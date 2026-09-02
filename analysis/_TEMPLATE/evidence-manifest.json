@@ -1,0 +1,19 @@
+{
+  "analysis_id": "ANA-YYYYMMDD-NNN",
+  "evidence": [
+    {
+      "evidence_id": "EVD-0001",
+      "query_id": "Q-DISC-IDENTITY-001",
+      "collector": "oracle-sql-collector",
+      "target": "host-A1",
+      "timestamp": "ISO-8601",
+      "classification": "sanitized",
+      "sensitivity": "LOW",
+      "hash": null,
+      "retention": {
+        "raw_expires_at": "ISO-8601",
+        "policy": "policies/evidence-retention-policy.md"
+      }
+    }
+  ]
+}

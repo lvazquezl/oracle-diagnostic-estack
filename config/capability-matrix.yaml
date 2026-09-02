@@ -1,0 +1,121 @@
+# Fuente estructurada de verdad de la Capability Matrix. docs/CAPABILITY_MATRIX.md debe mantenerse
+# consistente con este archivo (ver tests/test_capability_matrix_registry_consistency.sh).
+#
+# status values: PLANNED | FOUNDATION_ONLY | PARTIAL | SUPPORTED | UNSUPPORTED | LICENSE_DEPENDENT
+#   PLANNED           — la feature Oracle existe en esa versión, pero el e-stack aún no tiene
+#                        contrato/skill/query ni siquiera registrado para ella.
+#   FOUNDATION_ONLY   — el dominio tiene agente/contrato/skills REGISTERED, pero ningún skill
+#                        materializado (status: active) todavía cubre esta versión.
+#   PARTIAL           — al menos un skill materializado cubre esta versión, pero no el dominio completo.
+#   SUPPORTED         — cobertura completa certificada (no ocurre aún en Fase 1/Hardening).
+#   UNSUPPORTED       — la feature Oracle NO EXISTE en esa versión/arquitectura (no es límite del e-stack).
+#   LICENSE_DEPENDENT — depende de licenciamiento adicional (Diagnostics/Tuning Pack, etc.) independientemente
+#                        de la cobertura del e-stack; ver policies/licensing-awareness-policy.md.
+#
+# "latest" trackea la versión mayor soportada más reciente (hoy: 23ai) hasta que se agregue una nueva
+# vía /change compatibility.
+
+schema_version: 1
+generated_from: "Foundation Hardening pass"
+domains:
+  - id: oracle-core
+    display_name: "Oracle Core"
+    license_dependent: false
+    versions: {10g: PARTIAL, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
+    notes: "skills/oracle/tablespaces.md materializado (id oracle/tablespaces); resto de oracle/* registered."
+
+  - id: performance
+    display_name: "Performance"
+    license_dependent: false
+    versions: {10g: PARTIAL, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
+    notes: "skills/performance/wait-events.md materializado (id performance/wait-events) con fallback AWR->Statspack; no bloqueado por licencia por sí solo."
+
+  - id: awr
+    display_name: "AWR"
+    license_dependent: true
+    versions: {10g: LICENSE_DEPENDENT, 11g: LICENSE_DEPENDENT, 12c: LICENSE_DEPENDENT, 18c: LICENSE_DEPENDENT, 19c: LICENSE_DEPENDENT, 21c: LICENSE_DEPENDENT, 23ai: LICENSE_DEPENDENT, latest: LICENSE_DEPENDENT}
+    notes: "Requiere Diagnostics Pack en todas las versiones donde AWR existe (10g+). Ver policies/licensing-awareness-policy.md."
+
+  - id: ash
+    display_name: "ASH"
+    license_dependent: true
+    versions: {10g: LICENSE_DEPENDENT, 11g: LICENSE_DEPENDENT, 12c: LICENSE_DEPENDENT, 18c: LICENSE_DEPENDENT, 19c: LICENSE_DEPENDENT, 21c: LICENSE_DEPENDENT, 23ai: LICENSE_DEPENDENT, latest: LICENSE_DEPENDENT}
+    notes: "V$ACTIVE_SESSION_HISTORY historico (DBA_HIST_ACTIVE_SESS_HISTORY) requiere Diagnostics Pack."
+
+  - id: addm
+    display_name: "ADDM"
+    license_dependent: true
+    versions: {10g: LICENSE_DEPENDENT, 11g: LICENSE_DEPENDENT, 12c: LICENSE_DEPENDENT, 18c: LICENSE_DEPENDENT, 19c: LICENSE_DEPENDENT, 21c: LICENSE_DEPENDENT, 23ai: LICENSE_DEPENDENT, latest: LICENSE_DEPENDENT}
+    notes: "Depende de AWR + Diagnostics Pack. skills/performance/addm-analysis registered, no materializado."
+
+  - id: statspack
+    display_name: "Statspack"
+    license_dependent: false
+    versions: {10g: FOUNDATION_ONLY, 11g: FOUNDATION_ONLY, 12c: FOUNDATION_ONLY, 18c: FOUNDATION_ONLY, 19c: FOUNDATION_ONLY, 21c: FOUNDATION_ONLY, 23ai: FOUNDATION_ONLY, latest: FOUNDATION_ONLY}
+    notes: "No requiere licencia adicional. skills/performance/statspack-analysis registered; usado como fallback conceptual por performance/wait-events pero sin skill propio materializado aun."
+
+  - id: rac
+    display_name: "RAC"
+    license_dependent: false
+    versions: {10g: PLANNED, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
+    notes: "skills/rac/session-distribution.md materializado desde 11gR2 (Q-RAC-SESSION-DIST-001). 10g/11gR1 RAC no certificado en el catalogo -> PLANNED, no UNSUPPORTED (la feature Oracle si existe)."
+
+  - id: gi
+    display_name: "Grid Infrastructure"
+    license_dependent: false
+    versions: {10g: UNSUPPORTED, 11g: FOUNDATION_ONLY, 12c: FOUNDATION_ONLY, 18c: FOUNDATION_ONLY, 19c: FOUNDATION_ONLY, 21c: FOUNDATION_ONLY, 23ai: FOUNDATION_ONLY, latest: FOUNDATION_ONLY}
+    notes: "GI como marca/arquitectura formal es 11gR2+ (antes: Oracle Clusterware) -> UNSUPPORTED en 10g. Ningun skill de rac/{ocr,voting-disk,crs-resources} materializado aun -> FOUNDATION_ONLY desde 11g."
+
+  - id: asm
+    display_name: "ASM"
+    license_dependent: false
+    versions: {10g: PLANNED, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
+    notes: "skills/asm/capacity.md materializado desde 11g (declarado en su Skill Contract). ASM 10g existe en Oracle pero no esta certificado en el catalogo -> PLANNED."
+
+  - id: multitenant
+    display_name: "Multitenant"
+    license_dependent: true
+    versions: {10g: UNSUPPORTED, 11g: UNSUPPORTED, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
+    notes: "Multitenant no existe antes de 12c -> UNSUPPORTED real (no limite del e-stack). Mas de 1 PDB por CDB es LICENSE_DEPENDENT segun edicion; skills/multitenant/container-state.md materializado 12c+."
+
+  - id: dataguard
+    display_name: "Data Guard"
+    license_dependent: false
+    versions: {10g: PARTIAL, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
+    notes: "skills/dataguard/lag.md materializado 10g-23ai. Active Data Guard (lectura en standby) es LICENSE_DEPENDENT y se senala por finding, no a nivel de dominio completo."
+
+  - id: rman
+    display_name: "RMAN"
+    license_dependent: false
+    versions: {10g: PARTIAL, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
+    notes: "skills/rman/backup-status.md materializado 10g-23ai."
+
+  - id: network
+    display_name: "Network"
+    license_dependent: false
+    versions: {10g: PARTIAL, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
+    notes: "skills/network/tns.md materializado 10g-23ai."
+
+  - id: os
+    display_name: "OS"
+    license_dependent: false
+    versions: {10g: PARTIAL, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
+    notes: "No depende de la version Oracle. skills/os/linux/memory.md materializado; Solaris/AIX/Windows/HP-UX FOUNDATION_ONLY (registered)."
+
+  - id: capacity
+    display_name: "Capacity"
+    license_dependent: false
+    versions: {10g: PARTIAL, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
+    notes: "skills/capacity/forecast.md materializado; depende de evidencia de los dominios subyacentes (oracle/tablespaces, asm/capacity, os/*)."
+
+  - id: documentation
+    display_name: "Documentation"
+    license_dependent: false
+    versions: {10g: PARTIAL, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
+    notes: "No depende de la version Oracle. skills/documentation/healthcheck-report.md materializado; entregables binarios (DOCX/XLSX/PDF/PPTX) son Fase 9."
+
+  - id: change
+    display_name: "/change"
+    license_dependent: false
+    versions: {10g: SUPPORTED, 11g: SUPPORTED, 12c: SUPPORTED, 18c: SUPPORTED, 19c: SUPPORTED, 21c: SUPPORTED, 23ai: SUPPORTED, latest: SUPPORTED}
+    notes: "El proceso de gobierno /change esta completo y probado (tests/test_change_governance_flow.sh) independientemente de la version del target -- es un proceso sobre el propio e-stack, no sobre el ambiente Oracle."

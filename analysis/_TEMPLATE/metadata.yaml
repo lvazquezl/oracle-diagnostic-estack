@@ -1,0 +1,13 @@
+analysis_id: ANA-YYYYMMDD-NNN
+type: healthcheck|assessment|diagnose|awr|rac|dataguard|capacity|incident|rca
+target_summary: string        # referencia enmascarada, nunca hostname/IP real sin autorización
+requested_by: string          # usuario DBA (identidad estación de trabajo, no credencial Oracle)
+requested_at: ISO-8601
+workflow: string               # ej. workflows/healthcheck.md
+agents_activated: []
+skills_invoked: []
+evidence_refs: []
+confidence_summary: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|CONFIRMED_ROOT_CAUSE|UNDETERMINED
+sanitization_exceptions: []    # cualquier excepción autorizada explícitamente para esta sesión
+status: open|closed
+closed_at: ISO-8601|null

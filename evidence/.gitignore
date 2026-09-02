@@ -1,0 +1,7 @@
+# Evidencia real de ambientes: nunca se versiona (ver DISTRIBUTION.md, policies/evidence-retention-policy.md)
+raw/*
+sanitized/*
+derived/*
+!raw/.gitkeep
+!sanitized/.gitkeep
+!derived/.gitkeep

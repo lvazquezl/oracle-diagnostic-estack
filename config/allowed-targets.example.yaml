@@ -1,0 +1,13 @@
+# Copiar a allowed-targets.local.yaml (NO versionado). Lista blanca de targets que el e-stack
+# puede diagnosticar desde esta estación de trabajo. Ningún target fuera de esta lista es accesible.
+
+targets:
+  - alias: "example-standalone-dev"
+    connection_ref: "local wallet / TNS alias — nunca credenciales en este archivo"
+    environment_class: "non-production"
+  - alias: "example-rac-prod"
+    connection_ref: "local wallet / TNS alias"
+    environment_class: "production"
+    notes: "requiere autorización explícita adicional para ventanas AWR/ASH ampliadas"
+
+# Nunca incluir password, wallet content, ni connection strings con credenciales embebidas.

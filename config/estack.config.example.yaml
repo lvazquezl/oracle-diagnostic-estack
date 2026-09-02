@@ -1,0 +1,34 @@
+# Copiar a estack.config.local.yaml (NO versionado) y ajustar por estación de trabajo.
+# Ver DISTRIBUTION.md#separación-de-contenido.
+
+mcp_gateway:
+  bind: "localhost"          # nunca expuesto a red
+  default_timeout_seconds: 30
+  audit_log_dir: "./.audit"  # local, no versionado
+
+discovery_cache:
+  ttl_minutes: 60
+
+evidence_cache:
+  ttl_minutes: 240
+
+rate_limiting:
+  max_concurrent_queries_per_identity: 3
+  max_queries_per_minute_per_identity: 30
+
+sanitization:
+  mask_hostnames: true
+  mask_ips: true
+  mask_service_names: true
+  mask_schema_names: true
+  send_sql_text: false        # requiere override explícito por sesión, ver policies/data-minimization-policy.md
+
+evidence_retention:
+  raw_days: 30
+
+licensing_awareness:
+  assume_diagnostics_pack: false
+  assume_tuning_pack: false
+  assume_active_data_guard: false
+  assume_rac: false
+  assume_multitenant_multi_pdb: false
