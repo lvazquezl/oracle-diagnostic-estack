@@ -1,0 +1,199 @@
+# Oracle Dictionary Compatibility Layer — Fase 2 Compatibility Hardening
+#
+# NO modela todo el diccionario Oracle. Registra únicamente las vistas/columnas
+# efectivamente usadas por el catálogo Oracle Core (queries/oracle/**), para permitir
+# tests estáticos (tests/test_sql_static_validator.sh) que verifiquen que ninguna
+# variante SQL certificada usa una columna fuera de la versión donde existe.
+#
+# min_version usa la representación normalizada de policies/version-awareness-policy.md
+# (comparar como tupla major.minor, nunca como string). "all" = disponible desde 10g
+# (el mínimo soportado por el catálogo) sin restricción adicional conocida.
+
+schema_version: 1
+
+views:
+  V$INSTANCE:
+    min_version: all
+    columns:
+      version:            {min_version: all}
+      version_full:        {min_version: "18.0"}      # BUG CORREGIDO: usado sin guardia en Q-DISC-IDENTITY-001 v1.0
+      instance_name:       {min_version: all}
+      instance_number:      {min_version: all}
+      host_name:            {min_version: all}
+      status:                {min_version: all}
+      database_status:       {min_version: all}
+      active_state:            {min_version: all}
+      shutdown_pending:         {min_version: all}
+      startup_time:              {min_version: all}
+      instance_role:              {min_version: "11.0"}  # BUG CORREGIDO: usado sin guardia en Q-ORA-INSTANCE-STATE-001 v1.0
+
+  GV$INSTANCE:
+    min_version: all
+    notes: "Mismas columnas que V$INSTANCE, una fila por instancia visible."
+
+  V$DATABASE:
+    min_version: all
+    columns:
+      name:                {min_version: all}
+      database_role:         {min_version: all}
+      open_mode:              {min_version: all}
+      log_mode:                {min_version: all}
+      force_logging:            {min_version: all}
+      cdb:                       {min_version: "12.1"}   # BUG CORREGIDO: usado sin guardia en Q-DISC-IDENTITY-001 v1.0
+      flashback_on:              {min_version: all}
+      guard_status:               {min_version: all}
+      protection_mode:             {min_version: all}
+      protection_level:             {min_version: all}
+      remote_archive:                 {min_version: all}
+      switchover_status:                {min_version: all}
+
+  V$ACTIVE_INSTANCES:
+    min_version: "11.2"     # V$ACTIVE_INSTANCES en sí certificada desde 11gR2 en este catálogo
+    columns:
+      inst_number:         {min_version: "11.2"}
+      inst_name:            {min_version: "11.2"}
+      con_id:                 {min_version: "12.1"}      # BUG CORREGIDO: usado sin guardia en Q-DISC-RAC-001 v1.0
+
+  V$PARAMETER:
+    min_version: all
+    columns: {name: {min_version: all}, value: {min_version: all}, isdefault: {min_version: all}, ismodified: {min_version: all}}
+
+  GV$PARAMETER:
+    min_version: all
+
+  V$SPPARAMETER:
+    min_version: all
+
+  V$CONTROLFILE:
+    min_version: all
+
+  V$CONTROLFILE_RECORD_SECTION:
+    min_version: all
+
+  V$LOG:
+    min_version: all
+
+  V$LOGFILE:
+    min_version: all
+
+  V$LOG_HISTORY:
+    min_version: all
+
+  V$ARCHIVE_DEST:
+    min_version: all
+
+  V$ARCHIVE_DEST_STATUS:
+    min_version: all
+
+  V$ARCHIVED_LOG:
+    min_version: all
+
+  DBA_TABLESPACES:
+    min_version: all
+
+  DBA_DATA_FILES:
+    min_version: all
+
+  DBA_TABLESPACE_USAGE_METRICS:
+    min_version: "11.0"     # BUG CORREGIDO: usado en Q-DBA-TBS-USAGE-001 sin variante real para 10g
+
+  DBA_FREE_SPACE:
+    min_version: all
+    notes: "Fallback 10g para uso de tablespace, junto con DBA_DATA_FILES (ver Q-DBA-TBS-USAGE-001 variant V1)."
+
+  DBA_TEMP_FILES:
+    min_version: all
+
+  DBA_TEMP_FREE_SPACE:
+    min_version: all
+
+  V$TEMP_SPACE_HEADER:
+    min_version: all
+    notes: "No usado por el catálogo actual; registrado por completitud del inventario (sección 15 del prompt de hardening)."
+
+  V$UNDOSTAT:
+    min_version: all
+
+  DBA_UNDO_EXTENTS:
+    min_version: all
+    notes: "No usado por el catálogo actual (oracle/undo usa V$UNDOSTAT); registrado por completitud."
+
+  V$SESSION:
+    min_version: all
+    columns:
+      status: {min_version: all}
+      type: {min_version: all}
+      blocking_session: {min_version: all}
+      last_call_et: {min_version: all}
+      con_id: {min_version: "12.1"}
+      sql_id: {min_version: all, note: "prohibido por policies/data-minimization-policy.md, no por versión"}
+
+  V$PROCESS:
+    min_version: all
+
+  V$RESOURCE_LIMIT:
+    min_version: all
+
+  DBA_OBJECTS:
+    min_version: all
+    columns: {owner: {min_version: all}, object_type: {min_version: all}, status: {min_version: all}, object_name: {min_version: all}}
+
+  CDB_OBJECTS:
+    min_version: "12.1"
+    notes: "No usado por defecto en Fase 2 (ver Q-ORA-OBJECTS-INVENTORY-001); documentado como alternativa cross-PDB."
+
+  DBA_REGISTRY:
+    min_version: all
+
+  CDB_REGISTRY:
+    min_version: "12.1"
+
+  DBA_SCHEDULER_JOBS:
+    min_version: all
+
+  DBA_SCHEDULER_JOB_RUN_DETAILS:
+    min_version: all
+
+  DBA_JOBS:
+    min_version: all
+    notes: "Legacy DBMS_JOB. Declarado en objects_accessed de Q-ORA-JOBS-SUMMARY-001 pero NO consultado por su SQL actual — gap corregido en este hardening (ver docs/PHASE_2_COMPATIBILITY_HARDENING.md#other-query-fixes); consulta separada queda PLANNED, no se inventa un SELECT ficticio."
+
+  V$DIAG_INFO:
+    min_version: "11.0"
+
+  DBA_OUTSTANDING_ALERTS:
+    min_version: "11.0"
+
+  V$ACTIVE_SESSION_HISTORY:
+    min_version: all
+    notes: "Requiere Diagnostics Pack (license gate, no version gate) — ver Q-PERF-WAIT-ASH-001, fuera del alcance Oracle Core."
+
+  V$ASM_DISKGROUP:
+    min_version: all
+    notes: "cost_class endurecido en este hardening — puede disparar disk discovery; usar V$ASM_DISKGROUP_STAT para monitoreo rutinario (ver Q-DISC-ASM-001)."
+
+  V$ASM_DISKGROUP_STAT:
+    min_version: "11.0"
+    notes: "Variante de bajo costo de V$ASM_DISKGROUP para polling rutinario — no dispara disk discovery."
+
+  GV$SESSION:
+    min_version: all
+    notes: "Misma disponibilidad de columnas que V$SESSION, una fila por sesión por instancia visible. Usada por Q-RAC-SESSION-DIST-001 (columnas inst_id, service_name, type, status — todas 'all')."
+
+  GV$SERVICES:
+    min_version: all
+    notes: "Usada por Q-RAC-SESSION-DIST-001 vía join implícito de service_name en GV$SESSION; Q-RAC-SESSION-DIST-001 certifica desde 11gR2 por política de soporte RAC (ver Notes by version en el archivo), no por disponibilidad de la vista."
+
+  DBA_HIST_SNAPSHOT:
+    min_version: "10.1"
+    notes: "AWR (Diagnostics Pack). Usada por Q-PERF-WAIT-AWR-001 para acotar snap_id/end_interval_time de la ventana."
+
+  DBA_HIST_SYSTEM_EVENT:
+    min_version: "10.1"
+    columns:
+      time_waited_micro_fg: {min_version: "11.0", notes: "Columna foreground (FG) introducida en 11g; en 10g sólo existe time_waited_micro (sin split FG/BG). No incluida en RISKY_COLUMNS del SQL Static Validator — gap conocido, ver docs/PHASE_2_COMPATIBILITY_HARDENING.md#limitations."}
+    notes: "AWR (Diagnostics Pack). Usada por Q-PERF-WAIT-AWR-001."
+
+  DBA_HIST_ACTIVE_SESS_HISTORY:
+    min_version: "10.1"
+    notes: "AWR (Diagnostics Pack), ASH histórico persistido en cada snapshot. Usada por Q-PERF-WAIT-ASH-001 como fallback documentado a V$ACTIVE_SESSION_HISTORY."

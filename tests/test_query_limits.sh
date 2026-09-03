@@ -4,7 +4,7 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 
-for f in "$ROOT"/queries/Q-*.md; do
+for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   [ -f "$f" ] || continue
   if grep -q '^timeout_seconds:' "$f" && grep -q '^max_rows:' "$f"; then
     echo "[PASS] $f declara timeout_seconds y max_rows"
@@ -22,7 +22,7 @@ else
   FAIL=1
 fi
 
-for f in "$ROOT"/queries/Q-*.md; do
+for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   [ -f "$f" ] || continue
   if grep -q '^max_output_bytes:' "$f"; then
     echo "[PASS] $f declara max_output_bytes"

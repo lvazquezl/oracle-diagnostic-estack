@@ -1,0 +1,22 @@
+name: redo
+display_name: "Redo Configuration"
+id: oracle/redo
+version: 1.0.0
+domain: oracle
+status: active
+
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac]
+container_scope: CDB_ROOT
+database_role_scope: PRIMARY
+
+required_evidence:
+  - query_id: Q-ORA-REDO-001
+optional_evidence:
+  - query_id: Q-ORA-REDO-SWITCH-FREQ-001
+
+data_sensitivity: LOW
+context_budget: LOW
+
+related_skills: [oracle/archive, oracle/controlfile]

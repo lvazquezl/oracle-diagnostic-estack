@@ -4,7 +4,7 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 
-for f in "$ROOT"/agents/*.md; do
+for f in "$ROOT"/agents/*.md "$ROOT"/agents/*/AGENT.md; do
   base=$(basename "$f")
   [ "$base" = "_AGENT_CONTRACT_TEMPLATE.md" ] && continue
   # Buscar menciones de privilegios elevados que NO estén en una línea de negación/prohibición

@@ -22,6 +22,35 @@ Cada tool mapea 1:1 (o 1:N) a entradas certificadas de [`queries/REGISTRY.md`](.
 | `get_security_posture(target)` | `{target: string}` | usuarios privilegiados, profiles, DB links | `Q-SEC-USERS-001` *(registered — Fase 5)* |
 | `get_capacity_trend(target, resource, horizon_months)` | `{target, resource, horizon_months: 1\|3\|6}` | serie histórica + proyección | `Q-CAP-TIMESERIES-001` |
 | `get_pdb_state(target)` | `{target: string}` | estado por PDB | `Q-CDB-PDB-STATE-001`, `Q-CDB-CONTAINERS-001` |
+| `get_database_state(target)` | `{target: string}` | flashback/guard/protection flags | `Q-ORA-DB-STATE-001` |
+| `get_database_parameters(target)` | `{target: string}` | parámetros no-default (+ diff RAC si aplica) | `Q-ORA-PARAMETERS-001`, `Q-ORA-PARAMETERS-RAC-DIFF-001` |
+| `get_controlfile_metadata(target)` | `{target: string}` | multiplexado, record sections | `Q-ORA-CONTROLFILE-001` |
+| `get_redo_configuration(target, window_start?, window_end?)` | `{target, window_start?, window_end?}` | grupos/miembros, frecuencia de switch | `Q-ORA-REDO-001`, `Q-ORA-REDO-SWITCH-FREQ-001` |
+| `get_archive_configuration(target)` | `{target: string}` | destinos, estado, último archivado | `Q-ORA-ARCHIVE-001` |
+| `get_temp_usage(target)` | `{target: string}` | uso/configuración de TEMP | `Q-ORA-TEMP-001` |
+| `get_undo_status(target)` | `{target: string}` | configuración/uso de UNDO | `Q-ORA-UNDO-001` |
+| `get_session_summary(target)` | `{target: string}` | resumen agregado de sesiones | `Q-ORA-SESSIONS-SUMMARY-001` |
+| `get_process_summary(target)` | `{target: string}` | procesos vs. límite | `Q-ORA-PROCESSES-SUMMARY-001` |
+| `get_resource_limits(target)` | `{target: string}` | uso pico vs. límite (processes/sessions/open_cursors/...) | `Q-ORA-RESOURCE-LIMITS-001` |
+| `get_invalid_object_summary(target)` | `{target: string}` | objetos inválidos por owner/tipo | `Q-ORA-INVALID-OBJECTS-001` |
+| `get_component_status(target)` | `{target: string}` | estado/versión de componentes | `Q-ORA-COMPONENTS-001` |
+| `get_jobs_summary(target)` | `{target: string}` | jobs fallidos/broken/larga duración | `Q-ORA-JOBS-SUMMARY-001` |
+| `get_objects_inventory(target)` | `{target: string}` | inventario agregado de objetos | `Q-ORA-OBJECTS-INVENTORY-001` |
+| `get_spfile_status(target)` | `{target: string}` | existencia SPFILE, cambios no persistidos | `Q-ORA-SPFILE-001` |
+| `get_diagnostic_state(target, window_start?, window_end?)` | `{target, window_start?, window_end?}` | incidentes ADR, extracto de alert log | `Q-ORA-DIAGNOSTICS-ADR-001`, `Q-ORA-DIAGNOSTICS-ALERTLOG-001` |
+
+## MCP Query Certification (Compatibility Hardening)
+
+Antes de exponer una tool contra un target concreto, el Gateway MCP consulta al Query Variant Resolver (`docs/QUERY_VARIANTS.md#query-variant-resolver`) por cada `query_id` detrás de esa tool. Estado resultante posible:
+
+| Resolver status | Tool disponible para ese target |
+|---|---|
+| `SUPPORTED` (el Resolver encontró un variant compatible) | Sí — `CERTIFIED` para ese target específico. |
+| `UNSUPPORTED` (ningún variant cubre ese target) | No — la tool no se expone; el orquestador reporta `capability_status: UNSUPPORTED` con `reason`/`alternative` (nunca un error genérico). |
+| `PARTIALLY_SUPPORTED` sin variant compatible para ese target concreto | No — no equivale a `CERTIFIED`; sólo aplica si existe al menos un variant que cubra ese target exacto. |
+| Query no revisada por Compatibility Hardening (`NOT_CERTIFIED`/estado desconocido) | No — nunca expuesta. Ninguna tool detrás de una query `NOT_CERTIFIED` o `UNKNOWN` es alcanzable vía MCP, independientemente de si su Query Contract declara metadata de soporte. |
+
+Esto es evaluado **por target**, no una vez globalmente: la misma tool puede estar `CERTIFIED` para un target 19c y no disponible para un target 10g si el Resolver no encuentra variant para ese caso — ver la tabla `10g COMPATIBILITY`…`23ai COMPATIBILITY` en `docs/PHASE_2_COMPATIBILITY_HARDENING.md`. El Gateway MCP en sí (ejecución real contra una instancia) es Fase 7; hasta entonces esta sección documenta la regla que ese Gateway debe implementar, no un comportamiento runtime activo hoy.
 
 ## Reglas del manifest
 

@@ -85,3 +85,17 @@ Ningún artefacto en `candidate` o `under_review` puede ser invocado por el orqu
 - **Regression impact**: `REGRESSION VALIDATION` confirma que artefactos existentes que referencian el elemento modificado (`Allowed skills` de agentes, `Skills`/`Evidence required` de workflows) siguen siendo válidos tras el cambio.
 
 Toda incorporación de una nueva versión Oracle entra específicamente por `/change compatibility` y actualiza, en el mismo cambio: `config/capability-matrix.yaml`, las reglas de versión en `policies/version-awareness-policy.md`, las queries afectadas, los tests relevantes, y la documentación (`docs/CAPABILITY_MATRIX.md`).
+
+### `/change compatibility` — checklist obligatorio (Oracle Core Compatibility Hardening)
+
+Ninguna versión Oracle nueva (ni un ajuste de rango sobre una existente) se marca `SUPPORTED`/`COMPATIBLE` sin que el mismo cambio incluya, todos, no un subconjunto:
+
+1. **Dictionary delta**: `compatibility/oracle-dictionary/views.yaml` actualizado con toda vista/columna nueva realmente usada y su `min_version` real (fuente: documentación oficial Oracle — nunca inventada, ver `docs/QUERY_VARIANTS.md#future-proof-version-policy`).
+2. **Query variants**: si la nueva versión introduce una diferencia de columnas/vistas frente a variantes existentes, se crea un variant nuevo (`docs/QUERY_VARIANTS.md#query-variant-contract`) — nunca se extiende el `max` de un variant existente para cubrir una versión no validada contra el dictionary.
+3. **Compatibility matrix**: `config/query-compatibility-matrix.yaml` refleja el/los variant(s) afectados y su `validation_status`.
+4. **Fixtures**: al menos un fixture (`tests/fixtures/*.yaml`) representando la nueva versión/arquitectura, con `architecture`/`container`/`role`/`open_mode` (`tests/test_documented_support_matches_query_variants.sh` y equivalentes la consumen).
+5. **Tests**: el test de Resolver por versión correspondiente (`tests/test_query_variant_resolver_<version>.sh`) existe y pasa; si no existe uno para la nueva versión, se crea siguiendo el patrón de los 7 existentes (10g–23ai).
+6. **Skills**: `skills/**/manifest.yaml`/`SKILL.md` que dependan de la query actualizan su `supported_oracle_versions` sólo hasta donde el Resolver realmente puede seleccionar una variante — nunca declarar soporte que el catálogo de variantes no respalda.
+7. **Docs**: `docs/CAPABILITY_MATRIX.md` y, si aplica, `docs/PHASE_2_COMPATIBILITY_HARDENING.md` (o el documento de hardening vigente) referencian el cambio.
+
+Ver también sección "Future-proof version policy" en `docs/QUERY_VARIANTS.md` para el tratamiento de `latest` y versiones Oracle aún no integradas.

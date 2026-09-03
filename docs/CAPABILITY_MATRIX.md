@@ -19,7 +19,7 @@ Vista legible de [`config/capability-matrix.yaml`](../config/capability-matrix.y
 
 | Dominio | 10g | 11g | 12c | 18c | 19c | 21c | 23ai | latest |
 |---|---|---|---|---|---|---|---|---|
-| Oracle Core | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
+| Oracle Core | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED |
 | Performance | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
 | AWR | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT |
 | ASH | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT |
@@ -39,15 +39,15 @@ Vista legible de [`config/capability-matrix.yaml`](../config/capability-matrix.y
 
 ## Notas por dominio
 
-- **Oracle Core**: `skills/oracle/tablespaces.md` materializado (id `oracle/tablespaces`); resto de `oracle/*` `registered`.
+- **Oracle Core**: `SUPPORTED` desde Fase 2 — las 18 skills `oracle/*` completamente materializadas (`SKILL.md` + `manifest.yaml`), ~20 queries `Q-ORA-*` certificadas (Query Contract v2), 40 tests dedicados. `oracle/diagnostics` (ADR) requiere 11g+; en 10g esa sub-capacidad específica degrada a `UNSUPPORTED` sin afectar el resto del dominio.
 - **Performance**: `skills/performance/wait-events.md` materializado (id `performance/wait-events`) con fallback AWR→Statspack; no bloqueado por licencia por sí solo (a diferencia de AWR/ASH/ADDM como dominios propios).
 - **AWR/ASH/ADDM**: requieren Diagnostics Pack en todas las versiones donde existen (10g+) — `LICENSE_DEPENDENT` no es una limitación del e-stack sino del contrato de licenciamiento del cliente; ver `policies/licensing-awareness-policy.md`.
 - **Statspack**: no requiere licencia adicional; `skills/performance/statspack-analysis` está `registered`, no materializado — usado como fallback conceptual por `performance/wait-events` pero sin skill propio activo aún.
-- **RAC**: `skills/rac/session-distribution.md` materializado desde 11gR2. 10g/11gR1 RAC no está certificado en el catálogo → `PLANNED` (la feature Oracle sí existe), no `UNSUPPORTED`.
+- **RAC**: esta fila mide **deep diagnostics** (`skills/rac/session-distribution.md`, desde 11gR2). 10g/11gR1 no certificado → `PLANNED` (la feature Oracle sí existe), no `UNSUPPORTED`. **RAC detection** (presencia/topología básica) es distinta y está `SUPPORTED` desde Fase 2 vía el Target Profile (`docs/TARGET_PROFILE.md`, `capabilities.rac`).
 - **GI (Grid Infrastructure)**: como marca/arquitectura formal es 11gR2+ (antes: Oracle Clusterware) → `UNSUPPORTED` en 10g. Ningún skill de `rac/ocr`, `rac/voting-disk`, `rac/crs-resources` está materializado aún → `FOUNDATION_ONLY` desde 11g.
-- **ASM**: `skills/asm/capacity.md` materializado desde 11g (declarado en su Skill Contract). ASM en 10g existe en Oracle pero no está certificado en el catálogo → `PLANNED`.
-- **Multitenant**: no existe antes de 12c → `UNSUPPORTED` real. Más de 1 PDB por CDB es `LICENSE_DEPENDENT` según edición (se señala por finding, no a nivel de dominio completo en esta matriz). `skills/multitenant/container-state.md` materializado 12c+.
-- **Data Guard**: `skills/dataguard/lag.md` materializado 10g–23ai. Active Data Guard (lectura en standby) es `LICENSE_DEPENDENT` y se señala por finding específico, no a nivel de dominio completo.
+- **ASM**: fila = **deep diagnostics** (`skills/asm/capacity.md`, desde 11g). **ASM detection** (presencia, `storage_mode`) está `SUPPORTED` desde Fase 2 vía el Target Profile.
+- **Multitenant**: no existe antes de 12c → `UNSUPPORTED` real. Más de 1 PDB por CDB es `LICENSE_DEPENDENT` según edición. Fila = **deep diagnostics** (`skills/multitenant/container-state.md`, 12c+). **Container detection** (CDB/PDB, listado de PDBs) está `SUPPORTED` desde Fase 2 vía el Target Profile.
+- **Data Guard**: fila = **deep diagnostics** (`skills/dataguard/lag.md`, 10g–23ai). Active Data Guard (lectura en standby) es `LICENSE_DEPENDENT` y se señala por finding específico. **Role detection** (primary/standby/logical/snapshot) está `SUPPORTED` desde Fase 2 vía el Target Profile.
 - **RMAN, Network, OS, Capacity, Documentation**: un skill representativo materializado por dominio; el resto `registered` (ver `skills/REGISTRY.md`). OS y Documentation no dependen de la versión Oracle — la tabla los repite igual en las 8 columnas por consistencia estructural con el resto de la matriz.
 - **/change**: el proceso de gobierno está completo y probado (`tests/test_change_governance_flow.sh`) independientemente de la versión del target — es un proceso sobre el propio e-stack, no sobre el ambiente Oracle.
 

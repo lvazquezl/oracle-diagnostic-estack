@@ -1,6 +1,6 @@
 ---
 name: healthcheck
-version: 1.0.0
+version: 2.0.0
 status: active
 ---
 
@@ -26,19 +26,19 @@ Target identificado (alias de conexión read-only ya configurado en `config/allo
 
 # Activation conditions
 
-- RAC → activa `oracle-rac-analyst` sólo si `instance_mode = rac`.
-- ASM → activa `oracle-asm-storage-analyst` sólo si `storage_mode = asm`.
+- RAC → activa `oracle-rac-analyst` sólo si `architecture.cluster_mode = rac` (Target Profile).
+- ASM → activa `oracle-asm-storage-analyst` sólo si `architecture.storage_mode = asm`.
 - Data Guard → activa `oracle-dataguard-analyst` sólo si discovery confirma standby asociado o `database_role != primary` sin standby (para reportar el gap).
-- CDB → activa `oracle-multitenant-analyst` sólo si `container_mode = cdb`.
+- CDB → activa `oracle-multitenant-analyst` sólo si `architecture.multitenant_mode = cdb`.
 - El resto de agentes opcionales sólo se activan si el DBA los pide explícitamente o si `oracle-dba-analyst` reporta un hallazgo que los amerita (ver `Escalation`).
 
 # Skills
 
-`core/context-discovery` (vía discovery), `oracle/database-state`, `oracle/tablespaces`, `oracle/undo`, `oracle/temp`, `oracle/sessions`, `oracle/invalid-objects`.
+`core/context-discovery`, `core/version-awareness` (vía discovery); `oracle-dba-analyst` activa, según `constraints.area_scope` o por defecto todas, las 18 skills Oracle Core (`oracle/database-state`, `oracle/instance`, `oracle/parameters`, `oracle/spfile`, `oracle/controlfile`, `oracle/redo`, `oracle/archive`, `oracle/tablespaces`, `oracle/temp`, `oracle/undo`, `oracle/sessions`, `oracle/processes`, `oracle/jobs`, `oracle/objects`, `oracle/components`, `oracle/invalid-objects`, `oracle/resource-limits`, `oracle/diagnostics`) — ver `agents/oracle-dba-analyst/AGENT.md#responsibilities`.
 
 # Evidence required
 
-`Q-DISC-IDENTITY-001`, `Q-DISC-INSTANCE-001`, `Q-DBA-TBS-USAGE-001` como mínimo; el resto según agentes opcionales activados.
+`Q-DISC-IDENTITY-001`, `Q-DISC-INSTANCE-001`, `Q-DBA-TBS-USAGE-001` como mínimo del Target Profile + tablespaces; el resto de las ~20 queries `Q-ORA-*` de Oracle Core (ver `queries/REGISTRY.md#oracle-core-queries-fase-2`) según las áreas efectivamente activadas.
 
 # Stop conditions
 

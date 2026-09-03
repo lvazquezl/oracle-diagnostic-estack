@@ -4,6 +4,8 @@ Todo query/comando aquí es de sólo lectura por construcción (`execution_mode:
 
 > **Foundation Hardening**: esta tabla migró a Query Contract v2 — se separó en "Identity & Scope" y "Cost, Risk & Sensitivity" para mantener cada tabla legible. `id` es la clave de unión entre ambas. `risk_class` (seguridad) y `cost_class` (impacto operacional) son dimensiones **distintas** — ver `policies/query-cost-policy.md`.
 
+> **Fase 2 (Oracle Core)**: el catálogo Oracle se organizó por carpeta bajo `queries/oracle/<categoría>/`, una query por archivo (`<query_id>.md`), en vez de un único archivo `.md` plano por query en `queries/`. Las 4 queries de discovery (`Q-DISC-IDENTITY-001`, `Q-DISC-INSTANCE-001`, `Q-DISC-RAC-001`, `Q-DISC-ASM-001`) y las 2 de tablespaces (`Q-DBA-TBS-USAGE-001`, `Q-DBA-TBS-DATAFILES-001`) se **relocalizaron** (mismos IDs, sin duplicar) a `queries/oracle/discovery/` y `queries/oracle/tablespaces/` respectivamente. Se agregaron 20 queries nuevas para las 18 áreas Oracle Core (`Q-ORA-*`) — ver sección "Oracle Core queries (Fase 2)" abajo.
+
 ## Tools semánticas MCP (nivel Gateway)
 
 | tool | catálogo | dominio | agente principal |
@@ -39,9 +41,9 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-DISC-ASM-001` | Presencia de ASM | 11g–23ai | todas | ASM | NOT_APPLICABLE | ANY |
 | `Q-DBA-TBS-USAGE-001` | Uso de tablespaces | 10g–23ai | todas | NON-CDB/CDB | ANY_CONTAINER | ANY |
 | `Q-DBA-TBS-DATAFILES-001` | Detalle de datafiles/autoextend | 10g–23ai | todas | NON-CDB/CDB | ANY_CONTAINER | ANY |
-| `Q-PERF-WAIT-AWR-001` | Wait events agregados (AWR) | 10g–23ai (Diagnostics Pack) | todas | Standalone/RAC | CDB_ROOT | PRIMARY |
-| `Q-PERF-WAIT-ASH-001` | Wait events granulares (ASH) | 10g–23ai (Diagnostics Pack) | todas | Standalone/RAC | CDB_ROOT | PRIMARY |
-| `Q-PERF-WAIT-STATSPACK-001` | Wait events (fallback sin licencia) | 10g–23ai | todas | Standalone/RAC | CDB_ROOT | PRIMARY |
+| `Q-PERF-WAIT-AWR-001` | Wait events agregados (AWR) | 10g–23ai (Diagnostics Pack) | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-WAIT-ASH-001` | Wait events granulares (ASH) | 10g–23ai (Diagnostics Pack) | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-WAIT-STATSPACK-001` | Wait events (fallback sin licencia) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
 | `Q-RAC-SESSION-DIST-001` | Distribución de sesiones por instancia | 11gR2–23ai | Linux/RHEL/SUSE/Solaris/AIX/Windows | RAC | NOT_APPLICABLE | ANY |
 | `Q-RAC-SERVICE-PLACEMENT-001` | Placement y goals de servicio | 11gR2–23ai | ídem | RAC | NOT_APPLICABLE | ANY |
 | `Q-ASM-DG-USAGE-001` | Espacio usable por disk group | 11g–23ai | ídem | ASM | NOT_APPLICABLE | ANY |
@@ -90,6 +92,58 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-CAP-TIMESERIES-001` | `DBA_HIST_*`/snapshots retenidos | R0 | MEDIUM | 45 | 5000 | LOW | none |
 
 Todas con `status: active`, `execution_mode: READ_ONLY`, `tests:` referenciado a `tests/test_no_write_operations.*`, `tests/test_query_limits.*`, `tests/test_query_contract_requires_container_scope.sh`, `tests/test_query_contract_requires_role_scope.sh`, `tests/test_query_contract_requires_cost_class.sh`, `tests/test_query_contract_requires_license_metadata.sh` como mínimo. Ninguna entrada certificada tiene `cost_class: BLOCKED` — esa clase describe por qué una query se **rechaza** del catálogo (ver `policies/query-cost-policy.md`), no un modo de ejecución.
+
+## Oracle Core queries (Fase 2) — Identity & Scope
+
+| id | purpose | versions | platform | architecture | container_scope | database_role_scope |
+|---|---|---|---|---|---|---|
+| `Q-ORA-DB-STATE-001` | Flags globales de V$DATABASE (flashback/guard/protection) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-ORA-INSTANCE-STATE-001` | Estado operativo de instancia(s) | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+| `Q-ORA-PARAMETERS-001` | Parámetros no-default | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-ORA-PARAMETERS-RAC-DIFF-001` | Parámetros divergentes entre instancias | 10g–23ai | todas | RAC | ANY_CONTAINER | ANY |
+| `Q-ORA-SPFILE-001` | Existencia de SPFILE / cambios no persistidos | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+| `Q-ORA-CONTROLFILE-001` | Multiplexado y record sections | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-ORA-REDO-001` | Configuración de grupos/miembros de redo | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-ORA-REDO-SWITCH-FREQ-001` | Frecuencia de log switches (ventana) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-ORA-ARCHIVE-001` | Configuración/estado de destinos de archivado | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-ORA-TEMP-001` | Uso/configuración de tempfiles | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-ORA-UNDO-001` | Configuración/uso de UNDO activo | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-ORA-SESSIONS-SUMMARY-001` | Resumen agregado de sesiones | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-ORA-PROCESSES-SUMMARY-001` | Resumen de procesos vs. límite | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+| `Q-ORA-JOBS-SUMMARY-001` | Jobs fallidos/broken/larga duración | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-ORA-OBJECTS-INVENTORY-001` | Inventario agregado de objetos | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-ORA-INVALID-OBJECTS-001` | Objetos inválidos por owner/tipo | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-ORA-COMPONENTS-001` | Estado/versión de componentes | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-ORA-RESOURCE-LIMITS-001` | Uso pico vs. límite de recursos | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+| `Q-ORA-DIAGNOSTICS-ADR-001` | Incidentes ADR abiertos | 11g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+| `Q-ORA-DIAGNOSTICS-ALERTLOG-001` | Extracto acotado de alert log (errores ORA-*) | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+
+## Oracle Core queries (Fase 2) — Cost, Risk & Sensitivity
+
+| id | objects_accessed | risk_class | cost_class | timeout_s | max_rows | sensitivity | license_requirements |
+|---|---|---|---|---|---|---|---|
+| `Q-ORA-DB-STATE-001` | `V$DATABASE` | R0 | LOW | 10 | 1 | LOW | none |
+| `Q-ORA-INSTANCE-STATE-001` | `GV$INSTANCE` | R0 | LOW | 10 | 50 | LOW | none |
+| `Q-ORA-PARAMETERS-001` | `V$PARAMETER` | R0 | LOW | 20 | 500 | MEDIUM | none |
+| `Q-ORA-PARAMETERS-RAC-DIFF-001` | `GV$PARAMETER` | R0 | MEDIUM | 30 | 1000 | MEDIUM | none |
+| `Q-ORA-SPFILE-001` | `V$SPPARAMETER`, `V$PARAMETER` | R0 | LOW | 10 | 500 | LOW | none |
+| `Q-ORA-CONTROLFILE-001` | `V$CONTROLFILE`, `V$CONTROLFILE_RECORD_SECTION` | R0 | LOW | 10 | 100 | LOW | none |
+| `Q-ORA-REDO-001` | `V$LOG`, `V$LOGFILE` | R0 | LOW | 10 | 200 | LOW | none |
+| `Q-ORA-REDO-SWITCH-FREQ-001` | `V$LOG_HISTORY` | R0 | MEDIUM | 30 | 2000 | LOW | none |
+| `Q-ORA-ARCHIVE-001` | `V$ARCHIVE_DEST`, `V$ARCHIVE_DEST_STATUS`, `V$ARCHIVED_LOG` | R0 | LOW | 15 | 100 | MEDIUM | none |
+| `Q-ORA-TEMP-001` | `DBA_TEMP_FILES`, `DBA_TEMP_FREE_SPACE` | R0 | LOW | 15 | 200 | MEDIUM | none |
+| `Q-ORA-UNDO-001` | `V$PARAMETER`, `DBA_TABLESPACES`, `V$UNDOSTAT` | R0 | LOW | 15 | 100 | LOW | none |
+| `Q-ORA-SESSIONS-SUMMARY-001` | `V$SESSION` (agregado) | R0 | MEDIUM | 20 | 200 | MEDIUM | none |
+| `Q-ORA-PROCESSES-SUMMARY-001` | `V$PROCESS`, `V$PARAMETER` | R0 | LOW | 10 | 5 | LOW | none |
+| `Q-ORA-JOBS-SUMMARY-001` | `DBA_SCHEDULER_JOBS`, `DBA_SCHEDULER_JOB_RUN_DETAILS`, `DBA_JOBS` | R0 | MEDIUM | 20 | 500 | MEDIUM | none |
+| `Q-ORA-OBJECTS-INVENTORY-001` | `DBA_OBJECTS` (agregado) | R0 | MEDIUM | 30 | 1000 | MEDIUM | none |
+| `Q-ORA-INVALID-OBJECTS-001` | `DBA_OBJECTS` | R0 | LOW | 20 | 500 | MEDIUM | none |
+| `Q-ORA-COMPONENTS-001` | `DBA_REGISTRY` | R0 | LOW | 10 | 100 | LOW | none |
+| `Q-ORA-RESOURCE-LIMITS-001` | `V$RESOURCE_LIMIT` | R0 | LOW | 10 | 50 | LOW | none |
+| `Q-ORA-DIAGNOSTICS-ADR-001` | `V$DIAG_INFO`, `DBA_OUTSTANDING_ALERTS` | R0 | LOW | 15 | 100 | MEDIUM | none |
+| `Q-ORA-DIAGNOSTICS-ALERTLOG-001` | alert log (archivo, collector certificado) | R0 | MEDIUM | 30 | 2000 | HIGH | none |
+
+Todas con `status: active`, `execution_mode: READ_ONLY`, mismo set mínimo de tests que el resto del catálogo. Ninguna es `cost_class: BLOCKED`. Ninguna toca tablas de aplicación (`tests/test_no_application_table_access.sh`, `tests/test_application_data_blocked.sh`).
 
 ## Extensión más allá de las 14 tools nombradas
 

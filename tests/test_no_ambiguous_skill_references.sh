@@ -6,7 +6,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 AMBIGUOUS='temp|undo|sga|pga|services|memory|io'
 
-for f in "$ROOT"/agents/*.md "$ROOT"/workflows/*.md; do
+for f in "$ROOT"/agents/*.md "$ROOT"/agents/*/AGENT.md "$ROOT"/workflows/*.md; do
   base=$(basename "$f")
   case "$base" in _AGENT_CONTRACT_TEMPLATE.md|_WORKFLOW_CONTRACT_TEMPLATE.md) continue ;; esac
   # Buscar backtick-quoted bare ambiguous words SIN un "/" antes (no domain-qualified) dentro de

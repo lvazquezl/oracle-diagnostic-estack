@@ -25,7 +25,7 @@ Ver [ARCHITECTURE.md](ARCHITECTURE.md) para el detalle de cada carpeta. Punto de
 
 ## Convenciones
 
-Todo skill se referencia siempre por su `skill_id` completo (`dominio/skill`, ej. `oracle/tablespaces`) — nunca por un nombre corto suelto (`tablespaces`, `temp`, `undo`...); ver [skills/REGISTRY.md](skills/REGISTRY.md). Toda capability que no se ejecuta tal como se pidió (por versión, licencia, privilegio, costo...) devuelve un estado explícito en vez de fallar en silencio — ver [docs/CONTRACTS.md#capability-status-model](docs/CONTRACTS.md#capability-status-model).
+Todo skill se referencia siempre por su `skill_id` completo (`dominio/skill`, ej. `oracle/tablespaces`) — nunca por un nombre corto suelto (`tablespaces`, `temp`, `undo`...); ver [skills/REGISTRY.md](skills/REGISTRY.md). Toda capability que no se ejecuta tal como se pidió (por versión, licencia, privilegio, costo...) devuelve un estado explícito en vez de fallar en silencio — ver [docs/CONTRACTS.md#capability-status-model](docs/CONTRACTS.md#capability-status-model). Un agente profundizado por una fase vive en `agents/<id>/AGENT.md` (ej. `oracle-discovery-analyst`, `oracle-dba-analyst`); el resto permanece `agents/<id>.md`. La identidad de un ambiente Oracle se publica una vez por análisis como **Target Profile** ([docs/TARGET_PROFILE.md](docs/TARGET_PROFILE.md)) y se reutiliza — ningún especialista vuelve a determinar versión/arquitectura/rol por su cuenta.
 
 ## Empezar
 
@@ -36,4 +36,4 @@ Todo skill se referencia siempre por su `skill_id` completo (`dominio/skill`, ej
 
 ## Estado
 
-Fase actual: **Fase 1 — Foundation**, con un **Foundation Hardening** pass aplicado (canonical skill IDs, Query Contract v2, cost/capability/licensing/version gating, Capability Matrix). Ver [CHANGELOG.md](CHANGELOG.md) y "Known limitations" en el reporte de cierre de fase.
+Fase actual: **Fase 2 — Oracle Core** (sobre baseline `v0.1.0-foundation`: Foundation + Foundation Hardening). `oracle-discovery-analyst`/`oracle-dba-analyst` y las 18 skills `oracle/*` están completamente implementados y probados — ver [docs/PHASE_2_ORACLE_CORE.md](docs/PHASE_2_ORACLE_CORE.md). Ver [CHANGELOG.md](CHANGELOG.md) y "Known limitations" en el reporte de cierre de fase.

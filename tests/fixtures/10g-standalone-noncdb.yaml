@@ -1,0 +1,62 @@
+# Fixture: Oracle 10g Standalone NON-CDB
+# Usada por: test_10g_non_cdb_discovery.sh, test_oracle_core_controlfile.sh
+fixture_id: FX-10g-standalone-noncdb
+
+target_profile:
+  schema_version: "2.0.0"
+  target_id: "fixture-10g-standalone"
+  database:
+    name: "ORCL10G"
+    unique_name: "ORCL10G"
+    dbid: "1234567890"
+  oracle_version: {major: 10, minor: 2, release: 0, ru: null, raw: "10.2.0.5.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: false
+  instance: {name: "orcl10g", number: 1, host: "HOST_TOKEN_010"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: non_cdb, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities:
+    rac: UNSUPPORTED
+    asm: PLANNED
+    multitenant: UNSUPPORTED
+    dataguard: UNSUPPORTED
+    awr: LICENSE_RESTRICTED
+    ash: LICENSE_RESTRICTED
+  discovery: {timestamp: "2026-01-15T09:00:00Z", evidence_refs: [EVD-FX-001], confidence: FACT}
+
+# Compatibility schema (Compatibility Hardening, sección 26) — derivado de
+# compatibility/oracle-dictionary/views.yaml para oracle_version=10.2, architecture=non_cdb.
+# Usado por tests que validan que el Query Variant Resolver seleccione, para esta fixture,
+# únicamente variantes cuyas vistas/columnas estén en available_views/available_columns.
+compatibility_schema:
+  available_views: [V$INSTANCE, GV$INSTANCE, V$DATABASE, V$PARAMETER, GV$PARAMETER, V$SPPARAMETER,
+    V$CONTROLFILE, V$CONTROLFILE_RECORD_SECTION, V$LOG, V$LOGFILE, V$LOG_HISTORY, V$ARCHIVE_DEST,
+    V$ARCHIVE_DEST_STATUS, V$ARCHIVED_LOG, DBA_TABLESPACES, DBA_DATA_FILES, DBA_FREE_SPACE,
+    DBA_TEMP_FILES, DBA_TEMP_FREE_SPACE, V$TEMP_SPACE_HEADER, V$UNDOSTAT, DBA_UNDO_EXTENTS,
+    V$SESSION, GV$SESSION, GV$SERVICES, V$PROCESS, V$RESOURCE_LIMIT, DBA_OBJECTS, DBA_REGISTRY,
+    DBA_SCHEDULER_JOBS, DBA_SCHEDULER_JOB_RUN_DETAILS, DBA_JOBS, V$ACTIVE_SESSION_HISTORY,
+    DBA_HIST_SNAPSHOT, DBA_HIST_SYSTEM_EVENT, DBA_HIST_ACTIVE_SESS_HISTORY]
+    # NO disponibles a 10.2: V$ACTIVE_INSTANCES (11.2+), DBA_TABLESPACE_USAGE_METRICS (11.0+),
+    # V$DIAG_INFO (11.0+), DBA_OUTSTANDING_ALERTS (11.0+), V$ASM_DISKGROUP/_STAT (11.0+),
+    # CDB_OBJECTS/CDB_REGISTRY (12.1+, arquitectura non_cdb de todos modos).
+  available_columns:
+    "V$INSTANCE.version_full": false     # 18.0+
+    "V$INSTANCE.instance_role": false    # 11.0+
+    "V$DATABASE.cdb": false              # 12.1+, arquitectura non_cdb de todos modos
+    "V$ACTIVE_INSTANCES.con_id": false   # vista misma no disponible (11.2+)
+    "V$SESSION.con_id": false            # 12.1+
+    "DBA_HIST_SYSTEM_EVENT.time_waited_micro_fg": false   # 11.0+
+
+mock_evidence:
+  - query_id: Q-ORA-CONTROLFILE-001
+    result:
+      - {copies: 1, type: "DATAFILE", records_used: 40, records_total: 100}
+
+expected_findings:
+  - category: controlfile
+    severity: MEDIUM
+    reason: "count(V$CONTROLFILE) < 2 -> sin multiplexado"

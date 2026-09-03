@@ -1,0 +1,113 @@
+# Query Compatibility Matrix — Oracle Core Compatibility Hardening
+#
+# Fuente estructurada por logical query: variantes, rango de versión real, vistas/columnas
+# requeridas, container/role scope, cost class, validation_status. Espejo ejecutable de lo
+# declarado en cada archivo queries/**/Q-*.md — ver tests/test_every_logical_query_has_variant.sh
+# y tests/test_documented_support_matches_query_variants.sh para la validación cruzada.
+#
+# validation_status: COMPATIBLE | VARIANT_REQUIRED (ya corregido en este hardening) |
+#                     UNSUPPORTED | INCORRECT_VERSION_RANGE | INCORRECT_COST_CLASS |
+#                     INCORRECT_CONTAINER_SCOPE | INCORRECT_ROLE_SCOPE
+# Todas las entradas de este archivo están post-corrección: status COMPATIBLE salvo que se
+# indique lo contrario explícitamente (ninguna en este catálogo queda con hallazgo abierto).
+
+schema_version: 1
+
+queries:
+  # --- Queries con variantes explícitas (corregidas en este hardening) ---
+
+  Q-DISC-IDENTITY-001:
+    file: queries/oracle/discovery/Q-DISC-IDENTITY-001.md
+    variants:
+      - {variant_id: Q-DISC-IDENTITY-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: NON_CDB}
+      - {variant_id: Q-DISC-IDENTITY-001-V2, label: multitenant_12c, min: "12.1", max: "12.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-DISC-IDENTITY-001-V3, label: modern_18plus, min: "18.0", max: latest, container_scope: ANY_CONTAINER}
+    required_views: [V$INSTANCE, V$DATABASE]
+    role_scope: ANY
+    cost_class: LOW
+    license_requirements: none
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED   # estado antes de este hardening
+
+  Q-DISC-RAC-001:
+    file: queries/oracle/discovery/Q-DISC-RAC-001.md
+    variants:
+      - {variant_id: Q-DISC-RAC-001-V1, label: pre_multitenant, min: "11.2", max: "11.2", container_scope: NOT_APPLICABLE}
+      - {variant_id: Q-DISC-RAC-001-V2, label: multitenant_aware, min: "12.1", max: latest, container_scope: NOT_APPLICABLE}
+    required_views: [GV$INSTANCE, V$ACTIVE_INSTANCES]
+    role_scope: ANY
+    cost_class: LOW
+    license_requirements: none
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
+
+  Q-ORA-INSTANCE-STATE-001:
+    file: queries/oracle/instance/Q-ORA-INSTANCE-STATE-001.md
+    variants:
+      - {variant_id: Q-ORA-INSTANCE-STATE-001-V1, label: legacy_10g, min: "10.2", max: "10.2", container_scope: NOT_APPLICABLE}
+      - {variant_id: Q-ORA-INSTANCE-STATE-001-V2, label: modern_11plus, min: "11.0", max: latest, container_scope: NOT_APPLICABLE}
+    required_views: [GV$INSTANCE]
+    role_scope: ANY
+    cost_class: LOW
+    license_requirements: none
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
+
+  Q-DBA-TBS-USAGE-001:
+    file: queries/oracle/tablespaces/Q-DBA-TBS-USAGE-001.md
+    variants:
+      - {variant_id: Q-DBA-TBS-USAGE-001-V1, label: legacy_10g, min: "10.2", max: "10.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-DBA-TBS-USAGE-001-V2, label: modern_11plus, min: "11.0", max: latest, container_scope: ANY_CONTAINER}
+    required_views: [DBA_TABLESPACE_USAGE_METRICS, DBA_DATA_FILES, DBA_FREE_SPACE]
+    role_scope: ANY
+    cost_class: LOW
+    license_requirements: none
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
+
+  Q-DISC-ASM-001:
+    file: queries/oracle/discovery/Q-DISC-ASM-001.md
+    variants:
+      - {variant_id: Q-DISC-ASM-001-V1, label: routine_stat, min: "11.0", max: latest, container_scope: NOT_APPLICABLE}
+      - {variant_id: Q-DISC-ASM-001-V2, label: detailed_diskgroup, min: "11.0", max: latest, container_scope: NOT_APPLICABLE, cost_class: MEDIUM, on_demand_only: true}
+    required_views: [V$ASM_DISKGROUP_STAT, V$ASM_DISKGROUP]
+    role_scope: ANY
+    cost_class: LOW
+    license_requirements: none
+    validation_status: COMPATIBLE
+    was: INCORRECT_COST_CLASS
+
+  # --- Queries con un único variante implícito (SQL verificado dentro de su rango declarado) ---
+
+  Q-DISC-INSTANCE-001: {file: queries/oracle/discovery/Q-DISC-INSTANCE-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$INSTANCE, GV$INSTANCE], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-DB-STATE-001: {file: queries/oracle/database/Q-ORA-DB-STATE-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$DATABASE], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-PARAMETERS-001: {file: queries/oracle/parameters/Q-ORA-PARAMETERS-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$PARAMETER], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-PARAMETERS-RAC-DIFF-001: {file: queries/oracle/parameters/Q-ORA-PARAMETERS-RAC-DIFF-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [GV$PARAMETER], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-ORA-SPFILE-001: {file: queries/oracle/spfile/Q-ORA-SPFILE-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SPPARAMETER, V$PARAMETER], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-CONTROLFILE-001: {file: queries/oracle/controlfile/Q-ORA-CONTROLFILE-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$CONTROLFILE, V$CONTROLFILE_RECORD_SECTION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-REDO-001: {file: queries/oracle/redo/Q-ORA-REDO-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$LOG, V$LOGFILE], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-REDO-SWITCH-FREQ-001: {file: queries/oracle/redo/Q-ORA-REDO-SWITCH-FREQ-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$LOG_HISTORY], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-ORA-ARCHIVE-001: {file: queries/oracle/archive/Q-ORA-ARCHIVE-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$ARCHIVE_DEST, V$ARCHIVE_DEST_STATUS, V$ARCHIVED_LOG], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-DBA-TBS-DATAFILES-001: {file: queries/oracle/tablespaces/Q-DBA-TBS-DATAFILES-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_DATA_FILES], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-ORA-TEMP-001: {file: queries/oracle/temp/Q-ORA-TEMP-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_TEMP_FILES, DBA_TEMP_FREE_SPACE], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-UNDO-001: {file: queries/oracle/undo/Q-ORA-UNDO-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$PARAMETER, DBA_TABLESPACES, V$UNDOSTAT], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-SESSIONS-SUMMARY-001: {file: queries/oracle/sessions/Q-ORA-SESSIONS-SUMMARY-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SESSION], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-ORA-PROCESSES-SUMMARY-001: {file: queries/oracle/processes/Q-ORA-PROCESSES-SUMMARY-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$PROCESS, V$PARAMETER], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-JOBS-SUMMARY-001: {file: queries/oracle/jobs/Q-ORA-JOBS-SUMMARY-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_SCHEDULER_JOBS], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE, was: "objects_accessed listaba DBA_JOBS no usado; corregido en este hardening"}
+  Q-ORA-OBJECTS-INVENTORY-001: {file: queries/oracle/objects/Q-ORA-OBJECTS-INVENTORY-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_OBJECTS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-ORA-INVALID-OBJECTS-001: {file: queries/oracle/objects/Q-ORA-INVALID-OBJECTS-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_OBJECTS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-COMPONENTS-001: {file: queries/oracle/components/Q-ORA-COMPONENTS-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_REGISTRY], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-RESOURCE-LIMITS-001: {file: queries/oracle/resources/Q-ORA-RESOURCE-LIMITS-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$RESOURCE_LIMIT], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-DIAGNOSTICS-ADR-001: {file: queries/oracle/diagnostics/Q-ORA-DIAGNOSTICS-ADR-001.md, variants: implicit_full_range, min: "11.0", max: latest, required_views: [V$DIAG_INFO, DBA_OUTSTANDING_ALERTS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-DIAGNOSTICS-ALERTLOG-001: {file: queries/oracle/diagnostics/Q-ORA-DIAGNOSTICS-ALERTLOG-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: ["alert.log"], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+
+  # --- Queries pre-existentes (Foundation Hardening) revisadas por completitud ---
+
+  Q-RAC-SESSION-DIST-001: {file: queries/Q-RAC-SESSION-DIST-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$SESSION, GV$SERVICES], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-PERF-WAIT-AWR-001: {file: queries/Q-PERF-WAIT-AWR-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_HIST_SYSTEM_EVENT, DBA_HIST_SNAPSHOT], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE, license_requirements: [Diagnostics Pack]}
+  Q-PERF-WAIT-ASH-001: {file: queries/Q-PERF-WAIT-ASH-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$ACTIVE_SESSION_HISTORY, DBA_HIST_ACTIVE_SESS_HISTORY], role_scope: PRIMARY, cost_class: HIGH, validation_status: COMPATIBLE, license_requirements: [Diagnostics Pack]}
+
+notes: >
+  "implicit_full_range" significa: la query no requirió split porque su SQL, verificado contra
+  compatibility/oracle-dictionary/views.yaml, no referencia ninguna columna/vista fuera de su
+  supported_oracle_versions declarado. Ver docs/QUERY_VARIANTS.md#logical-query-vs-physical-sql-variant.

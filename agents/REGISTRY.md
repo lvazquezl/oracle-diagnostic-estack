@@ -1,12 +1,12 @@
 # Agent Registry
 
-18/18 agentes obligatorios (sección 7 del prompt maestro), todos `status: active`, versión `1.0.0`, conformes al [Agent Contract](../docs/CONTRACTS.md#agent-contract).
+18/18 agentes obligatorios (sección 7 del prompt maestro), todos `status: active`, conformes al [Agent Contract](../docs/CONTRACTS.md#agent-contract). `oracle-discovery-analyst` y `oracle-dba-analyst` están en `v2.0.0` (Fase 2 — Oracle Core, desarrollo profundo con estructura de carpeta `agents/<id>/AGENT.md`); el resto permanece en `v1.0.0` (Foundation, manifest plano `agents/<id>.md`) hasta que su fase correspondiente los profundice.
 
 | id | Dominio | Manifest |
 |---|---|---|
 | `oracle-operations-orchestrator` | Orquestación | [agents/oracle-operations-orchestrator.md](oracle-operations-orchestrator.md) |
-| `oracle-discovery-analyst` | Discovery/identidad | [agents/oracle-discovery-analyst.md](oracle-discovery-analyst.md) |
-| `oracle-dba-analyst` | Estado general Oracle | [agents/oracle-dba-analyst.md](oracle-dba-analyst.md) |
+| `oracle-discovery-analyst` | Discovery/identidad/Target Profile | [agents/oracle-discovery-analyst/AGENT.md](oracle-discovery-analyst/AGENT.md) |
+| `oracle-dba-analyst` | Oracle Core (18 áreas) | [agents/oracle-dba-analyst/AGENT.md](oracle-dba-analyst/AGENT.md) |
 | `oracle-performance-analyst` | AWR/ASH/ADDM/performance | [agents/oracle-performance-analyst.md](oracle-performance-analyst.md) |
 | `oracle-rac-analyst` | RAC/GI/Cache Fusion | [agents/oracle-rac-analyst.md](oracle-rac-analyst.md) |
 | `oracle-asm-storage-analyst` | ASM/almacenamiento | [agents/oracle-asm-storage-analyst.md](oracle-asm-storage-analyst.md) |

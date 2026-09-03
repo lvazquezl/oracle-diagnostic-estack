@@ -10,8 +10,10 @@ while IFS= read -r id; do
   [ -z "$id" ] && continue
   if [ -f "$ROOT/agents/$id.md" ]; then
     echo "[PASS] agents/$id.md existe"
+  elif [ -f "$ROOT/agents/$id/AGENT.md" ]; then
+    echo "[PASS] agents/$id/AGENT.md existe (agente profundizado por fase)"
   else
-    echo "[FAIL] agents/REGISTRY.md referencia '$id' pero agents/$id.md no existe"
+    echo "[FAIL] agents/REGISTRY.md referencia '$id' pero ni agents/$id.md ni agents/$id/AGENT.md existen"
     FAIL=1
   fi
 done < <(grep -oE '^\| `[a-z-]+`' "$ROOT/agents/REGISTRY.md" | sed -E 's/^\| `//; s/`$//')

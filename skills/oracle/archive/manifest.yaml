@@ -1,0 +1,21 @@
+name: archive
+display_name: "Archive Configuration"
+id: oracle/archive
+version: 1.0.0
+domain: oracle
+status: active
+
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac]
+container_scope: CDB_ROOT
+database_role_scope: PRIMARY
+
+required_evidence:
+  - query_id: Q-ORA-ARCHIVE-001
+optional_evidence: []
+
+data_sensitivity: MEDIUM
+context_budget: LOW
+
+related_skills: [oracle/redo, oracle/controlfile]

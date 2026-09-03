@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 VALID_COST='^cost_class: (LOW|MEDIUM|HIGH|BLOCKED)$'
 
-for f in "$ROOT"/queries/Q-*.md; do
+for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   [ -f "$f" ] || continue
   cost=$(grep '^cost_class:' "$f" || true)
   risk=$(grep '^risk_class:' "$f" || true)

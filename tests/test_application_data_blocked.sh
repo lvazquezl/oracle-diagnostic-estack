@@ -3,9 +3,9 @@
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
-ALLOWED='^(V\$|GV\$|DBA_|CDB_|STATS\$|/proc/|listener\.ora|sqlnet\.ora|tnsnames\.ora|listener\.log|vm\.nr_hugepages)'
+ALLOWED='^(V\$|GV\$|DBA_|CDB_|ALL_|STATS\$|/proc/|listener\.ora|sqlnet\.ora|tnsnames\.ora|listener\.log|alert\.log|vm\.nr_hugepages)'
 
-for f in "$ROOT"/queries/Q-*.md; do
+for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   [ -f "$f" ] || continue
   objs=$(awk -F': ' '/^objects_accessed:/{print; exit}' "$f")
   # Extraer los items entre corchetes

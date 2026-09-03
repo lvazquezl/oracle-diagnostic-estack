@@ -12,7 +12,7 @@ else
   FAIL=1
 fi
 
-if grep -rq '^cost_class: BLOCKED$' "$ROOT"/queries/Q-*.md; then
+if grep -rq '^cost_class: BLOCKED$' --include='Q-*.md' -R "$ROOT/queries"; then
   echo "[FAIL] Hay una query certificada con cost_class BLOCKED — contradictorio, no debería estar en el catálogo"
   FAIL=1
 else

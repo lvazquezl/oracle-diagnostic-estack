@@ -21,8 +21,8 @@ domains:
   - id: oracle-core
     display_name: "Oracle Core"
     license_dependent: false
-    versions: {10g: PARTIAL, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
-    notes: "skills/oracle/tablespaces.md materializado (id oracle/tablespaces); resto de oracle/* registered."
+    versions: {10g: SUPPORTED, 11g: SUPPORTED, 12c: SUPPORTED, 18c: SUPPORTED, 19c: SUPPORTED, 21c: SUPPORTED, 23ai: SUPPORTED, latest: SUPPORTED}
+    notes: "Fase 2: las 18 skills oracle/* completamente materializadas (SKILL.md + manifest.yaml), ~26 queries Q-ORA-*/Q-DISC-*/Q-DBA-* certificadas. Compatibility Hardening (config/query-compatibility-matrix.yaml) validó que cada versión declarada tiene una variante SQL ejecutable real (Query Variant Resolver), no sólo metadata — ver docs/QUERY_VARIANTS.md y docs/PHASE_2_COMPATIBILITY_HARDENING.md. diagnostics (ADR) requiere 11g+; en 10g degrada a UNSUPPORTED para ese sub-componente específico. jobs/DBA_JOBS (legacy DBMS_JOB) es un gap documentado y PLANNED en todas las versiones — el sub-componente DBMS_SCHEDULER (Q-ORA-JOBS-SUMMARY-001) sí está SUPPORTED 10g–23ai; ver skills/oracle/jobs/SKILL.md. El resto de Oracle Core aplica igual en todas las versiones declaradas."
 
   - id: performance
     display_name: "Performance"
@@ -58,7 +58,7 @@ domains:
     display_name: "RAC"
     license_dependent: false
     versions: {10g: PLANNED, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
-    notes: "skills/rac/session-distribution.md materializado desde 11gR2 (Q-RAC-SESSION-DIST-001). 10g/11gR1 RAC no certificado en el catalogo -> PLANNED, no UNSUPPORTED (la feature Oracle si existe)."
+    notes: "Esta fila mide RAC DEEP DIAGNOSTICS (rac/session-distribution.md, desde 11gR2, Q-RAC-SESSION-DIST-001; 10g/11gR1 no certificado -> PLANNED, no UNSUPPORTED). RAC DETECTION (presencia/topologia basica) es distinta y esta SUPPORTED desde Fase 2 via el Target Profile (docs/TARGET_PROFILE.md, capabilities.rac) -- ver seccion 41 del prompt de Fase 2."
 
   - id: gi
     display_name: "Grid Infrastructure"
@@ -70,19 +70,19 @@ domains:
     display_name: "ASM"
     license_dependent: false
     versions: {10g: PLANNED, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
-    notes: "skills/asm/capacity.md materializado desde 11g (declarado en su Skill Contract). ASM 10g existe en Oracle pero no esta certificado en el catalogo -> PLANNED."
+    notes: "Fila = ASM DEEP DIAGNOSTICS (asm/capacity.md desde 11g). ASM DETECTION (presencia, storage_mode) esta SUPPORTED desde Fase 2 via el Target Profile."
 
   - id: multitenant
     display_name: "Multitenant"
     license_dependent: true
     versions: {10g: UNSUPPORTED, 11g: UNSUPPORTED, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
-    notes: "Multitenant no existe antes de 12c -> UNSUPPORTED real (no limite del e-stack). Mas de 1 PDB por CDB es LICENSE_DEPENDENT segun edicion; skills/multitenant/container-state.md materializado 12c+."
+    notes: "Multitenant no existe antes de 12c -> UNSUPPORTED real (no limite del e-stack). Mas de 1 PDB por CDB es LICENSE_DEPENDENT segun edicion. Fila = Multitenant DEEP DIAGNOSTICS (multitenant/container-state.md 12c+); CONTAINER DETECTION (CDB/PDB, listado de PDBs) esta SUPPORTED desde Fase 2 via el Target Profile."
 
   - id: dataguard
     display_name: "Data Guard"
     license_dependent: false
     versions: {10g: PARTIAL, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
-    notes: "skills/dataguard/lag.md materializado 10g-23ai. Active Data Guard (lectura en standby) es LICENSE_DEPENDENT y se senala por finding, no a nivel de dominio completo."
+    notes: "skills/dataguard/lag.md materializado 10g-23ai. Active Data Guard (lectura en standby) es LICENSE_DEPENDENT y se senala por finding, no a nivel de dominio completo. Fila = Data Guard DEEP DIAGNOSTICS; ROLE DETECTION (primary/standby/logical/snapshot) esta SUPPORTED desde Fase 2 via el Target Profile."
 
   - id: rman
     display_name: "RMAN"

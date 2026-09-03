@@ -1,6 +1,6 @@
 # Collectors — especificación
 
-Estado en Fase 1: **especificación certificada**, no runtime ejecutable (Fase 2+ implementa los collectors reales por plataforma).
+Estado: **especificación certificada**, no runtime ejecutable (el Gateway MCP real es Fase 7). Fase 2 (Oracle Core) amplía el contrato de `oracle-sql-collector` para cubrir las ~20 queries `Q-ORA-*` nuevas, y agrega el contrato de `oracle-diag-collector` (ADR/alert log).
 
 Un collector ejecuta exactamente una query/comando certificado de `queries/REGISTRY.md` contra el ambiente real y devuelve el resultado crudo al Sanitizer — nunca directamente al modelo.
 
@@ -24,6 +24,7 @@ Un collector ejecuta exactamente una query/comando certificado de `queries/REGIS
 | `os-windows-collector` | PerfCounters/WMI de sólo lectura | Windows Server |
 | `os-hpux-collector` | comandos de estado HP-UX de sólo lectura | HP-UX (legacy) |
 | `net-config-collector` | lectura de archivos `tnsnames.ora`/`sqlnet.ora`/`listener.ora` y `listener.log` (ventana acotada) | todas |
+| `oracle-diag-collector` (Fase 2) | lectura acotada de `alert.log`/ADR home (`Q-ORA-DIAGNOSTICS-ALERTLOG-001`) — ventana de líneas/tiempo, nunca el archivo completo; XML alert log (11g+) parseado estructuralmente, texto plano (10g) por patrón de fecha/`ORA-` | todas — ruta resuelta por convención de plataforma, nunca hardcodeada |
 
 ## Certificación
 

@@ -11,7 +11,7 @@ else
   FAIL=1
 fi
 
-if grep -rq '^cost_class: LOW$' "$ROOT"/queries/Q-*.md; then
+if grep -rq '^cost_class: LOW$' --include='Q-*.md' -R "$ROOT/queries"; then
   echo "[PASS] Existe al menos una query certificada con cost_class LOW"
 else
   echo "[FAIL] Ninguna query certificada tiene cost_class LOW"

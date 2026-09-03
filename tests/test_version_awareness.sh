@@ -11,7 +11,7 @@ for f in $(grep -rl 'status: active' "$ROOT/skills" --include='*.md'); do
   fi
 done
 
-for f in "$ROOT"/queries/Q-*.md; do
+for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   [ -f "$f" ] || continue
   if ! grep -q '^supported_oracle_versions:' "$f"; then
     echo "[FAIL] $f no declara 'supported_oracle_versions:' en frontmatter (Query Contract v2)"

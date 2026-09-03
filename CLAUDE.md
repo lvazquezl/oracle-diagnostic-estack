@@ -22,7 +22,7 @@ Este e-stack asiste a DBAs Oracle y SysAdmins en **assessment, health checks, ob
 
 ## Carga de agentes y skills
 
-- Los manifests de agentes viven en `agents/*.md` y siguen el **Agent Contract** ([docs/CONTRACTS.md](docs/CONTRACTS.md#agent-contract)).
+- Los manifests de agentes viven en `agents/*.md` y siguen el **Agent Contract** ([docs/CONTRACTS.md](docs/CONTRACTS.md#agent-contract)). Un agente profundizado por una fase específica (ej. `oracle-discovery-analyst`, `oracle-dba-analyst` en Fase 2) vive en `agents/<id>/AGENT.md` — el registro (`agents/REGISTRY.md`) siempre tiene el path canónico.
 - Los skills viven en `skills/<dominio>/*.md` y siguen el **Skill Contract** ([docs/CONTRACTS.md](docs/CONTRACTS.md#skill-contract)). El índice completo está en [skills/REGISTRY.md](skills/REGISTRY.md). Todo skill se referencia **siempre** por su `skill_id` completo (`dominio/skill`) — nunca por un nombre corto suelto.
 - Un agente sólo puede invocar skills listados en su `allowed_skills`. Un skill sólo puede usar queries certificadas en `queries/` (Query Contract v2 — ver [docs/CONTRACTS.md](docs/CONTRACTS.md#query-contract-v2-foundation-hardening)).
 

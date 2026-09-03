@@ -12,10 +12,11 @@ else
   FAIL=1
 fi
 
-if grep -q 'instance_mode = rac' "$ROOT/agents/oracle-discovery-analyst.md" 2>/dev/null || grep -qi 'instance_mode' "$ROOT/agents/oracle-discovery-analyst.md"; then
-  echo "[PASS] oracle-discovery-analyst reporta instance_mode"
+AGENT_F="$ROOT/agents/oracle-discovery-analyst/AGENT.md"
+if grep -qi 'cluster_mode\|instance_mode' "$AGENT_F"; then
+  echo "[PASS] oracle-discovery-analyst reporta cluster_mode/instance_mode"
 else
-  echo "[FAIL] oracle-discovery-analyst no reporta instance_mode"
+  echo "[FAIL] oracle-discovery-analyst no reporta cluster_mode/instance_mode"
   FAIL=1
 fi
 

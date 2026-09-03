@@ -1,10 +1,12 @@
 ---
 name: context-discovery
 id: core/context-discovery
-version: 1.0.0
+version: 1.1.0
 domain: core
 status: active
 ---
+
+> **Fase 2 (Oracle Core)**: el schema de salida concreto de este skill fue extendido — no reemplazado — por `docs/TARGET_PROFILE.md`, consumido por `agents/oracle-discovery-analyst/AGENT.md`. Los campos `instance_mode`/`container_mode` de este documento se corresponden con `architecture.cluster_mode`/`architecture.multitenant_mode` en el Target Profile; se documentan aquí con la nomenclatura original de Fase 1 por trazabilidad histórica, y en `docs/TARGET_PROFILE.md` con la nomenclatura vigente. Ningún otro dominio (Fase 3+) debe re-implementar este skill — todos consumen el Target Profile ya publicado.
 
 # Purpose
 

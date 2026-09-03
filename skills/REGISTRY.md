@@ -12,7 +12,7 @@ Este registro identifica cada skill **exclusivamente** por su `skill_id` complet
 - `active` — materializado por completo (19 secciones del Skill Contract), archivo real en el dominio.
 - `registered` — nombre, dominio y propósito fijados en este registro; su materialización completa es Fase 2+ según `README.md#fases-de-construcción`. No es un placeholder vacío: es la entrada de catálogo que gobierna qué se puede construir y en qué orden vía `/change skill`.
 
-Fase 1 materializa **un ejemplo representativo completo por dominio** (14), más `core/version-awareness` agregado en Foundation Hardening (15), demostrando el contrato en cada tipo de dominio. El resto queda `registered` para materialización gobernada en Fases 2–9, en el orden de `README.md`.
+Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total). El resto queda `registered` para materialización gobernada en Fases 3–9, en el orden de `README.md`.
 
 ## core (20)
 
@@ -39,28 +39,30 @@ Fase 1 materializa **un ejemplo representativo completo por dominio** (14), más
 | `core/redaction` | registered |
 | `core/reporting` | registered |
 
-## oracle (18)
+## oracle (18) — completo desde Fase 2 (Oracle Core)
+
+Todos materializados con estructura `skills/oracle/<skill>/SKILL.md` + `manifest.yaml`.
 
 | skill_id | status |
 |---|---|
-| `oracle/database-state` | registered |
-| `oracle/instance` | registered |
-| `oracle/parameters` | registered |
-| `oracle/spfile` | registered |
-| `oracle/controlfile` | registered |
-| `oracle/redo` | registered |
-| `oracle/archive` | registered |
-| `oracle/tablespaces` | **active** ([oracle/tablespaces.md](oracle/tablespaces.md)) |
-| `oracle/temp` | registered |
-| `oracle/undo` | registered |
-| `oracle/sessions` | registered |
-| `oracle/processes` | registered |
-| `oracle/jobs` | registered |
-| `oracle/objects` | registered |
-| `oracle/components` | registered |
-| `oracle/invalid-objects` | registered |
-| `oracle/resource-limits` | registered |
-| `oracle/diagnostics` | registered |
+| `oracle/database-state` | **active** ([oracle/database-state/SKILL.md](oracle/database-state/SKILL.md)) |
+| `oracle/instance` | **active** ([oracle/instance/SKILL.md](oracle/instance/SKILL.md)) |
+| `oracle/parameters` | **active** ([oracle/parameters/SKILL.md](oracle/parameters/SKILL.md)) |
+| `oracle/spfile` | **active** ([oracle/spfile/SKILL.md](oracle/spfile/SKILL.md)) |
+| `oracle/controlfile` | **active** ([oracle/controlfile/SKILL.md](oracle/controlfile/SKILL.md)) |
+| `oracle/redo` | **active** ([oracle/redo/SKILL.md](oracle/redo/SKILL.md)) |
+| `oracle/archive` | **active** ([oracle/archive/SKILL.md](oracle/archive/SKILL.md)) |
+| `oracle/tablespaces` | **active** ([oracle/tablespaces/SKILL.md](oracle/tablespaces/SKILL.md)) — materializado en Fase 1, extendido en Fase 2 |
+| `oracle/temp` | **active** ([oracle/temp/SKILL.md](oracle/temp/SKILL.md)) |
+| `oracle/undo` | **active** ([oracle/undo/SKILL.md](oracle/undo/SKILL.md)) |
+| `oracle/sessions` | **active** ([oracle/sessions/SKILL.md](oracle/sessions/SKILL.md)) |
+| `oracle/processes` | **active** ([oracle/processes/SKILL.md](oracle/processes/SKILL.md)) |
+| `oracle/jobs` | **active** ([oracle/jobs/SKILL.md](oracle/jobs/SKILL.md)) |
+| `oracle/objects` | **active** ([oracle/objects/SKILL.md](oracle/objects/SKILL.md)) |
+| `oracle/components` | **active** ([oracle/components/SKILL.md](oracle/components/SKILL.md)) |
+| `oracle/invalid-objects` | **active** ([oracle/invalid-objects/SKILL.md](oracle/invalid-objects/SKILL.md)) |
+| `oracle/resource-limits` | **active** ([oracle/resource-limits/SKILL.md](oracle/resource-limits/SKILL.md)) |
+| `oracle/diagnostics` | **active** ([oracle/diagnostics/SKILL.md](oracle/diagnostics/SKILL.md)) |
 
 ## performance (27)
 

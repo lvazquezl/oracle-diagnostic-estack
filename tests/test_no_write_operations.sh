@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 PATTERN='(^|[^A-Za-z_])(INSERT|UPDATE|DELETE|MERGE|CREATE|ALTER|DROP|TRUNCATE|GRANT|REVOKE)([^A-Za-z_]|$)'
 
-for f in "$ROOT"/queries/Q-*.md; do
+for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   [ -f "$f" ] || continue
   # Extraer sólo el/los bloque(s) de código SQL (entre ```sql y ```)
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")

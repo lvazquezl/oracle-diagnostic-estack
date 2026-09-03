@@ -1,0 +1,21 @@
+name: processes
+display_name: "Processes Summary"
+id: oracle/processes
+version: 1.0.0
+domain: oracle
+status: active
+
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+
+required_evidence:
+  - query_id: Q-ORA-PROCESSES-SUMMARY-001
+optional_evidence: []
+
+data_sensitivity: LOW
+context_budget: LOW
+
+related_skills: [oracle/sessions, oracle/resource-limits, oracle/parameters]

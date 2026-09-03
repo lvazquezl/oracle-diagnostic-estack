@@ -152,6 +152,10 @@ supported_architectures: []      # Standalone/RAC/RAC One Node según aplique
 
 container_scope: NON_CDB|CDB_ROOT|PDB|ANY_CONTAINER|NOT_APPLICABLE
 database_role_scope: PRIMARY|STANDBY|ANY|NOT_APPLICABLE
+open_mode_scope: []           # opcional (Compatibility Hardening, sección 19) — subconjunto de
+                               # [READ WRITE, READ ONLY, MOUNTED, ANY]; se declara sólo cuando el
+                               # resultado de la query es incorrecto/no representativo en algún
+                               # open_mode que database_role_scope por sí solo no excluye — ver abajo
 
 objects_accessed: []          # vistas/comandos exactos (ej. DBA_TABLESPACES, V$ASM_DISKGROUP)
 privileges_required: []       # ej. [SELECT_CATALOG_ROLE] o vista concreta del ESTACK_DIAGNOSTIC_ROLE
@@ -181,6 +185,10 @@ status: candidate|active|deprecated
 ### `database_role_scope`
 
 `PRIMARY` (sólo válida contra un Primary) · `STANDBY` (sólo válida contra un Physical/Active Data Guard Standby) · `ANY` (válida en ambos) · `NOT_APPLICABLE` (no depende del rol, ej. identidad/OS).
+
+### `open_mode_scope` (Compatibility Hardening)
+
+Campo **opcional** — se declara únicamente cuando `database_role_scope` no basta para excluir un estado de apertura donde el resultado es incorrecto o no representativo (la mayoría de las queries de sólo-metadata/flags son válidas en cualquier `open_mode` y omiten este campo). Valores: `READ WRITE` · `READ ONLY` · `MOUNTED` · `ANY`. Ejemplo real: `Q-DBA-TBS-USAGE-001` sobre un target `MOUNTED` — `DBA_FREE_SPACE`/`DBA_DATA_FILES` no reflejan uso real de espacio mientras la base no está abierta; el agente que consume esa evidencia degrada `confidence: UNDETERMINED` en vez de bloquear la query (ver `tests/fixtures/19c-physical-standby.yaml`, hallazgo `tablespaces`).
 
 ### `risk_class` vs. `cost_class` — no confundir
 

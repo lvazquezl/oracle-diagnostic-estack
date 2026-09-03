@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 VALID='^container_scope: (NON_CDB|CDB_ROOT|PDB|ANY_CONTAINER|NOT_APPLICABLE)$'
 
-for f in "$ROOT"/queries/Q-*.md; do
+for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   [ -f "$f" ] || continue
   line=$(grep '^container_scope:' "$f" || true)
   if [ -z "$line" ]; then

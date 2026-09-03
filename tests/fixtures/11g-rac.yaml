@@ -1,0 +1,56 @@
+# Fixture: Oracle 11g RAC (2 nodos)
+# Usada por: test_oracle_core_instance.sh, test_standalone_rac_unsupported.sh (caso positivo de RAC)
+fixture_id: FX-11g-rac
+
+target_profile:
+  schema_version: "2.0.0"
+  target_id: "fixture-11g-rac"
+  database:
+    name: "ORCL11GRAC"
+    unique_name: "ORCL11GRAC"
+    dbid: "3234567890"
+  oracle_version: {major: 11, minor: 2, release: 0, ru: null, raw: "11.2.0.4.0"}
+  architecture: {cluster_mode: rac, multitenant_mode: non_cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl11grac1", number: 1, host: "HOST_TOKEN_012A"}
+  cluster: {detected: true, instance_count: 2}
+  container: {type: non_cdb, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities:
+    rac: PARTIALLY_SUPPORTED   # 11gR2 esta en el limite inferior de cobertura certificada
+    asm: PARTIAL
+    multitenant: UNSUPPORTED
+    dataguard: UNSUPPORTED
+    awr: LICENSE_RESTRICTED
+    ash: LICENSE_RESTRICTED
+  discovery: {timestamp: "2026-01-15T09:10:00Z", evidence_refs: [EVD-FX-003], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$INSTANCE, GV$INSTANCE, V$DATABASE, V$ACTIVE_INSTANCES, V$PARAMETER,
+    GV$PARAMETER, V$SPPARAMETER, V$CONTROLFILE, V$CONTROLFILE_RECORD_SECTION, V$LOG, V$LOGFILE,
+    V$LOG_HISTORY, V$ARCHIVE_DEST, V$ARCHIVE_DEST_STATUS, V$ARCHIVED_LOG, DBA_TABLESPACES,
+    DBA_DATA_FILES, DBA_FREE_SPACE, DBA_TABLESPACE_USAGE_METRICS, DBA_TEMP_FILES,
+    DBA_TEMP_FREE_SPACE, V$TEMP_SPACE_HEADER, V$UNDOSTAT, DBA_UNDO_EXTENTS, V$SESSION, GV$SESSION,
+    GV$SERVICES, V$PROCESS, V$RESOURCE_LIMIT, DBA_OBJECTS, DBA_REGISTRY, DBA_SCHEDULER_JOBS,
+    DBA_SCHEDULER_JOB_RUN_DETAILS, DBA_JOBS, V$DIAG_INFO, DBA_OUTSTANDING_ALERTS,
+    V$ACTIVE_SESSION_HISTORY, DBA_HIST_SNAPSHOT, DBA_HIST_SYSTEM_EVENT,
+    DBA_HIST_ACTIVE_SESS_HISTORY, V$ASM_DISKGROUP, V$ASM_DISKGROUP_STAT]
+    # CDB_OBJECTS/CDB_REGISTRY no disponibles (12.1+, arquitectura non_cdb de todos modos).
+  available_columns:
+    "V$INSTANCE.version_full": false     # 18.0+
+    "V$INSTANCE.instance_role": true     # 11.0+
+    "V$DATABASE.cdb": false              # 12.1+, arquitectura non_cdb de todos modos
+    "V$ACTIVE_INSTANCES.con_id": false   # 12.1+ — este target (11.2 RAC) resuelve a Q-DISC-RAC-001-V1
+    "V$SESSION.con_id": false            # 12.1+
+    "DBA_HIST_SYSTEM_EVENT.time_waited_micro_fg": true    # 11.0+
+
+mock_evidence:
+  - query_id: Q-DISC-RAC-001
+    result:
+      - {inst_number: 1, inst_name: "orcl11grac1"}
+      - {inst_number: 2, inst_name: "orcl11grac2"}
+
+expected_findings: []

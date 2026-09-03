@@ -1,6 +1,6 @@
 ---
 query_id: Q-PERF-WAIT-AWR-001
-version: 2.0.0
+version: 2.1.0
 
 domain: performance
 purpose: Top wait events por tiempo total de espera en una ventana AWR
@@ -9,7 +9,7 @@ supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
 supported_os: [todas]
 supported_architectures: [Standalone, RAC]
 
-container_scope: CDB_ROOT
+container_scope: ANY_CONTAINER
 database_role_scope: PRIMARY
 
 objects_accessed: [DBA_HIST_SYSTEM_EVENT, DBA_HIST_SNAPSHOT]
@@ -61,6 +61,10 @@ Requiere Diagnostics Pack licenciado (marcar `LICENSE_CHECK_REQUIRED` en el find
 # Notes by platform
 
 Ninguna — query SQL pura.
+
+# Container / role scope notes
+
+`ANY_CONTAINER` (corregido en Compatibility Hardening — era `CDB_ROOT`, valor inválido para 10g/11g donde Multitenant no existe). En 12c+, la disponibilidad de `DBA_HIST_*` consultado desde dentro de una PDB específica varía por release/edición; `oracle-performance-analyst` debe validar que la query devuelva filas y, si no, degradar el `capability_status` a `UNDETERMINED` (ver `docs/CONTRACTS.md#capability-status-model`) en lugar de asumir soporte — nunca reportar ausencia de wait events como "sin contención".
 
 # Sanitization notes
 
