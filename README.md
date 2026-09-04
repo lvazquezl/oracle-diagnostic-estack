@@ -31,9 +31,9 @@ Todo skill se referencia siempre por su `skill_id` completo (`dominio/skill`, ej
 
 1. Lee [CLAUDE.md](CLAUDE.md) (rutas, política de contexto y evidencia).
 2. Lee [SECURITY.md](SECURITY.md) antes de conectar cualquier ambiente real.
-3. Corre `scripts/bootstrap-check.sh` (o `.ps1` en Windows) para validar prerrequisitos de tu estación.
+3. Corre `scripts/bootstrap-check.sh` (o `.ps1` en Windows) para validar prerrequisitos de tu estación. Los tests (`tests/run-all.sh`) requieren `bash` — en Windows, Git Bash (Git for Windows) o WSL; ver [docs/PHASE_3_COMPLETION_HARDENING.md#gap-4--cross-platform--crlf-hardening](docs/PHASE_3_COMPLETION_HARDENING.md#gap-4--cross-platform--crlf-hardening).
 4. Usa los comandos en `.claude/commands/` (`/diagnose`, `/healthcheck`, `/assessment`, `/analyze`, `/awr`, `/rac`, `/dataguard`, `/capacity`, `/incident`, `/rca`, `/recommend`, `/document`, `/change`).
 
 ## Estado
 
-Fase actual: **Fase 2 — Oracle Core** (sobre baseline `v0.1.0-foundation`: Foundation + Foundation Hardening). `oracle-discovery-analyst`/`oracle-dba-analyst` y las 18 skills `oracle/*` están completamente implementados y probados — ver [docs/PHASE_2_ORACLE_CORE.md](docs/PHASE_2_ORACLE_CORE.md). Ver [CHANGELOG.md](CHANGELOG.md) y "Known limitations" en el reporte de cierre de fase.
+Fase actual: **Fase 3 — Performance Completion & Portability Hardening** (sobre baseline `v0.2.0-oracle-core` + Fase 3 Oracle Performance). Statspack ahora cubre reportes multi-sección completos, arquitectura genérica de ingesta/parseo local de reportes (`parsers/performance/`), `oracle-performance-analyst` (`v4.0.0`) materializado en contrato estructurado, y line endings normalizados/gobernados por `.gitattributes` — ver [docs/PHASE_3_COMPLETION_HARDENING.md](docs/PHASE_3_COMPLETION_HARDENING.md). Base funcional previa: [docs/PHASE_3_ORACLE_PERFORMANCE.md](docs/PHASE_3_ORACLE_PERFORMANCE.md) (`oracle-performance-analyst` y 31 skills `performance/*`), [docs/PHASE_2_ORACLE_CORE.md](docs/PHASE_2_ORACLE_CORE.md) (`oracle-discovery-analyst`/`oracle-dba-analyst`, 18 skills `oracle/*`). Ver [CHANGELOG.md](CHANGELOG.md) y "Known limitations" en el reporte de cierre de cada fase.

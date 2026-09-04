@@ -1,0 +1,24 @@
+name: execution-plan
+display_name: "Execution Plan"
+id: performance/execution-plan
+version: 1.1.0
+domain: performance
+status: active
+
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac]
+container_scope: ANY_CONTAINER
+database_role_scope: PRIMARY
+
+license_requirements: none
+
+required_evidence:
+  - query_id: Q-PERF-PLAN-001
+optional_evidence:
+  - report_parser: parsers/performance/execution_plan_parser.py
+
+data_sensitivity: MEDIUM
+context_budget: LOW
+
+related_skills: [performance/top-sql, performance/plan-regression]

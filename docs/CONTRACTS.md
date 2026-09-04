@@ -37,6 +37,8 @@ Secciones obligatorias (Markdown, en este orden):
 
 Ningún agente puede operar fuera de su contrato: si el orquestador pide algo fuera de `responsibilities`/`allowed_skills`, el agente debe rechazarlo y señalar el agente correcto o proponer `/change agent`.
 
+**Materialización del contrato**: las 16 secciones anteriores viven, por defecto, en un único `agents/<id>.md` (o `agents/<id>/AGENT.md` para un agente profundizado por fase). Cuando la complejidad de un agente lo justifica, el contrato puede materializarse en archivos YAML estructurados independientes (`manifest.yaml`, `routing.yaml`, `context-policy.yaml`, `collaboration.yaml`, `output-schema.yaml`) con `AGENT.md` reducido a documento narrativo que referencia, nunca duplica, esos campos — patrón introducido en Fase 3 Completion & Portability Hardening para `oracle-performance-analyst` (ver `docs/PHASE_3_COMPLETION_HARDENING.md#gap-3--agent-contract-materialization`). No es la convención por defecto para agentes nuevos; `agents/REGISTRY.md` siempre indica el path canónico real de cada agente.
+
 ---
 
 ## Skill Contract

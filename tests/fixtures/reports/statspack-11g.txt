@@ -1,0 +1,122 @@
+STATSPACK report for
+
+Database    DB Id    Instance     Inst Num  Startup Time    Release     RAC
+~~~~~~~~ ----------- ------------ -------- --------------- ----------- ---
+ORCL11G    2234567890 orcl11g              1 15-Jan-26 08:00 11.2.0.4.0  NO
+
+Host Name        Platform                Cores  Sockets  Memory(G)
+~~~~~~~~~~~~ ------------------------ ------ ------- ---------
+fixturehost01     Linux x86 64-bit             8         2      32.0
+
+Snapshot     Snap Id      Snap Time      Sessions Curs/Sess
+~~~~~~~~~~ --------- ------------------ -------- ---------
+Begin Snap:      100 15-Jan-26 08:00:00       45        6.2
+  End Snap:      101 15-Jan-26 09:00:00       48        6.5
+   Elapsed:               60.00 (mins)
+   DB Time:              120.50 (mins)
+
+Cache Sizes
+~~~~~~~~~~~
+       Buffer Cache:          4096M      Std Block Size:          8K
+   Shared Pool Size:          1024M          Log Buffer:       14336K
+
+Load Profile
+~~~~~~~~~~~~                            Per Second       Per Transaction
+                                    ---------------       ---------------
+                  Redo size:            125432.10                578.23
+              Logical reads:             15234.56                 70.21
+              Block changes:               890.12                  4.11
+             Physical reads:                234.56                  1.08
+            Physical writes:                45.67                  0.21
+                 User calls:               234.56                  1.08
+                     Parses:               123.45                  0.57
+                Hard parses:                12.34                  0.06
+                      Sorts:                56.78                  0.26
+                     Logons:                 0.45                  0.00
+                   Executes:               345.67                  1.60
+               Transactions:               216.78
+
+Instance Efficiency Percentages (Target 100%)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            Buffer Nowait %:   99.98       Redo NoWait %:  100.00
+            Buffer  Hit   %:   98.45    In-memory Sort %:   99.87
+            Library Hit   %:   97.23        Soft Parse %:   90.00
+         Execute to Parse %:   64.28         Latch Hit %:   99.91
+Parse CPU to Parse Elapsd %:   85.34     % Non-Parse CPU:   95.67
+
+Top 5 Timed Events                                                Avg %Total
+~~~~~~~~~~~~~~~~~~                                               wait   Call
+Event                                            Waits    Time (s)   (ms)   Time
+----------------------------------------- ------------ ----------- ------ ------
+db file sequential read                        123456       4567     37   45.6
+DB CPU                                                        3210          32.1
+log file sync                                    45678       1234     27   12.3
+db file scattered read                           23456        890     38    8.9
+latch free                                        4567        210     46    2.1
+
+SQL ordered by CPU Time
+~~~~~~~~~~~~~~~~~~~~~~~~
+  CPU Time (s)   Executions  CPU per Exec (s)  %Total   Elapsd Time (s)    SQL Id
+---------------- ------------ ---------------- ------- ----------------  -------------
+          234.56         1000             0.23    23.4           345.67  abc123xyz0001
+          123.45          500             0.25    12.3           234.56  def456uvw0002
+
+SQL ordered by Elapsed Time
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Elapsd Time (s)  Executions  Elap per Exec (s)  %Total    CPU Time (s)    SQL Id
+------------------ ------------ ------------------ ------- ---------------  -------------
+            456.78          800               0.57    34.5          200.11  ghi789rst0003
+
+SQL ordered by Executions
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+     Executions  Rows Processed  Rows per Exec    CPU per Exec  Elap per Exec  SQL Id
+---------------- --------------- --------------- --------------- --------------- -------------
+           50000          150000            3.00            0.01            0.02  jkl012mno0004
+
+SQL ordered by Gets
+~~~~~~~~~~~~~~~~~~~~
+   Buffer Gets  Executions  Gets per Exec  %Total    CPU Time (s)   SQL Id
+-------------- ------------ -------------- ------- --------------  -------------
+       900000          1000          900.00    23.4          234.56  pqr345stu0005
+
+SQL ordered by Reads
+~~~~~~~~~~~~~~~~~~~~~
+    Disk Reads  Executions  Reads per Exec  %Total    CPU Time (s)   SQL Id
+-------------- ------------ --------------- ------- --------------  -------------
+        45000          1000           45.00    12.1          100.00  vwx678yza0006
+
+Instance Activity Stats
+~~~~~~~~~~~~~~~~~~~~~~~~
+Statistic                                    Total    per Second   per Trans
+--------------------------------- ---------------- ------------- -----------
+user commits                                  12345           3.4         1.1
+user rollbacks                                  120           0.03        0.01
+redo entries                                 456789         126.9        40.6
+
+Library Cache Activity
+~~~~~~~~~~~~~~~~~~~~~~~
+Namespace           Gets  GetHitRatio    Pins  PinHitRatio  Reloads  Invalidations
+--------------- --------- ------------ ------- ------------ -------- --------------
+SQL AREA          1000000         0.98  1200000         0.96      120             15
+TABLE/PROCEDURE     50000         0.99    60000         0.98        5              0
+
+Latch Activity
+~~~~~~~~~~~~~~~
+Latch Name                    Get Requests   Pct Get Miss  Avg Slps/Miss
+------------------------ --------------- --------------- ---------------
+cache buffers chains            5000000            0.01            0.50
+shared pool                      800000            0.05            1.20
+
+Enqueue activity
+~~~~~~~~~~~~~~~~~
+Eq  Requests   Succ Gets  Failed Gets    Waits  Wait Time (s)
+--- --------- ----------- ------------ -------- --------------
+TX      45000       44950            5     1200            34
+TM       9000        9000            0        0             0
+
+File IO Stats
+~~~~~~~~~~~~~~
+Filename                Reads   Av Rd(ms) Writes  Av Wt(ms)
+------------------ --------- ---------- ------- ----------
++DATA/orcl/data01       123456        4.20    5000       2.10
++DATA/orcl/data02        45678        3.80    2000       1.90

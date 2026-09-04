@@ -63,7 +63,7 @@ Ninguna — query SQL pura.
 
 # Container / role scope notes
 
-`container_scope: ANY_CONTAINER` (corregido en Compatibility Hardening — era `CDB_ROOT`, valor inválido para 10g/11g donde Multitenant no existe; ver misma corrección y razonamiento en `Q-PERF-WAIT-AWR-001`). `database_role_scope: PRIMARY` por la misma razón en ambas queries: ASH refleja actividad de sesiones de usuario, mínima o nula en un Standby en mount — ver `skills/performance/wait-events.md`.
+`container_scope: ANY_CONTAINER` (corregido en Compatibility Hardening — era `CDB_ROOT`, valor inválido para 10g/11g donde Multitenant no existe; ver misma corrección y razonamiento en `Q-PERF-WAIT-AWR-001`). `database_role_scope: PRIMARY` por la misma razón en ambas queries: ASH refleja actividad de sesiones de usuario, mínima o nula en un Standby en mount — ver `skills/performance/wait-events/SKILL.md`.
 
 # Cost classification rationale
 

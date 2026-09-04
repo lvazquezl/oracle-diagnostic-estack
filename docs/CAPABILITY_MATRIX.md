@@ -20,11 +20,11 @@ Vista legible de [`config/capability-matrix.yaml`](../config/capability-matrix.y
 | Dominio | 10g | 11g | 12c | 18c | 19c | 21c | 23ai | latest |
 |---|---|---|---|---|---|---|---|---|
 | Oracle Core | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED |
-| Performance | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
+| Performance | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED |
 | AWR | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT |
 | ASH | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT |
 | ADDM | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT | LICENSE_DEPENDENT |
-| Statspack | FOUNDATION_ONLY | FOUNDATION_ONLY | FOUNDATION_ONLY | FOUNDATION_ONLY | FOUNDATION_ONLY | FOUNDATION_ONLY | FOUNDATION_ONLY | FOUNDATION_ONLY |
+| Statspack | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED | SUPPORTED |
 | RAC | PLANNED | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
 | GI | UNSUPPORTED | FOUNDATION_ONLY | FOUNDATION_ONLY | FOUNDATION_ONLY | FOUNDATION_ONLY | FOUNDATION_ONLY | FOUNDATION_ONLY | FOUNDATION_ONLY |
 | ASM | PLANNED | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
@@ -40,9 +40,9 @@ Vista legible de [`config/capability-matrix.yaml`](../config/capability-matrix.y
 ## Notas por dominio
 
 - **Oracle Core**: `SUPPORTED` desde Fase 2 — las 18 skills `oracle/*` completamente materializadas (`SKILL.md` + `manifest.yaml`), ~20 queries `Q-ORA-*` certificadas (Query Contract v2), 40 tests dedicados. `oracle/diagnostics` (ADR) requiere 11g+; en 10g esa sub-capacidad específica degrada a `UNSUPPORTED` sin afectar el resto del dominio.
-- **Performance**: `skills/performance/wait-events.md` materializado (id `performance/wait-events`) con fallback AWR→Statspack; no bloqueado por licencia por sí solo (a diferencia de AWR/ASH/ADDM como dominios propios).
-- **AWR/ASH/ADDM**: requieren Diagnostics Pack en todas las versiones donde existen (10g+) — `LICENSE_DEPENDENT` no es una limitación del e-stack sino del contrato de licenciamiento del cliente; ver `policies/licensing-awareness-policy.md`.
-- **Statspack**: no requiere licencia adicional; `skills/performance/statspack-analysis` está `registered`, no materializado — usado como fallback conceptual por `performance/wait-events` pero sin skill propio activo aún.
+- **Performance**: `SUPPORTED` desde Fase 3 — 31 skills `performance/*` completamente materializadas (`SKILL.md` + `manifest.yaml`), catálogo `queries/performance/**` (21 queries certificadas, Query Contract v2 + Query Variant Contract). Esta fila mide el core no licenciado (ruta estándar sin Diagnostics Pack, Statspack); AWR/ASH/ADDM son capacidades `LICENSE_DEPENDENT` independientes, filas propias abajo.
+- **AWR/ASH/ADDM**: requieren Diagnostics Pack en todas las versiones donde existen (10g+) — `LICENSE_DEPENDENT` no es una limitación del e-stack sino del contrato de licenciamiento del cliente; ver `policies/licensing-awareness-policy.md`. Los 3 skills (`performance/awr-analysis`, `performance/ash-analysis`, `performance/addm-analysis`) están completamente materializados y funcionan cuando la licencia se confirma.
+- **Statspack**: `SUPPORTED` desde Fase 3, cobertura multi-sección completa desde Fase 3 Completion Hardening — no requiere licencia adicional; `skills/performance/statspack-analysis` cubre Load Profile, Instance Efficiency, Top Wait Events, SQL ordered by CPU/elapsed/executions/gets/reads, Instance Activity, Library Cache, Latch, Enqueue, I/O (incl. ASM), Memory/Cache Sizes, Redo/Commit y Parsing derivados, vía consulta en vivo (`Q-PERF-WAIT-STATSPACK-001`, sólo wait events) y vía ingesta de reporte texto (`parsers/performance/statspack_parser.py`). Cobertura por-sección es `SUPPORTED`/`PARTIALLY_SUPPORTED`/`UNSUPPORTED` según el reporte concreto suministrado — ver `docs/PHASE_3_COMPLETION_HARDENING.md#gap-1--statspack-completion`.
 - **RAC**: esta fila mide **deep diagnostics** (`skills/rac/session-distribution.md`, desde 11gR2). 10g/11gR1 no certificado → `PLANNED` (la feature Oracle sí existe), no `UNSUPPORTED`. **RAC detection** (presencia/topología básica) es distinta y está `SUPPORTED` desde Fase 2 vía el Target Profile (`docs/TARGET_PROFILE.md`, `capabilities.rac`).
 - **GI (Grid Infrastructure)**: como marca/arquitectura formal es 11gR2+ (antes: Oracle Clusterware) → `UNSUPPORTED` en 10g. Ningún skill de `rac/ocr`, `rac/voting-disk`, `rac/crs-resources` está materializado aún → `FOUNDATION_ONLY` desde 11g.
 - **ASM**: fila = **deep diagnostics** (`skills/asm/capacity.md`, desde 11g). **ASM detection** (presencia, `storage_mode`) está `SUPPORTED` desde Fase 2 vía el Target Profile.

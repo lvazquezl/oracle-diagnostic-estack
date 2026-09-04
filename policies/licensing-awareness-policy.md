@@ -45,7 +45,7 @@ Cuando un agente detecta uso o necesidad de alguna de estas, marca el finding/re
 
 ## Alternativa cuando la licencia no se puede confirmar
 
-Si una capability queda `LICENSE_RESTRICTED`, el skill/agente busca una ruta alternativa no licenciada cuando existe, y la declara explícitamente en `alternative` (ver `policies/capability-degradation-policy.md`). Ejemplo ya implementado en el catálogo (`skills/performance/wait-events.md`):
+Si una capability queda `LICENSE_RESTRICTED`, el skill/agente busca una ruta alternativa no licenciada cuando existe, y la declara explícitamente en `alternative` (ver `policies/capability-degradation-policy.md`). Ejemplo ya implementado en el catálogo (`skills/performance/wait-events/SKILL.md`):
 
 ```text
 AWR unavailable/restricted → considerar Statspack o vistas dinámicas de performance (V$SYSTEM_EVENT)

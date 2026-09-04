@@ -1,0 +1,12 @@
+Meeting notes - Q1 planning
+============================
+
+Attendees: DBA team
+Topics discussed: capacity planning, backup schedule review, on-call rotation.
+
+Action items:
+- Review tablespace growth trend next sprint
+- Confirm RMAN retention policy with storage team
+
+This is just a plain text file that happens to be on the DBA's desktop and
+should never be mistaken for a Statspack/AWR/ADDM/execution plan report.

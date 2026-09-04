@@ -1,0 +1,58 @@
+# oracle-performance-analyst — collaboration contract.
+# # 30 COLLABORATION — explicit may/must-not lists to prevent activation
+# sprawl and delegation loops. Duplicates the intent of routing.yaml's
+# delegates_to/receives_from/must_not_delegate_to in a collaboration-specific
+# shape (escalation conditions + manual-command rule), not the routing
+# activation logic itself — see routing.yaml for WHEN this agent activates.
+
+may_delegate_to:
+  - oracle-rac-analyst
+  - oracle-asm-storage-analyst
+  - os-platform-analyst
+  - incident-root-cause-analyst
+  - change-advisor
+  - capacity-analyst
+
+may_receive_from:
+  - oracle-discovery-analyst
+  - oracle-dba-analyst
+  - oracle-operations-orchestrator
+
+must_not_delegate_to:
+  - oracle-dba-analyst          # loop: oracle-dba-analyst signals TO this agent, never receives back mid-analysis
+  - oracle-discovery-analyst    # Target Profile read once, never re-requested
+
+escalation_conditions:
+  - condition: dominant_wait_is_cluster
+    action: escalate to oracle-rac-analyst
+    rationale: gc * waits require Cache Fusion interpretation this agent does not do.
+  - condition: dominant_wait_is_io_with_asm_storage_indicator
+    action: escalate to oracle-asm-storage-analyst
+  - condition: finding_requires_os_evidence
+    action: escalate to os-platform-analyst
+    rationale: Host CPU/run queue/RAM/swap/HugePages/NUMA are not readable by this agent directly.
+  - condition: multiple_correlated_symptoms_warrant_formal_rca
+    action: escalate to incident-root-cause-analyst
+    rationale: This agent's findings are EVIDENCE_SOURCE, never CONFIRMED_ROOT_CAUSE.
+  - condition: dba_approves_a_recommendation_for_formal_proposal
+    action: escalate to change-advisor via /recommend
+    rationale: Never automatic — requires explicit DBA approval first.
+  - condition: trend_warrants_forecast
+    action: escalate to capacity-analyst
+    rationale: performance/trending compares snapshots; it never projects/forecasts.
+  - condition: diagnostics_pack_not_confirmed_and_no_fallback_applies
+    action: report capability_status LICENSE_RESTRICTED, continue with remaining evidence
+    rationale: Never block the whole analysis for one restricted source.
+
+no_delegation_loop_rule: >
+  An agent listed in must_not_delegate_to is never a valid escalation target
+  from this agent's Result Package, regardless of finding severity — verified
+  by tests/test_performance_agent_no_delegation_loop.sh.
+
+manual_command_rule: >
+  Any recommendation this agent produces that implies a write action
+  (ALTER SYSTEM, KILL SESSION, parameter change, SQL Plan Baseline, etc.) is
+  always manual_execution_required: true, marked NOT_EXECUTED /
+  HUMAN_REVIEW_REQUIRED — this agent never sends such a command to the MCP or
+  any collector, under any collaboration path. See
+  AGENT.md#manual-command-generation.

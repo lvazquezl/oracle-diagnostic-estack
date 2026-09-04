@@ -1,0 +1,5 @@
+This is not a Statspack report at all.
+It has no recognized section headers.
+Just some random text that a DBA might have pasted by mistake,
+including a stray number 12345 and a word that looks like SQL Id: zzzzzzzzzzzzz
+but none of it should be interpreted as structured Statspack data.

@@ -28,6 +28,8 @@ Cualquiera, si el hallazgo del especialista principal amerita correlación cruza
 
 Mapeo directo `área solicitada → agente` (ej. "UNDO" → `oracle-dba-analyst`; "AWR" → `oracle-performance-analyst`; "disk group" → `oracle-asm-storage-analyst`). Si el área no mapea a ningún agente conocido, el orquestador lo declara y sugiere `/change agent` o `/change skill` en vez de improvisar.
 
+**Fase 3**: `/analyze performance`, `/analyze sql`, `/analyze memory`, `/analyze io`, `/analyze waits` mapean todos a `oracle-performance-analyst`, resolviendo al/los skill(s) `performance/*` específicos según la sub-área de la pregunta — sub-área "performance" → Load Profile completo vía `performance/awr-analysis`/`performance/statspack-analysis` según licensing; sub-área "sql" → `performance/top-sql` y familia `performance/sql-*`; sub-área "memory" → `performance/sga`/`performance/pga`/`performance/memory`; sub-área "io" → `performance/io`; sub-área "waits" → `performance/wait-events`/`performance/wait-classes` — sin crear slash commands nuevos por sub-área.
+
 # Skills
 
 El/los skill(s) específico(s) del área solicitada dentro del agente activado.

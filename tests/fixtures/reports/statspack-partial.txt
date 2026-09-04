@@ -1,0 +1,24 @@
+STATSPACK report for
+
+Database    DB Id    Instance     Inst Num  Startup Time    Release     RAC
+~~~~~~~~ ----------- ------------ -------- --------------- ----------- ---
+ORCLPART   4234567890 orclpart             1 12-Jan-26 08:00 19.21.0.0.0 NO
+
+Snapshot     Snap Id      Snap Time      Sessions Curs/Sess
+~~~~~~~~~~ --------- ------------------ -------- ---------
+Begin Snap:      300 12-Jan-26 08:00:00       10        2.0
+  End Snap:      301 12-Jan-26 08:15:00       10        2.0
+   Elapsed:               15.00 (mins)
+   DB Time:                2.10 (mins)
+
+Load Profile
+~~~~~~~~~~~~                            Per Second       Per Transaction
+                                    ---------------       ---------------
+                  Redo size:              1200.00                 60.00
+                 User calls:                10.00                  0.50
+
+Top 5 Timed Events                                                Avg %Total
+~~~~~~~~~~~~~~~~~~                                               wait   Call
+Event                                            Waits    Time (s)   (ms)   Time
+----------------------------------------- ------------ ----------- ------ ------
+db file sequential read                          1200         45     37   60.0

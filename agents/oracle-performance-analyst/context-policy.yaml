@@ -1,0 +1,58 @@
+# oracle-performance-analyst — context/token budget contract.
+# # 29 CONTEXT POLICY — materialized limits, not just prose intent.
+
+minimum_context:
+  # What this agent needs at minimum to start: never the full conversation
+  # history, never raw evidence from other agents — only their outputs.
+  - target_summary (Target Profile reference, not raw discovery evidence)
+  - question
+  - constraints (time_window / sql_id / license_confirmed as applicable)
+
+evidence_by_reference: true
+evidence_by_reference_rule: >
+  Every piece of evidence is an EVD-* reference in evidence_refs, never
+  duplicated inline. Evidence already collected earlier in the same session
+  is reused, never re-queried/re-parsed.
+
+top_n:
+  top_sql_default: 10
+  top_waits_default: 10
+  top_plans_default: 10
+  configurable: true
+  rule: >
+    Top-N is applied locally after aggregation, before anything is exposed as
+    evidence — never send all rows unbounded (see common.py:SizeLimitPolicy
+    for the parser-side equivalent).
+
+no_full_report: true
+no_full_report_rule: >
+  An AWR HTML/Statspack TEXT/ADDM TEXT/execution plan file is never sent to
+  the model whole. It goes FILE -> TYPE DETECTOR -> LOCAL PARSER ->
+  STRUCTURED REPORT -> SANITIZER -> EVIDENCE first (parsers/performance/ingest.py).
+
+no_full_history: true
+no_full_history_rule: >
+  A time-windowed query (AWR/ASH/Statspack) is bounded by
+  constraints.time_window — an unbounded "all available history" request is
+  never executed; performance/trending compares discrete snapshots, it does
+  not replay full history.
+
+no_sql_text_default: true
+no_sql_text_default_rule: >
+  SQL_ID + PLAN_HASH_VALUE + metrics only, by default, in every
+  queries/performance/sql/** and queries/performance/plans/** query and in
+  every parser output. See AGENT.md#sql-text-policy.
+
+no_bind_values: true
+no_bind_values_rule: Never collected, never requested, under any circumstance.
+
+context_budget:
+  relative_level: HIGH   # relative to Oracle Core — AWR/ASH/Statspack are dense evidence
+  scaling_rule: >
+    Strictly bounded by constraints.time_window for live queries and by
+    SizeLimitPolicy (max_report_size_bytes/max_section_size_bytes/
+    max_sql_entries/max_wait_entries/max_plan_rows) for file-based evidence —
+    see parsers/performance/common.py.
+  reuse_rule: >
+    No repeated sections already evidenced in the same session — reuse
+    evidence_refs instead of re-collecting.

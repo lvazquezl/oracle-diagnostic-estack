@@ -1,0 +1,70 @@
+# oracle-performance-analyst — Result Package output schema.
+# # 31 OUTPUT SCHEMA — this is the structured contract every invocation of
+# this agent returns. Individual skills (performance/*) return their own
+# narrower output_schema (see each SKILL.md); this agent composes those into
+# performance_result before returning to the orchestrator/DBA.
+
+performance_result:
+  summary: string                       # one paragraph, human-readable
+
+  workload:
+    db_time_sec: number
+    db_cpu_sec: number
+    non_idle_wait_sec: number
+    elapsed_sec: number
+    source: "AWR" | "STATSPACK" | "STANDARD_PATH" | "FILE_REPORT"
+
+  bottlenecks:
+    - category: string                   # wait_class | sql | memory | io | concurrency | parallelism | redo_commit
+      description: string
+      severity: "INFO" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"
+      pct_db_time: number|null
+
+  findings:
+    - finding_id: string                 # FND-...
+      category: string                   # one of the 31 performance/* areas
+      severity: "INFO" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"
+      title: string
+      observation: string
+      evidence_refs: [string]             # EVD-...
+      interpretation: string
+      confidence: "FACT" | "OBSERVATION" | "HYPOTHESIS" | "PROBABLE_CAUSE" | "UNDETERMINED"
+      impact: string
+      license_check_required: boolean
+
+  hypotheses:
+    - statement: string
+      supporting_evidence_refs: [string]
+      confidence: "HYPOTHESIS" | "PROBABLE_CAUSE"
+
+  evidence_refs: [string]                 # full set, deduplicated
+
+  recommendations:
+    - recommendation_id: string           # REC-...
+      finding_id: string
+      priority: "LOW" | "MEDIUM" | "HIGH"
+      reason: string
+      risk: "LOW" | "MEDIUM" | "HIGH"
+      expected_benefit: string
+      manual_execution_required: true     # always true — this agent never executes
+      license_check_required: boolean
+      command_text: string|null           # NOT_EXECUTED / HUMAN_REVIEW_REQUIRED text when applicable
+
+  manual_actions:
+    - precheck: string
+      command: string
+      expected_result: string
+      rollback: string
+      postcheck: string
+      status: "NOT_EXECUTED"
+
+  limitations:
+    - area: string
+      reason: string                       # e.g. "section absent from this specific report", "Diagnostics Pack not confirmed"
+
+  confidence: "FACT" | "OBSERVATION" | "HYPOTHESIS" | "PROBABLE_CAUSE" | "UNDETERMINED"
+  # never "CONFIRMED_ROOT_CAUSE" — see AGENT.md#confidence-rules
+
+  next_skill_or_agent: string|null
+
+  capability_status: null   # or a full capability-degradation block — see docs/CONTRACTS.md#capability-status-model

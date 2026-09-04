@@ -1,0 +1,36 @@
+WORKLOAD REPOSITORY report for
+
+DB Name         DB Id    Instance     Inst Num Startup Time    Release     RAC
+------------ ----------- ------------ -------- --------------- ----------- ---
+CDB19CPERF   9234567890 cdb19cperf            1 15-Jan-26 08:00 19.21.0.0.0  NO
+
+              Snap Id      Snap Time      Sessions Curs/Sess
+            --------- ------------------ -------- ---------
+Begin Snap:       800 15-Jan-26 08:00:00       50       6.5
+  End Snap:       801 15-Jan-26 09:00:00       52       6.7
+   Elapsed:               60.02 (mins)
+   DB Time:              200.30 (mins)
+DB Time(s):              12018.00
+DB CPU(s):                7200.00
+
+Load Profile
+~~~~~~~~~~~~                            Per Second       Per Transaction
+                                    ---------------       ---------------
+                  Redo size:            210432.10                578.23
+                 User calls:               340.56                  1.08
+                     Parses:               180.45                  0.57
+                Hard parses:                15.34                  0.06
+
+Top 10 Foreground Events by Total Wait Time
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Event                                              Waits  Total Wait Time (sec)  Avg Wait   % DB time  Wait Class
+--------------------------------------------- ------------ ---------------------- ---------- ---------- ----------
+DB CPU                                                            7200          60.0
+db file sequential read                             180000                4200      23ms      35.0      User I/O
+log file sync                                        90000                 600       7ms       5.0      Commit
+
+SQL ordered by Elapsed Time
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Elapsed Time (s)  Executions  Elap per Exec (s)  %Total   CPU Time (s)    SQL Id
+------------------ ------------ ------------------ ------- ---------------  -------------
+           2345.67          2000               1.17    19.5         1800.00  awr123abc0001

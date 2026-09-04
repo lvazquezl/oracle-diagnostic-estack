@@ -1,0 +1,79 @@
+STATSPACK report for
+
+Database    DB Id    Instance     Inst Num  Startup Time    Release     RAC
+~~~~~~~~ ----------- ------------ -------- --------------- ----------- ---
+ORCL10G    3234567890 orcl10g              1 10-Jan-26 08:00 10.2.0.5.0  NO
+
+Host Name        Platform                Cores  Sockets  Memory(G)
+~~~~~~~~~~~~ ------------------------ ------ ------- ---------
+fixturehost02     Linux x86 64-bit             4         2      16.0
+
+Snapshot     Snap Id      Snap Time      Sessions Curs/Sess
+~~~~~~~~~~ --------- ------------------ -------- ---------
+Begin Snap:      200 10-Jan-26 08:00:00       20        4.1
+  End Snap:      201 10-Jan-26 09:00:00       22        4.3
+   Elapsed:               60.00 (mins)
+   DB Time:               45.20 (mins)
+
+Cache Sizes
+~~~~~~~~~~~
+       Buffer Cache:          2048M      Std Block Size:          8K
+   Shared Pool Size:           512M          Log Buffer:        7168K
+
+Load Profile
+~~~~~~~~~~~~                            Per Second       Per Transaction
+                                    ---------------       ---------------
+                  Redo size:             45210.30                210.11
+              Logical reads:              8234.10                 38.22
+              Block changes:               410.05                  1.90
+             Physical reads:               120.30                  0.56
+            Physical writes:                20.11                  0.09
+                 User calls:               120.44                  0.56
+                     Parses:                55.20                  0.26
+                Hard parses:                 3.10                  0.01
+                      Sorts:                25.60                  0.12
+                     Logons:                 0.20                  0.00
+                   Executes:               160.30                  0.74
+               Transactions:               216.10
+
+Instance Efficiency Percentages (Target 100%)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            Buffer Nowait %:   99.99       Redo NoWait %:  100.00
+            Buffer  Hit   %:   97.10    In-memory Sort %:   99.90
+            Library Hit   %:   98.44        Soft Parse %:   94.38
+         Execute to Parse %:   65.55         Latch Hit %:   99.95
+Parse CPU to Parse Elapsd %:   88.10     % Non-Parse CPU:   96.20
+
+Top 5 Timed Events                                                Avg %Total
+~~~~~~~~~~~~~~~~~~                                               wait   Call
+Event                                            Waits    Time (s)   (ms)   Time
+----------------------------------------- ------------ ----------- ------ ------
+db file sequential read                         45678       1200     26   40.1
+log file sync                                    12345        450     36   15.0
+db file scattered read                            8901        320     36   10.7
+
+SQL ordered by CPU Time
+~~~~~~~~~~~~~~~~~~~~~~~~
+  CPU Time (s)   Executions  CPU per Exec (s)  %Total   Elapsd Time (s)    SQL Id
+---------------- ------------ ---------------- ------- ----------------  -------------
+           88.10          400             0.22    18.4           120.55  bcd234efg0007
+
+Instance Activity Stats
+~~~~~~~~~~~~~~~~~~~~~~~~
+Statistic                                    Total    per Second   per Trans
+--------------------------------- ---------------- ------------- -----------
+user commits                                   4210           1.2         0.5
+user rollbacks                                   30           0.01        0.00
+redo entries                                 156789          43.6        18.1
+
+Library Cache Activity
+~~~~~~~~~~~~~~~~~~~~~~~
+Namespace           Gets  GetHitRatio    Pins  PinHitRatio  Reloads  Invalidations
+--------------- --------- ------------ ------- ------------ -------- --------------
+SQL AREA           400000         0.99   500000         0.98       10              2
+
+File IO Stats
+~~~~~~~~~~~~~~
+Filename                Reads   Av Rd(ms) Writes  Av Wt(ms)
+------------------ --------- ---------- ------- ----------
+/u01/oradata/orcl10g/data01     45678        3.10    1500       1.40

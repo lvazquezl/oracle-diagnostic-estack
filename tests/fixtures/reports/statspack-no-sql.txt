@@ -1,0 +1,40 @@
+STATSPACK report for
+
+Database    DB Id    Instance     Inst Num  Startup Time    Release     RAC
+~~~~~~~~ ----------- ------------ -------- --------------- ----------- ---
+ORCLNOSQL  5234567890 orclnosql            1 13-Jan-26 08:00 19.21.0.0.0 NO
+
+Snapshot     Snap Id      Snap Time      Sessions Curs/Sess
+~~~~~~~~~~ --------- ------------------ -------- ---------
+Begin Snap:      400 13-Jan-26 08:00:00       15        3.0
+  End Snap:      401 13-Jan-26 09:00:00       16        3.1
+   Elapsed:               60.00 (mins)
+   DB Time:               10.20 (mins)
+
+Cache Sizes
+~~~~~~~~~~~
+       Buffer Cache:          1024M      Std Block Size:          8K
+   Shared Pool Size:           256M          Log Buffer:        4096K
+
+Load Profile
+~~~~~~~~~~~~                            Per Second       Per Transaction
+                                    ---------------       ---------------
+                  Redo size:              5210.30                 90.11
+                 User calls:                40.44                  0.70
+
+Instance Efficiency Percentages (Target 100%)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            Buffer Nowait %:   99.99       Redo NoWait %:  100.00
+            Buffer  Hit   %:   99.10    In-memory Sort %:   99.95
+
+Top 5 Timed Events                                                Avg %Total
+~~~~~~~~~~~~~~~~~~                                               wait   Call
+Event                                            Waits    Time (s)   (ms)   Time
+----------------------------------------- ------------ ----------- ------ ------
+db file sequential read                          3456        120     35   58.8
+
+Instance Activity Stats
+~~~~~~~~~~~~~~~~~~~~~~~~
+Statistic                                    Total    per Second   per Trans
+--------------------------------- ---------------- ------------- -----------
+user commits                                    900           0.25        0.1

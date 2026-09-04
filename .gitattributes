@@ -1,0 +1,24 @@
+# Line ending policy — oracle-diagnostic-estack (# 34 LINE ENDING POLICY,
+# docs/PHASE_3_COMPLETION_HARDENING.md#line-ending-policy).
+#
+# The repository is developed primarily on Windows workstations (Git for
+# Windows / PowerShell) but executed through Git Bash / WSL / Linux CI —
+# every shell script MUST stay LF regardless of the developer's local
+# core.autocrlf setting, or `bash script.sh` can fail/behave inconsistently
+# depending on where it's checked out.
+
+* text=auto eol=lf
+
+*.sh    text eol=lf
+*.bash  text eol=lf
+*.py    text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+
+# Binary/opaque — never subject to any EOL conversion.
+*.png binary
+*.jpg binary
+*.gif binary
+*.pdf binary

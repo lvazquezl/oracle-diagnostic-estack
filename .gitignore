@@ -1,0 +1,62 @@
+# ============================================
+# Oracle Diagnostic E-Stack
+# Local / generated / sensitive files
+# ============================================
+
+# Python compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Environment / secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Oracle Wallet / credential artifacts
+*.p12
+*.sso
+cwallet.sso
+ewallet.p12
+
+# Local configuration
+config/local/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / editor local config
+.vscode/
+.idea/
+
+# Python tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+
+# Logs
+*.log
+
+# Local generated artifacts - review before enabling broadly
+# analysis/
+# reports/
+# evidence/raw/
+# evidence/sanitized/
+# evidence/derived/

@@ -12,7 +12,7 @@ Este registro identifica cada skill **exclusivamente** por su `skill_id` complet
 - `active` — materializado por completo (19 secciones del Skill Contract), archivo real en el dominio.
 - `registered` — nombre, dominio y propósito fijados en este registro; su materialización completa es Fase 2+ según `README.md#fases-de-construcción`. No es un placeholder vacío: es la entrada de catálogo que gobierna qué se puede construir y en qué orden vía `/change skill`.
 
-Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total). El resto queda `registered` para materialización gobernada en Fases 3–9, en el orden de `README.md`.
+Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total). El resto queda `registered` para materialización gobernada en Fases 4–9, en el orden de `README.md`.
 
 ## core (20)
 
@@ -64,38 +64,41 @@ Todos materializados con estructura `skills/oracle/<skill>/SKILL.md` + `manifest
 | `oracle/resource-limits` | **active** ([oracle/resource-limits/SKILL.md](oracle/resource-limits/SKILL.md)) |
 | `oracle/diagnostics` | **active** ([oracle/diagnostics/SKILL.md](oracle/diagnostics/SKILL.md)) |
 
-## performance (27)
+## performance (31)
 
 | skill_id | status |
 |---|---|
-| `performance/awr-analysis` | registered |
-| `performance/ash-analysis` | registered |
-| `performance/statspack-analysis` | registered |
-| `performance/addm-analysis` | registered |
-| `performance/db-time` | registered |
-| `performance/db-cpu` | registered |
-| `performance/load-profile` | registered |
-| `performance/wait-events` | **active** ([performance/wait-events.md](performance/wait-events.md)) |
-| `performance/wait-classes` | registered |
-| `performance/top-sql` | registered |
-| `performance/sql-cpu` | registered |
-| `performance/sql-elapsed` | registered |
-| `performance/sql-io` | registered |
-| `performance/sql-executions` | registered |
-| `performance/execution-plan` | registered |
-| `performance/plan-regression` | registered |
-| `performance/sga` | registered |
-| `performance/pga` | registered |
-| `performance/hard-parse` | registered |
-| `performance/library-cache` | registered |
-| `performance/shared-pool` | registered |
-| `performance/io` | registered |
-| `performance/temp` | registered |
-| `performance/undo` | registered |
-| `performance/concurrency` | registered |
-| `performance/locking` | registered |
-| `performance/blocking` | registered |
-| `performance/parallelism` | registered |
+| `performance/awr-analysis` | **active** ([performance/awr-analysis/SKILL.md](performance/awr-analysis/SKILL.md)) |
+| `performance/ash-analysis` | **active** ([performance/ash-analysis/SKILL.md](performance/ash-analysis/SKILL.md)) |
+| `performance/statspack-analysis` | **active** ([performance/statspack-analysis/SKILL.md](performance/statspack-analysis/SKILL.md)) |
+| `performance/addm-analysis` | **active** ([performance/addm-analysis/SKILL.md](performance/addm-analysis/SKILL.md)) |
+| `performance/db-time` | **active** ([performance/db-time/SKILL.md](performance/db-time/SKILL.md)) |
+| `performance/db-cpu` | **active** ([performance/db-cpu/SKILL.md](performance/db-cpu/SKILL.md)) |
+| `performance/load-profile` | **active** ([performance/load-profile/SKILL.md](performance/load-profile/SKILL.md)) |
+| `performance/wait-events` | **active** ([performance/wait-events/SKILL.md](performance/wait-events/SKILL.md)) |
+| `performance/wait-classes` | **active** ([performance/wait-classes/SKILL.md](performance/wait-classes/SKILL.md)) |
+| `performance/top-sql` | **active** ([performance/top-sql/SKILL.md](performance/top-sql/SKILL.md)) |
+| `performance/sql-cpu` | **active** ([performance/sql-cpu/SKILL.md](performance/sql-cpu/SKILL.md)) |
+| `performance/sql-elapsed` | **active** ([performance/sql-elapsed/SKILL.md](performance/sql-elapsed/SKILL.md)) |
+| `performance/sql-io` | **active** ([performance/sql-io/SKILL.md](performance/sql-io/SKILL.md)) |
+| `performance/sql-executions` | **active** ([performance/sql-executions/SKILL.md](performance/sql-executions/SKILL.md)) |
+| `performance/execution-plan` | **active** ([performance/execution-plan/SKILL.md](performance/execution-plan/SKILL.md)) |
+| `performance/plan-regression` | **active** ([performance/plan-regression/SKILL.md](performance/plan-regression/SKILL.md)) |
+| `performance/sga` | **active** ([performance/sga/SKILL.md](performance/sga/SKILL.md)) |
+| `performance/pga` | **active** ([performance/pga/SKILL.md](performance/pga/SKILL.md)) |
+| `performance/memory` | **active** ([performance/memory/SKILL.md](performance/memory/SKILL.md)) |
+| `performance/hard-parse` | **active** ([performance/hard-parse/SKILL.md](performance/hard-parse/SKILL.md)) |
+| `performance/library-cache` | **active** ([performance/library-cache/SKILL.md](performance/library-cache/SKILL.md)) |
+| `performance/shared-pool` | **active** ([performance/shared-pool/SKILL.md](performance/shared-pool/SKILL.md)) |
+| `performance/io` | **active** ([performance/io/SKILL.md](performance/io/SKILL.md)) |
+| `performance/temp` | **active** ([performance/temp/SKILL.md](performance/temp/SKILL.md)) |
+| `performance/undo` | **active** ([performance/undo/SKILL.md](performance/undo/SKILL.md)) |
+| `performance/concurrency` | **active** ([performance/concurrency/SKILL.md](performance/concurrency/SKILL.md)) |
+| `performance/locking` | **active** ([performance/locking/SKILL.md](performance/locking/SKILL.md)) |
+| `performance/blocking` | **active** ([performance/blocking/SKILL.md](performance/blocking/SKILL.md)) |
+| `performance/parallelism` | **active** ([performance/parallelism/SKILL.md](performance/parallelism/SKILL.md)) |
+| `performance/commit-redo` | **active** ([performance/commit-redo/SKILL.md](performance/commit-redo/SKILL.md)) |
+| `performance/trending` | **active** ([performance/trending/SKILL.md](performance/trending/SKILL.md)) |
 
 ## rac (29)
 

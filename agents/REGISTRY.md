@@ -1,13 +1,13 @@
 # Agent Registry
 
-18/18 agentes obligatorios (sección 7 del prompt maestro), todos `status: active`, conformes al [Agent Contract](../docs/CONTRACTS.md#agent-contract). `oracle-discovery-analyst` y `oracle-dba-analyst` están en `v2.0.0` (Fase 2 — Oracle Core, desarrollo profundo con estructura de carpeta `agents/<id>/AGENT.md`); el resto permanece en `v1.0.0` (Foundation, manifest plano `agents/<id>.md`) hasta que su fase correspondiente los profundice.
+18/18 agentes obligatorios (sección 7 del prompt maestro), todos `status: active`, conformes al [Agent Contract](../docs/CONTRACTS.md#agent-contract). `oracle-discovery-analyst` y `oracle-dba-analyst` están en `v2.0.0` (Fase 2 — Oracle Core, desarrollo profundo con estructura de carpeta `agents/<id>/AGENT.md`); `oracle-performance-analyst` está en `v4.0.0` (Fase 3 Completion & Portability Hardening — contrato estructurado completo: `AGENT.md` + `manifest.yaml` + `routing.yaml` + `context-policy.yaml` + `collaboration.yaml` + `output-schema.yaml` + `tests/` + `CHANGELOG.md`); el resto permanece en `v1.0.0` (Foundation, manifest plano `agents/<id>.md`) hasta que su fase correspondiente los profundice.
 
 | id | Dominio | Manifest |
 |---|---|---|
 | `oracle-operations-orchestrator` | Orquestación | [agents/oracle-operations-orchestrator.md](oracle-operations-orchestrator.md) |
 | `oracle-discovery-analyst` | Discovery/identidad/Target Profile | [agents/oracle-discovery-analyst/AGENT.md](oracle-discovery-analyst/AGENT.md) |
 | `oracle-dba-analyst` | Oracle Core (18 áreas) | [agents/oracle-dba-analyst/AGENT.md](oracle-dba-analyst/AGENT.md) |
-| `oracle-performance-analyst` | AWR/ASH/ADDM/performance | [agents/oracle-performance-analyst.md](oracle-performance-analyst.md) |
+| `oracle-performance-analyst` | AWR/ASH/ADDM/Statspack/performance | [agents/oracle-performance-analyst/AGENT.md](oracle-performance-analyst/AGENT.md) |
 | `oracle-rac-analyst` | RAC/GI/Cache Fusion | [agents/oracle-rac-analyst.md](oracle-rac-analyst.md) |
 | `oracle-asm-storage-analyst` | ASM/almacenamiento | [agents/oracle-asm-storage-analyst.md](oracle-asm-storage-analyst.md) |
 | `oracle-dataguard-analyst` | Data Guard | [agents/oracle-dataguard-analyst.md](oracle-dataguard-analyst.md) |

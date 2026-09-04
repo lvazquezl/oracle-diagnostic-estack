@@ -9,7 +9,15 @@ Cada tool mapea 1:1 (o 1:N) a entradas certificadas de [`queries/REGISTRY.md`](.
 | `get_rac_topology(target)` | `{target: string}` | nodos, instancias, versión GI | `Q-DISC-RAC-001` |
 | `get_session_distribution(target, service?)` | `{target: string, service?: string}` | sesiones por instancia/servicio | `Q-RAC-SESSION-DIST-001`, `Q-RAC-SERVICE-PLACEMENT-001` |
 | `get_wait_events(target, window_start, window_end, source?)` | `{target, window_start, window_end, source?: awr\|ash\|statspack}` | top wait events | `Q-PERF-WAIT-AWR-001`, `Q-PERF-WAIT-ASH-001`, `Q-PERF-WAIT-STATSPACK-001` |
-| `get_top_sql_metrics(target, window_start, window_end)` | `{target, window_start, window_end}` | SQL_ID, plan hash, métricas (sin SQL text por defecto) | `Q-PERF-TOPSQL-001` *(registered — Fase 3)* |
+| `get_top_sql_metrics(target, window_start?, window_end?)` | `{target, window_start?, window_end?}` | SQL_ID, plan hash, métricas (sin SQL text por defecto) | `Q-PERF-TOPSQL-001`, `Q-PERF-TOPSQL-CURRENT-001` |
+| `get_db_time(target, window_start?, window_end?)` | `{target, window_start?, window_end?}` | DB Time/DB CPU, ventana AWR o acumulado desde arranque | `Q-PERF-DBTIME-001`, `Q-PERF-DBTIME-CURRENT-001` |
+| `get_execution_plan(target, sql_id, plan_hash_value?, window_start?, window_end?)` | `{target, sql_id, plan_hash_value?, window_start?, window_end?}` | operaciones/costo/cardinalidad del plan, o historial de plan_hash_value | `Q-PERF-PLAN-001`, `Q-PERF-PLAN-HIST-001` |
+| `get_memory_status(target)` | `{target: string}` | SGA/PGA/library cache/shared pool | `Q-PERF-SGA-001`, `Q-PERF-PGA-001`, `Q-PERF-HARDPARSE-001`, `Q-PERF-LIBCACHE-001`, `Q-PERF-SHAREDPOOL-001` |
+| `get_io_waits(target)` | `{target: string}` | waits de I/O dominantes y latencia por datafile | `Q-PERF-IO-001`, `Q-PERF-IO-FILESTAT-001` |
+| `get_active_temp_usage(target)` | `{target: string}` | uso activo de TEMP por sesión/SQL_ID | `Q-PERF-TEMP-001` |
+| `get_blocking_sessions(target)` | `{target: string}` | cadenas de bloqueo blocker/waiter, locks activos | `Q-PERF-BLOCKING-001`, `Q-PERF-LOCKS-001` |
+| `get_parallel_sessions(target)` | `{target: string}` | sesiones Parallel Execution activas | `Q-PERF-PARALLEL-001` |
+| `get_redo_activity(target)` | `{target: string}` | volumen de redo y tasa de commit/rollback | `Q-PERF-REDO-001` |
 | `get_tablespace_usage(target)` | `{target: string}` | uso/autoextend por tablespace | `Q-DBA-TBS-USAGE-001`, `Q-DBA-TBS-DATAFILES-001` |
 | `get_asm_usage(target)` | `{target: string}` | espacio usable por disk group | `Q-ASM-DG-USAGE-001`, `Q-ASM-OPERATION-001` |
 | `get_dataguard_status(target)` | `{target: string}` | rol, lag, gaps, destinos | `Q-DG-STATS-001`, `Q-DG-ARCHIVE-GAP-001` |

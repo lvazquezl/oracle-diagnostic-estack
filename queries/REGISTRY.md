@@ -6,6 +6,8 @@ Todo query/comando aquí es de sólo lectura por construcción (`execution_mode:
 
 > **Fase 2 (Oracle Core)**: el catálogo Oracle se organizó por carpeta bajo `queries/oracle/<categoría>/`, una query por archivo (`<query_id>.md`), en vez de un único archivo `.md` plano por query en `queries/`. Las 4 queries de discovery (`Q-DISC-IDENTITY-001`, `Q-DISC-INSTANCE-001`, `Q-DISC-RAC-001`, `Q-DISC-ASM-001`) y las 2 de tablespaces (`Q-DBA-TBS-USAGE-001`, `Q-DBA-TBS-DATAFILES-001`) se **relocalizaron** (mismos IDs, sin duplicar) a `queries/oracle/discovery/` y `queries/oracle/tablespaces/` respectivamente. Se agregaron 20 queries nuevas para las 18 áreas Oracle Core (`Q-ORA-*`) — ver sección "Oracle Core queries (Fase 2)" abajo.
 
+> **Fase 3 (Oracle Performance)**: `Q-PERF-WAIT-AWR-001` y `Q-PERF-WAIT-ASH-001` se **relocalizaron** (mismos IDs, sin duplicar) de `queries/` plano a `queries/performance/waits/`. `Q-PERF-WAIT-STATSPACK-001` (antes sólo `registered`) se materializó en la misma carpeta — ver `docs/PHASE_3_ORACLE_PERFORMANCE.md`. Las filas de estas 3 queries en las tablas "Fase 1" abajo permanecen sin cambio (identidad de catálogo, no ubicación física). Se agregaron 18 queries nuevas bajo `queries/performance/<categoría>/` — ver sección "Performance queries (Fase 3)" abajo.
+
 ## Tools semánticas MCP (nivel Gateway)
 
 | tool | catálogo | dominio | agente principal |
@@ -60,7 +62,7 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-OS-LINUX-HUGEPAGES-001` | HugePages (Linux) | N/A | Oracle Linux/RHEL/SUSE | todas | NOT_APPLICABLE | NOT_APPLICABLE |
 | `Q-CAP-TIMESERIES-001` | Serie histórica de un recurso | 10g–23ai | todas | todas | ANY_CONTAINER | ANY |
 
-`Q-PERF-WAIT-*` se restringen a `PRIMARY` porque AWR/ASH/Statspack reflejan actividad de sesiones de usuario, mínima o nula en un Standby en mount — ver `skills/performance/wait-events.md`.
+`Q-PERF-WAIT-*` se restringen a `PRIMARY` porque AWR/ASH/Statspack reflejan actividad de sesiones de usuario, mínima o nula en un Standby en mount — ver `skills/performance/wait-events/SKILL.md`.
 
 ## Queries certificadas materializadas (Fase 1) — Cost, Risk & Sensitivity
 
@@ -144,6 +146,54 @@ Todas con `status: active`, `execution_mode: READ_ONLY`, `tests:` referenciado a
 | `Q-ORA-DIAGNOSTICS-ALERTLOG-001` | alert log (archivo, collector certificado) | R0 | MEDIUM | 30 | 2000 | HIGH | none |
 
 Todas con `status: active`, `execution_mode: READ_ONLY`, mismo set mínimo de tests que el resto del catálogo. Ninguna es `cost_class: BLOCKED`. Ninguna toca tablas de aplicación (`tests/test_no_application_table_access.sh`, `tests/test_application_data_blocked.sh`).
+
+## Performance queries (Fase 3) — Identity & Scope
+
+| id | purpose | versions | platform | architecture | container_scope | database_role_scope |
+|---|---|---|---|---|---|---|
+| `Q-PERF-DBTIME-001` | DB Time/DB CPU sobre ventana AWR | 10g–23ai (Diagnostics Pack) | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-DBTIME-CURRENT-001` | DB Time/DB CPU acumulado (sin licencia) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-TOPSQL-001` | Top SQL sobre ventana AWR | 10g–23ai (Diagnostics Pack) | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-TOPSQL-CURRENT-001` | Top SQL acumulado (sin licencia) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-PLAN-001` | Plan de ejecución actual | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-PLAN-HIST-001` | Historial de plan_hash_value (AWR) | 10g–23ai (Diagnostics Pack) | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-SGA-001` | Tamaño/componentes de SGA | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-PERF-PGA-001` | Uso/over-allocation de PGA | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-PERF-HARDPARSE-001` | Parse count total/hard | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-LIBCACHE-001` | Reloads/invalidations de Library Cache | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-PERF-SHAREDPOOL-001` | Memoria libre shared pool + dictionary cache | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-PERF-IO-001` | Waits de I/O dominantes | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-IO-FILESTAT-001` | Latencia por datafile | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-TEMP-001` | Uso activo de TEMP por sesión/SQL_ID | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-BLOCKING-001` | Cadenas de bloqueo blocker/waiter | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-LOCKS-001` | Enqueue locks activos | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-PARALLEL-001` | Sesiones Parallel Execution activas | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-REDO-001` | Volumen de redo y tasa de commit | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+
+## Performance queries (Fase 3) — Cost, Risk & Sensitivity
+
+| id | objects_accessed | risk_class | cost_class | timeout_s | max_rows | sensitivity | license_requirements |
+|---|---|---|---|---|---|---|---|
+| `Q-PERF-DBTIME-001` | `DBA_HIST_SYS_TIME_MODEL`, `DBA_HIST_SNAPSHOT` | R0 | MEDIUM | 30 | 100 | LOW | Diagnostics Pack |
+| `Q-PERF-DBTIME-CURRENT-001` | `V$SYS_TIME_MODEL`, `V$INSTANCE` | R0 | LOW | 10 | 5 | LOW | none |
+| `Q-PERF-TOPSQL-001` | `DBA_HIST_SQLSTAT`, `DBA_HIST_SNAPSHOT` | R0 | MEDIUM | 60 | 100 | MEDIUM | Diagnostics Pack |
+| `Q-PERF-TOPSQL-CURRENT-001` | `V$SQLSTATS` | R0 | MEDIUM | 30 | 100 | MEDIUM | none |
+| `Q-PERF-PLAN-001` | `V$SQL_PLAN` | R0 | LOW | 15 | 200 | LOW | none |
+| `Q-PERF-PLAN-HIST-001` | `DBA_HIST_SQLSTAT`, `DBA_HIST_SNAPSHOT` | R0 | MEDIUM | 30 | 100 | LOW | Diagnostics Pack |
+| `Q-PERF-SGA-001` | `V$SGA`, `V$SGAINFO`, `V$SGASTAT` | R0 | LOW | 10 | 50 | LOW | none |
+| `Q-PERF-PGA-001` | `V$PGASTAT` | R0 | LOW | 10 | 30 | LOW | none |
+| `Q-PERF-HARDPARSE-001` | `V$SYSSTAT` | R0 | LOW | 10 | 10 | LOW | none |
+| `Q-PERF-LIBCACHE-001` | `V$LIBRARYCACHE` | R0 | LOW | 10 | 30 | LOW | none |
+| `Q-PERF-SHAREDPOOL-001` | `V$SGASTAT`, `V$ROWCACHE` | R0 | LOW | 10 | 30 | LOW | none |
+| `Q-PERF-IO-001` | `V$SYSTEM_EVENT` | R0 | LOW | 15 | 20 | LOW | none |
+| `Q-PERF-IO-FILESTAT-001` | `V$FILESTAT`, `V$DATAFILE` | R0 | MEDIUM | 20 | 500 | MEDIUM | none |
+| `Q-PERF-TEMP-001` | `V$SORT_USAGE`, `V$SESSION` | R0 | MEDIUM | 15 | 200 | MEDIUM | none |
+| `Q-PERF-BLOCKING-001` | `V$SESSION` | R0 | MEDIUM | 15 | 200 | MEDIUM | none |
+| `Q-PERF-LOCKS-001` | `V$LOCK`, `V$SESSION` | R0 | MEDIUM | 15 | 500 | MEDIUM | none |
+| `Q-PERF-PARALLEL-001` | `V$PX_SESSION` | R0 | LOW | 15 | 200 | LOW | none |
+| `Q-PERF-REDO-001` | `V$SYSSTAT` | R0 | LOW | 10 | 10 | LOW | none |
+
+Todas con `status: active`, `execution_mode: READ_ONLY`, mismo set mínimo de tests que el resto del catálogo. Ninguna es `cost_class: BLOCKED`. Rutas `*-CURRENT-001`/`*-HIST-001` sin sufijo `-CURRENT-`/`-HIST-` son la alternativa AWR licenciada vs. la ruta estándar sin licencia respectivamente — ver `docs/PHASE_3_ORACLE_PERFORMANCE.md#awr-path` y `#standard-non-licensed-performance-path`. `Q-PERF-*` (excepto memoria estructural `SGA`/`PGA`/`LIBCACHE`/`SHAREDPOOL`, `database_role_scope: ANY`) se restringen a `PRIMARY` por la misma razón que `Q-PERF-WAIT-*` — reflejan actividad de sesión de usuario, mínima o nula en standby en mount.
 
 ## Extensión más allá de las 14 tools nombradas
 

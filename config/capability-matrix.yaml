@@ -27,8 +27,8 @@ domains:
   - id: performance
     display_name: "Performance"
     license_dependent: false
-    versions: {10g: PARTIAL, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
-    notes: "skills/performance/wait-events.md materializado (id performance/wait-events) con fallback AWR->Statspack; no bloqueado por licencia por sí solo."
+    versions: {10g: SUPPORTED, 11g: SUPPORTED, 12c: SUPPORTED, 18c: SUPPORTED, 19c: SUPPORTED, 21c: SUPPORTED, 23ai: SUPPORTED, latest: SUPPORTED}
+    notes: "Fase 3: 31 skills performance/* completamente materializadas (SKILL.md + manifest.yaml), catálogo queries/performance/** (21 queries certificadas, Query Variant Resolver validado). Esta fila mide el core de performance no licenciado (ruta estándar sin Diagnostics Pack, Statspack) — genuinamente SUPPORTED 10g-23ai. AWR/ASH/ADDM son capacidades LICENSE_DEPENDENT independientes (filas propias abajo) — su disponibilidad real depende de licenciamiento del cliente, no de cobertura del e-stack. Ver docs/PHASE_3_ORACLE_PERFORMANCE.md."
 
   - id: awr
     display_name: "AWR"
@@ -51,8 +51,8 @@ domains:
   - id: statspack
     display_name: "Statspack"
     license_dependent: false
-    versions: {10g: FOUNDATION_ONLY, 11g: FOUNDATION_ONLY, 12c: FOUNDATION_ONLY, 18c: FOUNDATION_ONLY, 19c: FOUNDATION_ONLY, 21c: FOUNDATION_ONLY, 23ai: FOUNDATION_ONLY, latest: FOUNDATION_ONLY}
-    notes: "No requiere licencia adicional. skills/performance/statspack-analysis registered; usado como fallback conceptual por performance/wait-events pero sin skill propio materializado aun."
+    versions: {10g: SUPPORTED, 11g: SUPPORTED, 12c: SUPPORTED, 18c: SUPPORTED, 19c: SUPPORTED, 21c: SUPPORTED, 23ai: SUPPORTED, latest: SUPPORTED}
+    notes: "Fase 3 Completion Hardening: performance/statspack-analysis ahora cubre reportes multi-sección completos vía parsers/performance/statspack_parser.py (Load Profile, Instance Efficiency, Top Wait Events, SQL ordered by CPU/elapsed/executions/gets/reads, Instance Activity, Library Cache, Latch, Enqueue, I/O incl. ASM, Memory/Cache Sizes, Redo/Commit y Parsing derivados), además de la vía de consulta en vivo (Q-PERF-WAIT-STATSPACK-001, sólo wait events). Cobertura por-sección es SUPPORTED/PARTIALLY_SUPPORTED/UNSUPPORTED según el reporte concreto suministrado — nunca se finge una sección ausente en el reporte fuente (ver skills/performance/statspack-analysis/SKILL.md#statspack-capability-map)."
 
   - id: rac
     display_name: "RAC"

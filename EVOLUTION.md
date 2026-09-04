@@ -15,6 +15,7 @@ El e-stack puede proponerse cambios y construir candidatos, pero **no promueve c
 - `/change compatibility` — ampliación de version-awareness/platform-awareness
 - `/change documentation` — nuevo template o cambio de uno existente
 - `/change security` — cambio con impacto directo en el modelo de amenazas
+- `/change parser` — nuevo tipo de reporte de performance soportado (ej. Exadata AWR, RAC AWR multi-instancia consolidado) o extensión de un parser existente (`parsers/performance/*.py`)
 
 Implementación: [`.claude/commands/change.md`](.claude/commands/change.md), orquestado por [`estack-evolution-architect`](agents/estack-evolution-architect.md).
 
@@ -99,3 +100,16 @@ Ninguna versión Oracle nueva (ni un ajuste de rango sobre una existente) se mar
 7. **Docs**: `docs/CAPABILITY_MATRIX.md` y, si aplica, `docs/PHASE_2_COMPATIBILITY_HARDENING.md` (o el documento de hardening vigente) referencian el cambio.
 
 Ver también sección "Future-proof version policy" en `docs/QUERY_VARIANTS.md` para el tratamiento de `latest` y versiones Oracle aún no integradas.
+
+## 15. `/change parser` — checklist obligatorio (Fase 3 Completion & Portability Hardening)
+
+Ningún tipo de reporte nuevo (ni una sección nueva sobre un parser existente) se marca `SUPPORTED`/`PARTIALLY_SUPPORTED` sin que el mismo cambio incluya, todos, no un subconjunto:
+
+1. **Parser**: implementación en `parsers/performance/<tipo>_parser.py` (Python 3, sólo librería estándar) que devuelve el envelope común `ParsedReport` (`parsers/performance/common.py`) — nunca un formato ad-hoc paralelo.
+2. **Type detector**: `parsers/performance/type_detector.py` reconoce el nuevo tipo por firma de contenido, nunca por extensión de archivo; si la firma puede confundirse con un tipo existente, el orden de chequeo se documenta explícitamente en el propio detector.
+3. **Security**: el nuevo parser no llama `eval`/`exec`/`subprocess`/`os.system`/`compile()` sobre contenido del reporte — extendido en `tests/test_parser_does_not_execute_embedded_instructions.sh`; ninguna sección extrae SQL text ni bind values (`Sanitizer.drop_sql_text()`).
+4. **Fixtures**: al menos un fixture representativo en `tests/fixtures/reports/`, y si el tipo es propenso a reportes parciales/malformados, un fixture adicional de ese caso (ver `statspack-partial.txt`/`empty-report.txt`/`*-malformed.txt` como patrón).
+5. **Tests**: detección de tipo, extracción de cada sección nueva, y (si aplica) truncamiento por `SizeLimitPolicy` — siguiendo el patrón de los tests `test_statspack_*`/`test_awr_*`/`test_addm_*`/`test_execution_plan_*` existentes.
+6. **Skill**: el `manifest.yaml`/`SKILL.md` del skill correspondiente declara el parser en `optional_evidence` (`report_parser: parsers/performance/<tipo>_parser.py`) y, si el skill ya tenía un capability map por sección (ver `skills/performance/statspack-analysis/SKILL.md#statspack-capability-map`), se actualiza — nunca se finge cubierta una sección que el parser concreto no extrae.
+7. **Capability matrix**: `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` reflejan la cobertura real, por sección si corresponde — nunca `SUPPORTED` global cuando sólo algunas secciones lo están.
+8. **Docs**: `docs/PHASE_3_COMPLETION_HARDENING.md#report-ingest-architecture` (o el documento de hardening vigente que lo suceda) referencia el tipo/sección nueva.

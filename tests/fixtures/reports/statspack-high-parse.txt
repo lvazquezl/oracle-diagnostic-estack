@@ -1,0 +1,60 @@
+STATSPACK report for
+
+Database    DB Id    Instance     Inst Num  Startup Time    Release     RAC
+~~~~~~~~ ----------- ------------ -------- --------------- ----------- ---
+ORCLPARSE  6234567890 orclparse            1 14-Jan-26 08:00 19.21.0.0.0 NO
+
+Snapshot     Snap Id      Snap Time      Sessions Curs/Sess
+~~~~~~~~~~ --------- ------------------ -------- ---------
+Begin Snap:      500 14-Jan-26 08:00:00       60        8.0
+  End Snap:      501 14-Jan-26 09:00:00       62        8.2
+   Elapsed:               60.00 (mins)
+   DB Time:              200.00 (mins)
+
+Cache Sizes
+~~~~~~~~~~~
+       Buffer Cache:          4096M      Std Block Size:          8K
+   Shared Pool Size:          2048M          Log Buffer:       14336K
+
+Load Profile
+~~~~~~~~~~~~                            Per Second       Per Transaction
+                                    ---------------       ---------------
+                  Redo size:             20000.00                 90.00
+              Logical reads:              9000.00                 40.50
+                 User calls:              1500.00                  6.75
+                     Parses:               890.00                  4.01
+                Hard parses:               650.00                  2.93
+                   Executes:              1600.00                  7.21
+               Transactions:               222.00
+
+Instance Efficiency Percentages (Target 100%)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            Buffer  Hit   %:   96.10    In-memory Sort %:   99.10
+            Library Hit   %:   62.30        Soft Parse %:   26.97
+         Execute to Parse %:   44.38         Latch Hit %:   98.50
+
+Top 5 Timed Events                                                Avg %Total
+~~~~~~~~~~~~~~~~~~                                               wait   Call
+Event                                            Waits    Time (s)   (ms)   Time
+----------------------------------------- ------------ ----------- ------ ------
+latch: shared pool                              89000       5400     60   45.0
+library cache lock                              34000       2100     61   17.5
+DB CPU                                                       3200          26.6
+
+SQL ordered by CPU Time
+~~~~~~~~~~~~~~~~~~~~~~~~
+  CPU Time (s)   Executions  CPU per Exec (s)  %Total   Elapsd Time (s)    SQL Id
+---------------- ------------ ---------------- ------- ----------------  -------------
+          890.00        45000             0.02    62.1           950.00  ccc111ddd0008
+
+Library Cache Activity
+~~~~~~~~~~~~~~~~~~~~~~~
+Namespace           Gets  GetHitRatio    Pins  PinHitRatio  Reloads  Invalidations
+--------------- --------- ------------ ------- ------------ -------- --------------
+SQL AREA          2000000         0.62  2400000         0.58    45000            300
+
+Latch Activity
+~~~~~~~~~~~~~~~
+Latch Name                    Get Requests   Pct Get Miss  Avg Slps/Miss
+------------------------ --------------- --------------- ---------------
+shared pool                      3200000            8.40            2.10

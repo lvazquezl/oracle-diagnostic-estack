@@ -1,0 +1,59 @@
+# Fixture: Oracle 10g Standalone — Statspack (sin Diagnostics Pack)
+# Usada por: test_statspack_10g.sh
+fixture_id: FX-10g-statspack
+
+target_profile:
+  schema_version: "2.0.0"
+  target_id: "fixture-10g-statspack"
+  database:
+    name: "ORCL10G"
+    unique_name: "ORCL10G"
+    dbid: "9234567890"
+  oracle_version: {major: 10, minor: 2, release: 0, ru: null, raw: "10.2.0.5.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: false
+  instance: {name: "orcl10g", number: 1, host: "HOST_TOKEN_020"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: non_cdb, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities:
+    rac: UNSUPPORTED
+    asm: PLANNED
+    multitenant: UNSUPPORTED
+    dataguard: UNSUPPORTED
+    awr: LICENSE_RESTRICTED
+    ash: LICENSE_RESTRICTED
+  discovery: {timestamp: "2026-01-16T09:00:00Z", evidence_refs: [EVD-FX-020], confidence: FACT}
+
+license_confirmed: {diagnostics_pack: false, tuning_pack: false}
+statspack_installed: true
+
+compatibility_schema:
+  available_views: [V$INSTANCE, GV$INSTANCE, V$DATABASE, V$PARAMETER, GV$PARAMETER, V$SPPARAMETER,
+    V$SESSION, GV$SESSION, V$PROCESS, V$RESOURCE_LIMIT, STATS$SYSTEM_EVENT, STATS$SNAPSHOT,
+    V$SYS_TIME_MODEL, V$SQLSTATS, V$SQL_PLAN, V$SGA, V$SGAINFO, V$SGASTAT, V$PGASTAT, V$SYSSTAT,
+    V$LIBRARYCACHE, V$ROWCACHE, V$SYSTEM_EVENT, V$FILESTAT, V$DATAFILE, V$SORT_USAGE, V$LOCK,
+    V$PX_SESSION]
+    # DBA_HIST_*/V$ACTIVE_SESSION_HISTORY no listadas: diagnostics_pack: false (AWR/ASH no aplican).
+  available_columns:
+    "V$INSTANCE.version_full": false     # 18.0+
+    "V$INSTANCE.instance_role": false    # 11.0+
+    "V$DATABASE.cdb": false              # 12.1+, arquitectura non_cdb de todos modos
+    "V$ACTIVE_INSTANCES.con_id": false
+    "V$SESSION.con_id": false            # 12.1+
+    "DBA_HIST_SYSTEM_EVENT.time_waited_micro_fg": false   # 11.0+, y AWR no aplica aquí
+
+mock_evidence:
+  - query_id: Q-PERF-WAIT-STATSPACK-001
+    result:
+      - {instance_number: 1, event_name: "db file sequential read", wait_class_derived: "User I/O", total_wait_time_sec: 420.5}
+      - {instance_number: 1, event_name: "log file sync", wait_class_derived: "Commit", total_wait_time_sec: 95.2}
+
+expected_findings:
+  - category: statspack-analysis
+    severity: LOW
+    confidence: FACT
+    reason: "top wait 'db file sequential read' (User I/O) sin concentración anormal; capability_status: SUPPORTED (Statspack instalado, sin Diagnostics Pack)"

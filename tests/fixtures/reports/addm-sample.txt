@@ -1,0 +1,23 @@
+DETAILED ADDM Report for Task 'ADDM:9234567890_1_800'
+
+Analysis Period: 15-Jan-26 08:00:00 to 15-Jan-26 09:00:00
+Task Name: ADDM:9234567890_1_800
+
+FINDING 1: 45% impact (3200 seconds)
+CPU usage was a significant throughput bottleneck for this instance, consuming
+100% of the available CPU capacity during the analysis period. All wait
+classes were significantly affected by this bottleneck.
+
+   RECOMMENDATION 1: Estimated Benefit is 30 seconds (12% of the total impact)
+   Investigate SQL statements consuming significant CPU time and consider
+   tuning them for lower CPU consumption.
+      RATIONALE: SQL statements consuming significant CPU time were found.
+
+FINDING 2: 20.1 percent impact (1200 seconds)
+Individual database segments responsible for significant user I/O wait were
+found.
+
+   RECOMMENDATION 2: Estimated Benefit is 15 seconds (5% of the total impact)
+   Consider running an object level analysis on the segment ORDERS to
+   investigate the possibility of reorganizing it.
+      RATIONALE: The I/O throughput of the segment was significantly high.

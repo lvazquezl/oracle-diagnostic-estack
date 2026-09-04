@@ -1,0 +1,26 @@
+name: top-sql
+display_name: "Top SQL"
+id: performance/top-sql
+version: 1.0.0
+domain: performance
+status: active
+
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac]
+container_scope: ANY_CONTAINER
+database_role_scope: PRIMARY
+
+license_requirements: none
+
+required_evidence:
+  - query_id: Q-PERF-TOPSQL-CURRENT-001
+optional_evidence:
+  - query_id: Q-PERF-TOPSQL-001
+  - query_id: Q-PERF-PLAN-001
+  - query_id: Q-PERF-PLAN-HIST-001
+
+data_sensitivity: MEDIUM
+context_budget: MEDIUM
+
+related_skills: [performance/sql-cpu, performance/sql-elapsed, performance/sql-io, performance/sql-executions, performance/execution-plan, performance/plan-regression, performance/awr-analysis]

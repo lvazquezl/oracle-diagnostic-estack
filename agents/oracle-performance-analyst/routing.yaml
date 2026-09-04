@@ -1,0 +1,77 @@
+# oracle-performance-analyst — routing/activation contract.
+# Source of truth for WHEN this agent activates and to whom it delegates.
+# # 28 ROUTING: activate only on real performance signal, never automatically
+# alongside every other agent; delegate deliberately, never activate all
+# possible collaborators.
+
+activation_conditions:
+  # Any ONE of these is sufficient to activate this agent — they are not
+  # required in combination.
+  - type: performance_intent
+    description: >
+      The DBA's question names a performance area explicitly (AWR, Statspack,
+      ADDM, wait events, top SQL, execution plan, SGA/PGA, blocking,
+      parallelism, redo/commit, TEMP/UNDO performance).
+    example_triggers: ["/awr", "/analyze performance", "/analyze sql", "/analyze memory", "/analyze io", "/analyze waits"]
+
+  - type: performance_symptom
+    description: >
+      /diagnose classifies the reported symptom as performance-shaped (slow
+      query, high CPU, contention, timeout under load) rather than a
+      configuration/state question that belongs to oracle-dba-analyst.
+    routed_by: workflows/diagnose.md
+
+  - type: report_input
+    description: >
+      The DBA attaches an AWR HTML/TEXT, Statspack TEXT, ADDM TEXT, or
+      execution plan TEXT file for analysis.
+    handler: parsers/performance/ingest.py
+
+  - type: performance_evidence_already_present
+    description: >
+      oracle-dba-analyst already signaled contention (high waits, excessive
+      hard parsing) while covering its own 18 areas, without itself
+      profundizing — this agent picks up from that signal.
+    source_agent: oracle-dba-analyst
+
+deactivation_rule: >
+  If none of the above hold, this agent does not activate — a request that
+  only needs oracle-dba-analyst/capacity-analyst/oracle-rac-analyst/etc. must
+  not also spin up oracle-performance-analyst "just in case".
+
+delegates_to:
+  - agent: oracle-rac-analyst
+    when: >
+      The dominant wait is Cluster (`gc *`) or evidence shows desbalance entre
+      instancias RAC — this agent only recognizes and reports the
+      multi-instance dimension (see AGENT.md#multi-instance-awareness), it
+      never interprets Cache Fusion internals.
+  - agent: oracle-asm-storage-analyst
+    when: The dominant wait is I/O with indicios de contención de storage ASM.
+  - agent: os-platform-analyst
+    when: >
+      A finding requires OS-level evidence this agent cannot read directly
+      (host CPU/run queue, RAM/swap, HugePages/NUMA).
+  - agent: incident-root-cause-analyst
+    when: >
+      Multiple correlated symptoms warrant a formal RCA — this agent's
+      findings become EVIDENCE_SOURCE input, never a confirmed root cause on
+      their own.
+  - agent: change-advisor
+    when: >
+      A recommendation is accepted by the DBA and needs to become a formal
+      CHG-* proposal (via /recommend) — always downstream of explicit DBA
+      approval, never automatic.
+  - agent: capacity-analyst
+    when: A trend observed by performance/trending warrants forecast/capacity work — this agent does forecast never itself.
+
+receives_from:
+  - agent: oracle-discovery-analyst
+    what: Target Profile (version, architecture, role) — never re-determined by this agent.
+  - agent: oracle-dba-analyst
+    what: Contention signals surfaced while covering the 18 Oracle Core areas, without profundizing.
+
+must_not_delegate_to:
+  # Loop prevention (# 30 COLLABORATION: "Evitar loops entre agentes").
+  - oracle-dba-analyst    # would create a cycle — oracle-dba-analyst signals TO this agent, never the reverse
+  - oracle-discovery-analyst   # Target Profile is read once, never re-requested mid-analysis

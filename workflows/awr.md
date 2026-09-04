@@ -64,7 +64,7 @@ READ-ONLY ALWAYS. SQL text sólo por SQL_ID/plan hash salvo autorización explí
 
 ```yaml
 gates:
-  version:      config/capability-matrix.yaml → AWR/ASH/ADDM son LICENSE_DEPENDENT en toda versión 10g-latest; Statspack es FOUNDATION_ONLY
+  version:      config/capability-matrix.yaml → AWR/ASH/ADDM son LICENSE_DEPENDENT en toda versión 10g-latest; Statspack es SUPPORTED (Fase 3, primera clase, sin licencia)
   architecture: agentes de escalada (oracle-rac-analyst/oracle-asm-storage-analyst/os-platform-analyst) sólo se activan si el wait dominante lo justifica Y la arquitectura aplica (ej. gc waits sólo si RAC)
   environment:  target debe estar en config/allowed-targets.local.yaml
   license:      si Diagnostics Pack no se confirma, capability_status LICENSE_RESTRICTED en AWR/ASH; fallback automático a Q-PERF-WAIT-STATSPACK-001

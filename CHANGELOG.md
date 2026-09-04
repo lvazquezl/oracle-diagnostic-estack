@@ -2,6 +2,62 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — 2026-09-03 — Fase 3: Performance Completion & Portability Hardening
+
+Cierra 4 gaps de Fase 3 sobre el mismo baseline `v0.2.0-oracle-core` — no es un rebuild de Fase 3. Ver `docs/PHASE_3_COMPLETION_HARDENING.md` para el reporte de cierre completo.
+
+### Added
+
+- `parsers/performance/` (nuevo, Python 3 stdlib-only — primer código fuente no Markdown/YAML/Bash del repositorio): `common.py` (envelope `ParsedReport`, `ParseStatus`, `SizeLimitPolicy`, `Sanitizer`), `type_detector.py`, `statspack_parser.py`, `awr_parser.py`, `addm_parser.py`, `execution_plan_parser.py`, `ingest.py` (orquestador único), `__init__.py`.
+- Statspack ahora cubre reportes multi-sección completos (Load Profile, Instance Efficiency, Top Wait Events, SQL ordered by CPU/elapsed/executions/gets/reads, Instance Activity, Library Cache, Latch, Enqueue, I/O incl. ASM, Memory/Cache Sizes, Redo/Commit y Parsing derivados) — antes sólo wait events.
+- 15 fixtures de reportes (`tests/fixtures/reports/`), incluyendo un intento de prompt injection (`addm-injection-attempt.txt`) usado para probar que el contenido de un reporte nunca se interpreta como instrucción.
+- 28 tests nuevos de parsers (detección de tipo ×6, parsers AWR/ADDM/execution-plan ×4, Statspack ×12, seguridad/límites/sanitización ×3, secciones faltantes/malformadas/vacías ×3).
+- `agents/oracle-performance-analyst/` materializado en contrato estructurado completo (`v4.0.0`): `manifest.yaml`, `routing.yaml`, `context-policy.yaml`, `collaboration.yaml`, `output-schema.yaml`, `tests/README.md`, `CHANGELOG.md`; `AGENT.md` reescrito como documento narrativo que referencia, nunca duplica, esos campos.
+- 7 tests nuevos de contrato de agente (manifest/routing/context-policy/collaboration/output-schema/no-execution-capability/no-delegation-loop).
+- `.gitattributes` — fuerza `eol=lf` en `*.sh/*.bash/*.py/*.yaml/*.yml/*.json/*.md`.
+- `tests/test_no_crlf_in_shell_scripts.sh` — falla el build si cualquier `*.sh`/`*.bash` contiene CRLF o carece de shebang bash válido.
+- `tests/run_all.py` — runner de tests portable en Python 3 (stdlib only), coherente con `tests/run-all.sh`, no lo reemplaza.
+
+### Changed
+
+- `skills/performance/statspack-analysis` (`v2.0.0`) — capability map explícito por sección (`statspack_capabilities:`), 3 patrones de correlación certificados nuevos.
+- `skills/performance/awr-analysis` (`v1.1.0`), `skills/performance/addm-analysis` (`v1.1.0`), `skills/performance/execution-plan` (`v1.1.0`) — añadida ruta de ingesta de reporte de archivo vía el parser correspondiente, sin tocar la ruta de query en vivo existente.
+- `tests/run-all.sh` — agrega totales (`N/M tests OK`) y lista de nombres de tests fallidos al resumen; preserva el comportamiento existente (no fail-fast, exit code agregado).
+- `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` — Statspack ya no se limita a "sólo wait events"; nota actualizada para reflejar cobertura multi-sección con `capability_status` por sección.
+- **Normalización de line endings**: 85 archivos `tests/test_*.sh` pre-existentes (de Foundation Hardening/Fase 2/Oracle Core Compatibility Hardening) contenían CRLF real, no detectado hasta ahora porque el chequeo original carecía de la flag `-U`/`--binary` de grep (en Git Bash/MSYS, grep descarta CR de fin de línea antes de matchear salvo que se le indique explícitamente no hacerlo). Normalizados a LF sin alterar contenido (verificado byte a byte, `diff` vacío tras `tr -d '\r'`).
+
+### Known limitations
+
+- `awr_parser.py` es una primera versión funcional — alineación de columnas numéricas imperfecta en algunas filas de wait events; no cubre todos los formatos históricos de AWR.
+- El parser de ejecución de planes requiere la firma exacta `"| Id  | Operation"`; formatos de `DBMS_XPLAN` no tabulares devuelven `UNSUPPORTED_FORMAT` en vez de un intento de mejor esfuerzo.
+- Ningún parser genera evidencia desde un reporte que el DBA no haya adjuntado — la ruta de query en vivo sigue siendo la única fuente de evidencia sin insumo externo.
+
+Segunda capa funcional del e-stack, sobre baseline `v0.2.0-oracle-core`. Ver `docs/PHASE_3_ORACLE_PERFORMANCE.md` para el reporte de cierre completo.
+
+### Added
+
+- `agents/oracle-performance-analyst/AGENT.md` (`v3.0.0`) — reestructurado a carpeta profunda; Licensing Gate formalizado, Performance workflow, Correlation model con ejemplos certificados, SQL text policy, Manual command generation (nunca `KILL SESSION`/`ALTER SYSTEM` ejecutado).
+- 31 skills `performance/*` completamente materializadas (`SKILL.md` + `manifest.yaml`), incluyendo 3 previamente ni siquiera `registered` (`memory`, `commit-redo`, `trending`).
+- `queries/performance/` — 21 queries certificadas (Query Contract v2 + Query Variant Contract), todas `implicit_full_range`, sin discrepancias metadata↔SQL.
+- `Q-PERF-WAIT-STATSPACK-001` materializada (antes sólo `registered`) — Statspack como ruta de primera clase, no fallback de segunda categoría.
+- 11 fixtures nuevas (`tests/fixtures/{10g-statspack,11g-statspack,12c-awr,19c-standalone-performance,19c-rac-multi-instance,19c-no-diagnostic-pack,19c-blocking,19c-high-cpu,19c-high-io,19c-log-file-sync,23ai-modern-performance}.yaml`).
+- 47 tests nuevos: AWR (9), Statspack (5), ruta estándar sin licencia (5), SQL performance (6), memoria (4), concurrencia (4), I/O (3), paralelismo (2), seguridad (8), version-support (1).
+- `docs/PHASE_3_ORACLE_PERFORMANCE.md` — reporte de cierre de fase.
+- 9 tools MCP nuevas en `mcp/tool-manifest.md` (`get_db_time`, `get_execution_plan`, `get_memory_status`, `get_io_waits`, `get_active_temp_usage`, `get_blocking_sessions`, `get_parallel_sessions`, `get_redo_activity`; `get_top_sql_metrics` materializada de `registered` a `active`).
+
+### Changed
+
+- `Q-PERF-WAIT-AWR-001`/`Q-PERF-WAIT-ASH-001` relocalizadas de `queries/` plano a `queries/performance/waits/` (mismos IDs, sin duplicar).
+- `skills/performance/wait-events` reestructurado de `wait-events.md` plano a `wait-events/SKILL.md` + `manifest.yaml` (v2.0.0) — extendido con ruta dinámica sin licencia, no reconstruido.
+- `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` — `Performance` `PARTIAL → SUPPORTED`, `Statspack` `FOUNDATION_ONLY → SUPPORTED` (10g–23ai); `AWR`/`ASH`/`ADDM` sin cambio (`LICENSE_DEPENDENT`, no es limitación del e-stack).
+- `workflows/analyze.md` extendido con mapeo explícito `performance`/`sql`/`memory`/`io`/`waits` → `oracle-performance-analyst`, sin slash commands nuevos.
+- `workflows/awr.md` — gate de versión actualizado (Statspack `FOUNDATION_ONLY → SUPPORTED`).
+- `policies/licensing-awareness-policy.md`, `queries/REGISTRY.md` — referencias de ruta actualizadas tras la relocalización de `wait-events`.
+
+### Known limitations
+
+Ver `docs/PHASE_3_ORACLE_PERFORMANCE.md#known-limitations`. En resumen: parser local de AWR HTML/texto externo documentado pero no implementado (evidencia proviene de queries certificadas contra el ambiente vivo, no de parsear un archivo); Statspack cubre sólo wait events (Load Profile/SQL statistics vía Statspack quedan para `/change query` futuro); `V$PQ_SYSSTAT` agregado no materializado; ADDM se interpreta sólo cuando el DBA provee su output, nunca generado por el e-stack.
+
 ## [0.1.0] — 2026-09-02 — Fase 1: Foundation
 
 ### Added
@@ -58,7 +114,7 @@ Pass de endurecimiento sobre el mismo baseline de Fase 1 (no avanza a Fase 2). V
 
 Las mismas de Fase 1 (Gateway MCP/collectors/generadores de documentos son contrato, no runtime). Adicional: `test_no_ambiguous_skill_references.sh` es una heurística de grep sobre backticks, no un parser real de Markdown — puede tener falsos negativos ante formatos de referencia no anticipados; se refuerza en Fase 2+ si aparecen casos reales.
 
-## [Unreleased] — 2026-09-03 — Oracle Core Compatibility Hardening
+## [0.2.0-oracle-core] — 2026-09-03 — Oracle Core Compatibility Hardening
 
 Pasada de endurecimiento sobre `v0.2.0-oracle-core` (branch `phase/2-oracle-core`), previa a aprobar ese baseline — NO una reconstrucción de Fase 2. Ver `docs/PHASE_2_COMPATIBILITY_HARDENING.md` para el reporte de cierre completo.
 

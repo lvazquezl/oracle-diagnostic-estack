@@ -1,0 +1,25 @@
+name: parallelism
+display_name: "Parallelism"
+id: performance/parallelism
+version: 1.0.0
+domain: performance
+status: active
+
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac]
+container_scope: ANY_CONTAINER
+database_role_scope: PRIMARY
+
+license_requirements: none
+
+required_evidence:
+  - query_id: Q-PERF-PARALLEL-001
+optional_evidence:
+  - query_id: Q-PERF-TOPSQL-CURRENT-001
+  - query_id: Q-PERF-TOPSQL-001
+
+data_sensitivity: LOW
+context_budget: LOW
+
+related_skills: [performance/db-cpu, performance/io, performance/top-sql, performance/concurrency]

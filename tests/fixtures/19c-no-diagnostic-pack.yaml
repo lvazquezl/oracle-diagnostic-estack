@@ -1,0 +1,69 @@
+# Fixture: Oracle 19c Standalone CDB — sin Diagnostics Pack confirmado (ruta estándar/dinámica)
+# Usada por: test_performance_without_diagnostic_pack.sh, test_standard_path_db_cpu.sh,
+#            test_standard_path_waits.sh, test_standard_path_top_sql_metrics.sh, test_standard_path_memory.sh
+fixture_id: FX-19c-no-diagnostic-pack
+
+target_profile:
+  schema_version: "2.0.0"
+  target_id: "fixture-19c-perf-no-diagpack"
+  database:
+    name: "CDB19CNODIAG"
+    unique_name: "CDB19CNODIAG"
+    dbid: "9734567890"
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "cdb19cnodiag", number: 1, host: "HOST_TOKEN_025"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities:
+    rac: UNSUPPORTED
+    asm: UNSUPPORTED
+    multitenant: SUPPORTED
+    dataguard: UNSUPPORTED
+    awr: LICENSE_RESTRICTED
+    ash: LICENSE_RESTRICTED
+  pdbs: ["APPPDB"]
+  discovery: {timestamp: "2026-01-16T09:25:00Z", evidence_refs: [EVD-FX-025], confidence: FACT}
+
+license_confirmed: {diagnostics_pack: false, tuning_pack: false}
+statspack_installed: false
+
+compatibility_schema:
+  available_views: [V$INSTANCE, GV$INSTANCE, V$DATABASE, V$ACTIVE_INSTANCES, V$PARAMETER,
+    GV$PARAMETER, V$SPPARAMETER, V$SESSION, GV$SESSION, V$PROCESS, V$RESOURCE_LIMIT,
+    V$SYS_TIME_MODEL, V$SQLSTATS, V$SQL_PLAN, V$SGA, V$SGAINFO, V$SGASTAT, V$PGASTAT, V$SYSSTAT,
+    V$LIBRARYCACHE, V$ROWCACHE, V$SYSTEM_EVENT, V$FILESTAT, V$DATAFILE, V$SORT_USAGE, V$LOCK,
+    V$PX_SESSION]
+    # DBA_HIST_*/V$ACTIVE_SESSION_HISTORY/STATS$* no listadas: diagnostics_pack: false y
+    # statspack_installed: false — ruta estándar dinámica es la única disponible.
+  available_columns:
+    "V$INSTANCE.version_full": true      # 18.0+ (columna existe; el gate real aquí es de licencia, no de versión)
+    "V$INSTANCE.instance_role": true     # 11.0+
+    "V$DATABASE.cdb": true                # 12.1+
+    "V$ACTIVE_INSTANCES.con_id": true     # 12.1+
+    "V$SESSION.con_id": true              # 12.1+
+    "DBA_HIST_SYSTEM_EVENT.time_waited_micro_fg": false   # AWR no aplica aquí (sin Diagnostics Pack)
+
+mock_evidence:
+  - query_id: Q-PERF-DBTIME-CURRENT-001
+    result:
+      db_time_sec_since_startup: 12000.0
+      db_cpu_sec_since_startup: 7000.0
+      uptime_sec: 2592000.0
+  - query_id: Q-PERF-IO-001
+    result:
+      - {event: "db file sequential read", total_waits: 850000, total_wait_time_sec: 3200.0}
+  - query_id: Q-PERF-TOPSQL-CURRENT-001
+    result:
+      - {sql_id: "pqr345stu05", plan_hash_value: 3333333333, executions: 40000, elapsed_sec: 1800.0, cpu_sec: 1500.0, buffer_gets: 2000000, disk_reads: 90000, rows_processed: 400000}
+
+expected_findings:
+  - category: performance-standard-path
+    severity: LOW
+    confidence: FACT
+    reason: "AWR/ASH LICENSE_RESTRICTED, Statspack no instalado (statspack_installed: false) — capability_status: UNDETERMINED para statspack-analysis; ruta estándar (V$SYS_TIME_MODEL/V$SQLSTATS/V$SYSTEM_EVENT) sí produce análisis útil sin licencia"

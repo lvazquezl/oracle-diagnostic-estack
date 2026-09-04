@@ -1,0 +1,34 @@
+STATSPACK report for
+
+Database    DB Id    Instance     Inst Num  Startup Time    Release     RAC
+~~~~~~~~ ----------- ------------ -------- --------------- ----------- ---
+ORCLCOMM   8234567890 orclcomm             1 16-Jan-26 08:00 19.21.0.0.0 NO
+
+Snapshot     Snap Id      Snap Time      Sessions Curs/Sess
+~~~~~~~~~~ --------- ------------------ -------- ---------
+Begin Snap:      700 16-Jan-26 08:00:00       50        6.0
+  End Snap:      701 16-Jan-26 09:00:00       52        6.2
+   Elapsed:               60.00 (mins)
+   DB Time:              150.00 (mins)
+
+Load Profile
+~~~~~~~~~~~~                            Per Second       Per Transaction
+                                    ---------------       ---------------
+                  Redo size:            890000.00                 45.00
+                 User calls:              5000.00                  0.25
+               Transactions:             19800.00
+
+Top 5 Timed Events                                                Avg %Total
+~~~~~~~~~~~~~~~~~~                                               wait   Call
+Event                                            Waits    Time (s)   (ms)   Time
+----------------------------------------- ------------ ----------- ------ ------
+log file sync                                  980000       6800      7   68.0
+log file parallel write                        980000       1200      1   12.0
+
+Instance Activity Stats
+~~~~~~~~~~~~~~~~~~~~~~~~
+Statistic                                    Total    per Second   per Trans
+--------------------------------- ---------------- ------------- -----------
+user commits                                1188000         330.0         1.0
+user rollbacks                                  300           0.08        0.00
+redo entries                               45000000       12500.0        37.9

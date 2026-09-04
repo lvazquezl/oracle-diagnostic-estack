@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><title>WORKLOAD REPOSITORY report for CDB19CPERF</title></head>
+<body>
+<h1>WORKLOAD REPOSITORY report for</h1>
+<table border="1">
+<tr><th>DB Name</th><th>DB Id</th><th>Instance</th><th>Release</th></tr>
+<tr><td>CDB19CPERF</td><td>9234567890</td><td>cdb19cperf</td><td>19.21.0.0.0</td></tr>
+</table>
+
+<p><b>Elapsed:</b> 60.02 (mins) <b>DB Time:</b> 200.30 (mins)</p>
+
+<table border="1">
+<tr><th>DB Time(s):</th><td>12018.00</td></tr>
+<tr><th>DB CPU(s):</th><td>7200.00</td></tr>
+</table>
+
+<h2>Top 10 Foreground Events by Total Wait Time</h2>
+<table border="1" summary="Top 10 Foreground Events">
+<tr><th>Event</th><th>Waits</th><th>Total Wait Time (sec)</th><th>Avg Wait</th><th>% DB time</th></tr>
+<tr><td>DB CPU</td><td></td><td>7200</td><td></td><td>60.0</td></tr>
+<tr><td>db file sequential read</td><td>180000</td><td>4200</td><td>23ms</td><td>35.0</td></tr>
+<tr><td>log file sync</td><td>90000</td><td>600</td><td>7ms</td><td>5.0</td></tr>
+</table>
+
+<h2>SQL ordered by Elapsed Time</h2>
+<table border="1" summary="SQL ordered by Elapsed Time">
+<tr><th>Elapsed Time (s)</th><th>Executions</th><th>%Total</th><th>SQL Id</th></tr>
+<tr><td>2345.67</td><td>2000</td><td>19.5</td><td>awr123abc0001</td></tr>
+</table>
+</body>
+</html>

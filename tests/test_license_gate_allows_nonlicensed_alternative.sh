@@ -12,10 +12,10 @@ else
   FAIL=1
 fi
 
-if grep -qi 'Statspack' "$ROOT/skills/performance/wait-events.md"; then
-  echo "[PASS] skills/performance/wait-events.md implementa el fallback AWR->Statspack"
+if grep -qi 'Statspack' "$ROOT/skills/performance/wait-events/SKILL.md"; then
+  echo "[PASS] skills/performance/wait-events/SKILL.md implementa el fallback AWR->Statspack"
 else
-  echo "[FAIL] skills/performance/wait-events.md no implementa el fallback AWR->Statspack"
+  echo "[FAIL] skills/performance/wait-events/SKILL.md no implementa el fallback AWR->Statspack"
   FAIL=1
 fi
 
