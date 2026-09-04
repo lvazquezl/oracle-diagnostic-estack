@@ -1,0 +1,45 @@
+# Fixture: Oracle 19c RAC — TNS-12170 con SCAN/listener/servicio OK (escenario a: investigar red/cliente/firewall)
+# Usada por: network/tns-errors, network/connection-path, network/timeouts
+fixture_id: FX-19c-tns-timeout-scenario
+
+target_profile:
+  schema_version: "2.1.0"
+  target_id: "fixture-19c-tns-timeout"
+  database: {name: "ORCL19CTO", unique_name: "ORCL19CTO", dbid: "1920223330"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: rac, multitenant_mode: cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19cto1", number: 1, host: "HOST_TOKEN_801"}
+  cluster: {detected: true, instance_count: 2}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: SUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  rac: {enabled: true, node_count: 2, instances: ["INSTANCE_TOKEN_001", "INSTANCE_TOKEN_002"]}
+  gi: {version: "19.21.0.0.0", home: "PATH_TOKEN_008", cluster_name: "CLUSTER_TOKEN_008"}
+  asm: {enabled: true, instance_count: 2}
+  network: {scan_name: "SCAN_TOKEN_008", scan_ips: ["IP_TOKEN", "IP_TOKEN", "IP_TOKEN"], listener_ports: [1521]}
+  discovery: {timestamp: "2026-01-17T09:00:00Z", evidence_refs: [EVD-FX-801], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$INSTANCE, GV$INSTANCE, V$DATABASE, V$ACTIVE_INSTANCES, GV$SERVICES,
+    GV$ACTIVE_SERVICES, GV$SESSION, GV$CLUSTER_INTERCONNECTS, GV$GES_STATISTICS, GV$GCS_STATISTICS,
+    GV$ASM_INSTANCE, V$ASM_DISKGROUP_STAT, V$ASM_DISK, GV$ASM_OPERATION]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+collector_output:
+  get_name_resolution: {resolution_status: RESOLVED, resolved_ip_count: 3}
+  get_listener_configuration: {services_registered: ["orclsvc1"]}
+  reported_error: "TNS-12170"
+
+expected_findings:
+  - category: connection-path
+    severity: MEDIUM
+    confidence: HYPOTHESIS
+    reason: "TNS-12170 + SCAN resuelve + listener online + servicio registrado → clasificación NETWORK_PATH/FIREWALL_SUSPECTED sólo tras descartar name-resolution y listener (# 51) — recomendación manual al equipo de red"

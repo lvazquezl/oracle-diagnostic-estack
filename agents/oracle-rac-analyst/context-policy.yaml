@@ -1,0 +1,20 @@
+minimum_context: "Target Profile (architecture.cluster_mode, cluster.instance_count) + la pregunta puntual — nunca la conversación completa."
+
+evidence_by_reference: true
+evidence_by_reference_rule: "Toda evidencia de topología/recursos/servicios se referencia por EVD-*, nunca se reenvía el dump crudo de crsctl/srvctl entre agentes."
+
+top_n:
+  abnormal_resources_default: 10
+  services_default: 10
+  imbalanced_instances_default: 10
+  configurable: true
+
+no_full_crsctl_dump: true
+no_full_crsctl_dump_rule: "Nunca se envía la salida completa de 'crsctl stat res -t' al modelo — el collector la parsea localmente a resource/type/target/state/server y sólo las anomalías (no ONLINE-as-expected) se detallan; el resto se resume como conteo."
+no_full_listener_log: true
+no_full_cluster_log: true
+
+context_budget:
+  relative_level: MEDIUM_HIGH
+  scaling_rule: "Escala con node_count × resource_count; se agrega por nodo/tipo de recurso antes de consolidar, nunca se envía una fila por recurso ONLINE sin anomalía."
+  reuse_rule: "Reutiliza el Target Profile ya publicado por oracle-discovery-analyst — nunca vuelve a determinar cluster_mode/instance_count por su cuenta."

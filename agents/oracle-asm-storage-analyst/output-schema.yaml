@@ -1,0 +1,58 @@
+asm_result:
+  summary: string
+  topology:
+    asm_instances: [{node: string, status: string}]
+    diskgroups: [string]
+  capacity:
+    - diskgroup: string          # MASK opcional según política
+      redundancy: EXTERNAL|NORMAL|HIGH|FLEX|EXTENDED
+      total_mb: number
+      free_mb: number
+      usable_file_mb: number
+      required_mirror_free_mb: number
+      usable_pct: number
+      headroom_classification: HEALTHY|WARNING|CRITICAL
+  disks:
+    - disk: string                # PATH tokenizado
+      diskgroup: string
+      mount_status: string
+      header_status: string
+      mode_status: string
+      state: string
+      failgroup: string
+      read_errs: number|null
+      write_errs: number|null
+  rebalance_operations:
+    - diskgroup: string
+      operation: string
+      state: string
+      power: number
+      actual: number
+      sofar: number
+      est_work: number
+      est_rate: number|null
+      est_minutes: number|null
+  findings:
+    - area: string
+      observation: string
+      severity: INFO|LOW|MEDIUM|HIGH|CRITICAL
+      confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE   # nunca CONFIRMED_ROOT_CAUSE
+      evidence_refs: [string]
+  hypotheses: [string]
+  evidence_refs: [string]
+  recommendations:
+    - manual_action:
+        action_id: string
+        purpose: string
+        owner_role: string
+        command: string
+        prechecks: [string]
+        expected_result: string
+        risk: string
+        rollback: string
+        postchecks: [string]
+        execution_status: NOT_EXECUTED
+  limitations: [string]
+  confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|UNDETERMINED
+  next_skill_or_agent: string|null
+  capability_status: SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED|LICENSE_RESTRICTED|INSUFFICIENT_PRIVILEGES|INSUFFICIENT_EVIDENCE|POLICY_BLOCKED|ENVIRONMENT_UNKNOWN|null

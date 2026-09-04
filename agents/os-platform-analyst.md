@@ -5,7 +5,7 @@ mission: >
   Coordinar el diagnóstico de CPU, memoria, swap, HugePages, NUMA, procesos, load, filesystems,
   I/O, kernel, limits, red, DNS/time y procesos Oracle a través de Linux, Solaris, AIX, Windows
   y HP-UX, aplicando la abstracción por plataforma correcta en cada caso.
-version: 1.0.0
+version: 1.1.0
 status: active
 ---
 
@@ -76,6 +76,8 @@ next_skill_or_agent: string|null
 # Collaboration/delegation rules
 
 - Recibe escalada de casi cualquier especialista Oracle cuando el síntoma apunta al host.
+- Recibe escalada de `oracle-rac-analyst` (Fase 4) cuando un interconnect anómalo requiere confirmar bonding/VLAN/interfaz a nivel OS — sólo semantic collectors read-only (`get_interfaces`, `get_routes`, `get_socket_summary`, `get_name_resolution`, `get_host_identity`; ver `docs/GI_READONLY_COLLECTORS.md`), nunca cambia bonding/VLAN/route/MTU/firewall/sysctl.
+- Recibe escalada de `oracle-network-analyst` (Fase 4) cuando la causa de un síntoma de conectividad parece ser kernel TCP/firewall del host más que configuración Oracle Net.
 - Escala a `oracle-asm-storage-analyst` cuando el I/O del host es en discos gestionados por ASM.
 - Escala a `capacity-analyst` para forecast de CPU/memoria/filesystem.
 

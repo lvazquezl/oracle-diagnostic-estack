@@ -1,0 +1,27 @@
+may_delegate_to: [oracle-asm-storage-analyst, oracle-network-analyst, os-platform-analyst, oracle-performance-analyst, incident-root-cause-analyst, change-advisor]
+
+may_receive_from: [oracle-discovery-analyst, oracle-performance-analyst, oracle-dba-analyst]
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+
+escalation_conditions:
+  - condition: "recurso Clusterware crítico (OCR, voting, VIP, SCAN) reportado OFFLINE sin ventana de mantenimiento conocida"
+    action: "escalar a incident-root-cause-analyst, severity HIGH"
+    rationale: "riesgo de pérdida de disponibilidad del cluster, requiere triage inmediato del DBA/Grid admin"
+  - condition: "indicios de node eviction reciente (voting disk I/O issue, CSS misscount) en logs correlacionados"
+    action: "escalar a incident-root-cause-analyst inmediatamente, severity HIGH"
+    rationale: "eviction ya ocurrida o inminente es un evento de disponibilidad, no un hallazgo de tuning"
+  - condition: "desbalance de sesión correlaciona con I/O elevado en un disk group ASM compartido"
+    action: "delegar a oracle-asm-storage-analyst con evidence_refs, no reconstruir el análisis ASM"
+  - condition: "síntoma de conectividad (TNS-125xx, SCAN no resuelve) sin evidencia de topología Clusterware anómala"
+    action: "delegar a oracle-network-analyst"
+  - condition: "gc waits dominantes requieren cuantificar impacto en DB Time"
+    action: "delegar a oracle-performance-analyst con evidence_refs de la topología ya determinada"
+  - condition: "interconnect anómalo requiere confirmar bonding/VLAN a nivel OS"
+    action: "delegar a os-platform-analyst"
+  - condition: "hallazgo aprobado por el DBA requiere ejecución (ej. relocate de servicio, rebalance ASM)"
+    action: "generar manual_action y, si el DBA aprueba, delegar la propuesta formal a change-advisor — nunca ejecutar"
+
+no_delegation_loop_rule: "oracle-rac-analyst nunca delega a oracle-dba-analyst ni oracle-discovery-analyst — ambos son fuente, nunca destino, de su Task Package (ver routing.yaml)."
+
+manual_command_rule: "Todo comando srvctl/crsctl generado como recomendación usa el Manual Action Contract (docs/PHASE_4_RAC_GI_ASM_NETWORK.md#manual-action-contract) con execution_status: NOT_EXECUTED — nunca se invoca."

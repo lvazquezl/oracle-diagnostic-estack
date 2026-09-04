@@ -1,0 +1,8 @@
+SCAN name: cluster1-scan, Network: 1
+Subnet IPv4: 10.0.0.0/255.255.255.0/eth0, static
+SCAN 1 IPv4 VIP: 10.0.0.101
+SCAN VIP is enabled.
+SCAN 2 IPv4 VIP: 10.0.0.102
+SCAN VIP is enabled.
+SCAN 3 IPv4 VIP: 10.0.0.103
+SCAN VIP is enabled.

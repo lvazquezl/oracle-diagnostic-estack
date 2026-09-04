@@ -13,7 +13,7 @@ else
   FAIL=1
 fi
 
-F2="$ROOT/queries/Q-RAC-SESSION-DIST-001.md"
+F2="$ROOT/queries/rac/Q-RAC-SESSION-DIST-001.md"
 if [ -f "$F2" ] && grep -q '^supported_oracle_versions: \[11gR2' "$F2"; then
   echo "[PASS] Q-RAC-SESSION-DIST-001 declara 11gR2 como mínimo"
 else

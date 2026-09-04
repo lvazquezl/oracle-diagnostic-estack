@@ -6,7 +6,7 @@ status: active
 
 # Trigger/intent
 
-Comando `/healthcheck`. Solicitud general de salud de un target Oracle (todo el ambiente o un módulo específico).
+Comando `/healthcheck`. Solicitud general de salud de un target Oracle (todo el ambiente o un módulo específico). Invocaciones acotadas por módulo (Fase 4): `/healthcheck rac` (orquesta `rac/healthcheck`), `/healthcheck asm` (orquesta `asm/healthcheck`), `/healthcheck network` (orquesta `network/healthcheck`) — cada una activa únicamente el agente correspondiente, sin recorrer Oracle Core completo.
 
 # Prerequisites
 
@@ -26,8 +26,9 @@ Target identificado (alias de conexión read-only ya configurado en `config/allo
 
 # Activation conditions
 
-- RAC → activa `oracle-rac-analyst` sólo si `architecture.cluster_mode = rac` (Target Profile).
-- ASM → activa `oracle-asm-storage-analyst` sólo si `architecture.storage_mode = asm`.
+- RAC → activa `oracle-rac-analyst` sólo si `architecture.cluster_mode = rac` (Target Profile; ver `target_profile.rac.enabled`).
+- ASM → activa `oracle-asm-storage-analyst` sólo si `architecture.storage_mode = asm` (`target_profile.asm.enabled`).
+- Network → `oracle-network-analyst` se activa junto con `oracle-rac-analyst` en `/healthcheck rac`/`/healthcheck` completo cuando hay SCAN configurado, o de forma independiente vía `/healthcheck network`.
 - Data Guard → activa `oracle-dataguard-analyst` sólo si discovery confirma standby asociado o `database_role != primary` sin standby (para reportar el gap).
 - CDB → activa `oracle-multitenant-analyst` sólo si `architecture.multitenant_mode = cdb`.
 - El resto de agentes opcionales sólo se activan si el DBA los pide explícitamente o si `oracle-dba-analyst` reporta un hallazgo que los amerita (ver `Escalation`).

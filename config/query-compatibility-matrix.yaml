@@ -103,7 +103,7 @@ queries:
 
   # --- Queries pre-existentes (Foundation Hardening) revisadas por completitud ---
 
-  Q-RAC-SESSION-DIST-001: {file: queries/Q-RAC-SESSION-DIST-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$SESSION, GV$SERVICES], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-RAC-SESSION-DIST-001: {file: queries/rac/Q-RAC-SESSION-DIST-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$SESSION, GV$SERVICES], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
 
   # --- Fase 3 (Oracle Performance) ---
 
@@ -128,6 +128,33 @@ queries:
   Q-PERF-LOCKS-001: {file: queries/performance/concurrency/Q-PERF-LOCKS-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$LOCK, V$SESSION], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE}
   Q-PERF-PARALLEL-001: {file: queries/performance/parallel/Q-PERF-PARALLEL-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$PX_SESSION], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-PERF-REDO-001: {file: queries/performance/redo/Q-PERF-REDO-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SYSSTAT], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
+
+  # --- Fase 4 (RAC/GI/ASM/Network) ---
+
+  Q-RAC-TOPOLOGY-001:
+    file: queries/rac/Q-RAC-TOPOLOGY-001.md
+    variants:
+      - {variant_id: Q-RAC-TOPOLOGY-001-V1, label: pre_multitenant, min: "11.2", max: "11.2", container_scope: NOT_APPLICABLE}
+      - {variant_id: Q-RAC-TOPOLOGY-001-V2, label: multitenant_aware, min: "12.1", max: latest, container_scope: NOT_APPLICABLE}
+    required_views: [GV$INSTANCE, V$ACTIVE_INSTANCES]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+
+  Q-RAC-SERVICES-001:
+    file: queries/rac/Q-RAC-SERVICES-001.md
+    variants:
+      - {variant_id: Q-RAC-SERVICES-001-V1, label: active_services_aware, min: "11.2", max: latest, container_scope: NOT_APPLICABLE}
+    required_views: [GV$SERVICES, GV$ACTIVE_SERVICES]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+
+  Q-RAC-INTERCONNECT-001: {file: queries/rac/Q-RAC-INTERCONNECT-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$CLUSTER_INTERCONNECTS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-RAC-GES-GCS-001: {file: queries/rac/Q-RAC-GES-GCS-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$GES_STATISTICS, GV$GCS_STATISTICS, GV$INSTANCE_CACHE_TRANSFER], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-ASM-TOPOLOGY-001: {file: queries/asm/Q-ASM-TOPOLOGY-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$ASM_INSTANCE, V$ASM_DISKGROUP_STAT], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ASM-DISKS-001: {file: queries/asm/Q-ASM-DISKS-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [V$ASM_DISK], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-ASM-REBALANCE-001: {file: queries/asm/Q-ASM-REBALANCE-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$ASM_OPERATION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
 
 notes: >
   "implicit_full_range" significa: la query no requirió split porque su SQL, verificado contra

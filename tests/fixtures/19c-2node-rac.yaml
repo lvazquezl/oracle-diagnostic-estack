@@ -1,0 +1,49 @@
+# Fixture: Oracle 19c 2-node RAC — caso estándar moderno
+# Usada por: rac/topology, rac/services, rac/load-balancing, rac/healthcheck
+fixture_id: FX-19c-2node-rac
+
+target_profile:
+  schema_version: "2.1.0"
+  target_id: "fixture-19c-2node-rac"
+  database: {name: "ORCL19C", unique_name: "ORCL19C", dbid: "1912223330"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: rac, multitenant_mode: cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19c1", number: 1, host: "HOST_TOKEN_201"}
+  cluster: {detected: true, instance_count: 2}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: SUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  rac: {enabled: true, node_count: 2, instances: ["INSTANCE_TOKEN_001", "INSTANCE_TOKEN_002"]}
+  gi: {version: "19.21.0.0.0", home: "PATH_TOKEN_002", cluster_name: "CLUSTER_TOKEN_002"}
+  asm: {enabled: true, instance_count: 2}
+  network: {scan_name: "SCAN_TOKEN_002", scan_ips: ["IP_TOKEN", "IP_TOKEN", "IP_TOKEN"], listener_ports: [1521]}
+  discovery: {timestamp: "2026-01-11T09:00:00Z", evidence_refs: [EVD-FX-201], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$INSTANCE, GV$INSTANCE, V$DATABASE, V$ACTIVE_INSTANCES, GV$SERVICES,
+    GV$ACTIVE_SERVICES, GV$SESSION, GV$CLUSTER_INTERCONNECTS, GV$GES_STATISTICS, GV$GCS_STATISTICS,
+    GV$ASM_INSTANCE, V$ASM_DISKGROUP_STAT, V$ASM_DISK, GV$ASM_OPERATION]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-RAC-TOPOLOGY-001
+    result:
+      - {instance_number: 1, instance_name: "orcl19c1", host_name: "HOST_TOKEN_201", status: "OPEN", inst_number: 1, inst_name: "orcl19c1", con_id: null}
+      - {instance_number: 2, instance_name: "orcl19c2", host_name: "HOST_TOKEN_202", status: "OPEN", inst_number: 2, inst_name: "orcl19c2", con_id: null}
+  - query_id: Q-RAC-SERVICES-001
+    result:
+      - {service_name: "orclsvc1", clb_goal: "LONG", rlb_goal: "SERVICE_TIME", active_instance: 1}
+
+expected_findings:
+  - category: topology
+    severity: INFO
+    confidence: FACT
+    reason: "2 nodos activos, con_id presente (Variant V2, 12.1+), servicio balanceado según CLB/RLB goal declarado"

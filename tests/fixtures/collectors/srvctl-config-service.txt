@@ -1,0 +1,19 @@
+Service name: orclsvc1
+Service is enabled
+Server pool: orcl
+Cardinality: 2
+Disconnect: false
+Service role: PRIMARY
+Management policy: AUTOMATIC
+DTP transaction: false
+AQ HA notifications: false
+Failover type: SELECT
+Failover method: BASIC
+TAF failover retries: 0
+TAF failover delay: 0
+Connection Load Balancing Goal: LONG
+Runtime Load Balancing Goal: SERVICE_TIME
+TAF policy specification: NONE
+Edition:
+Preferred instances: orcl1
+Available instances: orcl2

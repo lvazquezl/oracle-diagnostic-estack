@@ -1,0 +1,16 @@
+Status of Oracle Cluster Registry is as follows :
+	 Version                  :          4
+	 Total space (kbytes)     :     614328
+	 Used space (kbytes)      :       3320
+	 Available space (kbytes) :     611008
+	 ID                       : 1234567890
+	 Device/File Name         :      +DATA
+				    Device/File integrity check succeeded
+	 Device/File Name         :     +VOTE1
+				    Device/File integrity check succeeded
+
+	 Device/File not configured
+
+	 Cluster registry integrity check succeeded
+
+	 Logical corruption check succeeded

@@ -1,0 +1,17 @@
+minimum_context: "Target Profile (network.scan_name/scan_ips cuando existan) + la pregunta puntual."
+
+evidence_by_reference: true
+
+top_n:
+  listener_handlers_default: 10
+  dns_anomalies_default: 10
+  configurable: true
+
+no_full_listener_log: true
+no_full_listener_log_rule: "Nunca se envía listener.log completo — sólo el fragmento acotado por ventana de tiempo relevante al síntoma, ya parseado localmente a errores/timeouts estructurados."
+no_config_files_with_credentials: true
+
+context_budget:
+  relative_level: LOW_MEDIUM
+  scaling_rule: "Configuración de red es compacta; logs se acotan por ventana de tiempo."
+  reuse_rule: "Reutiliza el Target Profile ya publicado — nunca vuelve a determinar SCAN/listener por su cuenta si ya está cacheado."

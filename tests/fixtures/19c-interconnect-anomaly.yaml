@@ -1,0 +1,51 @@
+# Fixture: Oracle 19c RAC — interfaz de interconnect declarada distinta de la reportada activa por Oracle
+# Usada por: rac/interconnect, rac/gi-network-interfaces, network/interconnect
+fixture_id: FX-19c-interconnect-anomaly
+
+target_profile:
+  schema_version: "2.1.0"
+  target_id: "fixture-19c-interconnect-anomaly"
+  database: {name: "ORCL19CIA", unique_name: "ORCL19CIA", dbid: "1924223330"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: rac, multitenant_mode: cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19cia1", number: 1, host: "HOST_TOKEN_1201"}
+  cluster: {detected: true, instance_count: 2}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: SUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  rac: {enabled: true, node_count: 2, instances: ["INSTANCE_TOKEN_001", "INSTANCE_TOKEN_002"]}
+  gi: {version: "19.21.0.0.0", home: "PATH_TOKEN_012", cluster_name: "CLUSTER_TOKEN_012"}
+  asm: {enabled: true, instance_count: 2}
+  network: {scan_name: "SCAN_TOKEN_012", scan_ips: ["IP_TOKEN"], listener_ports: [1521]}
+  discovery: {timestamp: "2026-01-21T09:00:00Z", evidence_refs: [EVD-FX-1201], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$INSTANCE, GV$INSTANCE, V$DATABASE, V$ACTIVE_INSTANCES, GV$SERVICES,
+    GV$ACTIVE_SERVICES, GV$SESSION, GV$CLUSTER_INTERCONNECTS, GV$GES_STATISTICS, GV$GCS_STATISTICS,
+    GV$ASM_INSTANCE, V$ASM_DISKGROUP_STAT, V$ASM_DISK, GV$ASM_OPERATION]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-RAC-INTERCONNECT-001
+    result:
+      - {inst_id: 1, name: "ib0", ip_address: "IP_TOKEN", is_public: "NO", source: "Oracle Cluster Repository"}
+  - query_id: Q-RAC-GES-GCS-001
+    result:
+      - {inst_id: 1, ges_stat: "global lock async converts", ges_value: 250000}
+
+collector_output:
+  get_network_configuration: {interfaces: [{interface: "eth1", subnet: "IP_TOKEN", classification: "cluster_interconnect"}]}
+
+expected_findings:
+  - category: interconnect
+    severity: MEDIUM
+    confidence: HYPOTHESIS
+    reason: "oifcfg declara eth1 como cluster_interconnect pero GV$CLUSTER_INTERCONNECTS reporta ib0 activo — discrepancia real detectada; sube a PROBABLE_CAUSE sólo si network/interconnect confirma la discrepancia también a nivel OS (bonding/VLAN)"

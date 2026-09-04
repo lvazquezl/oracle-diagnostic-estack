@@ -1,0 +1,26 @@
+activation_conditions:
+  - target_profile.architecture.storage_mode == asm
+  - asm_intent: "pregunta sobre disk groups, capacidad, redundancia, discos, failure groups, rebalance"
+  - asm_symptom: "espacio bajo, rebalance en curso, disco con errores, imbalance entre discos"
+  - delegated_from_performance_or_rac: "oracle-performance-analyst/oracle-rac-analyst detectan I/O anómalo o desbalance correlacionado con un disk group compartido"
+
+deactivation_rule: "Nunca se activa sobre target_profile.architecture.storage_mode = filesystem."
+
+delegates_to:
+  - agent: capacity-analyst
+    when: "se requiere forecast de espacio de disk groups a mediano plazo, no sólo estado actual"
+  - agent: os-platform-analyst
+    when: "la causa parece estar en multipath/HBA/kernel I/O más que en ASM en sí"
+  - agent: change-advisor
+    when: "hallazgo aprobado por el DBA requiere una propuesta de cambio formal (ej. ampliación de disk group)"
+
+receives_from:
+  - agent: oracle-discovery-analyst
+    what: "Target Profile con architecture.storage_mode"
+  - agent: oracle-performance-analyst
+    what: "evidencia de I/O wait correlacionado con un disk group, con evidence_refs"
+  - agent: oracle-rac-analyst
+    what: "evidencia de desbalance/interconnect correlacionado con I/O en disk group compartido"
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+loop_prevention_rule: "oracle-asm-storage-analyst nunca delega de vuelta a quien ya le entregó el Task Package original."

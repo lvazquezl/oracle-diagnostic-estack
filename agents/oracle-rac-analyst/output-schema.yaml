@@ -1,0 +1,53 @@
+rac_result:
+  summary: string
+  topology:
+    nodes: [{node_id: string, status: ONLINE|OFFLINE|UNKNOWN}]
+    instances: [{instance_name: string, node: string, status: string}]
+    cluster_resources_summary: {total: number, online: number, offline: number, intermediate: number, unknown: number}
+  services:
+    - service_name: string       # MASK por defecto
+      preferred_instances: [string]
+      available_instances: [string]
+      current_instances: [string]
+      clb_goal: string|null
+      rlb_goal: string|null
+  session_distribution:
+    - instance: string
+      service: string
+      active_sessions: number
+      inactive_sessions: number
+      pct_of_total: number
+  imbalance_analysis:
+    - observation: string
+      classification: CONFIGURATION|CLIENT_BEHAVIOR|POOLING|SERVICE_AFFINITY|WORKLOAD|FAILOVER_HISTORY|INSUFFICIENT_EVIDENCE
+      confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE
+  gi_visibility:
+    scan: {name: string, ips: [string], listener_status: string}|null
+    vip: [{node: string, status: string}]
+    ocr_status: KNOWN|UNKNOWN|INSUFFICIENT_PRIVILEGES
+    voting_status: KNOWN|UNKNOWN|INSUFFICIENT_PRIVILEGES
+  interconnect_summary: {status: HEALTHY|DEGRADED|WARNING|CRITICAL|UNKNOWN, evidence_refs: [string]}
+  findings:
+    - area: string
+      observation: string
+      severity: INFO|LOW|MEDIUM|HIGH|CRITICAL
+      confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE   # nunca CONFIRMED_ROOT_CAUSE
+      evidence_refs: [string]
+  hypotheses: [string]
+  evidence_refs: [string]
+  recommendations:
+    - manual_action:
+        action_id: string
+        purpose: string
+        owner_role: string
+        command: string
+        prechecks: [string]
+        expected_result: string
+        risk: string
+        rollback: string
+        postchecks: [string]
+        execution_status: NOT_EXECUTED   # nunca EXECUTED
+  limitations: [string]
+  confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|UNDETERMINED   # nunca CONFIRMED_ROOT_CAUSE
+  next_skill_or_agent: string|null
+  capability_status: SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED|LICENSE_RESTRICTED|INSUFFICIENT_PRIVILEGES|INSUFFICIENT_EVIDENCE|POLICY_BLOCKED|ENVIRONMENT_UNKNOWN|null

@@ -1,4 +1,4 @@
-# Oracle Read-Only Privileges — `ESTACK_DIAGNOSTIC_ROLE` (Fase 2)
+# Oracle Read-Only Privileges — `ESTACK_DIAGNOSTIC_ROLE` (Fase 2, extendido en Fase 4)
 
 Este documento es **propuesta para revisión humana** — no se ejecuta automáticamente. El e-stack nunca crea usuarios/roles ni otorga privilegios (ver `policies/forbidden-operations.md`). El DBA revisa este documento y decide qué otorgar, cuándo y a quién.
 
@@ -49,6 +49,44 @@ GRANT SELECT ON V_$PDBS                      TO estack_diagnostic_role;   -- 12c
 GRANT SELECT ON V_$CONTAINERS                TO estack_diagnostic_role;   -- 12c+
 ```
 
+## Required privileges — RAC/GI/Network (Fase 4)
+
+```sql
+GRANT SELECT ON GV_$SESSION                   TO estack_diagnostic_role;
+GRANT SELECT ON GV_$SERVICES                  TO estack_diagnostic_role;
+GRANT SELECT ON GV_$ACTIVE_SERVICES           TO estack_diagnostic_role;   -- 11.2+
+GRANT SELECT ON GV_$CLUSTER_INTERCONNECTS     TO estack_diagnostic_role;   -- 11.2+
+GRANT SELECT ON GV_$GES_STATISTICS            TO estack_diagnostic_role;   -- 11.2+
+GRANT SELECT ON GV_$GCS_STATISTICS            TO estack_diagnostic_role;   -- 11.2+
+GRANT SELECT ON GV_$INSTANCE_CACHE_TRANSFER   TO estack_diagnostic_role;   -- 11.2+
+```
+
+Los collectors GI/Clusterware/red (`docs/GI_READONLY_COLLECTORS.md`) no usan SQL — requieren una **identidad diagnóstica de sistema operativo separada** (ver "Identity separation" abajo), nunca la identidad SQL `ESTACK_DIAGNOSTIC_ROLE`.
+
+## Required privileges — ASM (Fase 4)
+
+```sql
+-- Ejecutados contra la instancia +ASM, no contra la base de datos — conexión SQL separada.
+GRANT SELECT ON GV_$ASM_INSTANCE       TO estack_diagnostic_role;   -- 11.2+
+GRANT SELECT ON V_$ASM_DISKGROUP_STAT  TO estack_diagnostic_role;   -- default de monitoreo rutinario
+GRANT SELECT ON V_$ASM_DISK            TO estack_diagnostic_role;   -- 11.2+, cost_class MEDIUM
+GRANT SELECT ON GV_$ASM_OPERATION      TO estack_diagnostic_role;   -- 11.2+
+-- V$ASM_DISKGROUP (disk discovery) sólo bajo demanda explícita — no otorgar por defecto
+-- (mismo criterio de Q-DISC-ASM-001-V2, ver tabla de variantes abajo).
+```
+
+## Identity separation (Fase 4, `# 71` del prompt de Fase 4)
+
+Tres identidades distintas, ninguna con capacidad de escritura, nunca `root`/`sudo`/`grid` con capacidad de cambio:
+
+| Identidad | Alcance | Usada por |
+|---|---|---|
+| `ESTACK_DIAGNOSTIC_ROLE` (database) | `SELECT` sobre las vistas de este documento, contra la base de datos | Todas las queries `Q-ORA-*`/`Q-PERF-*`/`Q-RAC-*` |
+| Identidad diagnóstica GI/OS | Ejecución allowlisted de `olsnodes`/`crsctl`/`srvctl`/`lsnrctl`/`oifcfg`/`ocrcheck` (subcomandos de lectura únicamente) | Collectors de `docs/GI_READONLY_COLLECTORS.md` |
+| `ESTACK_DIAGNOSTIC_ROLE` (ASM) | `SELECT` sobre las vistas ASM de este documento, contra la instancia `+ASM` (conexión separada, rol distinto al de la base de datos — arquitectura estándar Oracle, no una elección de este e-stack) | `Q-ASM-*` |
+
+Para cualquier evidencia que requiera un privilegio no disponible en alguna de estas tres identidades: `INSUFFICIENT_PRIVILEGES` + `MANUAL COLLECTION INSTRUCTION` para que un administrador autorizado (DBA/Grid admin, según corresponda) ejecute el comando/query y entregue la salida — nunca se escalan privilegios automáticamente, y nunca se recomienda `root`/`sudo`/`grid` con capacidad de cambio como identidad permanente del e-stack.
+
 Lectura de `alert.log` (`Q-ORA-DIAGNOSTICS-ALERTLOG-001`) es un privilegio de **sistema operativo**, no SQL — requiere que el usuario OS bajo el que corre el collector tenga permiso de lectura sobre el ADR home (típicamente el grupo `oinstall`/equivalente), nunca escritura.
 
 ## Optional privileges
@@ -94,8 +132,8 @@ Ver `queries/REGISTRY.md` (secciones "Identity & Scope" y "Oracle Core queries")
 
 ## Limitations
 
-- Esta lista cubre exclusivamente Oracle Core (Fase 2) + Discovery. Fases futuras (Performance/RAC/ASM/Data Guard/Multitenant/RMAN/Network/OS) requerirán privilegios adicionales, documentados incrementalmente vía `/change` cuando esas fases se implementen.
-- No cubre la instancia ASM por separado (ver arriba).
+- Esta lista cubre Oracle Core (Fase 2) + Discovery + Performance (Fase 3) + RAC/GI/ASM/Network (Fase 4). Fases futuras (Data Guard/Multitenant/RMAN/OS) requerirán privilegios adicionales, documentados incrementalmente vía `/change` cuando esas fases se implementen.
+- La instancia ASM ahora está cubierta (ver "Required privileges — ASM (Fase 4)" arriba) — sigue siendo una conexión/rol separado de la base de datos, arquitectura estándar Oracle.
 - El acceso a `alert.log` depende de la configuración de permisos del sistema operativo del target, fuera del control de Oracle SQL — se documenta como prerequisito operativo, no como un `GRANT`.
 
 ## Referencia

@@ -1,0 +1,24 @@
+activation_conditions:
+  - network_intent: "pregunta sobre SCAN, listener, DNS/resolución, registro de servicio, TNS errors, timeouts, connection path"
+  - network_symptom: "TNS-12541/12537/12170/12154, ORA-3136, timeout de conexión, servicio no registrado"
+  - delegated_from_rac: "oracle-rac-analyst detecta que el síntoma apunta a resolución/registro más que a topología Clusterware"
+  - delegated_from_dataguard: "oracle-dataguard-analyst requiere diagnóstico de conectividad entre sitios (cuando esa fase se profundice)"
+
+deactivation_rule: "No se activa cuando el síntoma ya está confirmado como puramente Cache Fusion/topología Clusterware sin componente de red."
+
+delegates_to:
+  - agent: os-platform-analyst
+    when: "la causa parece ser kernel TCP/firewall del host más que configuración Oracle Net"
+  - agent: oracle-rac-analyst
+    when: "la resolución/registro está correcta y el síntoma apunta a estado de recurso Clusterware (SCAN VIP OFFLINE)"
+
+receives_from:
+  - agent: oracle-discovery-analyst
+    what: "Target Profile con network.scan_name/scan_ips/listener_ports cuando existan"
+  - agent: oracle-rac-analyst
+    what: "evidencia de que el síntoma requiere diagnóstico de resolución/registro, con evidence_refs"
+  - agent: oracle-dataguard-analyst
+    what: "contexto de conectividad entre sitios primary/standby"
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+loop_prevention_rule: "oracle-network-analyst nunca delega de vuelta a oracle-rac-analyst por el mismo síntoma ya recibido — si confirma que es un recurso Clusterware, lo señala en el finding sin reabrir el ciclo (evidence_refs, no nueva delegación)."

@@ -1,0 +1,19 @@
+name: session-distribution
+display_name: "RAC Session Distribution"
+id: rac/session-distribution
+version: 2.0.0
+domain: rac
+status: active
+supported_oracle_versions: [11gR2, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [Oracle Linux, RHEL, SUSE, Solaris, AIX, Windows Server]
+supported_architectures: [rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence:
+  - query_id: Q-RAC-SESSION-DIST-001
+optional_evidence:
+  - query_id: Q-RAC-SERVICES-001
+data_sensitivity: MEDIUM
+context_budget: LOW
+related_skills: [rac/load-balancing, rac/clb, rac/rlb, rac/service-placement, rac/services]

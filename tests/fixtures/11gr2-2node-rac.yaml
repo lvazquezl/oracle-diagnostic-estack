@@ -1,0 +1,46 @@
+# Fixture: Oracle 11gR2 2-node RAC — baseline mínimo soportado (CRS legacy queda fuera)
+# Usada por: rac/topology, rac/instance-state, rac/services, rac/session-distribution
+fixture_id: FX-11gr2-2node-rac
+
+target_profile:
+  schema_version: "2.1.0"
+  target_id: "fixture-11gr2-2node-rac"
+  database: {name: "ORCL11G", unique_name: "ORCL11G", dbid: "1112223330"}
+  oracle_version: {major: 11, minor: 2, release: 0, ru: null, raw: "11.2.0.4.0"}
+  architecture: {cluster_mode: rac, multitenant_mode: non_cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl11g1", number: 1, host: "HOST_TOKEN_101"}
+  cluster: {detected: true, instance_count: 2}
+  container: {type: non_cdb, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: SUPPORTED, asm: SUPPORTED, multitenant: UNSUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  rac: {enabled: true, node_count: 2, instances: ["INSTANCE_TOKEN_001", "INSTANCE_TOKEN_002"]}
+  gi: {version: "11.2.0.4.0", home: "PATH_TOKEN_001", cluster_name: "CLUSTER_TOKEN_001"}
+  asm: {enabled: true, instance_count: 2}
+  network: {scan_name: "SCAN_TOKEN_001", scan_ips: ["IP_TOKEN"], listener_ports: [1521]}
+  discovery: {timestamp: "2026-01-10T09:00:00Z", evidence_refs: [EVD-FX-101], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$INSTANCE, GV$INSTANCE, V$DATABASE, V$ACTIVE_INSTANCES, GV$SERVICES,
+    GV$ACTIVE_SERVICES, GV$SESSION, GV$CLUSTER_INTERCONNECTS, GV$GES_STATISTICS, GV$GCS_STATISTICS,
+    GV$ASM_INSTANCE, V$ASM_DISKGROUP_STAT, V$ASM_DISK, GV$ASM_OPERATION]
+  available_columns:
+    "V$INSTANCE.version_full": false     # 18.0+
+    "V$DATABASE.cdb": false               # 12.1+
+    "V$ACTIVE_INSTANCES.con_id": false    # 12.1+
+    "V$INSTANCE.instance_role": true      # 11.0+
+
+mock_evidence:
+  - query_id: Q-RAC-TOPOLOGY-001
+    result:
+      - {instance_number: 1, instance_name: "orcl11g1", host_name: "HOST_TOKEN_101", status: "OPEN", inst_number: 1, inst_name: "orcl11g1"}
+      - {instance_number: 2, instance_name: "orcl11g2", host_name: "HOST_TOKEN_102", status: "OPEN", inst_number: 2, inst_name: "orcl11g2"}
+
+expected_findings:
+  - category: topology
+    severity: INFO
+    confidence: FACT
+    reason: "2 nodos/instancias activas, consistentes con node_count declarado — sin con_id (Multitenant no existe en 11gR2, Variant V1)"

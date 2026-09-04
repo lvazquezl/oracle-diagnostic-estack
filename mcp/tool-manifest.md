@@ -7,7 +7,7 @@ Cada tool mapea 1:1 (o 1:N) a entradas certificadas de [`queries/REGISTRY.md`](.
 | `get_database_identity(target)` | `{target: string}` | version, edition, role, cdb, open_mode | `Q-DISC-IDENTITY-001` |
 | `get_instance_status(target)` | `{target: string}` | instance_mode, instance_number, status por instancia | `Q-DISC-INSTANCE-001` |
 | `get_rac_topology(target)` | `{target: string}` | nodos, instancias, versión GI | `Q-DISC-RAC-001` |
-| `get_session_distribution(target, service?)` | `{target: string, service?: string}` | sesiones por instancia/servicio | `Q-RAC-SESSION-DIST-001`, `Q-RAC-SERVICE-PLACEMENT-001` |
+| `get_session_distribution(target, service?)` | `{target: string, service?: string}` | sesiones por instancia/servicio | `Q-RAC-SESSION-DIST-001`, `Q-RAC-SERVICES-001` |
 | `get_wait_events(target, window_start, window_end, source?)` | `{target, window_start, window_end, source?: awr\|ash\|statspack}` | top wait events | `Q-PERF-WAIT-AWR-001`, `Q-PERF-WAIT-ASH-001`, `Q-PERF-WAIT-STATSPACK-001` |
 | `get_top_sql_metrics(target, window_start?, window_end?)` | `{target, window_start?, window_end?}` | SQL_ID, plan hash, métricas (sin SQL text por defecto) | `Q-PERF-TOPSQL-001`, `Q-PERF-TOPSQL-CURRENT-001` |
 | `get_db_time(target, window_start?, window_end?)` | `{target, window_start?, window_end?}` | DB Time/DB CPU, ventana AWR o acumulado desde arranque | `Q-PERF-DBTIME-001`, `Q-PERF-DBTIME-CURRENT-001` |
@@ -19,9 +19,9 @@ Cada tool mapea 1:1 (o 1:N) a entradas certificadas de [`queries/REGISTRY.md`](.
 | `get_parallel_sessions(target)` | `{target: string}` | sesiones Parallel Execution activas | `Q-PERF-PARALLEL-001` |
 | `get_redo_activity(target)` | `{target: string}` | volumen de redo y tasa de commit/rollback | `Q-PERF-REDO-001` |
 | `get_tablespace_usage(target)` | `{target: string}` | uso/autoextend por tablespace | `Q-DBA-TBS-USAGE-001`, `Q-DBA-TBS-DATAFILES-001` |
-| `get_asm_usage(target)` | `{target: string}` | espacio usable por disk group | `Q-ASM-DG-USAGE-001`, `Q-ASM-OPERATION-001` |
+| `get_asm_usage(target)` | `{target: string}` | espacio usable por disk group (`V$ASM_DISKGROUP_STAT`, sin disk discovery) | `Q-ASM-TOPOLOGY-001` |
 | `get_dataguard_status(target)` | `{target: string}` | rol, lag, gaps, destinos | `Q-DG-STATS-001`, `Q-DG-ARCHIVE-GAP-001` |
-| `get_listener_status(target)` | `{target: string}` | estado de listener/SCAN listener, servicios registrados | `Q-NET-LISTENER-STATUS-001` *(registered — Fase 4)* |
+| `get_listener_status(target)` | `{target: string}` | estado de listener/SCAN listener, servicios registrados | collector `get_listener_configuration`/`get_scan_configuration` (`docs/GI_READONLY_COLLECTORS.md`), sin query SQL detrás |
 | `get_os_cpu(target)` | `{target: string}` | load, run queue | `Q-OS-<plataforma>-CPU-001` *(registered por plataforma — Fase 6, salvo Linux representativo)* |
 | `get_os_memory(target)` | `{target: string}` | uso de memoria/swap/HugePages | `Q-OS-LINUX-MEM-001` (Linux, active); resto `registered` |
 | `get_os_io(target)` | `{target: string}` | latencia/throughput por dispositivo | `Q-OS-<plataforma>-IO-001` *(registered)* |
@@ -46,6 +46,21 @@ Cada tool mapea 1:1 (o 1:N) a entradas certificadas de [`queries/REGISTRY.md`](.
 | `get_objects_inventory(target)` | `{target: string}` | inventario agregado de objetos | `Q-ORA-OBJECTS-INVENTORY-001` |
 | `get_spfile_status(target)` | `{target: string}` | existencia SPFILE, cambios no persistidos | `Q-ORA-SPFILE-001` |
 | `get_diagnostic_state(target, window_start?, window_end?)` | `{target, window_start?, window_end?}` | incidentes ADR, extracto de alert log | `Q-ORA-DIAGNOSTICS-ADR-001`, `Q-ORA-DIAGNOSTICS-ALERTLOG-001` |
+| `get_rac_service_config(target)` | `{target: string}` | CLB/RLB goal, placement configurado vs. activo | `Q-RAC-SERVICES-001` |
+| `get_rac_interconnect(target)` | `{target: string}` | interfaces de interconnect privado activas | `Q-RAC-INTERCONNECT-001` |
+| `get_rac_global_cache(target)` | `{target: string}` | indicadores agregados GES/GCS | `Q-RAC-GES-GCS-001` |
+| `get_cluster_nodes(target)` | `{target: string}` | membership de nodos Clusterware | collector `get_cluster_nodes` (`olsnodes`) |
+| `get_cluster_resources(target)` | `{target: string}` | estado/propiedades de recursos Clusterware | collector `get_cluster_resources` (`crsctl stat res -t`) |
+| `get_cluster_version(target)` | `{target: string}` | versión GI activa/software | collector `get_cluster_version` (`crsctl query crs activeversion/softwareversion`) |
+| `get_scan_configuration(target)` | `{target: string}` | SCAN name/IPs/listeners, estado | collector `get_scan_configuration` (`srvctl config/status scan`) |
+| `get_vip_configuration(target)` | `{target: string}` | VIP configurado/estado por nodo | collector `get_vip_configuration` (`srvctl config vip`) |
+| `get_service_configuration(target, service)` | `{target: string, service: string}` | configuración detallada de un servicio | collector `get_service_configuration` (`srvctl config service`) |
+| `get_network_configuration(target)` | `{target: string}` | interfaces públicas/interconnect/ASM declaradas a GI | collector `get_network_configuration` (`oifcfg getif`) |
+| `get_ocr_status(target)` | `{target: string}` | integridad y ubicación de copias OCR | collector `get_ocr_status` (`ocrcheck`) |
+| `get_voting_status(target)` | `{target: string}` | ubicación/estado de voting disks, riesgo de quorum | collector `get_voting_status` (`crsctl query css votedisk`) |
+| `get_asm_disk_health(target)` | `{target: string}` | discos ASM anómalos (header/mode/errores) | `Q-ASM-DISKS-001` |
+| `get_asm_rebalance_status(target)` | `{target: string}` | operaciones ASM en curso (lectura) | `Q-ASM-REBALANCE-001` |
+| `get_scan_resolution(target)` | `{target: string}` | resolución DNS de SCAN, IPs resueltas | collector `get_name_resolution` (`network/scan-resolution`) |
 
 ## MCP Query Certification (Compatibility Hardening)
 

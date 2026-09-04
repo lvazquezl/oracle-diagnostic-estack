@@ -1,0 +1,6 @@
+##  STATE    File Universal Id                File Name Disk group
+--  -----    -----------------                --------- ---------
+ 1. ONLINE   12345678-abcd-abcd-abcd-1234567890ab (+DATA) [DATA]
+ 2. ONLINE   23456789-abcd-abcd-abcd-1234567890ab (+VOTE1) [VOTE1]
+ 3. ONLINE   34567890-abcd-abcd-abcd-1234567890ab (+VOTE2) [VOTE2]
+Located 3 voting disk(s).

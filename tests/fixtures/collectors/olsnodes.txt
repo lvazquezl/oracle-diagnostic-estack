@@ -1,0 +1,3 @@
+node1	Active	Hub
+node2	Active	Hub
+node3	Inactive	Hub

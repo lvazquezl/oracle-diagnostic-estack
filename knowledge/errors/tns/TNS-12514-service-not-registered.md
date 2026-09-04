@@ -24,6 +24,6 @@ status: active
 
 # Notas
 
-En RAC, distinguir si el error ocurre contra el listener local de un nodo específico (servicio no placed en ese nodo, comportamiento esperado con `PREFERRED`/`AVAILABLE` instances) vs. contra el SCAN listener (más indicativo de un problema real de registro). Ver `rac/services`/`rac/service-placement` para esa distinción — este skill (`network/tns`) cubre el diagnóstico genérico del error, no la lógica de placement RAC.
+En RAC, distinguir si el error ocurre contra el listener local de un nodo específico (servicio no placed en ese nodo, comportamiento esperado con `PREFERRED`/`AVAILABLE` instances) vs. contra el SCAN listener (más indicativo de un problema real de registro). Ver `rac/services`/`rac/service-placement` para esa distinción — este código se diagnostica hoy vía `network/service-registration` (Fase 4; el skill `network/tns` original de Fase 1 se reorganizó en `network/oracle-net` + `network/tns-errors`).
 
 Ejemplo semilla materializado en Fase 1.

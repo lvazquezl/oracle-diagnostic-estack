@@ -6,6 +6,8 @@ Todo query/comando aquí es de sólo lectura por construcción (`execution_mode:
 
 > **Fase 2 (Oracle Core)**: el catálogo Oracle se organizó por carpeta bajo `queries/oracle/<categoría>/`, una query por archivo (`<query_id>.md`), en vez de un único archivo `.md` plano por query en `queries/`. Las 4 queries de discovery (`Q-DISC-IDENTITY-001`, `Q-DISC-INSTANCE-001`, `Q-DISC-RAC-001`, `Q-DISC-ASM-001`) y las 2 de tablespaces (`Q-DBA-TBS-USAGE-001`, `Q-DBA-TBS-DATAFILES-001`) se **relocalizaron** (mismos IDs, sin duplicar) a `queries/oracle/discovery/` y `queries/oracle/tablespaces/` respectivamente. Se agregaron 20 queries nuevas para las 18 áreas Oracle Core (`Q-ORA-*`) — ver sección "Oracle Core queries (Fase 2)" abajo.
 
+> **Fase 4 (RAC/GI/ASM/Network)**: `Q-RAC-SESSION-DIST-001` se relocalizó (mismo ID, sin duplicar) a `queries/rac/`. Las filas Foundation `Q-RAC-SERVICE-PLACEMENT-001`/`Q-ASM-DG-USAGE-001`/`Q-ASM-OPERATION-001` nunca tuvieron un archivo `.md` real pese a figurar en la sección "materializadas" — gap pre-existente detectado y corregido en esta fase: reemplazadas por 7 queries genuinamente materializadas bajo `queries/rac/`/`queries/asm/` (`Q-RAC-TOPOLOGY-001`, `Q-RAC-SERVICES-001` — cubre placement, `Q-RAC-INTERCONNECT-001`, `Q-RAC-GES-GCS-001`, `Q-ASM-TOPOLOGY-001` — cubre espacio usable vía `V$ASM_DISKGROUP_STAT`, `Q-ASM-DISKS-001`, `Q-ASM-REBALANCE-001` — cubre progreso de rebalance).
+
 > **Fase 3 (Oracle Performance)**: `Q-PERF-WAIT-AWR-001` y `Q-PERF-WAIT-ASH-001` se **relocalizaron** (mismos IDs, sin duplicar) de `queries/` plano a `queries/performance/waits/`. `Q-PERF-WAIT-STATSPACK-001` (antes sólo `registered`) se materializó en la misma carpeta — ver `docs/PHASE_3_ORACLE_PERFORMANCE.md`. Las filas de estas 3 queries en las tablas "Fase 1" abajo permanecen sin cambio (identidad de catálogo, no ubicación física). Se agregaron 18 queries nuevas bajo `queries/performance/<categoría>/` — ver sección "Performance queries (Fase 3)" abajo.
 
 ## Tools semánticas MCP (nivel Gateway)
@@ -46,10 +48,14 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-PERF-WAIT-AWR-001` | Wait events agregados (AWR) | 10g–23ai (Diagnostics Pack) | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
 | `Q-PERF-WAIT-ASH-001` | Wait events granulares (ASH) | 10g–23ai (Diagnostics Pack) | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
 | `Q-PERF-WAIT-STATSPACK-001` | Wait events (fallback sin licencia) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
-| `Q-RAC-SESSION-DIST-001` | Distribución de sesiones por instancia | 11gR2–23ai | Linux/RHEL/SUSE/Solaris/AIX/Windows | RAC | NOT_APPLICABLE | ANY |
-| `Q-RAC-SERVICE-PLACEMENT-001` | Placement y goals de servicio | 11gR2–23ai | ídem | RAC | NOT_APPLICABLE | ANY |
-| `Q-ASM-DG-USAGE-001` | Espacio usable por disk group | 11g–23ai | ídem | ASM | NOT_APPLICABLE | ANY |
-| `Q-ASM-OPERATION-001` | Progreso de rebalance (lectura) | 11g–23ai | ídem | ASM | NOT_APPLICABLE | ANY |
+| `Q-RAC-SESSION-DIST-001` | Distribución de sesiones por instancia (relocalizada a `queries/rac/` en Fase 4) | 11gR2–23ai | Linux/RHEL/SUSE/Solaris/AIX/Windows | RAC | NOT_APPLICABLE | ANY |
+| `Q-RAC-TOPOLOGY-001` | Topología de instancias RAC | 11gR2–23ai | ídem | RAC | NOT_APPLICABLE | ANY |
+| `Q-RAC-SERVICES-001` | Servicios, CLB/RLB goal, placement configurado vs. activo | 11gR2–23ai | ídem | RAC | NOT_APPLICABLE | ANY |
+| `Q-RAC-INTERCONNECT-001` | Interfaces de interconnect privado activas | 11gR2–23ai | ídem | RAC | NOT_APPLICABLE | ANY |
+| `Q-RAC-GES-GCS-001` | Indicadores agregados GES/GCS | 11gR2–23ai | ídem | RAC | NOT_APPLICABLE | ANY |
+| `Q-ASM-TOPOLOGY-001` | Instancias ASM y disk groups (`V$ASM_DISKGROUP_STAT`, sin disk discovery) | 11gR2–23ai | ídem | ASM | NOT_APPLICABLE | ANY |
+| `Q-ASM-DISKS-001` | Salud de discos individuales (sólo anómalos) | 11gR2–23ai | ídem | ASM | NOT_APPLICABLE | ANY |
+| `Q-ASM-REBALANCE-001` | Progreso de operaciones ASM en curso (lectura) | 11gR2–23ai | ídem | ASM | NOT_APPLICABLE | ANY |
 | `Q-DG-STATS-001` | Lag de transporte/apply | 10g–23ai | todas | Primary/Standby | NOT_APPLICABLE | ANY |
 | `Q-DG-ARCHIVE-GAP-001` | Gap de archivelog | 10g–23ai | todas | Primary/Standby | NOT_APPLICABLE | ANY |
 | `Q-CDB-PDB-STATE-001` | Estado de PDBs | 12c–23ai | todas | CDB | CDB_ROOT | ANY |
@@ -78,9 +84,13 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-PERF-WAIT-ASH-001` | `V$ACTIVE_SESSION_HISTORY`, `DBA_HIST_ACTIVE_SESS_HISTORY` | R0 | HIGH | 60 | 1000 | MEDIUM | Diagnostics Pack |
 | `Q-PERF-WAIT-STATSPACK-001` | `STATS$SYSTEM_EVENT` | R0 | MEDIUM | 60 | 200 | MEDIUM | none |
 | `Q-RAC-SESSION-DIST-001` | `GV$SESSION`, `GV$SERVICES` | R0 | MEDIUM | 30 | 5000 | MEDIUM | none |
-| `Q-RAC-SERVICE-PLACEMENT-001` | `DBA_SERVICES`, `GV$SERVICES` | R0 | LOW | 20 | 200 | MEDIUM | none |
-| `Q-ASM-DG-USAGE-001` | `V$ASM_DISKGROUP` | R0 | LOW | 15 | 50 | LOW | none |
-| `Q-ASM-OPERATION-001` | `V$ASM_OPERATION` | R0 | LOW | 15 | 50 | LOW | none |
+| `Q-RAC-TOPOLOGY-001` | `GV$INSTANCE`, `V$ACTIVE_INSTANCES` | R0 | LOW | 15 | 50 | MEDIUM | none |
+| `Q-RAC-SERVICES-001` | `GV$SERVICES`, `GV$ACTIVE_SERVICES` | R0 | LOW | 15 | 200 | MEDIUM | none |
+| `Q-RAC-INTERCONNECT-001` | `GV$CLUSTER_INTERCONNECTS` | R0 | LOW | 15 | 50 | HIGH | none |
+| `Q-RAC-GES-GCS-001` | `GV$GES_STATISTICS`, `GV$GCS_STATISTICS`, `GV$INSTANCE_CACHE_TRANSFER` | R0 | MEDIUM | 30 | 200 | LOW | none |
+| `Q-ASM-TOPOLOGY-001` | `GV$ASM_INSTANCE`, `V$ASM_DISKGROUP_STAT` | R0 | LOW | 15 | 100 | MEDIUM | none |
+| `Q-ASM-DISKS-001` | `V$ASM_DISK` | R0 | MEDIUM | 30 | 500 | HIGH | none |
+| `Q-ASM-REBALANCE-001` | `GV$ASM_OPERATION` | R0 | LOW | 15 | 50 | LOW | none |
 | `Q-DG-STATS-001` | `V$DATAGUARD_STATS`, `V$ARCHIVE_DEST_STATUS` | R0 | LOW | 20 | 50 | MEDIUM | none |
 | `Q-DG-ARCHIVE-GAP-001` | `V$ARCHIVE_GAP` | R0 | LOW | 15 | 50 | LOW | none |
 | `Q-CDB-PDB-STATE-001` | `DBA_PDBS`, `V$PDBS` | R0 | LOW | 15 | 200 | MEDIUM (nombres) | none (multi-PDB puede ser LICENSE_DEPENDENT — ver `docs/CAPABILITY_MATRIX.md`) |

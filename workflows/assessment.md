@@ -1,12 +1,12 @@
 ---
 name: assessment
-version: 1.0.0
+version: 1.1.0
 status: active
 ---
 
 # Trigger/intent
 
-Comando `/assessment`. Evaluación integral y más profunda que un healthcheck — típicamente para onboarding de un ambiente nuevo, auditoría periódica, o antes de un cambio mayor.
+Comando `/assessment`. Evaluación integral y más profunda que un healthcheck — típicamente para onboarding de un ambiente nuevo, auditoría periódica, o antes de un cambio mayor. `/assessment rac` (Fase 4) acota el alcance a `rac/assessment` — arquitectura, versiones, nodos/instancias/servicios, load-balancing, SCAN, listeners, interconnect, resumen ASM, hallazgos de configuración, riesgos y recomendaciones (`# 42` del prompt de Fase 4).
 
 # Prerequisites
 

@@ -1,0 +1,37 @@
+--------------------------------------------------------------------------------
+NAME           TARGET  STATE        SERVER                   STATE_DETAILS
+--------------------------------------------------------------------------------
+Local Resources
+--------------------------------------------------------------------------------
+ora.DATA.dg
+               ONLINE  ONLINE       node1
+               ONLINE  ONLINE       node2
+ora.LISTENER.lsnr
+               ONLINE  ONLINE       node1
+               ONLINE  ONLINE       node2
+ora.net1.network
+               ONLINE  ONLINE       node1
+               ONLINE  ONLINE       node2
+ora.ons
+               ONLINE  ONLINE       node1
+               ONLINE  ONLINE       node2
+--------------------------------------------------------------------------------
+Cluster Resources
+--------------------------------------------------------------------------------
+ora.LISTENER_SCAN1.lsnr
+      1        OFFLINE  OFFLINE                               STARTING
+ora.LISTENER_SCAN2.lsnr
+      1        ONLINE   ONLINE       node2
+ora.LISTENER_SCAN3.lsnr
+      1        ONLINE   ONLINE       node1
+ora.orcl.db
+      1        ONLINE   ONLINE       node1                    Open
+      2        ONLINE   ONLINE       node2                    Open
+ora.scan1.vip
+      1        OFFLINE  OFFLINE                               STABLE
+ora.scan2.vip
+      1        ONLINE   ONLINE       node2
+ora.scan3.vip
+      1        ONLINE   ONLINE       node1
+ora.orcl.svc1.svc
+      1        ONLINE   OFFLINE                               STABLE

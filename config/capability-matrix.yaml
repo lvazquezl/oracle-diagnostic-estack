@@ -57,20 +57,20 @@ domains:
   - id: rac
     display_name: "RAC"
     license_dependent: false
-    versions: {10g: PLANNED, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
-    notes: "Esta fila mide RAC DEEP DIAGNOSTICS (rac/session-distribution.md, desde 11gR2, Q-RAC-SESSION-DIST-001; 10g/11gR1 no certificado -> PLANNED, no UNSUPPORTED). RAC DETECTION (presencia/topologia basica) es distinta y esta SUPPORTED desde Fase 2 via el Target Profile (docs/TARGET_PROFILE.md, capabilities.rac) -- ver seccion 41 del prompt de Fase 2."
+    versions: {10g: PLANNED, 11g: SUPPORTED, 12c: SUPPORTED, 18c: SUPPORTED, 19c: SUPPORTED, 21c: SUPPORTED, 23ai: SUPPORTED, latest: SUPPORTED}
+    notes: "Fase 4: RAC DEEP DIAGNOSTICS (topologia, servicios, session distribution, load balancing CLB/RLB, interconnect, Cache Fusion, recursos Clusterware) SUPPORTED desde 11gR2 (19 skills rac/* + 12 skills rac/gi-*). 10g/11gR1 (CRS legacy, sin Clusterware moderno) -> PLANNED, no UNSUPPORTED (la feature Oracle existe, este catalogo no la certifica). RAC DETECTION basica sigue SUPPORTED desde Fase 2 via el Target Profile. RAC deep performance (gc waits, impacto en DB Time) DELEGATES_TO_PERFORMANCE, no se duplica aqui."
 
   - id: gi
     display_name: "Grid Infrastructure"
     license_dependent: false
-    versions: {10g: UNSUPPORTED, 11g: FOUNDATION_ONLY, 12c: FOUNDATION_ONLY, 18c: FOUNDATION_ONLY, 19c: FOUNDATION_ONLY, 21c: FOUNDATION_ONLY, 23ai: FOUNDATION_ONLY, latest: FOUNDATION_ONLY}
-    notes: "GI como marca/arquitectura formal es 11gR2+ (antes: Oracle Clusterware) -> UNSUPPORTED en 10g. Ningun skill de rac/{ocr,voting-disk,crs-resources} materializado aun -> FOUNDATION_ONLY desde 11g."
+    versions: {10g: UNSUPPORTED, 11g: SUPPORTED, 12c: SUPPORTED, 18c: SUPPORTED, 19c: SUPPORTED, 21c: SUPPORTED, 23ai: SUPPORTED, latest: SUPPORTED}
+    notes: "Fase 4: GI absorbido por oracle-rac-analyst (sin agente separado), 12 skills rac/gi-* materializados (version, node-status, resource-status/-properties, scan, vip, listeners, network-interfaces, ocr-status, voting-status, cluster-health, configuration-consistency) -> SUPPORTED desde 11gR2. GI como marca/arquitectura formal es 11gR2+ (antes: Oracle Clusterware) -> UNSUPPORTED en 10g. OCR/Voting repair explicitamente PROHIBITED (solo visibility)."
 
   - id: asm
     display_name: "ASM"
     license_dependent: false
-    versions: {10g: PLANNED, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
-    notes: "Fila = ASM DEEP DIAGNOSTICS (asm/capacity.md desde 11g). ASM DETECTION (presencia, storage_mode) esta SUPPORTED desde Fase 2 via el Target Profile."
+    versions: {10g: UNSUPPORTED, 11g: SUPPORTED, 12c: SUPPORTED, 18c: SUPPORTED, 19c: SUPPORTED, 21c: SUPPORTED, 23ai: SUPPORTED, latest: SUPPORTED}
+    notes: "Fase 4: ASM DEEP DIAGNOSTICS (topologia, diskgroups, capacidad real via USABLE_FILE_MB, redundancia, salud de discos, failure groups, rebalance) SUPPORTED desde 11gR2 (12 skills asm/*), reemplaza el asm/capacity.md plano de Foundation. 10g fuera de soporte activo (arquitectura de disk group difiere significativamente antes de 11g). ASM DETECTION basica sigue SUPPORTED desde Fase 2. ASM write operations explicitamente PROHIBITED."
 
   - id: multitenant
     display_name: "Multitenant"
@@ -93,8 +93,8 @@ domains:
   - id: network
     display_name: "Network"
     license_dependent: false
-    versions: {10g: PARTIAL, 11g: PARTIAL, 12c: PARTIAL, 18c: PARTIAL, 19c: PARTIAL, 21c: PARTIAL, 23ai: PARTIAL, latest: PARTIAL}
-    notes: "skills/network/tns.md materializado 10g-23ai."
+    versions: {10g: SUPPORTED, 11g: SUPPORTED, 12c: SUPPORTED, 18c: SUPPORTED, 19c: SUPPORTED, 21c: SUPPORTED, 23ai: SUPPORTED, latest: SUPPORTED}
+    notes: "Fase 4: 14 skills network/* completamente materializados (oracle-net, listeners, scan, scan-resolution, service-registration, local-listener, remote-listener, connection-path, tns-errors, timeouts, name-resolution, interconnect, healthcheck, troubleshooting), reemplaza el network/tns.md plano de Foundation. SCAN es exclusivo de RAC 11gR2+ pero el resto del dominio (listener, TNS errors, name resolution, connection path) aplica igual en Standalone 10g+. Oracle Net diagnostics SUPPORTED; ningún cambio de configuración de red/DNS/firewall/listener ejecutado (PROHIBITED)."
 
   - id: os
     display_name: "OS"

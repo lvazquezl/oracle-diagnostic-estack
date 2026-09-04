@@ -1,0 +1,18 @@
+name: remote-listener
+display_name: "REMOTE_LISTENER Parameter"
+id: network/remote-listener
+version: 1.0.0
+domain: network
+status: active
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence:
+  - query_id: Q-ORA-PARAMETERS-001
+optional_evidence: []
+data_sensitivity: MEDIUM
+context_budget: LOW
+related_skills: [network/local-listener, network/scan]

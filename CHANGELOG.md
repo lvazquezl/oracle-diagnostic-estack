@@ -2,7 +2,40 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — 2026-09-03 — Fase 3: Performance Completion & Portability Hardening
+## [Unreleased] — 2026-09-04 — Fase 4: RAC / Grid Infrastructure / ASM / Network
+
+Cuarta capa funcional del e-stack, sobre baseline `v0.3.0-performance`. Ver `docs/PHASE_4_RAC_GI_ASM_NETWORK.md` para el reporte de cierre completo.
+
+### Added
+
+- `agents/oracle-rac-analyst/` (`v2.0.0`), `agents/oracle-asm-storage-analyst/` (`v2.0.0`), `agents/oracle-network-analyst/` (`v2.0.0`) — los 3 reestructurados de manifest plano a contrato estructurado completo (`AGENT.md`/`manifest.yaml`/`routing.yaml`/`context-policy.yaml`/`collaboration.yaml`/`output-schema.yaml`/`tests/`/`CHANGELOG.md`), mismo patrón que `oracle-performance-analyst` v4.0.0. `oracle-rac-analyst` absorbe Grid Infrastructure — sin agente GI separado.
+- `agents/os-platform-analyst.md` (`v1.1.0`) — extensión ligera: colaboración con `oracle-rac-analyst`/`oracle-network-analyst` para interconnect OS-level/TCP.
+- 57 skills nuevas completamente materializadas: 31 `rac/*` (19 RAC + 12 `gi-*`), 12 `asm/*`, 14 `network/*` — `skills/REGISTRY.md` pasa de 63 a 120 skills `active`.
+- `queries/rac/` (`Q-RAC-TOPOLOGY-001` con 2 variantes, `Q-RAC-SERVICES-001`, `Q-RAC-INTERCONNECT-001`, `Q-RAC-GES-GCS-001`) y `queries/asm/` (`Q-ASM-TOPOLOGY-001`, `Q-ASM-DISKS-001`, `Q-ASM-REBALANCE-001`) — 7 queries certificadas nuevas.
+- `parsers/rac/` (nuevo, Python 3 stdlib-only) — 8 parsers de salida de collectors GI/Clusterware/ASM/red (`crsctl_resource_parser.py` cubre resources+version+oifcfg, `olsnodes_parser.py`, `srvctl_scan_parser.py`, `srvctl_service_parser.py`, `lsnrctl_status_parser.py`, `ocrcheck_parser.py`, `voting_parser.py`, `asmcmd_lsdg_parser.py`), mismo envelope/disciplina de seguridad que `parsers/performance/` de Fase 3.
+- `docs/GI_READONLY_COLLECTORS.md` — Collector Contract completo (16 collectors: 11 GI/Clusterware/ASM + 5 OS network), `docs/RAC_DIAGNOSTIC_MODEL.md`, `docs/ASM_DIAGNOSTIC_MODEL.md`, `docs/ORACLE_NETWORK_DIAGNOSTIC_MODEL.md`, `docs/PHASE_4_RAC_GI_ASM_NETWORK.md` (incluye el Manual Action Contract).
+- 15 fixtures de collectors (`tests/fixtures/collectors/`) + 13 fixtures de escenario (11gR2/19c/23ai RAC, service imbalance, SCAN healthy/DNS failure, listener registration issue, TNS timeout, ASM normal/low-capacity/rebalance, interconnect anomaly).
+- 9 entradas nuevas de `knowledge/errors/` (`tns/`: TNS-12541/12537/12170/01199; `ora/`: ORA-3136/27300-27301/27501-27530; `crs/`: CRS-4535/4529/4533).
+- 68 tests nuevos: 16 collector/parser (incl. prueba viva de prompt-injection), 11 RAC, 8 ASM, 11 Network, 14 seguridad específicos de Fase 4, 8 contrato de agente.
+- `EVOLUTION.md` sección 15 — `/change parser` con checklist obligatorio para nuevos tipos de collector/parser.
+
+### Changed
+
+- `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` — RAC/GI/ASM/Network `PARTIAL/FOUNDATION_ONLY → SUPPORTED` (11gR2–23ai; 10g queda `PLANNED`/`UNSUPPORTED` según corresponda).
+- `queries/rac/Q-RAC-SESSION-DIST-001.md` relocalizada desde `queries/` plano (mismo ID, sin duplicar).
+- `queries/REGISTRY.md` — corregido un gap pre-existente: `Q-RAC-SERVICE-PLACEMENT-001`/`Q-ASM-DG-USAGE-001`/`Q-ASM-OPERATION-001` (Foundation) nunca tuvieron archivo real pese a figurar "materializadas"; reemplazadas por las 7 queries RAC/ASM genuinamente construidas esta fase.
+- `docs/TARGET_PROFILE.md` — schema `2.0.0 → 2.1.0` (aditivo): bloques `rac`/`gi`/`asm`/`network`.
+- `docs/ORACLE_READONLY_PRIVILEGES.md` — grants RAC/GI/Network/ASM, separación explícita de 3 identidades (database/GI-OS/ASM).
+- `mcp/tool-manifest.md` — 15 tools nuevas; corregidas 2 referencias a queries Foundation nunca materializadas (`get_session_distribution`, `get_asm_usage`, `get_listener_status`).
+- `collectors/README.md` — 4 tipos de collector nuevos documentados en la tabla existente, referencia a `docs/GI_READONLY_COLLECTORS.md`.
+- `workflows/rac.md` (`v2.0.0`), `workflows/healthcheck.md`/`assessment.md`/`diagnose.md` extendidos con las invocaciones acotadas `/healthcheck rac|asm|network`, `/assessment rac`, escenarios `/diagnose rac|service|scan|listener|interconnect|asm|connection`.
+- `.gitattributes`/portabilidad (Fase 3 Completion Hardening) sin cambios — 0 archivos nuevos con CRLF detectados en esta fase.
+
+### Known limitations
+
+Ver `docs/PHASE_4_RAC_GI_ASM_NETWORK.md#known-limitations`. En resumen: parsers `parsers/rac/*.py` primera versión funcional, validados contra fixtures propios, no contra la diversidad completa de formatos `crsctl`/`srvctl` entre versiones GI; TAF/Application Continuity documentados narrativamente sin `skill_id`/query/collector propio; sin collector de latencia de red certificado; gap pre-existente de Multitenant sin cambios (no corresponde a esta fase).
+
+## [0.3.0-performance] — 2026-09-03 — Fase 3: Performance Completion & Portability Hardening
 
 Cierra 4 gaps de Fase 3 sobre el mismo baseline `v0.2.0-oracle-core` — no es un rebuild de Fase 3. Ver `docs/PHASE_3_COMPLETION_HARDENING.md` para el reporte de cierre completo.
 

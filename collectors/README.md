@@ -25,6 +25,12 @@ Un collector ejecuta exactamente una query/comando certificado de `queries/REGIS
 | `os-hpux-collector` | comandos de estado HP-UX de sólo lectura | HP-UX (legacy) |
 | `net-config-collector` | lectura de archivos `tnsnames.ora`/`sqlnet.ora`/`listener.ora` y `listener.log` (ventana acotada) | todas |
 | `oracle-diag-collector` (Fase 2) | lectura acotada de `alert.log`/ADR home (`Q-ORA-DIAGNOSTICS-ALERTLOG-001`) — ventana de líneas/tiempo, nunca el archivo completo; XML alert log (11g+) parseado estructuralmente, texto plano (10g) por patrón de fecha/`ORA-` | todas — ruta resuelta por convención de plataforma, nunca hardcodeada |
+| `gi-clusterware-collector` (Fase 4) | ejecución allowlisted de `crsctl`/`srvctl`/`olsnodes`/`ocrcheck` (sólo subcomandos de lectura/status — nunca `start`/`stop`/`modify`/`add`/`delete`/`relocate`), parseada por `parsers/rac/*.py` | Oracle Linux, RHEL, SUSE, Solaris, AIX, Windows Server — ver `docs/GI_READONLY_COLLECTORS.md` |
+| `asm-cli-collector` (Fase 4) | `asmcmd lsdg` — sólo respaldo/discovery de `asm/topology`; el monitoreo rutinario de capacidad usa `oracle-sql-collector` contra `V$ASM_DISKGROUP_STAT`, no este collector | ídem |
+| `net-listener-collector` (Fase 4) | `lsnrctl status` — nunca `stop`/`reload`/`set` | todas |
+| `os-network-collector` (Fase 4) | equivalentes semánticos de sólo lectura por plataforma (`ip`/`ss`/`getent`/`nslookup`) — `get_interfaces`/`get_routes`/`get_socket_summary`/`get_name_resolution`/`get_host_identity`; nunca cambia bonding/VLAN/route/MTU/firewall/sysctl | Oracle Linux, RHEL, SUSE, Solaris, AIX, Windows Server |
+
+Ver `docs/GI_READONLY_COLLECTORS.md` para el Collector Contract completo (schema, catálogo GI/Clusterware/ASM/Network, GI Identity Model) de los collectors de Fase 4.
 
 ## Certificación
 

@@ -1,0 +1,18 @@
+name: healthcheck
+display_name: "Network Healthcheck Orchestration"
+id: network/healthcheck
+version: 1.0.0
+domain: network
+status: active
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence:
+  - collector_id: get_listener_configuration
+optional_evidence: []
+data_sensitivity: MEDIUM
+context_budget: HIGH
+related_skills: [network/scan-resolution, network/listeners, network/service-registration, rac/healthcheck]

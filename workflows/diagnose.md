@@ -1,6 +1,6 @@
 ---
 name: diagnose
-version: 1.0.0
+version: 1.1.0
 status: active
 ---
 
@@ -22,7 +22,7 @@ Target identificado y descripción del síntoma (`question` no vacío en el Task
 
 # Optional agents
 
-Cualquiera del registro, según la clasificación del síntoma por el orquestador (ej. "lento" → `oracle-performance-analyst`; "no conecta" → `oracle-network-analyst`; "espacio" → `oracle-dba-analyst`/`capacity-analyst`).
+Cualquiera del registro, según la clasificación del síntoma por el orquestador (ej. "lento" → `oracle-performance-analyst`; "no conecta" → `oracle-network-analyst`; "espacio" → `oracle-dba-analyst`/`capacity-analyst`). Escenarios Fase 4 (`# 43` del prompt de Fase 4): `rac` → `rac/troubleshooting`; `service`/`scan`/`listener`/`connection` → `network/troubleshooting`/`rac/troubleshooting` según si el síntoma es de conectividad o de recurso Clusterware; `interconnect` → `rac/interconnect`/`network/interconnect`; `asm` → `asm/troubleshooting`. No se crea un comando slash por cada código ORA/TNS/CRS individual — la taxonomía vive en `knowledge/{rac,network,asm}/errors/`.
 
 # Activation conditions
 

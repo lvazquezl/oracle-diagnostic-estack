@@ -289,3 +289,58 @@ views:
   V$PQ_SYSSTAT:
     min_version: all
     notes: "Registrada por completitud del inventario de Fase 3 — no consultada por ninguna query certificada activa todavía; candidata para Q-PERF-PARALLEL-STAT-001 vía /change query futuro (ver Q-PERF-PARALLEL-001)."
+
+  # --- Fase 4 (RAC/GI/ASM/Network) ---
+
+  GV$ACTIVE_SERVICES:
+    min_version: "11.2"
+    notes: "Usada por Q-RAC-SERVICES-001 junto con GV$SERVICES para distinguir configurado vs. activo."
+
+  GV$SERVICES:
+    min_version: all
+    notes: "Mismas columnas relevantes (clb_goal/goal) desde 10g; combinada con GV$ACTIVE_SERVICES (11.2+) para placement actual. Usada por Q-RAC-SERVICES-001."
+
+  GV$GES_STATISTICS:
+    min_version: "11.2"
+    notes: "Usada por Q-RAC-GES-GCS-001 (rac/global-cache)."
+
+  GV$GCS_STATISTICS:
+    min_version: "11.2"
+    notes: "Usada por Q-RAC-GES-GCS-001 (rac/global-cache)."
+
+  GV$INSTANCE_CACHE_TRANSFER:
+    min_version: "11.2"
+    notes: "Usada por Q-RAC-GES-GCS-001 — detalle de transferencia de bloques por instancia."
+
+  GV$CLUSTER_INTERCONNECTS:
+    min_version: "11.2"
+    notes: "Usada por Q-RAC-INTERCONNECT-001 (rac/interconnect)."
+
+  V$ACTIVE_INSTANCES:
+    min_version: "11.2"
+    notes: "Ya registrada arriba — reutilizada por Q-RAC-TOPOLOGY-001 junto con GV$INSTANCE."
+
+  GV$ASM_INSTANCE:
+    min_version: "11.2"
+    notes: "Usada por Q-ASM-TOPOLOGY-001 (asm/topology, asm/instances)."
+
+  V$ASM_DISK:
+    min_version: "11.2"
+    columns:
+      mount_status: {min_version: "11.2"}
+      header_status: {min_version: "11.2"}
+      mode_status: {min_version: "11.2"}
+      state: {min_version: "11.2"}
+      failgroup: {min_version: "11.2"}
+      path: {min_version: "11.2"}
+      read_errs: {min_version: "11.2"}
+      write_errs: {min_version: "11.2"}
+    notes: "Usada por Q-ASM-DISKS-001 (asm/disks, asm/failure-groups) — cost_class MEDIUM, no se usa para polling de capacidad rutinario (eso es V$ASM_DISKGROUP_STAT)."
+
+  V$ASM_OPERATION:
+    min_version: "11.2"
+    notes: "Usada por Q-ASM-REBALANCE-001 (asm/rebalance, asm/operations)."
+
+  GV$ASM_OPERATION:
+    min_version: "11.2"
+    notes: "Variante multi-instancia de V$ASM_OPERATION para RAC — misma columnas."

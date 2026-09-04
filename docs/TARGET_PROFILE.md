@@ -10,7 +10,7 @@ Un Target Profile es la única fuente de verdad sobre "qué es este ambiente" de
 
 ```yaml
 target_profile:
-  schema_version: "2.0.0"
+  schema_version: "2.1.0"
   target_id: string                    # referencia local (alias), nunca connection string con credenciales
 
   database:
@@ -60,6 +60,27 @@ target_profile:
     awr: LICENSE_RESTRICTED|UNSUPPORTED|ENVIRONMENT_UNKNOWN   # nunca SUPPORTED aquí — availability != entitlement (sección 18)
     ash: LICENSE_RESTRICTED|UNSUPPORTED|ENVIRONMENT_UNKNOWN
 
+  # --- Fase 4 (RAC/GI/ASM/Network) — aditivo, schema_version 2.1.0, ningún campo 2.0.0 removido/renombrado ---
+
+  rac:
+    enabled: bool
+    node_count: int|null
+    instances: [string]|null       # nombres de instancia — MASK por defecto
+
+  gi:
+    version: string|null           # activeversion de crsctl query crs
+    home: string|null              # MASK por defecto — puede revelar convención de filesystem interna
+    cluster_name: string|null      # MASK por defecto
+
+  asm:
+    enabled: bool
+    instance_count: int|null
+
+  network:
+    scan_name: string|null         # MASK por defecto
+    scan_ips: [string]|null        # MASK por defecto
+    listener_ports: [int]|null     # KEEP — puerto en sí no identifica, sólo junto con host
+
   discovery:
     timestamp: ISO-8601
     evidence_refs: [EVD-...]
@@ -73,6 +94,8 @@ target_profile:
 - **Cada campo puede degradar independientemente.** Si `database_role` no puede determinarse pero `oracle_version` sí, el Target Profile se publica igual, con `database_role: undetermined` y `discovery.confidence` reflejando el peor caso, más un `capability_status: ENVIRONMENT_UNKNOWN` reportado para lo que no se pudo determinar (ver `AGENT.md#degradation`).
 - **Inmutable dentro de un análisis.** Un Target Profile publicado no se recalcula a mitad de análisis salvo que el TTL de cache expire (ver `policies/discovery-cache-policy.md`) o el DBA fuerce un re-discovery explícito.
 - **`logical_standby`/`snapshot_standby`** se detectan cuando sea posible (`V$DATABASE.DATABASE_ROLE` los reporta directamente desde 11g) pero no se profundiza en ellos — Data Guard interno sigue fuera de alcance de Fase 2 (`oracle-dataguard-analyst` no se desarrolla en profundidad todavía).
+- **Bloques `rac`/`gi`/`asm`/`network` (Fase 4) son aditivos y se publican en `null`/`false` cuando no aplican** — nunca se omiten del schema. Un target standalone sin ASM publica `rac.enabled: false`, `asm.enabled: false`, con el resto de campos de esos bloques en `null` — nunca se activa `oracle-rac-analyst`/`oracle-asm-storage-analyst` sobre ese Target Profile (Capability Filter).
+- **`gi.version`/`gi.home`/`network.scan_name`/`network.scan_ips` nunca se determinan por adivinanza.** Si `oracle-discovery-analyst` no pudo obtener evidencia (ej. `INSUFFICIENT_PRIVILEGES` en el collector `get_cluster_version`/`get_scan_configuration`), el campo queda `null` y el consumidor (`oracle-rac-analyst`/`oracle-network-analyst`) re-consulta el skill correspondiente en vez de asumir un valor.
 
 ## Versionado del schema
 
@@ -80,4 +103,4 @@ target_profile:
 
 ## Consumidores
 
-`oracle-dba-analyst` (Oracle Core), y — por diseño, aunque no se implementan en profundidad en esta fase — `oracle-performance-analyst`, `oracle-rac-analyst`, `oracle-asm-storage-analyst`, `oracle-dataguard-analyst`, `oracle-multitenant-analyst`, `oracle-backup-recovery-analyst` leerán este mismo Target Profile cuando se profundicen en fases posteriores, en vez de re-implementar discovery.
+`oracle-dba-analyst` (Oracle Core), `oracle-performance-analyst` (Fase 3), `oracle-rac-analyst`/`oracle-asm-storage-analyst`/`oracle-network-analyst` (Fase 4 — consumen los bloques `rac`/`gi`/`asm`/`network` respectivamente, nunca vuelven a determinar `cluster_mode`/`storage_mode`/SCAN por su cuenta) — y, por diseño, aunque no se implementan en profundidad todavía, `oracle-dataguard-analyst`, `oracle-multitenant-analyst`, `oracle-backup-recovery-analyst` leerán este mismo Target Profile cuando se profundicen en fases posteriores, en vez de re-implementar discovery.

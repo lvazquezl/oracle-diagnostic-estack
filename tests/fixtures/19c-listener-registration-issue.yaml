@@ -1,0 +1,48 @@
+# Fixture: Oracle 19c RAC — servicio esperado sin registro en el listener (candidato TNS-12514)
+# Usada por: network/service-registration, network/listeners
+fixture_id: FX-19c-listener-registration-issue
+
+target_profile:
+  schema_version: "2.1.0"
+  target_id: "fixture-19c-listener-registration-issue"
+  database: {name: "ORCL19CLR", unique_name: "ORCL19CLR", dbid: "1919223330"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: rac, multitenant_mode: cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19clr1", number: 1, host: "HOST_TOKEN_701"}
+  cluster: {detected: true, instance_count: 2}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: SUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  rac: {enabled: true, node_count: 2, instances: ["INSTANCE_TOKEN_001", "INSTANCE_TOKEN_002"]}
+  gi: {version: "19.21.0.0.0", home: "PATH_TOKEN_007", cluster_name: "CLUSTER_TOKEN_007"}
+  asm: {enabled: true, instance_count: 2}
+  network: {scan_name: "SCAN_TOKEN_007", scan_ips: ["IP_TOKEN"], listener_ports: [1521]}
+  discovery: {timestamp: "2026-01-16T09:00:00Z", evidence_refs: [EVD-FX-701], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$INSTANCE, GV$INSTANCE, V$DATABASE, V$ACTIVE_INSTANCES, GV$SERVICES,
+    GV$ACTIVE_SERVICES, GV$SESSION, GV$CLUSTER_INTERCONNECTS, GV$GES_STATISTICS, GV$GCS_STATISTICS,
+    GV$ASM_INSTANCE, V$ASM_DISKGROUP_STAT, V$ASM_DISK, GV$ASM_OPERATION]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-RAC-SERVICES-001
+    result:
+      - {service_name: "orclsvc2", clb_goal: "LONG", rlb_goal: "SERVICE_TIME", active_instance: 1}
+
+collector_output:
+  get_listener_configuration: {services_registered: ["orclsvc1"]}
+
+expected_findings:
+  - category: service-registration
+    severity: HIGH
+    confidence: PROBABLE_CAUSE
+    reason: "orclsvc2 está activo/configurado pero no aparece en services_registered del listener local — candidato directo a explicar TNS-12514, sin evidencia de reinicio reciente de instancia que lo justifique"

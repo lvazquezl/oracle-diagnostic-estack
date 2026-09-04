@@ -12,7 +12,7 @@ Este registro identifica cada skill **exclusivamente** por su `skill_id` complet
 - `active` — materializado por completo (19 secciones del Skill Contract), archivo real en el dominio.
 - `registered` — nombre, dominio y propósito fijados en este registro; su materialización completa es Fase 2+ según `README.md#fases-de-construcción`. No es un placeholder vacío: es la entrada de catálogo que gobierna qué se puede construir y en qué orden vía `/change skill`.
 
-Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total). El resto queda `registered` para materialización gobernada en Fases 4–9, en el orden de `README.md`.
+Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total). El resto queda `registered` para materialización gobernada en Fases 5–9, en el orden de `README.md`.
 
 ## core (20)
 
@@ -100,52 +100,60 @@ Todos materializados con estructura `skills/oracle/<skill>/SKILL.md` + `manifest
 | `performance/commit-redo` | **active** ([performance/commit-redo/SKILL.md](performance/commit-redo/SKILL.md)) |
 | `performance/trending` | **active** ([performance/trending/SKILL.md](performance/trending/SKILL.md)) |
 
-## rac (29)
+## rac (31 — Fase 4: 19 RAC + 12 GI, todos `active`)
+
+Fase 4 (RAC/GI/ASM/Network) materializa el dominio `rac` completo y **reconcilia** la lista `registered` heredada de Foundation con los nombres realmente construidos — varios nombres Foundation eran especulativos y se consolidaron o renombraron antes de materializarse (ninguno estaba `active`, por lo que no hay ruptura de contrato): `cluster-health`/`node-health`/`instance-health` → `instance-state` + `node-membership`; `crs-resources` → `cluster-resources`; `cache-fusion`/`gcs`/`ges`/`gc-waits`/`global-enqueues` → `global-cache` (un único skill, evita fragmentación de una misma evidencia `GV$GES_STATISTICS`/`GV$GCS_STATISTICS`); `ocr`/`voting-disk` → `gi-ocr-status`/`gi-voting-status` (movidos a la sub-familia GI); `node-eviction` → `instance-eviction`; `service-failover-analysis`/`instance-failover-analysis` → `failover` (unificado); `session-imbalance-analysis` → absorbido en `session-distribution`/`load-balancing`; `fan`/`taf` → metadata narrativa en `agents/oracle-rac-analyst/AGENT.md`, no `skill_id` propio (no hay query/collector certificado independiente todavía). Grid Infrastructure vive en este mismo dominio con prefijo `gi-` (`# 8` del prompt de Fase 4: "si ya existe categoría rac/, mantener GI allí") — decisión documentada en `docs/PHASE_4_RAC_GI_ASM_NETWORK.md#gi-skill-placement`.
 
 | skill_id | status |
 |---|---|
-| `rac/topology` | registered |
-| `rac/cluster-health` | registered |
-| `rac/node-health` | registered |
-| `rac/instance-health` | registered |
-| `rac/services` | registered |
-| `rac/service-placement` | registered |
-| `rac/session-distribution` | **active** ([rac/session-distribution.md](rac/session-distribution.md)) |
-| `rac/session-imbalance-analysis` | registered |
-| `rac/clb` | registered |
-| `rac/rlb` | registered |
-| `rac/fan` | registered |
-| `rac/taf` | registered |
-| `rac/scan` | registered |
-| `rac/vip` | registered |
-| `rac/listeners` | registered |
-| `rac/interconnect` | registered |
-| `rac/cache-fusion` | registered |
-| `rac/gcs` | registered |
-| `rac/ges` | registered |
-| `rac/gc-waits` | registered |
-| `rac/global-enqueues` | registered |
-| `rac/crs-resources` | registered |
-| `rac/ocr` | registered |
-| `rac/voting-disk` | registered |
-| `rac/node-eviction` | registered |
-| `rac/service-failover-analysis` | registered |
-| `rac/instance-failover-analysis` | registered |
-| `rac/troubleshooting` | registered |
+| `rac/topology` | **active** ([rac/topology/SKILL.md](rac/topology/SKILL.md)) |
+| `rac/instance-state` | **active** ([rac/instance-state/SKILL.md](rac/instance-state/SKILL.md)) |
+| `rac/node-membership` | **active** ([rac/node-membership/SKILL.md](rac/node-membership/SKILL.md)) |
+| `rac/cluster-resources` | **active** ([rac/cluster-resources/SKILL.md](rac/cluster-resources/SKILL.md)) |
+| `rac/services` | **active** ([rac/services/SKILL.md](rac/services/SKILL.md)) |
+| `rac/service-placement` | **active** ([rac/service-placement/SKILL.md](rac/service-placement/SKILL.md)) |
+| `rac/session-distribution` | **active** ([rac/session-distribution/SKILL.md](rac/session-distribution/SKILL.md)) |
+| `rac/service-session-distribution` | **active** ([rac/service-session-distribution/SKILL.md](rac/service-session-distribution/SKILL.md)) |
+| `rac/load-balancing` | **active** ([rac/load-balancing/SKILL.md](rac/load-balancing/SKILL.md)) |
+| `rac/clb` | **active** ([rac/clb/SKILL.md](rac/clb/SKILL.md)) |
+| `rac/rlb` | **active** ([rac/rlb/SKILL.md](rac/rlb/SKILL.md)) |
+| `rac/failover` | **active** ([rac/failover/SKILL.md](rac/failover/SKILL.md)) |
+| `rac/interconnect` | **active** ([rac/interconnect/SKILL.md](rac/interconnect/SKILL.md)) |
+| `rac/global-cache` | **active** ([rac/global-cache/SKILL.md](rac/global-cache/SKILL.md)) |
+| `rac/instance-eviction` | **active** ([rac/instance-eviction/SKILL.md](rac/instance-eviction/SKILL.md)) |
+| `rac/configuration-drift` | **active** ([rac/configuration-drift/SKILL.md](rac/configuration-drift/SKILL.md)) |
+| `rac/healthcheck` | **active** ([rac/healthcheck/SKILL.md](rac/healthcheck/SKILL.md)) |
+| `rac/assessment` | **active** ([rac/assessment/SKILL.md](rac/assessment/SKILL.md)) |
+| `rac/troubleshooting` | **active** ([rac/troubleshooting/SKILL.md](rac/troubleshooting/SKILL.md)) |
+| `rac/gi-version` | **active** ([rac/gi-version/SKILL.md](rac/gi-version/SKILL.md)) |
+| `rac/gi-node-status` | **active** ([rac/gi-node-status/SKILL.md](rac/gi-node-status/SKILL.md)) |
+| `rac/gi-resource-status` | **active** ([rac/gi-resource-status/SKILL.md](rac/gi-resource-status/SKILL.md)) |
+| `rac/gi-resource-properties` | **active** ([rac/gi-resource-properties/SKILL.md](rac/gi-resource-properties/SKILL.md)) |
+| `rac/gi-scan` | **active** ([rac/gi-scan/SKILL.md](rac/gi-scan/SKILL.md)) |
+| `rac/gi-vip` | **active** ([rac/gi-vip/SKILL.md](rac/gi-vip/SKILL.md)) |
+| `rac/gi-listeners` | **active** ([rac/gi-listeners/SKILL.md](rac/gi-listeners/SKILL.md)) |
+| `rac/gi-network-interfaces` | **active** ([rac/gi-network-interfaces/SKILL.md](rac/gi-network-interfaces/SKILL.md)) |
+| `rac/gi-ocr-status` | **active** ([rac/gi-ocr-status/SKILL.md](rac/gi-ocr-status/SKILL.md)) |
+| `rac/gi-voting-status` | **active** ([rac/gi-voting-status/SKILL.md](rac/gi-voting-status/SKILL.md)) |
+| `rac/gi-cluster-health` | **active** ([rac/gi-cluster-health/SKILL.md](rac/gi-cluster-health/SKILL.md)) |
+| `rac/gi-configuration-consistency` | **active** ([rac/gi-configuration-consistency/SKILL.md](rac/gi-configuration-consistency/SKILL.md)) |
 
-## asm (9)
+## asm (12 — Fase 4, todos `active`)
 
 | skill_id | status |
 |---|---|
-| `asm/discovery` | registered |
-| `asm/diskgroups` | registered |
-| `asm/disks` | registered |
-| `asm/failure-groups` | registered |
-| `asm/redundancy` | registered |
-| `asm/capacity` | **active** ([asm/capacity.md](asm/capacity.md)) |
-| `asm/rebalance-analysis` | registered |
-| `asm/io` | registered |
-| `asm/alerts` | registered |
+| `asm/topology` | **active** ([asm/topology/SKILL.md](asm/topology/SKILL.md)) |
+| `asm/instances` | **active** ([asm/instances/SKILL.md](asm/instances/SKILL.md)) |
+| `asm/diskgroups` | **active** ([asm/diskgroups/SKILL.md](asm/diskgroups/SKILL.md)) |
+| `asm/capacity` | **active** ([asm/capacity/SKILL.md](asm/capacity/SKILL.md)) |
+| `asm/redundancy` | **active** ([asm/redundancy/SKILL.md](asm/redundancy/SKILL.md)) |
+| `asm/disks` | **active** ([asm/disks/SKILL.md](asm/disks/SKILL.md)) |
+| `asm/failure-groups` | **active** ([asm/failure-groups/SKILL.md](asm/failure-groups/SKILL.md)) |
+| `asm/rebalance` | **active** ([asm/rebalance/SKILL.md](asm/rebalance/SKILL.md)) |
+| `asm/operations` | **active** ([asm/operations/SKILL.md](asm/operations/SKILL.md)) |
+| `asm/healthcheck` | **active** ([asm/healthcheck/SKILL.md](asm/healthcheck/SKILL.md)) |
+| `asm/assessment` | **active** ([asm/assessment/SKILL.md](asm/assessment/SKILL.md)) |
+| `asm/troubleshooting` | **active** ([asm/troubleshooting/SKILL.md](asm/troubleshooting/SKILL.md)) |
 
 ## dataguard (17)
 
@@ -206,25 +214,26 @@ Todos materializados con estructura `skills/oracle/<skill>/SKILL.md` + `manifest
 | `rman/performance` | registered |
 | `rman/troubleshooting` | registered |
 
-## network (15)
+## network (14 — Fase 4, todos `active`)
+
+Reconciliación de la lista Foundation (ninguna estaba `active`): `network/tns` (flat) → `network/oracle-net` + `network/tns-errors`; `listener`/`scan-listener` → `network/listeners`/`network/scan`; `dns`/`hosts` → `network/name-resolution`/`network/scan-resolution`; `tcp`/`ports`/`ephemeral-ports` → cubiertos narrativamente por `network/connection-path`/`network/timeouts` (sin `skill_id` propio — no hay query/collector certificado independiente de puertos efímeros todavía); `tns-125xx`/`ora-3136` → `network/tns-errors` (taxonomía en `knowledge/errors/tns/`/`knowledge/errors/ora/`, no un skill por código); `rac-interconnect`/`bonding`/`vlan` → `network/interconnect`; `latency` → cubierto narrativamente, sin collector de latencia certificado en esta fase.
 
 | skill_id | status |
 |---|---|
-| `network/tns` | **active** ([network/tns.md](network/tns.md)) |
-| `network/listener` | registered |
-| `network/scan-listener` | registered |
-| `network/dns` | registered |
-| `network/hosts` | registered |
-| `network/tcp` | registered |
-| `network/ports` | registered |
-| `network/ephemeral-ports` | registered |
-| `network/timeouts` | registered |
-| `network/tns-125xx` | registered |
-| `network/ora-3136` | registered |
-| `network/rac-interconnect` | registered |
-| `network/bonding` | registered |
-| `network/vlan` | registered |
-| `network/latency` | registered |
+| `network/oracle-net` | **active** ([network/oracle-net/SKILL.md](network/oracle-net/SKILL.md)) |
+| `network/listeners` | **active** ([network/listeners/SKILL.md](network/listeners/SKILL.md)) |
+| `network/scan` | **active** ([network/scan/SKILL.md](network/scan/SKILL.md)) |
+| `network/scan-resolution` | **active** ([network/scan-resolution/SKILL.md](network/scan-resolution/SKILL.md)) |
+| `network/service-registration` | **active** ([network/service-registration/SKILL.md](network/service-registration/SKILL.md)) |
+| `network/local-listener` | **active** ([network/local-listener/SKILL.md](network/local-listener/SKILL.md)) |
+| `network/remote-listener` | **active** ([network/remote-listener/SKILL.md](network/remote-listener/SKILL.md)) |
+| `network/connection-path` | **active** ([network/connection-path/SKILL.md](network/connection-path/SKILL.md)) |
+| `network/tns-errors` | **active** ([network/tns-errors/SKILL.md](network/tns-errors/SKILL.md)) |
+| `network/timeouts` | **active** ([network/timeouts/SKILL.md](network/timeouts/SKILL.md)) |
+| `network/name-resolution` | **active** ([network/name-resolution/SKILL.md](network/name-resolution/SKILL.md)) |
+| `network/interconnect` | **active** ([network/interconnect/SKILL.md](network/interconnect/SKILL.md)) |
+| `network/healthcheck` | **active** ([network/healthcheck/SKILL.md](network/healthcheck/SKILL.md)) |
+| `network/troubleshooting` | **active** ([network/troubleshooting/SKILL.md](network/troubleshooting/SKILL.md)) |
 
 ## os (18 × 5 plataformas: linux, solaris, aix, windows, hpux)
 

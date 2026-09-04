@@ -1,0 +1,46 @@
+# Fixture: Oracle 23ai RAC — versión más reciente soportada explícitamente (nunca 'latest' automático)
+# Usada por: rac/topology, rac/gi-version, rac/services
+fixture_id: FX-23ai-rac-modern
+
+target_profile:
+  schema_version: "2.1.0"
+  target_id: "fixture-23ai-rac-modern"
+  database: {name: "ORCL23AI", unique_name: "ORCL23AI", dbid: "2313223330"}
+  oracle_version: {major: 23, minor: 4, release: 0, ru: "23.4", raw: "23.4.0.0.0"}
+  architecture: {cluster_mode: rac, multitenant_mode: cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl23ai1", number: 1, host: "HOST_TOKEN_1301"}
+  cluster: {detected: true, instance_count: 2}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: SUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  rac: {enabled: true, node_count: 2, instances: ["INSTANCE_TOKEN_001", "INSTANCE_TOKEN_002"]}
+  gi: {version: "23.4.0.0.0", home: "PATH_TOKEN_013", cluster_name: "CLUSTER_TOKEN_013"}
+  asm: {enabled: true, instance_count: 2}
+  network: {scan_name: "SCAN_TOKEN_013", scan_ips: ["IP_TOKEN", "IP_TOKEN", "IP_TOKEN"], listener_ports: [1521]}
+  discovery: {timestamp: "2026-01-22T09:00:00Z", evidence_refs: [EVD-FX-1301], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$INSTANCE, GV$INSTANCE, V$DATABASE, V$ACTIVE_INSTANCES, GV$SERVICES,
+    GV$ACTIVE_SERVICES, GV$SESSION, GV$CLUSTER_INTERCONNECTS, GV$GES_STATISTICS, GV$GCS_STATISTICS,
+    GV$ASM_INSTANCE, V$ASM_DISKGROUP_STAT, V$ASM_DISK, GV$ASM_OPERATION]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-RAC-TOPOLOGY-001
+    result:
+      - {instance_number: 1, instance_name: "orcl23ai1", host_name: "HOST_TOKEN_1301", status: "OPEN", inst_number: 1, inst_name: "orcl23ai1", con_id: 1}
+      - {instance_number: 2, instance_name: "orcl23ai2", host_name: "HOST_TOKEN_1302", status: "OPEN", inst_number: 2, inst_name: "orcl23ai2", con_id: 1}
+
+expected_findings:
+  - category: version-awareness
+    severity: INFO
+    confidence: FACT
+    reason: "23ai reconocido explícitamente como KNOWN_SUPPORTED — max: latest en las variantes cubre 23ai porque ya fue validado contra el dictionary, no porque 'latest' se asuma compatible automáticamente para una versión futura no probada (# 11, policies/version-awareness-policy.md#future-proof)"

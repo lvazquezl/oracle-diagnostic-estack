@@ -1,0 +1,19 @@
+name: load-balancing
+display_name: "RAC Load Balancing"
+id: rac/load-balancing
+version: 1.0.0
+domain: rac
+status: active
+supported_oracle_versions: [11gR2, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [Oracle Linux, RHEL, SUSE, Solaris, AIX, Windows Server]
+supported_architectures: [rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence:
+  - query_id: Q-RAC-SESSION-DIST-001
+  - query_id: Q-RAC-SERVICES-001
+optional_evidence: []
+data_sensitivity: MEDIUM
+context_budget: MEDIUM
+related_skills: [rac/clb, rac/rlb, rac/session-distribution, network/scan]

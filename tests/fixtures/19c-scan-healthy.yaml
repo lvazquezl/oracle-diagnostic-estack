@@ -1,0 +1,44 @@
+# Fixture: Oracle 19c RAC — SCAN completamente sano (3 IPs, resolución consistente, todos los SCAN listeners ONLINE)
+# Usada por: network/scan, network/scan-resolution, rac/gi-scan, network/healthcheck
+fixture_id: FX-19c-scan-healthy
+
+target_profile:
+  schema_version: "2.1.0"
+  target_id: "fixture-19c-scan-healthy"
+  database: {name: "ORCL19CSH", unique_name: "ORCL19CSH", dbid: "1917223330"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: rac, multitenant_mode: cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19csh1", number: 1, host: "HOST_TOKEN_501"}
+  cluster: {detected: true, instance_count: 2}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: SUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  rac: {enabled: true, node_count: 2, instances: ["INSTANCE_TOKEN_001", "INSTANCE_TOKEN_002"]}
+  gi: {version: "19.21.0.0.0", home: "PATH_TOKEN_005", cluster_name: "CLUSTER_TOKEN_005"}
+  asm: {enabled: true, instance_count: 2}
+  network: {scan_name: "SCAN_TOKEN_005", scan_ips: ["IP_TOKEN", "IP_TOKEN", "IP_TOKEN"], listener_ports: [1521]}
+  discovery: {timestamp: "2026-01-14T09:00:00Z", evidence_refs: [EVD-FX-501], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$INSTANCE, GV$INSTANCE, V$DATABASE, V$ACTIVE_INSTANCES, GV$SERVICES,
+    GV$ACTIVE_SERVICES, GV$SESSION, GV$CLUSTER_INTERCONNECTS, GV$GES_STATISTICS, GV$GCS_STATISTICS,
+    GV$ASM_INSTANCE, V$ASM_DISKGROUP_STAT, V$ASM_DISK, GV$ASM_OPERATION]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+collector_output:
+  get_scan_configuration: {scan_name: "SCAN_TOKEN_005", configured_ips: 3, scan_listeners_online: 3, scan_listeners_offline: 0}
+  get_name_resolution: {resolution_status: RESOLVED, resolved_ip_count: 3}
+
+expected_findings:
+  - category: scan
+    severity: INFO
+    confidence: FACT
+    reason: "3 IPs configuradas, resolución consistente con 3 respuestas, 3 SCAN listeners ONLINE — SCAN HEALTH: HEALTHY"

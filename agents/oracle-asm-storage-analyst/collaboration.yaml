@@ -1,0 +1,20 @@
+may_delegate_to: [capacity-analyst, os-platform-analyst, change-advisor]
+
+may_receive_from: [oracle-discovery-analyst, oracle-performance-analyst, oracle-rac-analyst]
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+
+escalation_conditions:
+  - condition: "disk group por debajo del umbral crítico de USABLE_FILE_MB considerando REQUIRED_MIRROR_FREE_MB"
+    action: "marcar HIGH, escalar a change-advisor para propuesta de ampliación (ejecución manual)"
+    rationale: "capacidad ASM agotada puede bloquear escritura de toda la base de datos, no sólo degradar performance"
+  - condition: "rebalance activo con impacto potencial en I/O de producción"
+    action: "informar impacto potencial correlacionado, nunca asumir causa de degradación de performance sin correlación (# 27 del prompt de Fase 4)"
+  - condition: "latencia elevada en OS coincide con I/O waits ASM en la misma ventana"
+    action: "delegar a os-platform-analyst para confirmar causa multipath/HBA/kernel"
+  - condition: "requiere forecast de espacio a mediano plazo"
+    action: "delegar a capacity-analyst"
+
+no_delegation_loop_rule: "oracle-asm-storage-analyst nunca delega a oracle-dba-analyst ni oracle-discovery-analyst."
+
+manual_command_rule: "Toda recomendación de asmcmd/ALTER DISKGROUP usa el Manual Action Contract con execution_status: NOT_EXECUTED — nunca se ejecuta."

@@ -1,0 +1,32 @@
+activation_conditions:
+  - target_profile.architecture.cluster_mode in [rac, rac_one_node]
+  - rac_intent: "pregunta sobre nodos, instancias, servicios, distribución de sesiones, SCAN/VIP/listener a nivel clusterware, interconnect, OCR/voting, o salud general del cluster"
+  - rac_symptom: "desbalance de sesiones, servicio no disponible en un nodo, recurso Clusterware OFFLINE, sospecha de eviction"
+  - performance_delegates: "oracle-performance-analyst detecta wait dominante gc * (Global Cache) y delega contexto de topología"
+
+deactivation_rule: "Nunca se activa sobre target_profile.architecture.cluster_mode = standalone — Capability Filter lo excluye antes de Agent Filter."
+
+delegates_to:
+  - agent: oracle-asm-storage-analyst
+    when: "desbalance o I/O anómalo correlaciona con un disk group ASM compartido, o rebalance activo coincide con síntoma"
+  - agent: oracle-network-analyst
+    when: "síntoma apunta a resolución SCAN/DNS, registro de servicio en listener, o TNS-125xx/timeout más que a topología/Clusterware"
+  - agent: os-platform-analyst
+    when: "interconnect anómalo requiere evidencia de interfaz/bonding/VLAN a nivel OS"
+  - agent: oracle-performance-analyst
+    when: "impacto de Global Cache (gc waits) requiere análisis de carga/DB Time, no sólo topología"
+  - agent: incident-root-cause-analyst
+    when: "indicios de node eviction, pérdida de quorum, o múltiples síntomas correlacionables entre dominios"
+  - agent: change-advisor
+    when: "hallazgo aprobado por el DBA requiere una propuesta de cambio formal (ej. rebalance de servicio)"
+
+receives_from:
+  - agent: oracle-discovery-analyst
+    what: "Target Profile con architecture.cluster_mode y cluster.instance_count"
+  - agent: oracle-performance-analyst
+    what: "evidencia de wait dominante gc * (Global Cache) con evidence_refs, nunca el AWR completo"
+  - agent: oracle-dba-analyst
+    what: "contexto de instancia/servicio cuando el análisis Oracle Core detecta una anomalía específica de un nodo"
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+loop_prevention_rule: "oracle-rac-analyst nunca delega de vuelta a quien ya le entregó el Task Package original — evita ciclos discovery→rac→discovery."

@@ -7,7 +7,7 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 TARGET=1002
-EXPECTED_UNSUPPORTED="Q-DISC-RAC-001 Q-DISC-ASM-001"
+EXPECTED_UNSUPPORTED="Q-DISC-RAC-001 Q-DISC-ASM-001 Q-RAC-TOPOLOGY-001 Q-RAC-SERVICES-001"
 
 vernum() { local v="$1"; [ "$v" = "latest" ] && { echo 99999; return; }; local maj min; maj=$(echo "$v"|cut -d. -f1); min=$(echo "$v"|cut -d. -f2); echo $((maj*100+min)); }
 

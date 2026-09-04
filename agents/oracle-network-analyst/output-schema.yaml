@@ -1,0 +1,49 @@
+network_result:
+  summary: string
+  scan:
+    name: string|null           # MASK por defecto
+    configured_endpoints: [string]
+    resolved_ips: [string]|null
+    resolution_status: RESOLVED|NO_RESOLUTION|SINGLE_IP_WHERE_MORE_EXPECTED|INCONSISTENT_ANSWERS|SERVFAIL|TIMEOUT|UNKNOWN
+  listeners:
+    - listener: string
+      type: LOCAL|SCAN
+      status: string
+      host: string               # MASK
+      port: number
+      protocol: string
+      services_registered: [string]
+  service_registration:
+    - service_name: string       # MASK
+      registered_on: [string]
+      handlers: number
+  connection_path_findings:
+    - observation: string
+      classification: NAME_RESOLUTION|LISTENER|NETWORK_PATH|FIREWALL_SUSPECTED|CLIENT_APPLICATION|RESOURCE_EXHAUSTION|INSUFFICIENT_EVIDENCE
+      confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE
+  known_errors_detected: [{code: string, count: number, first_seen: string|null, last_seen: string|null}]
+  interconnect_summary: {status: HEALTHY|DEGRADED|WARNING|CRITICAL|UNKNOWN, evidence_refs: [string]}|null
+  findings:
+    - area: string
+      observation: string
+      severity: INFO|LOW|MEDIUM|HIGH|CRITICAL
+      confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE   # nunca CONFIRMED_ROOT_CAUSE
+      evidence_refs: [string]
+  hypotheses: [string]
+  evidence_refs: [string]
+  recommendations:
+    - manual_action:
+        action_id: string
+        purpose: string
+        owner_role: string
+        command: string
+        prechecks: [string]
+        expected_result: string
+        risk: string
+        rollback: string
+        postchecks: [string]
+        execution_status: NOT_EXECUTED
+  limitations: [string]
+  confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|UNDETERMINED
+  next_skill_or_agent: string|null
+  capability_status: SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED|LICENSE_RESTRICTED|INSUFFICIENT_PRIVILEGES|INSUFFICIENT_EVIDENCE|POLICY_BLOCKED|ENVIRONMENT_UNKNOWN|null

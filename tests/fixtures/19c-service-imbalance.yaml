@@ -1,0 +1,50 @@
+# Fixture: Oracle 19c RAC — desbalance de sesiones NO automáticamente clasificado como error (# 14)
+# Usada por: rac/session-distribution, rac/load-balancing
+fixture_id: FX-19c-service-imbalance
+
+target_profile:
+  schema_version: "2.1.0"
+  target_id: "fixture-19c-service-imbalance"
+  database: {name: "ORCL19CIMB", unique_name: "ORCL19CIMB", dbid: "1916223330"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: rac, multitenant_mode: cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19cimb1", number: 1, host: "HOST_TOKEN_401"}
+  cluster: {detected: true, instance_count: 2}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: SUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  rac: {enabled: true, node_count: 2, instances: ["INSTANCE_TOKEN_001", "INSTANCE_TOKEN_002"]}
+  gi: {version: "19.21.0.0.0", home: "PATH_TOKEN_004", cluster_name: "CLUSTER_TOKEN_004"}
+  asm: {enabled: true, instance_count: 2}
+  network: {scan_name: "SCAN_TOKEN_004", scan_ips: ["IP_TOKEN"], listener_ports: [1521]}
+  discovery: {timestamp: "2026-01-13T09:00:00Z", evidence_refs: [EVD-FX-401], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$INSTANCE, GV$INSTANCE, V$DATABASE, V$ACTIVE_INSTANCES, GV$SERVICES,
+    GV$ACTIVE_SERVICES, GV$SESSION, GV$CLUSTER_INTERCONNECTS, GV$GES_STATISTICS, GV$GCS_STATISTICS,
+    GV$ASM_INSTANCE, V$ASM_DISKGROUP_STAT, V$ASM_DISK, GV$ASM_OPERATION]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-RAC-SESSION-DIST-001
+    result:
+      - {inst_id: 1, service_name: "orclsvc1", session_count: 180}
+      - {inst_id: 2, service_name: "orclsvc1", session_count: 20}
+  - query_id: Q-RAC-SERVICES-001
+    result:
+      - {service_name: "orclsvc1", clb_goal: "LONG", rlb_goal: "NONE", active_instance: 1}
+      - {service_name: "orclsvc1", clb_goal: "LONG", rlb_goal: "NONE", active_instance: 2}
+
+expected_findings:
+  - category: session-distribution
+    severity: MEDIUM
+    confidence: PROBABLE_CAUSE
+    reason: "instancia 1 concentra 90% de sesiones (imbalance_ratio alto) PERO rlb_goal=NONE explica el desbalance como CONFIGURATION esperada (RLB desactivado, sin redistribución runtime) — no se clasifica como load-balancing failure sin esta correlación"

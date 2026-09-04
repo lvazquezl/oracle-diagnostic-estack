@@ -1,0 +1,45 @@
+# Fixture: Oracle 19c RAC — rebalance ASM activo, visibilidad de progreso sin control
+# Usada por: asm/rebalance, asm/operations
+fixture_id: FX-19c-asm-rebalance
+
+target_profile:
+  schema_version: "2.1.0"
+  target_id: "fixture-19c-asm-rebalance"
+  database: {name: "ORCL19CRB", unique_name: "ORCL19CRB", dbid: "1923223330"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: rac, multitenant_mode: cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19crb1", number: 1, host: "HOST_TOKEN_1101"}
+  cluster: {detected: true, instance_count: 2}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: SUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  rac: {enabled: true, node_count: 2, instances: ["INSTANCE_TOKEN_001", "INSTANCE_TOKEN_002"]}
+  gi: {version: "19.21.0.0.0", home: "PATH_TOKEN_011", cluster_name: "CLUSTER_TOKEN_011"}
+  asm: {enabled: true, instance_count: 2}
+  network: {scan_name: "SCAN_TOKEN_011", scan_ips: ["IP_TOKEN"], listener_ports: [1521]}
+  discovery: {timestamp: "2026-01-20T09:00:00Z", evidence_refs: [EVD-FX-1101], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$INSTANCE, GV$INSTANCE, V$DATABASE, V$ACTIVE_INSTANCES, GV$SERVICES,
+    GV$ACTIVE_SERVICES, GV$SESSION, GV$CLUSTER_INTERCONNECTS, GV$GES_STATISTICS, GV$GCS_STATISTICS,
+    GV$ASM_INSTANCE, V$ASM_DISKGROUP_STAT, V$ASM_DISK, GV$ASM_OPERATION]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-ASM-REBALANCE-001
+    result:
+      - {inst_id: 1, group_number: 1, operation: "REBAL", state: "RUN", power: 4, actual: 4, sofar: 3200, est_work: 8000, est_rate: 40, est_minutes: 120}
+
+expected_findings:
+  - category: rebalance
+    severity: LOW
+    confidence: HYPOTHESIS
+    reason: "rebalance activo al 40% de progreso, est_minutes=120 — informa impacto potencial en I/O, nunca asume causa de degradación de performance sin correlación con oracle-performance-analyst (# 27), y POWER nunca se modifica"

@@ -1,0 +1,21 @@
+may_delegate_to: [os-platform-analyst, oracle-rac-analyst]
+
+may_receive_from: [oracle-discovery-analyst, oracle-rac-analyst, oracle-dataguard-analyst]
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+
+escalation_conditions:
+  - condition: "TNS-12170 + SCAN resuelve + listener online + servicio registrado"
+    action: "investigar path de red/cliente/firewall — nunca afirmar firewall sin evidencia (# 51 del prompt de Fase 4)"
+  - condition: "TNS-12170 + fallo de resolución SCAN"
+    action: "clasificar como hipótesis de name-resolution, no de firewall"
+  - condition: "TNS-12537 sin evidencia específica de dominio"
+    action: "solicitar evidencia adicional — no reducir automáticamente a listener (# 52); dominios posibles: listener/red, exhaustion de recursos del server process, límites OS, path de cliente/aplicación, dispositivo intermedio, terminación de proceso Oracle"
+  - condition: "causa parece ser kernel TCP/firewall del host"
+    action: "delegar a os-platform-analyst"
+  - condition: "resolución/registro correctos pero el recurso Clusterware (SCAN VIP) está OFFLINE"
+    action: "reportar el finding con evidence_refs y remitir a oracle-rac-analyst — nunca reabrir un ciclo de delegación por el mismo síntoma"
+
+no_delegation_loop_rule: "oracle-network-analyst nunca delega a oracle-dba-analyst ni oracle-discovery-analyst."
+
+manual_command_rule: "Ninguna recomendación de este agente modifica listener.ora/tnsnames.ora/sqlnet.ora/DNS/firewall — toda sugerencia es manual_action con execution_status: NOT_EXECUTED, dirigida al administrador de red/DBA correspondiente."

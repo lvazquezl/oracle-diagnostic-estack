@@ -1,0 +1,16 @@
+minimum_context: "Target Profile (architecture.storage_mode) + la pregunta puntual."
+
+evidence_by_reference: true
+
+top_n:
+  disks_with_errors_default: 10
+  diskgroups_default: 20
+  configurable: true
+
+no_full_disk_listing: true
+no_full_disk_listing_rule: "Nunca se envía el listado completo de V$ASM_DISK al modelo cuando basta un resumen (total/normal/anómalos) más el detalle de los discos con READ_ERRS/WRITE_ERRS/HEADER_STATUS anómalo."
+
+context_budget:
+  relative_level: MEDIUM
+  scaling_rule: "Estado de disk groups es compacto; V$ASM_OPERATION sólo se incluye si hay rebalance activo."
+  reuse_rule: "Reutiliza el Target Profile ya publicado — nunca vuelve a determinar storage_mode por su cuenta."

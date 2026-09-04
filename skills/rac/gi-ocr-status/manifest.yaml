@@ -1,0 +1,18 @@
+name: gi-ocr-status
+display_name: "OCR Status Visibility"
+id: rac/gi-ocr-status
+version: 1.0.0
+domain: rac
+status: active
+supported_oracle_versions: [11gR2, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [Oracle Linux, RHEL, SUSE, Solaris, AIX, Windows Server]
+supported_architectures: [rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence:
+  - collector_id: get_ocr_status
+optional_evidence: []
+data_sensitivity: MEDIUM
+context_budget: LOW
+related_skills: [rac/gi-voting-status, rac/gi-cluster-health]
