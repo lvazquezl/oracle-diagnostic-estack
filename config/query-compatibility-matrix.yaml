@@ -156,6 +156,39 @@ queries:
   Q-ASM-DISKS-001: {file: queries/asm/Q-ASM-DISKS-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [V$ASM_DISK], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
   Q-ASM-REBALANCE-001: {file: queries/asm/Q-ASM-REBALANCE-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$ASM_OPERATION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
 
+  # --- Fase 5 (Data Guard) ---
+
+  # "max" explicito (nunca "latest") en todo el dominio Data Guard desde PHASE 5 — DATA GUARD
+  # COMPATIBILITY & QUERY CERTIFICATION HARDENING (# 10-15 del prompt): "latest" resolvia a un
+  # techo sin limite en el Query Variant Resolver (vernum("latest") = 99999), lo que hacia que
+  # cualquier version futura desconocida resolviera como compatible por herencia — contradiciendo
+  # la propia declaracion UNKNOWN_FUTURE de agents/oracle-dataguard-analyst/manifest.yaml. El techo
+  # explicito "23.0" refleja las versiones realmente certificadas (10g-23ai); una version futura
+  # (ej. 24.x) ya no hace match y cae correctamente en COMPATIBILITY_VALIDATION_REQUIRED.
+  Q-DG-ROLE-001: {file: queries/dataguard/Q-DG-ROLE-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$DATABASE], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-DG-STATS-001: {file: queries/dataguard/Q-DG-STATS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$DATAGUARD_STATS], role_scope: STANDBY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-DG-DEST-001: {file: queries/dataguard/Q-DG-DEST-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$ARCHIVE_DEST, V$ARCHIVE_DEST_STATUS], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-DG-ARCHIVED-LOG-001: {file: queries/dataguard/Q-DG-ARCHIVED-LOG-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$ARCHIVED_LOG], role_scope: STANDBY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-DG-ARCHIVE-GAP-001: {file: queries/dataguard/Q-DG-ARCHIVE-GAP-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$ARCHIVE_GAP], role_scope: STANDBY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-DG-SRL-001: {file: queries/dataguard/Q-DG-SRL-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$STANDBY_LOG, V$LOG], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+
+  # PHASE 5 — DATA GUARD FINAL PROCESS-VIEW & PORTABILITY HARDENING: rango corregido — V$DATAGUARD_
+  # PROCESS fue introducida en 12.2.0.1 (no 11.2, corregido contra Oracle Database Reference), y
+  # V$MANAGED_STANDBY esta oficialmente deprecada desde esa misma version. Particion real sin
+  # solapamiento (no "legacy default + modern on-demand"): 10.2-12.1 -> legacy exclusivamente,
+  # 12.2-23.0 -> modern exclusivamente. Ver docs/PHASE_5_FINAL_PROCESS_VIEW_PORTABILITY_HARDENING.md.
+  Q-DG-MANAGED-PROCESS-001:
+    file: queries/dataguard/Q-DG-MANAGED-PROCESS-001.md
+    variants:
+      - {variant_id: Q-DG-MANAGED-PROCESS-001-V1, label: legacy_managed_standby, min: "10.2", max: "12.1", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-DG-MANAGED-PROCESS-001-V2, label: modern_dataguard_process, min: "12.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$MANAGED_STANDBY, GV$MANAGED_STANDBY, V$DATAGUARD_PROCESS, GV$DATAGUARD_PROCESS]
+    role_scope: ANY
+    cost_class: LOW
+    license_requirements: none
+    validation_status: COMPATIBLE
+    was: WRONG_MIN_VERSION_AND_WRONG_COLUMNS
+
 notes: >
   "implicit_full_range" significa: la query no requirió split porque su SQL, verificado contra
   compatibility/oracle-dictionary/views.yaml, no referencia ninguna columna/vista fuera de su

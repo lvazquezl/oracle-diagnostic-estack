@@ -2,7 +2,55 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — 2026-09-04 — Fase 4: RAC / Grid Infrastructure / ASM / Network
+## [Unreleased] — 2026-09-07 — Fase 5: Oracle Data Guard
+
+Quinta capa funcional del e-stack, sobre baseline `v0.4.0-rac-gi-asm-network`. Ver `docs/PHASE_5_ORACLE_DATAGUARD.md` para el reporte de cierre completo.
+
+### Added
+
+- `agents/oracle-dataguard-analyst/` (`v2.0.0`) — reestructurado de manifest plano a contrato estructurado completo, mismo patrón que Fase 4.
+- 21 skills `dataguard/*` completamente materializadas — `skills/REGISTRY.md` pasa de 120 a 141 skills `active`.
+- `queries/dataguard/` — 7 queries certificadas (`Q-DG-ROLE-001`, `Q-DG-STATS-001`, `Q-DG-DEST-001`, `Q-DG-ARCHIVED-LOG-001`, `Q-DG-ARCHIVE-GAP-001`, `Q-DG-MANAGED-PROCESS-001`, `Q-DG-SRL-001`).
+- `parsers/dataguard/` (nuevo, Python 3 stdlib-only) — `broker_parser.py` (4 funciones DGMGRL `SHOW`), `alertlog_filter.py` (filtro local de alert.log), mismo envelope/disciplina de seguridad que `parsers/rac/` de Fase 4.
+- `docs/DATAGUARD_BROKER_READONLY_COLLECTORS.md` — Collector Contract Broker (reutiliza Fase 4), `docs/DATAGUARD_DIAGNOSTIC_MODEL.md`, `docs/DATAGUARD_READONLY_QUERIES.md`, `docs/DATAGUARD_SWITCHOVER_READINESS.md`, `docs/DATAGUARD_FAILOVER_READINESS.md`, `docs/PHASE_5_ORACLE_DATAGUARD.md` (incluye el Manual Action Contract).
+- 17 fixtures de escenario (11gR2/19c/23ai, RAC primary+standby, transport/apply lag, archive gap, MRP stopped, destination error, SRL insuficiente, degradación de protección, Broker healthy/warning, FSFO enabled, switchover ready/not-ready, failover exposure) + 6 fixtures de salida DGMGRL Broker (`tests/fixtures/broker/`, incl. prueba de prompt-injection).
+- ~80 tests nuevos: 10 query, 11 Broker, 6 transporte, 7 apply, 4 gap, 6 SRL, 7 readiness, 3 licensing, ~17 seguridad específicos de Fase 5, 4 contrato de agente.
+
+### Changed
+
+- `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` — Data Guard `PARTIAL → SUPPORTED` (10g–23ai para Physical Standby).
+- `queries/REGISTRY.md` — corregido un gap pre-existente: `Q-DG-STATS-001`/`Q-DG-ARCHIVE-GAP-001` (Foundation) nunca tuvieron archivo real pese a figurar "materializadas"; ahora genuinamente construidas bajo `queries/dataguard/`.
+- `docs/TARGET_PROFILE.md` — schema `2.1.0 → 2.2.0` (aditivo): bloque `dataguard`.
+- `docs/ORACLE_READONLY_PRIVILEGES.md` — grants Data Guard, cuarta identidad separada (Broker diagnóstica).
+- `mcp/tool-manifest.md` — 9 tools nuevas; corregida referencia stale de `get_dataguard_status`.
+
+### Known limitations
+
+Ver `docs/PHASE_5_ORACLE_DATAGUARD.md#known-limitations`. En resumen: Logical/Snapshot Standby/Far Sync reconocidos sin análisis profundo; `broker_parser.py` primera versión funcional; leak real de `db_unique_name` sin tokenizar detectado y corregido durante la construcción (campo `observer_state` eliminado del parser).
+
+### Fixed — PHASE 5 — Data Guard Compatibility & Query Certification Hardening
+
+Cierre de 3 defectos de certificación detectados antes de aprobar `v0.5.0-dataguard`. Ver `docs/PHASE_5_COMPATIBILITY_HARDENING.md` para el detalle completo.
+
+- **`Q-DG-ROLE-001` (bug real)**: seleccionaba `LOG_ARCHIVE_CONFIG` de `V$DATABASE` — esa columna no existe ahí (es un parámetro, vía `V$PARAMETER`). Corregida a v2.0.0; fuente correcta documentada vía `Q-ORA-PARAMETERS-001`.
+- **SQL Static Validator (causa raíz)**: sólo validaba version-gating de 4 columnas conocidas, nunca existencia real de columna — por eso el bug de `Q-DG-ROLE-001` pasó todos los tests. Añadido un segundo chequeo de existencia de columna (alias-aware, JOIN/comma-join-aware, abstención ante subqueries) sobre vistas marcadas `columns_exhaustive: true` en `compatibility/oracle-dictionary/views.yaml` (9 vistas Data Guard auditadas en este hardening). Halló, de paso, el mismo patrón de defecto en `V$ASM_DISK` (Fase 4, fuera de alcance — documentado, no corregido aquí).
+- **Future version policy**: `config/query-compatibility-matrix.yaml` declaraba `max: latest` en las 7 queries `Q-DG-*`, que el resolver interpreta como techo sin límite (`vernum("latest") = 99999`) — contradiciendo la propia declaración `UNKNOWN_FUTURE` del agente para versiones futuras. Corregido a `max: "23.0"` explícito en las 7. Aclarada la semántica de `latest: SUPPORTED` en `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md`. Corregidas también 3 entradas `role_scope: PHYSICAL_STANDBY` remanentes (fuera del enum) en la misma matriz.
+- **`Q-DG-MANAGED-PROCESS-001` modernizada**: de un único statement legacy (`V$MANAGED_STANDBY`) a un modelo de variantes legacy (default, 10.2+)/modern (`V$DATAGUARD_PROCESS`, on-demand, 11.2+), con normalización semántica a un modelo lógico común — sin forzar equivalencia en campos que la vista moderna no expone (`thread`/`sequence` quedan `PARTIALLY_SUPPORTED` en la variante moderna).
+- 15 tests nuevos de regresión específicos de este hardening.
+
+### Fixed — PHASE 5 — Data Guard Final Process-View & Portability Hardening
+
+Cierre de 4 defectos finales antes de aprobar `v0.5.0-dataguard`. Ver `docs/PHASE_5_FINAL_PROCESS_VIEW_PORTABILITY_HARDENING.md` para el detalle completo.
+
+- **`V$DATAGUARD_PROCESS` metadata (bug real)**: el hardening anterior declaró `min_version: "11.2"` y columnas `status`/`client_process` — ambos datos incorrectos, verificado contra Oracle Database Reference. Versión real de introducción: **12.2.0.1**. `STATUS`/`CLIENT_PROCESS` no son columnas de esta vista (pertenecen a `V$MANAGED_STANDBY` — confusión entre ambas vistas). Corregido a las columnas reales documentadas (`name`/`pid`/`type`/`role`/`action`/`client_pid`/`client_role`/`thread#`/`sequence#`/`block#`/`block_count`); `V$MANAGED_STANDBY` corregida también (agregadas `thread#`/`client_pid`, documentada su deprecación oficial desde 12.2.0.1).
+- **Legacy/modern boundary corregida**: de "legacy default 10.2–23.0 + modern on-demand desde 11.2" a una partición real sin solapamiento — legacy única opción 10.2–12.1, modern única opción 12.2–23.0. `Q-DG-MANAGED-PROCESS-001` v3.0.0.
+- **Semantic normalization corregida**: modelo lógico renombrado (`process_name`/`process_role`/`process_action`/`client_pid`/`thread`/`sequence`/`source_view`/`source_variant`) — `thread`/`sequence` pasan de `PARTIALLY_SUPPORTED` (suposición incorrecta del hardening anterior) a soportados en ambas variantes; único campo sin equivalente real es `process_role` en legacy.
+- **`latest: SUPPORTED` eliminado estructuralmente** de la fila `dataguard` en `config/capability-matrix.yaml` (no sólo reinterpretado por comentario como en el hardening anterior) — reemplazado por `future_status: COMPATIBILITY_VALIDATION_REQUIRED`. `docs/CAPABILITY_MATRIX.md` actualizado igual.
+- **Regresión CRLF corregida**: `compatibility/oracle-dictionary/views.yaml` tenía terminadores de línea CRLF pese a `.gitattributes` ya declarar `eol=lf` — normalizado a LF (contenido sin cambios semánticos). Barrido de todo el repositorio confirmó que era el único archivo afectado.
+- **Nuevo test general de portabilidad**: `tests/test_repository_text_files_are_lf.sh` (Python stdlib, escanea *.sh/*.bash/*.py/*.yaml/*.yml/*.json/*.md) + `tests/test_gitattributes_lf_policy.sh`.
+- 10 tests nuevos + 6 tests corregidos (no cosméticos — reflejan el rango/columnas reales corregidos).
+
+## [0.4.0-rac-gi-asm-network] — 2026-09-04 — Fase 4: RAC / Grid Infrastructure / ASM / Network
 
 Cuarta capa funcional del e-stack, sobre baseline `v0.3.0-performance`. Ver `docs/PHASE_4_RAC_GI_ASM_NETWORK.md` para el reporte de cierre completo.
 

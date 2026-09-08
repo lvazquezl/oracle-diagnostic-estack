@@ -1,0 +1,14 @@
+Database - orcl_sby
+
+  Role:               PHYSICAL STANDBY
+  Intended State:     APPLY-ON
+  Transport Lag:      2 minutes 15 seconds (computed 1 second ago)
+  Apply Lag:          5 minutes 40 seconds (computed 1 second ago)
+  Average Apply Rate: 0.20 MByte/s
+  Real Time Query:    OFF
+
+Database Warning(s):
+  ORA-16826: apply service state is inconsistent with the DelayMins property
+
+Database Status:
+WARNING

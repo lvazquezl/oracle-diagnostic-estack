@@ -12,7 +12,7 @@ Este registro identifica cada skill **exclusivamente** por su `skill_id` complet
 - `active` — materializado por completo (19 secciones del Skill Contract), archivo real en el dominio.
 - `registered` — nombre, dominio y propósito fijados en este registro; su materialización completa es Fase 2+ según `README.md#fases-de-construcción`. No es un placeholder vacío: es la entrada de catálogo que gobierna qué se puede construir y en qué orden vía `/change skill`.
 
-Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total). El resto queda `registered` para materialización gobernada en Fases 5–9, en el orden de `README.md`.
+Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total); **Fase 5 (Data Guard) materializa las 21 skills del dominio `dataguard` completo** (141 activos en total). El resto queda `registered` para materialización gobernada en Fases 6–9, en el orden de `README.md`.
 
 ## core (20)
 
@@ -155,27 +155,33 @@ Fase 4 (RAC/GI/ASM/Network) materializa el dominio `rac` completo y **reconcilia
 | `asm/assessment` | **active** ([asm/assessment/SKILL.md](asm/assessment/SKILL.md)) |
 | `asm/troubleshooting` | **active** ([asm/troubleshooting/SKILL.md](asm/troubleshooting/SKILL.md)) |
 
-## dataguard (17)
+## dataguard (21 — Fase 5, todos `active`)
+
+Reconciliación de la lista Foundation (sólo `lag` estaba `active`): `discovery` → absorbido en `topology`/`role` (sin skill_id propio); `protection-mode` → `protection`; `archive-gap` → `archive-gaps`; `mrp`/`rfs` → absorbidos en `apply` (estado MRP) + `processes` (RFS/LNS/LGWR/ARCH/DGRD unificados); `srl` → `standby-redo-logs`; `services`/`network`/`performance` → sin skill_id propio, correlación cross-domain narrativa vía delegación a `oracle-rac-analyst`/`oracle-network-analyst`/`oracle-performance-analyst` (ver `agents/oracle-dataguard-analyst/AGENT.md#correlation-model`); `readiness` → dividido en `switchover-readiness` + `failover-readiness` (`# 31` del prompt de Fase 5: nunca el mismo workflow). Nuevos: `topology`, `real-time-apply`, `fsfo`, `observer`, `configuration-drift`, `healthcheck`, `assessment`, `incident-analysis`.
 
 | skill_id | status |
 |---|---|
-| `dataguard/discovery` | registered |
-| `dataguard/role` | registered |
-| `dataguard/protection-mode` | registered |
-| `dataguard/transport` | registered |
-| `dataguard/apply` | registered |
-| `dataguard/lag` | **active** ([dataguard/lag.md](dataguard/lag.md)) |
-| `dataguard/archive-destinations` | registered |
-| `dataguard/archive-gap` | registered |
-| `dataguard/mrp` | registered |
-| `dataguard/rfs` | registered |
-| `dataguard/srl` | registered |
-| `dataguard/broker` | registered |
-| `dataguard/services` | registered |
-| `dataguard/network` | registered |
-| `dataguard/performance` | registered |
-| `dataguard/readiness` | registered |
-| `dataguard/troubleshooting` | registered |
+| `dataguard/topology` | **active** ([dataguard/topology/SKILL.md](dataguard/topology/SKILL.md)) |
+| `dataguard/role` | **active** ([dataguard/role/SKILL.md](dataguard/role/SKILL.md)) |
+| `dataguard/protection` | **active** ([dataguard/protection/SKILL.md](dataguard/protection/SKILL.md)) |
+| `dataguard/transport` | **active** ([dataguard/transport/SKILL.md](dataguard/transport/SKILL.md)) |
+| `dataguard/apply` | **active** ([dataguard/apply/SKILL.md](dataguard/apply/SKILL.md)) |
+| `dataguard/lag` | **active** ([dataguard/lag/SKILL.md](dataguard/lag/SKILL.md)) |
+| `dataguard/archive-gaps` | **active** ([dataguard/archive-gaps/SKILL.md](dataguard/archive-gaps/SKILL.md)) |
+| `dataguard/archive-destinations` | **active** ([dataguard/archive-destinations/SKILL.md](dataguard/archive-destinations/SKILL.md)) |
+| `dataguard/processes` | **active** ([dataguard/processes/SKILL.md](dataguard/processes/SKILL.md)) |
+| `dataguard/standby-redo-logs` | **active** ([dataguard/standby-redo-logs/SKILL.md](dataguard/standby-redo-logs/SKILL.md)) |
+| `dataguard/real-time-apply` | **active** ([dataguard/real-time-apply/SKILL.md](dataguard/real-time-apply/SKILL.md)) |
+| `dataguard/broker` | **active** ([dataguard/broker/SKILL.md](dataguard/broker/SKILL.md)) |
+| `dataguard/fsfo` | **active** ([dataguard/fsfo/SKILL.md](dataguard/fsfo/SKILL.md)) |
+| `dataguard/observer` | **active** ([dataguard/observer/SKILL.md](dataguard/observer/SKILL.md)) |
+| `dataguard/switchover-readiness` | **active** ([dataguard/switchover-readiness/SKILL.md](dataguard/switchover-readiness/SKILL.md)) |
+| `dataguard/failover-readiness` | **active** ([dataguard/failover-readiness/SKILL.md](dataguard/failover-readiness/SKILL.md)) |
+| `dataguard/configuration-drift` | **active** ([dataguard/configuration-drift/SKILL.md](dataguard/configuration-drift/SKILL.md)) |
+| `dataguard/healthcheck` | **active** ([dataguard/healthcheck/SKILL.md](dataguard/healthcheck/SKILL.md)) |
+| `dataguard/assessment` | **active** ([dataguard/assessment/SKILL.md](dataguard/assessment/SKILL.md)) |
+| `dataguard/troubleshooting` | **active** ([dataguard/troubleshooting/SKILL.md](dataguard/troubleshooting/SKILL.md)) |
+| `dataguard/incident-analysis` | **active** ([dataguard/incident-analysis/SKILL.md](dataguard/incident-analysis/SKILL.md)) |
 
 ## multitenant (12)
 

@@ -1,0 +1,19 @@
+name: archive-gaps
+display_name: "Archive Gap Analysis (Thread-Aware)"
+id: dataguard/archive-gaps
+version: 1.0.0
+domain: dataguard
+status: active
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: ANY_CONTAINER
+database_role_scope: STANDBY
+license_requirements: none
+required_evidence:
+  - query_id: Q-DG-ARCHIVE-GAP-001
+optional_evidence:
+  - query_id: Q-DG-ARCHIVED-LOG-001
+data_sensitivity: LOW
+context_budget: MEDIUM
+related_skills: [dataguard/lag, dataguard/transport, dataguard/apply]

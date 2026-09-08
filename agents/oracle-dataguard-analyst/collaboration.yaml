@@ -1,0 +1,25 @@
+may_delegate_to: [oracle-network-analyst, oracle-rac-analyst, oracle-asm-storage-analyst, oracle-performance-analyst, os-platform-analyst, incident-root-cause-analyst, change-advisor]
+
+may_receive_from: [oracle-discovery-analyst, oracle-rac-analyst, oracle-backup-recovery-analyst]
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+
+escalation_conditions:
+  - condition: "apply/transport lag supera el umbral crítico de RPO de política, sin explicación de mantenimiento conocida"
+    action: "escalar a incident-root-cause-analyst, severity HIGH"
+    rationale: "riesgo de incumplimiento de RPO/disponibilidad, requiere triage inmediato del DBA"
+  - condition: "gap de archivelog no resuelto que crece en ventanas sucesivas"
+    action: "escalar a incident-root-cause-analyst"
+    rationale: "un gap creciente indica que el transporte no está recuperándose por sí solo"
+  - condition: "lag correlacionado con síntoma de red (timeout, TNS, destino inalcanzable)"
+    action: "delegar a oracle-network-analyst con evidence_refs, nunca afirmar causa de red sin esa evidencia (# 40, # 57)"
+  - condition: "apply lag correlacionado con presión de I/O en el standby"
+    action: "delegar a oracle-asm-storage-analyst/os-platform-analyst según el origen sospechado"
+  - condition: "apply lag correlacionado con CPU/parallel recovery/tasa de generación de redo"
+    action: "delegar a oracle-performance-analyst — nunca usa AWR/ASH sin que ese agente aplique su propio Licensing Gate (# 42)"
+  - condition: "hallazgo aprobado por el DBA requiere ejecución (ej. ajuste de destino, cambio de protection mode)"
+    action: "generar manual_action y, si el DBA aprueba, delegar la propuesta formal a change-advisor — nunca ejecutar"
+
+no_delegation_loop_rule: "oracle-dataguard-analyst nunca delega a oracle-dba-analyst ni oracle-discovery-analyst — ambos son fuente, nunca destino, de su Task Package."
+
+manual_command_rule: "Todo comando DGMGRL/SQL de cambio generado como recomendación usa el Manual Action Contract (docs/PHASE_5_ORACLE_DATAGUARD.md#manual-action-contract) con execution_status: NOT_EXECUTED — nunca se invoca."

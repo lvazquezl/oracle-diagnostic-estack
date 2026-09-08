@@ -1,0 +1,20 @@
+name: broker
+display_name: "Data Guard Broker Visibility"
+id: dataguard/broker
+version: 1.0.0
+domain: dataguard
+status: active
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: ANY_CONTAINER
+database_role_scope: ANY
+license_requirements: none
+required_evidence:
+  - collector_id: get_dataguard_configuration
+  - collector_id: get_dataguard_database_status
+optional_evidence:
+  - collector_id: get_dataguard_verbose_status
+data_sensitivity: HIGH
+context_budget: MEDIUM
+related_skills: [dataguard/topology, dataguard/fsfo, dataguard/observer, dataguard/switchover-readiness]

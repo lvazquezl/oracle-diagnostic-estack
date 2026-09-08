@@ -10,7 +10,7 @@ Un Target Profile es la única fuente de verdad sobre "qué es este ambiente" de
 
 ```yaml
 target_profile:
-  schema_version: "2.1.0"
+  schema_version: "2.2.0"
   target_id: string                    # referencia local (alias), nunca connection string con credenciales
 
   database:
@@ -81,6 +81,18 @@ target_profile:
     scan_ips: [string]|null        # MASK por defecto
     listener_ports: [int]|null     # KEEP — puerto en sí no identifica, sólo junto con host
 
+  # --- Fase 5 (Data Guard) — aditivo, schema_version 2.2.0, ningún campo previo removido/renombrado ---
+
+  dataguard:
+    enabled: bool
+    role: primary|physical_standby|logical_standby|snapshot_standby|undetermined   # espejo de database_role, explícito en este bloque para consumo directo por oracle-dataguard-analyst
+    db_unique_name: string|null            # MASK por defecto
+    protection_mode: MAXIMUM_PROTECTION|MAXIMUM_AVAILABILITY|MAXIMUM_PERFORMANCE|null
+    broker_enabled: bool
+    fsfo_enabled: bool
+    primary: string|null                   # db_unique_name del primary — MASK por defecto
+    standbys: [string]|null                # db_unique_name de cada standby conocido — MASK por defecto
+
   discovery:
     timestamp: ISO-8601
     evidence_refs: [EVD-...]
@@ -96,6 +108,7 @@ target_profile:
 - **`logical_standby`/`snapshot_standby`** se detectan cuando sea posible (`V$DATABASE.DATABASE_ROLE` los reporta directamente desde 11g) pero no se profundiza en ellos — Data Guard interno sigue fuera de alcance de Fase 2 (`oracle-dataguard-analyst` no se desarrolla en profundidad todavía).
 - **Bloques `rac`/`gi`/`asm`/`network` (Fase 4) son aditivos y se publican en `null`/`false` cuando no aplican** — nunca se omiten del schema. Un target standalone sin ASM publica `rac.enabled: false`, `asm.enabled: false`, con el resto de campos de esos bloques en `null` — nunca se activa `oracle-rac-analyst`/`oracle-asm-storage-analyst` sobre ese Target Profile (Capability Filter).
 - **`gi.version`/`gi.home`/`network.scan_name`/`network.scan_ips` nunca se determinan por adivinanza.** Si `oracle-discovery-analyst` no pudo obtener evidencia (ej. `INSUFFICIENT_PRIVILEGES` en el collector `get_cluster_version`/`get_scan_configuration`), el campo queda `null` y el consumidor (`oracle-rac-analyst`/`oracle-network-analyst`) re-consulta el skill correspondiente en vez de asumir un valor.
+- **`dataguard.role` es un espejo directo de `database_role` (Fase 5), nunca una segunda fuente de verdad.** `dataguard.enabled` es `true` cuando `database_role != primary` o cuando el primary tiene al menos un standby conocido — un target `primary` sin standby conocido publica `dataguard.enabled: false` y `oracle-dataguard-analyst` no se activa (Capability Filter). `dataguard.primary`/`dataguard.standbys` nunca se infieren de `OPEN_MODE` (`# 9` del prompt de Fase 5) — provienen siempre de `DATABASE_ROLE`/Broker cuando esté disponible.
 
 ## Versionado del schema
 
@@ -103,4 +116,4 @@ target_profile:
 
 ## Consumidores
 
-`oracle-dba-analyst` (Oracle Core), `oracle-performance-analyst` (Fase 3), `oracle-rac-analyst`/`oracle-asm-storage-analyst`/`oracle-network-analyst` (Fase 4 — consumen los bloques `rac`/`gi`/`asm`/`network` respectivamente, nunca vuelven a determinar `cluster_mode`/`storage_mode`/SCAN por su cuenta) — y, por diseño, aunque no se implementan en profundidad todavía, `oracle-dataguard-analyst`, `oracle-multitenant-analyst`, `oracle-backup-recovery-analyst` leerán este mismo Target Profile cuando se profundicen en fases posteriores, en vez de re-implementar discovery.
+`oracle-dba-analyst` (Oracle Core), `oracle-performance-analyst` (Fase 3), `oracle-rac-analyst`/`oracle-asm-storage-analyst`/`oracle-network-analyst` (Fase 4 — consumen los bloques `rac`/`gi`/`asm`/`network` respectivamente, nunca vuelven a determinar `cluster_mode`/`storage_mode`/SCAN por su cuenta), `oracle-dataguard-analyst` (Fase 5 — consume el bloque `dataguard`, nunca vuelve a determinar `database_role`/`protection_mode` por su cuenta) — y, por diseño, aunque no se implementan en profundidad todavía, `oracle-multitenant-analyst`, `oracle-backup-recovery-analyst` leerán este mismo Target Profile cuando se profundicen en fases posteriores, en vez de re-implementar discovery.

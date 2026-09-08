@@ -1,0 +1,45 @@
+# Fixture: Oracle 11gR2 physical standby — baseline mínimo soportado, todo sano
+# Usada por: dataguard/role, dataguard/topology, dataguard/lag, dataguard/healthcheck
+fixture_id: FX-11gr2-physical-standby-healthy
+
+target_profile:
+  schema_version: "2.2.0"
+  target_id: "fixture-11gr2-dg-healthy"
+  database: {name: "ORCL11GDR", unique_name: "orcl11g_sby", dbid: "1112223331"}
+  oracle_version: {major: 11, minor: 2, release: 0, ru: null, raw: "11.2.0.4.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: physical_standby
+  open_mode: "READ ONLY WITH APPLY"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl11g", number: 1, host: "HOST_TOKEN_SBY01"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: non_cdb, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: SUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  dataguard: {enabled: true, role: physical_standby, db_unique_name: "DB_UNIQUE_NAME_TOKEN_001", protection_mode: MAXIMUM_PERFORMANCE, broker_enabled: false, fsfo_enabled: false, primary: "DB_UNIQUE_NAME_TOKEN_002", standbys: null}
+  discovery: {timestamp: "2026-02-01T09:00:00Z", evidence_refs: [EVD-FX-2001], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$DATABASE, V$DATAGUARD_STATS, V$ARCHIVE_DEST, V$ARCHIVE_DEST_STATUS,
+    V$ARCHIVED_LOG, V$ARCHIVE_GAP, V$MANAGED_STANDBY, V$STANDBY_LOG, V$LOG]
+  available_columns:
+    "V$INSTANCE.version_full": false
+    "V$DATABASE.cdb": false
+    "V$ACTIVE_INSTANCES.con_id": false
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-DG-ROLE-001
+    result:
+      - {db_unique_name: "orcl11g_sby", database_role: "PHYSICAL STANDBY", open_mode: "READ ONLY WITH APPLY", switchover_status: "TO PRIMARY", protection_mode: "MAXIMUM PERFORMANCE", protection_level: "MAXIMUM PERFORMANCE", force_logging: true, flashback_on: true}
+  - query_id: Q-DG-STATS-001
+    result:
+      - {name: "transport lag", value: "+00 00:00:02", unit: "day(2) to second(0) interval"}
+      - {name: "apply lag", value: "+00 00:00:05", unit: "day(2) to second(0) interval"}
+
+expected_findings:
+  - category: role
+    severity: INFO
+    confidence: FACT
+    reason: "database_role=PHYSICAL STANDBY confirmado directamente, no inferido de open_mode (# 9) — protection_mode=protection_level consistente, lag mínimo"

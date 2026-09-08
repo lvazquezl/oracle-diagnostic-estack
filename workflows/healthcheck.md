@@ -6,7 +6,7 @@ status: active
 
 # Trigger/intent
 
-Comando `/healthcheck`. Solicitud general de salud de un target Oracle (todo el ambiente o un módulo específico). Invocaciones acotadas por módulo (Fase 4): `/healthcheck rac` (orquesta `rac/healthcheck`), `/healthcheck asm` (orquesta `asm/healthcheck`), `/healthcheck network` (orquesta `network/healthcheck`) — cada una activa únicamente el agente correspondiente, sin recorrer Oracle Core completo.
+Comando `/healthcheck`. Solicitud general de salud de un target Oracle (todo el ambiente o un módulo específico). Invocaciones acotadas por módulo (Fase 4): `/healthcheck rac` (orquesta `rac/healthcheck`), `/healthcheck asm` (orquesta `asm/healthcheck`), `/healthcheck network` (orquesta `network/healthcheck`) — cada una activa únicamente el agente correspondiente, sin recorrer Oracle Core completo. `/healthcheck dataguard` (Fase 5) orquesta `dataguard/healthcheck` — Data Guard Health Model por dimensión (`ROLE, TRANSPORT, APPLY, LAG, GAPS, BROKER, SRL, PROTECTION, FSFO, READINESS`).
 
 # Prerequisites
 

@@ -1,4 +1,4 @@
-# Oracle Read-Only Privileges — `ESTACK_DIAGNOSTIC_ROLE` (Fase 2, extendido en Fase 4)
+# Oracle Read-Only Privileges — `ESTACK_DIAGNOSTIC_ROLE` (Fase 2, extendido en Fase 4/5)
 
 Este documento es **propuesta para revisión humana** — no se ejecuta automáticamente. El e-stack nunca crea usuarios/roles ni otorga privilegios (ver `policies/forbidden-operations.md`). El DBA revisa este documento y decide qué otorgar, cuándo y a quién.
 
@@ -75,6 +75,32 @@ GRANT SELECT ON GV_$ASM_OPERATION      TO estack_diagnostic_role;   -- 11.2+
 -- (mismo criterio de Q-DISC-ASM-001-V2, ver tabla de variantes abajo).
 ```
 
+## Required privileges — Data Guard (Fase 5)
+
+```sql
+-- Ejecutadas en el sitio primary y en cada standby conocido, mismo rol ESTACK_DIAGNOSTIC_ROLE.
+GRANT SELECT ON V_$DATAGUARD_STATS      TO estack_diagnostic_role;
+GRANT SELECT ON V_$ARCHIVE_GAP          TO estack_diagnostic_role;
+GRANT SELECT ON V_$MANAGED_STANDBY      TO estack_diagnostic_role;
+GRANT SELECT ON GV_$MANAGED_STANDBY     TO estack_diagnostic_role;   -- si el sitio es RAC
+GRANT SELECT ON V_$STANDBY_LOG          TO estack_diagnostic_role;
+GRANT SELECT ON GV_$ARCHIVE_DEST_STATUS TO estack_diagnostic_role;   -- si el primary es RAC
+-- V$DATABASE, V$ARCHIVE_DEST, V$ARCHIVE_DEST_STATUS, V$ARCHIVED_LOG, V$LOG ya cubiertos arriba (Fase 2/3).
+```
+
+Los collectors Broker (`docs/DATAGUARD_BROKER_READONLY_COLLECTORS.md`) no usan SQL — requieren la identidad diagnóstica Broker separada (ver "Identity separation" abajo), nunca la identidad SQL `ESTACK_DIAGNOSTIC_ROLE`.
+
+## Identity separation (Fase 4/5, `# 77` del prompt de Fase 5)
+
+Extiende la tabla de Fase 4 con una cuarta identidad:
+
+| Identidad | Alcance | Usada por |
+|---|---|---|
+| `ESTACK_DIAGNOSTIC_ROLE` (database, primary y standby) | `SELECT` sobre las vistas Data Guard de este documento, en cada sitio conocido | `Q-DG-*` |
+| Identidad diagnóstica Broker | Ejecución allowlisted de `dgmgrl` limitada a `SHOW CONFIGURATION`/`SHOW DATABASE [VERBOSE]`/`SHOW FAST_START FAILOVER` | Collectors de `docs/DATAGUARD_BROKER_READONLY_COLLECTORS.md` |
+
+Ninguna identidad Data Guard es `SYSDBA` permanente (`# 77`: "No recomendar SYSDBA permanente para el e-stack"). Para cualquier evidencia que requiera un privilegio no disponible: `INSUFFICIENT_PRIVILEGES` + `MANUAL_COLLECTION_REQUIRED` — nunca escalamiento automático, mismo modelo que Fase 4.
+
 ## Identity separation (Fase 4, `# 71` del prompt de Fase 4)
 
 Tres identidades distintas, ninguna con capacidad de escritura, nunca `root`/`sudo`/`grid` con capacidad de cambio:
@@ -132,7 +158,7 @@ Ver `queries/REGISTRY.md` (secciones "Identity & Scope" y "Oracle Core queries")
 
 ## Limitations
 
-- Esta lista cubre Oracle Core (Fase 2) + Discovery + Performance (Fase 3) + RAC/GI/ASM/Network (Fase 4). Fases futuras (Data Guard/Multitenant/RMAN/OS) requerirán privilegios adicionales, documentados incrementalmente vía `/change` cuando esas fases se implementen.
+- Esta lista cubre Oracle Core (Fase 2) + Discovery + Performance (Fase 3) + RAC/GI/ASM/Network (Fase 4) + Data Guard (Fase 5). Fases futuras (Multitenant/RMAN/Security profundos) requerirán privilegios adicionales, documentados incrementalmente vía `/change` cuando esas fases se implementen.
 - La instancia ASM ahora está cubierta (ver "Required privileges — ASM (Fase 4)" arriba) — sigue siendo una conexión/rol separado de la base de datos, arquitectura estándar Oracle.
 - El acceso a `alert.log` depende de la configuración de permisos del sistema operativo del target, fuera del control de Oracle SQL — se documenta como prerequisito operativo, no como un `GRANT`.
 

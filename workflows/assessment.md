@@ -6,7 +6,7 @@ status: active
 
 # Trigger/intent
 
-Comando `/assessment`. Evaluación integral y más profunda que un healthcheck — típicamente para onboarding de un ambiente nuevo, auditoría periódica, o antes de un cambio mayor. `/assessment rac` (Fase 4) acota el alcance a `rac/assessment` — arquitectura, versiones, nodos/instancias/servicios, load-balancing, SCAN, listeners, interconnect, resumen ASM, hallazgos de configuración, riesgos y recomendaciones (`# 42` del prompt de Fase 4).
+Comando `/assessment`. Evaluación integral y más profunda que un healthcheck — típicamente para onboarding de un ambiente nuevo, auditoría periódica, o antes de un cambio mayor. `/assessment rac` (Fase 4) acota el alcance a `rac/assessment` — arquitectura, versiones, nodos/instancias/servicios, load-balancing, SCAN, listeners, interconnect, resumen ASM, hallazgos de configuración, riesgos y recomendaciones (`# 42` del prompt de Fase 4). `/assessment dataguard` (Fase 5) acota el alcance a `dataguard/assessment` — arquitectura, roles, versiones, protección, transporte, apply, lag, gaps, SRL, Broker, FSFO, dependencias de red/RAC/storage, riesgos, recomendaciones, readiness (`# 47` del prompt de Fase 5).
 
 # Prerequisites
 

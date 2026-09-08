@@ -1,0 +1,45 @@
+# Fixture: Oracle 19c standby — apply lag alto, transporte al día (# 56: apply lag es observación, no causa)
+# Usada por: dataguard/lag, dataguard/apply
+fixture_id: FX-19c-apply-lag
+
+target_profile:
+  schema_version: "2.2.0"
+  target_id: "fixture-19c-dg-applylag"
+  database: {name: "ORCL19AL", unique_name: "orcl19al_sby", dbid: "1915223331"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: asm}
+  database_role: physical_standby
+  open_mode: "READ ONLY WITH APPLY"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19al", number: 1, host: "HOST_TOKEN_SBY05"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: SUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  dataguard: {enabled: true, role: physical_standby, db_unique_name: "DB_UNIQUE_NAME_TOKEN_001", protection_mode: MAXIMUM_PERFORMANCE, broker_enabled: false, fsfo_enabled: false, primary: "DB_UNIQUE_NAME_TOKEN_002", standbys: null}
+  discovery: {timestamp: "2026-02-05T09:00:00Z", evidence_refs: [EVD-FX-2401], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$DATABASE, V$DATAGUARD_STATS, V$ARCHIVE_DEST, V$ARCHIVE_DEST_STATUS,
+    V$ARCHIVED_LOG, V$ARCHIVE_GAP, V$MANAGED_STANDBY, GV$MANAGED_STANDBY, V$STANDBY_LOG, V$LOG]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-DG-STATS-001
+    result:
+      - {name: "transport lag", value: "+00 00:00:03", unit: "day(2) to second(0) interval"}
+      - {name: "apply lag", value: "+00 00:25:00", unit: "day(2) to second(0) interval"}
+  - query_id: Q-DG-MANAGED-PROCESS-001
+    result:
+      - {process: "MRP0", status: "APPLYING_LOG", client_process: null, sequence#: 4501}
+
+expected_findings:
+  - category: lag
+    severity: HIGH
+    confidence: OBSERVATION
+    reason: "apply_lag=25min con transport_lag mínimo (3s) → MRP corriendo pero lento; reportado como OBSERVATION, requiere correlación con CPU/I/O/redo generation (# 56) antes de cualquier PROBABLE_CAUSE"

@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 PATTERN='execute_shell|run_command|shell_exec|os\.system\(|subprocess\.(run|call|Popen|check_output)\('
 
-for f in $(find "$ROOT/parsers" "$ROOT/mcp" "$ROOT/collectors" "$ROOT/docs/GI_READONLY_COLLECTORS.md" \( -name '*.py' -o -name '*.md' \) 2>/dev/null); do
+for f in $(find "$ROOT/parsers" "$ROOT/mcp" "$ROOT/collectors" "$ROOT/docs/GI_READONLY_COLLECTORS.md" "$ROOT/docs/DATAGUARD_BROKER_READONLY_COLLECTORS.md" \( -name '*.py' -o -name '*.md' \) 2>/dev/null); do
   [ -f "$f" ] || continue
   # Ventana de 3 líneas antes de cada match: si "nunca/never/prohibid/forbidden/NUNCA expone"
   # aparece en esa ventana (encabezado de sección o misma línea), es prosa documentando la

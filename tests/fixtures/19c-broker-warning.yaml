@@ -1,0 +1,39 @@
+# Fixture: Oracle 19c — Broker miembro con warning (usa show-database-warning.txt)
+# Usada por: dataguard/broker
+fixture_id: FX-19c-broker-warning
+
+target_profile:
+  schema_version: "2.2.0"
+  target_id: "fixture-19c-dg-brokerwarn"
+  database: {name: "ORCL19BW", unique_name: "orcl19bw_sby", dbid: "1922223331"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: asm}
+  database_role: physical_standby
+  open_mode: "READ ONLY WITH APPLY"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19bw", number: 1, host: "HOST_TOKEN_SBY10"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: SUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  dataguard: {enabled: true, role: physical_standby, db_unique_name: "DB_UNIQUE_NAME_TOKEN_001", protection_mode: MAXIMUM_AVAILABILITY, broker_enabled: true, fsfo_enabled: false, primary: "DB_UNIQUE_NAME_TOKEN_002", standbys: null}
+  discovery: {timestamp: "2026-02-12T09:00:00Z", evidence_refs: [EVD-FX-3101], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$DATABASE, V$DATAGUARD_STATS, V$ARCHIVE_DEST, V$ARCHIVE_DEST_STATUS,
+    V$ARCHIVED_LOG, V$ARCHIVE_GAP, V$MANAGED_STANDBY, GV$MANAGED_STANDBY, V$STANDBY_LOG, V$LOG]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+collector_fixture_files:
+  get_dataguard_database_status: tests/fixtures/broker/show-database-warning.txt
+
+expected_findings:
+  - category: broker
+    severity: MEDIUM
+    confidence: FACT
+    reason: "Database Status=WARNING con ORA-16826 (apply service state inconsistent with DelayMins) — reportado como finding MEDIUM, warning transitorio se descarta sólo si se resuelve en la siguiente observación"

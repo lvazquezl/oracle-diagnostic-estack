@@ -1,0 +1,11 @@
+Configuration - orcl_dr
+
+  Protection Mode: MaxAvailability
+  Members:
+  orcl_pri  - Primary database
+    orcl_sby - Physical standby database
+
+Fast-Start Failover: ENABLED
+
+Configuration Status:
+SUCCESS   (status updated 12 seconds ago)

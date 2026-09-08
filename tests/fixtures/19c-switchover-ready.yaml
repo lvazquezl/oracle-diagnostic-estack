@@ -1,0 +1,50 @@
+# Fixture: Oracle 19c — todas las verificaciones de switchover-readiness PASS
+# Usada por: dataguard/switchover-readiness
+fixture_id: FX-19c-switchover-ready
+
+target_profile:
+  schema_version: "2.2.0"
+  target_id: "fixture-19c-dg-swready"
+  database: {name: "ORCL19SW", unique_name: "orcl19sw_sby", dbid: "1924223331"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: asm}
+  database_role: physical_standby
+  open_mode: "READ ONLY WITH APPLY"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19sw", number: 1, host: "HOST_TOKEN_SBY11"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: SUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  dataguard: {enabled: true, role: physical_standby, db_unique_name: "DB_UNIQUE_NAME_TOKEN_001", protection_mode: MAXIMUM_AVAILABILITY, broker_enabled: true, fsfo_enabled: false, primary: "DB_UNIQUE_NAME_TOKEN_002", standbys: null}
+  discovery: {timestamp: "2026-02-14T09:00:00Z", evidence_refs: [EVD-FX-3301], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$DATABASE, V$DATAGUARD_STATS, V$ARCHIVE_DEST, V$ARCHIVE_DEST_STATUS,
+    V$ARCHIVED_LOG, V$ARCHIVE_GAP, V$MANAGED_STANDBY, GV$MANAGED_STANDBY, V$STANDBY_LOG, V$LOG]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-DG-ROLE-001
+    result:
+      - {db_unique_name: "orcl19sw_sby", database_role: "PHYSICAL STANDBY", switchover_status: "TO PRIMARY", protection_mode: "MAXIMUM AVAILABILITY", protection_level: "MAXIMUM AVAILABILITY", force_logging: true, flashback_on: true}
+  - query_id: Q-DG-STATS-001
+    result:
+      - {name: "transport lag", value: "+00 00:00:00", unit: "interval"}
+      - {name: "apply lag", value: "+00 00:00:00", unit: "interval"}
+  - query_id: Q-DG-ARCHIVE-GAP-001
+    result: []
+  - query_id: Q-DG-SRL-001
+    result:
+      - {thread#: 1, group_count: 4, size_mb: 200, status: "UNASSIGNED"}
+
+expected_findings:
+  - category: switchover-readiness
+    severity: INFO
+    confidence: FACT
+    reason: "SWITCHOVER_STATUS=TO PRIMARY, lag=0, sin gaps, SRL suficiente, protection_mode=protection_level → readiness.status=READY, todos los checks PASS"

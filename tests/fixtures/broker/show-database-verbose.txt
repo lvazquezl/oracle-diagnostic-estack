@@ -1,0 +1,26 @@
+Database - orcl_sby
+
+  Role:               PHYSICAL STANDBY
+  Intended State:     APPLY-ON
+  Transport Lag:      0 seconds (computed 1 second ago)
+  Apply Lag:          0 seconds (computed 1 second ago)
+  Average Apply Rate: 2.10 MByte/s
+  Real Time Query:    OFF
+  Instance(s):
+    orcl1
+
+  Properties:
+    DGConnectIdentifier             = 'orcl_sby'
+    ObserverConnectIdentifier       = ''
+    LogXptMode                      = 'SYNC'
+    NetTimeout                      = '30'
+    RedoRoutes                      = ''
+    DelayMins                       = '0'
+    Binding                         = 'optional'
+    MaxFailure                      = '0'
+    ReopenSecs                      = '300'
+    NetTimeout                      = '30'
+    LogShipping                     = 'ON'
+
+Database Status:
+SUCCESS

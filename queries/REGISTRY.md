@@ -8,6 +8,12 @@ Todo query/comando aquí es de sólo lectura por construcción (`execution_mode:
 
 > **Fase 4 (RAC/GI/ASM/Network)**: `Q-RAC-SESSION-DIST-001` se relocalizó (mismo ID, sin duplicar) a `queries/rac/`. Las filas Foundation `Q-RAC-SERVICE-PLACEMENT-001`/`Q-ASM-DG-USAGE-001`/`Q-ASM-OPERATION-001` nunca tuvieron un archivo `.md` real pese a figurar en la sección "materializadas" — gap pre-existente detectado y corregido en esta fase: reemplazadas por 7 queries genuinamente materializadas bajo `queries/rac/`/`queries/asm/` (`Q-RAC-TOPOLOGY-001`, `Q-RAC-SERVICES-001` — cubre placement, `Q-RAC-INTERCONNECT-001`, `Q-RAC-GES-GCS-001`, `Q-ASM-TOPOLOGY-001` — cubre espacio usable vía `V$ASM_DISKGROUP_STAT`, `Q-ASM-DISKS-001`, `Q-ASM-REBALANCE-001` — cubre progreso de rebalance).
 
+> **Fase 5 (Data Guard)**: mismo gap pre-existente detectado — `Q-DG-STATS-001`/`Q-DG-ARCHIVE-GAP-001` (Foundation) figuraban "materializadas" sin archivo real. Se materializaron ambas de verdad bajo `queries/dataguard/` (mismos IDs, sin duplicar) y se agregaron 5 queries nuevas: `Q-DG-ROLE-001` (role discovery), `Q-DG-DEST-001` (destinos de archive), `Q-DG-ARCHIVED-LOG-001` (secuencias por thread, ventana acotada), `Q-DG-MANAGED-PROCESS-001` (MRP/RFS/procesos), `Q-DG-SRL-001` (standby redo logs) — 7 queries certificadas en total.
+>
+> **PHASE 5 — DATA GUARD COMPATIBILITY & QUERY CERTIFICATION HARDENING**: `Q-DG-ROLE-001` corregida (`LOG_ARCHIVE_CONFIG` no es columna de `V$DATABASE` — bug de certificación real, ver `docs/PHASE_5_COMPATIBILITY_HARDENING.md`); todas las queries `Q-DG-*` pasaron de `max: latest` a `max: "23.0"` explícito; `Q-DG-MANAGED-PROCESS-001` modernizada a variantes legacy/modern (`V$MANAGED_STANDBY` default, `V$DATAGUARD_PROCESS` on-demand).
+>
+> **PHASE 5 — DATA GUARD FINAL PROCESS-VIEW & PORTABILITY HARDENING**: metadata de `V$DATAGUARD_PROCESS` corregida contra Oracle Database Reference — min_version real 12.2.0.1 (no 11.2), columnas reales NAME/PID/TYPE/ROLE/ACTION/CLIENT_PID/CLIENT_ROLE/THREAD#/SEQUENCE#/BLOCK#/BLOCK_COUNT (STATUS/CLIENT_PROCESS eliminadas — no existen en esa vista). `Q-DG-MANAGED-PROCESS-001` pasa de "legacy default + modern on-demand" a una partición real sin solapamiento: legacy 10.2–12.1 (única opción, `V$MANAGED_STANDBY` deprecada desde 12.2.0.1), modern 12.2–23.0 (única opción). Ver `docs/PHASE_5_FINAL_PROCESS_VIEW_PORTABILITY_HARDENING.md`.
+
 > **Fase 3 (Oracle Performance)**: `Q-PERF-WAIT-AWR-001` y `Q-PERF-WAIT-ASH-001` se **relocalizaron** (mismos IDs, sin duplicar) de `queries/` plano a `queries/performance/waits/`. `Q-PERF-WAIT-STATSPACK-001` (antes sólo `registered`) se materializó en la misma carpeta — ver `docs/PHASE_3_ORACLE_PERFORMANCE.md`. Las filas de estas 3 queries en las tablas "Fase 1" abajo permanecen sin cambio (identidad de catálogo, no ubicación física). Se agregaron 18 queries nuevas bajo `queries/performance/<categoría>/` — ver sección "Performance queries (Fase 3)" abajo.
 
 ## Tools semánticas MCP (nivel Gateway)
@@ -56,8 +62,13 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-ASM-TOPOLOGY-001` | Instancias ASM y disk groups (`V$ASM_DISKGROUP_STAT`, sin disk discovery) | 11gR2–23ai | ídem | ASM | NOT_APPLICABLE | ANY |
 | `Q-ASM-DISKS-001` | Salud de discos individuales (sólo anómalos) | 11gR2–23ai | ídem | ASM | NOT_APPLICABLE | ANY |
 | `Q-ASM-REBALANCE-001` | Progreso de operaciones ASM en curso (lectura) | 11gR2–23ai | ídem | ASM | NOT_APPLICABLE | ANY |
-| `Q-DG-STATS-001` | Lag de transporte/apply | 10g–23ai | todas | Primary/Standby | NOT_APPLICABLE | ANY |
-| `Q-DG-ARCHIVE-GAP-001` | Gap de archivelog | 10g–23ai | todas | Primary/Standby | NOT_APPLICABLE | ANY |
+| `Q-DG-ROLE-001` | Rol, protección, switchover status, flashback | 10g–23ai | todas | Primary/Standby | ANY_CONTAINER | ANY |
+| `Q-DG-STATS-001` | Lag de transporte/apply | 10g–23ai | todas | Primary/Standby | ANY_CONTAINER | STANDBY |
+| `Q-DG-DEST-001` | Estado de destinos de archive | 10g–23ai | todas | Primary/Standby | ANY_CONTAINER | PRIMARY |
+| `Q-DG-ARCHIVED-LOG-001` | Secuencias recibidas/aplicadas por thread (ventana acotada) | 10g–23ai | todas | Primary/Standby | ANY_CONTAINER | STANDBY |
+| `Q-DG-ARCHIVE-GAP-001` | Gap de archivelog (thread-aware) | 10g–23ai | todas | Primary/Standby | ANY_CONTAINER | STANDBY |
+| `Q-DG-MANAGED-PROCESS-001` | Procesos MRP/RFS/LNS/ARCH (legacy V1 10.2–12.1, modern V2 12.2–23.0, sin solapamiento) | 10g–23ai | todas | Primary/Standby | ANY_CONTAINER | ANY |
+| `Q-DG-SRL-001` | Standby redo logs por thread | 10g–23ai | todas | Primary/Standby | ANY_CONTAINER | ANY |
 | `Q-CDB-PDB-STATE-001` | Estado de PDBs | 12c–23ai | todas | CDB | CDB_ROOT | ANY |
 | `Q-CDB-CONTAINERS-001` | Metadata de contenedores | 12c–23ai | todas | CDB | CDB_ROOT | ANY |
 | `Q-RMAN-BACKUP-JOB-001` | Estado de jobs de backup | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
@@ -91,8 +102,13 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-ASM-TOPOLOGY-001` | `GV$ASM_INSTANCE`, `V$ASM_DISKGROUP_STAT` | R0 | LOW | 15 | 100 | MEDIUM | none |
 | `Q-ASM-DISKS-001` | `V$ASM_DISK` | R0 | MEDIUM | 30 | 500 | HIGH | none |
 | `Q-ASM-REBALANCE-001` | `GV$ASM_OPERATION` | R0 | LOW | 15 | 50 | LOW | none |
-| `Q-DG-STATS-001` | `V$DATAGUARD_STATS`, `V$ARCHIVE_DEST_STATUS` | R0 | LOW | 20 | 50 | MEDIUM | none |
+| `Q-DG-ROLE-001` | `V$DATABASE` | R0 | LOW | 10 | 1 | MEDIUM | none |
+| `Q-DG-STATS-001` | `V$DATAGUARD_STATS` | R0 | LOW | 15 | 20 | LOW | none |
+| `Q-DG-DEST-001` | `V$ARCHIVE_DEST`, `V$ARCHIVE_DEST_STATUS` | R0 | LOW | 15 | 32 | HIGH | none |
+| `Q-DG-ARCHIVED-LOG-001` | `V$ARCHIVED_LOG` | R0 | MEDIUM | 30 | 500 | LOW | none |
 | `Q-DG-ARCHIVE-GAP-001` | `V$ARCHIVE_GAP` | R0 | LOW | 15 | 50 | LOW | none |
+| `Q-DG-MANAGED-PROCESS-001` | `V$MANAGED_STANDBY`, `GV$MANAGED_STANDBY`, `V$DATAGUARD_PROCESS`, `GV$DATAGUARD_PROCESS` | R0 | LOW | 15 | 100 | LOW | none |
+| `Q-DG-SRL-001` | `V$STANDBY_LOG`, `V$LOG` | R0 | LOW | 15 | 100 | LOW | none |
 | `Q-CDB-PDB-STATE-001` | `DBA_PDBS`, `V$PDBS` | R0 | LOW | 15 | 200 | MEDIUM (nombres) | none (multi-PDB puede ser LICENSE_DEPENDENT — ver `docs/CAPABILITY_MATRIX.md`) |
 | `Q-CDB-CONTAINERS-001` | `V$CONTAINERS` | R0 | LOW | 15 | 200 | LOW | none |
 | `Q-RMAN-BACKUP-JOB-001` | `V$RMAN_BACKUP_JOB_DETAILS` | R0 | MEDIUM | 30 | 500 | LOW | none |

@@ -1,0 +1,41 @@
+# Fixture: Oracle 19c standby — SRL insuficiente (1 grupo, requiere >= 4 según online redo del primary)
+# Usada por: dataguard/standby-redo-logs, dataguard/switchover-readiness
+fixture_id: FX-19c-insufficient-srl
+
+target_profile:
+  schema_version: "2.2.0"
+  target_id: "fixture-19c-dg-srlgap"
+  database: {name: "ORCL19SR", unique_name: "orcl19sr_sby", dbid: "1919223331"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: asm}
+  database_role: physical_standby
+  open_mode: "MOUNTED"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19sr", number: 1, host: "HOST_TOKEN_SBY08"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: SUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  dataguard: {enabled: true, role: physical_standby, db_unique_name: "DB_UNIQUE_NAME_TOKEN_001", protection_mode: MAXIMUM_PERFORMANCE, broker_enabled: false, fsfo_enabled: false, primary: "DB_UNIQUE_NAME_TOKEN_002", standbys: null}
+  discovery: {timestamp: "2026-02-09T09:00:00Z", evidence_refs: [EVD-FX-2801], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$DATABASE, V$DATAGUARD_STATS, V$ARCHIVE_DEST, V$ARCHIVE_DEST_STATUS,
+    V$ARCHIVED_LOG, V$ARCHIVE_GAP, V$MANAGED_STANDBY, GV$MANAGED_STANDBY, V$STANDBY_LOG, V$LOG]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-DG-SRL-001
+    result:
+      - {thread#: 1, group_count: 1, size_mb: 200, status: "UNASSIGNED"}
+
+expected_findings:
+  - category: standby-redo-logs
+    severity: HIGH
+    confidence: FACT
+    reason: "group_count=1 para thread 1, regla estándar requiere online_redo_groups+1 (típicamente >=4 en este ambiente) → status INSUFFICIENT, bloquea real-time apply y es un blocking_finding para switchover-readiness"

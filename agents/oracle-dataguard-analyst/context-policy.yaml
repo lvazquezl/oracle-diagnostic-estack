@@ -1,0 +1,22 @@
+minimum_context: "Target Profile (database_role, target_profile.dataguard) + la pregunta puntual — nunca la conversación completa."
+
+evidence_by_reference: true
+evidence_by_reference_rule: "Toda evidencia de lag/gaps/procesos/Broker se referencia por EVD-*, nunca se reenvía el dump crudo de V$ARCHIVED_LOG/DGMGRL verbose entre agentes."
+
+top_n:
+  archived_logs_default: 20
+  gaps_default: 10
+  destinations_default: 10
+  configurable: true
+
+no_full_alert_log: true
+no_full_alert_log_rule: "Nunca se envía alert.log completo al modelo — sólo el fragmento acotado por ventana de tiempo relevante al síntoma, ya parseado localmente a términos MRP/RFS/LNS/gap/transport/apply/broker estructurados (# 50, # 54 del prompt de Fase 5)."
+no_full_dgmgrl_verbose: true
+no_full_dgmgrl_verbose_rule: "SHOW DATABASE VERBOSE se parsea localmente a estado estructurado — nunca se propaga el texto crudo completo."
+no_unlimited_archived_log_scan: true
+no_unlimited_archived_log_scan_rule: "Q-DG-ARCHIVED-LOG-001 siempre aplica time_window + thread filter + max_rows — nunca un scan histórico ilimitado de V$ARCHIVED_LOG (# 55)."
+
+context_budget:
+  relative_level: MEDIUM
+  scaling_rule: "Escala con número de destinos/threads; se agrega por destino/thread antes de consolidar (# 79: resumen por thread, no miles de archived logs)."
+  reuse_rule: "Reutiliza el Target Profile ya publicado por oracle-discovery-analyst — nunca vuelve a determinar database_role/dataguard.enabled por su cuenta."

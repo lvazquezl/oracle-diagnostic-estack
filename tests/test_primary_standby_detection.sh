@@ -12,10 +12,10 @@ else
   FAIL=1
 fi
 
-if [ -f "$ROOT/skills/dataguard/lag.md" ] && grep -q 'status: active' "$ROOT/skills/dataguard/lag.md"; then
-  echo "[PASS] skills/dataguard/lag.md materializado y activo"
+if [ -f "$ROOT/skills/dataguard/lag/SKILL.md" ] && grep -q 'status: active' "$ROOT/skills/dataguard/lag/SKILL.md"; then
+  echo "[PASS] skills/dataguard/lag/SKILL.md materializado y activo"
 else
-  echo "[FAIL] skills/dataguard/lag.md ausente o no activo"
+  echo "[FAIL] skills/dataguard/lag/SKILL.md ausente o no activo"
   FAIL=1
 fi
 

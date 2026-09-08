@@ -1,0 +1,27 @@
+Fast-Start Failover: ENABLED
+
+  Threshold:          30 seconds
+  Target:              orcl_sby
+  Observer:            observer_host1
+  Lag Limit:           30 seconds (not enforced)
+  Shutdown Primary:    TRUE
+  Auto-reinstate:      TRUE
+  Observer Reconnect:  (none)
+  Observer Override:   FALSE
+
+Configurable Failover Conditions
+  Health Conditions:
+    Corrupted Controlfile          YES
+    Corrupted Dictionary           YES
+    Inaccessible Logfile            NO
+    Stuck Archiver                  NO
+    Datafile Write Errors          YES
+
+  Oracle Error Conditions:
+    (none)
+
+Observer Status:
+  Registered: 1
+  Observer orcl_observer_1 - Master
+    Host Name: observer_host1
+    State: Observing orcl_pri

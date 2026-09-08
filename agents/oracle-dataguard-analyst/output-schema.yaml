@@ -1,0 +1,92 @@
+dataguard_result:
+  summary: string
+  topology:
+    configuration_name: string|null      # MASK por defecto
+    primary: {db_unique_name: string, role: string}    # db_unique_name MASK
+    standbys: [{db_unique_name: string, role: string, architecture: PHYSICAL_STANDBY|LOGICAL_STANDBY|SNAPSHOT_STANDBY}]
+    protection_mode: MAXIMUM_PROTECTION|MAXIMUM_AVAILABILITY|MAXIMUM_PERFORMANCE
+    protection_level: MAXIMUM_PROTECTION|MAXIMUM_AVAILABILITY|MAXIMUM_PERFORMANCE
+    broker_enabled: bool
+    fsfo_enabled: bool
+  transport:
+    - destination: string           # MASK
+      status: string
+      mode: SYNC|ASYNC
+      affirm: bool
+      valid_for: string
+      error: string|null
+      classification: HEALTHY|DEFERRED|ERROR|NETWORK_DELAY_SUSPECTED|DESTINATION_UNAVAILABLE|CONFIGURATION_MISMATCH|null
+      evidence_refs: [string]
+  apply:
+    mrp_state: string|null
+    recovery_mode: string|null
+    current_sequence: number|null
+    last_applied_sequence: number|null
+    last_received_sequence: number|null
+    real_time_apply: bool|null
+    evidence_refs: [string]
+  lag:
+    - metric: TRANSPORT_LAG|APPLY_LAG      # nunca sinónimos
+      thread: number|null
+      value_seconds: number
+      threshold_seconds: number
+      trend: STABLE|INCREASING|DECREASING|INTERMITTENT|CATCHING_UP|UNKNOWN
+      severity: INFO|LOW|MEDIUM|HIGH
+      confidence: FACT|OBSERVATION            # lag es siempre observación, nunca root cause por sí sola
+      evidence_refs: [string]
+  gaps:
+    - thread: number
+      classification: TRANSPORT_GAP|RECEIVED_NOT_APPLIED|THREAD_SPECIFIC_GAP|TEMPORARY_GAP|UNKNOWN_GAP
+      sequence_range: string
+      evidence_refs: [string]
+  standby_redo_logs:
+    - thread: number
+      group_count: number
+      required_minimum: number|null
+      size_mb: number
+      size_matches_online_redo: bool|null
+      status: SUFFICIENT|INSUFFICIENT|SIZE_MISMATCH|UNKNOWN
+  broker:
+    configuration_status: string|null
+    member_status: [{db_unique_name: string, role: string, status: string}]
+    warnings: [string]
+    errors: [string]
+    fsfo_status: {enabled: bool, target: string|null, threshold_seconds: number|null, observer_status: CONFIGURED|CONNECTED|DISCONNECTED|UNKNOWN|INSUFFICIENT_EVIDENCE}|null
+  readiness:
+    switchover: {status: READY|READY_WITH_WARNINGS|NOT_READY|INSUFFICIENT_EVIDENCE, blocking_findings: [string], warnings: [string], evidence_refs: [string], data_loss_exposure: string|null, manual_prechecks: [string], unsupported_checks: [string], confidence: FACT|OBSERVATION|HYPOTHESIS}|null
+    failover: {status: READY|READY_WITH_WARNINGS|NOT_READY|INSUFFICIENT_EVIDENCE, blocking_findings: [string], warnings: [string], evidence_refs: [string], data_loss_exposure: string|null, manual_prechecks: [string], unsupported_checks: [string], confidence: FACT|OBSERVATION|HYPOTHESIS}|null
+  health_model:
+    role: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    transport: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    apply: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    lag: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    gaps: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    broker: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    srl: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    protection: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    fsfo: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    readiness: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+  findings:
+    - area: string
+      observation: string
+      severity: INFO|LOW|MEDIUM|HIGH|CRITICAL
+      confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE   # nunca CONFIRMED_ROOT_CAUSE
+      evidence_refs: [string]
+  hypotheses: [string]
+  evidence_refs: [string]
+  recommendations:
+    - manual_action:
+        action_id: string
+        purpose: string
+        owner_role: string
+        command: string
+        prechecks: [string]
+        expected_result: string
+        risk: string
+        rollback: string
+        postchecks: [string]
+        execution_status: NOT_EXECUTED   # nunca EXECUTED
+  limitations: [string]
+  confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|UNDETERMINED   # nunca CONFIRMED_ROOT_CAUSE
+  next_skill_or_agent: string|null
+  capability_status: SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED|LICENSE_RESTRICTED|INSUFFICIENT_PRIVILEGES|INSUFFICIENT_EVIDENCE|POLICY_BLOCKED|COMPATIBILITY_VALIDATION_REQUIRED|null

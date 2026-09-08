@@ -1,0 +1,41 @@
+# Fixture: Oracle 19c primary — protection_mode MAXIMUM_AVAILABILITY con protection_level degradado
+# Usada por: dataguard/protection
+fixture_id: FX-19c-protection-degradation
+
+target_profile:
+  schema_version: "2.2.0"
+  target_id: "fixture-19c-dg-protdeg"
+  database: {name: "ORCL19PD", unique_name: "orcl19pd_pri", dbid: "1920223331"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19pd", number: 1, host: "HOST_TOKEN_PRI02"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: SUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  dataguard: {enabled: true, role: primary, db_unique_name: "DB_UNIQUE_NAME_TOKEN_001", protection_mode: MAXIMUM_AVAILABILITY, broker_enabled: false, fsfo_enabled: false, primary: "DB_UNIQUE_NAME_TOKEN_001", standbys: ["DB_UNIQUE_NAME_TOKEN_003"]}
+  discovery: {timestamp: "2026-02-10T09:00:00Z", evidence_refs: [EVD-FX-2901], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$DATABASE, V$DATAGUARD_STATS, V$ARCHIVE_DEST, V$ARCHIVE_DEST_STATUS,
+    V$ARCHIVED_LOG, V$ARCHIVE_GAP, V$MANAGED_STANDBY, GV$MANAGED_STANDBY, V$STANDBY_LOG, V$LOG]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-DG-ROLE-001
+    result:
+      - {db_unique_name: "orcl19pd_pri", database_role: "PRIMARY", open_mode: "READ WRITE", switchover_status: "TO STANDBY", protection_mode: "MAXIMUM AVAILABILITY", protection_level: "MAXIMUM PERFORMANCE", force_logging: true, flashback_on: true}
+
+expected_findings:
+  - category: protection
+    severity: HIGH
+    confidence: PROBABLE_CAUSE
+    reason: "protection_mode=MAXIMUM AVAILABILITY pero protection_level=MAXIMUM PERFORMANCE → degradación real, correlacionar con dataguard/transport (standby SYNC caído explica la degradación) antes de escalar; en MAXIMUM AVAILABILITY el riesgo es de disponibilidad reducida, no de detención del primary (a diferencia de MAXIMUM PROTECTION)"

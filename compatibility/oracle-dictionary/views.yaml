@@ -8,6 +8,17 @@
 # min_version usa la representación normalizada de policies/version-awareness-policy.md
 # (comparar como tupla major.minor, nunca como string). "all" = disponible desde 10g
 # (el mínimo soportado por el catálogo) sin restricción adicional conocida.
+#
+# columns_exhaustive: true (PHASE 5 — DATA GUARD COMPATIBILITY & QUERY CERTIFICATION HARDENING,
+# # 7-9 del prompt) marca que el bloque `columns:` de esa vista es una lista COMPLETA de las
+# columnas que el catálogo certificado puede seleccionar de ella — no sólo el subconjunto
+# histórico usado para el chequeo de version-gating. SÓLO en vistas marcadas así,
+# tests/test_sql_static_validator.sh valida EXISTENCIA de columna (además del version-gating).
+# Vistas con `columns:` pero SIN este flag (ej. la mayoría de las registradas antes de Fase 5)
+# se tratan igual que una vista sin `columns:` en absoluto para ese chequeo — permisivas por
+# diseño, porque su lista nunca pretendió ser exhaustiva (ver bug real encontrado en V$ASM_DISK:
+# GROUP_NUMBER/DISK_NUMBER/NAME son columnas reales usadas por Q-ASM-DISKS-001 pero no estaban
+# registradas, porque esa entrada sólo listaba las columnas relevantes al chequeo de Fase 4).
 
 schema_version: 1
 
@@ -33,9 +44,11 @@ views:
 
   V$DATABASE:
     min_version: all
+    columns_exhaustive: true
     columns:
       name:                {min_version: all}
       database_role:         {min_version: all}
+      db_unique_name:         {min_version: all}   # Fase 5 Compatibility Hardening: registrada, usada por Q-DG-ROLE-001
       open_mode:              {min_version: all}
       log_mode:                {min_version: all}
       force_logging:            {min_version: all}
@@ -46,6 +59,10 @@ views:
       protection_level:             {min_version: all}
       remote_archive:                 {min_version: all}
       switchover_status:                {min_version: all}
+      # NOTA (Fase 5 Compatibility Hardening): LOG_ARCHIVE_CONFIG NO es columna de V$DATABASE.
+      # Es un parametro de inicializacion (V$PARAMETER) — bug de certificacion detectado y corregido
+      # en Q-DG-ROLE-001 v1.0 (ver docs/PHASE_5_COMPATIBILITY_HARDENING.md). No se agrega aqui a
+      # proposito, para que el SQL Static Validator siga rechazando cualquier futura referencia.
 
   V$ACTIVE_INSTANCES:
     min_version: "11.2"     # V$ACTIVE_INSTANCES en sí certificada desde 11gR2 en este catálogo
@@ -81,12 +98,34 @@ views:
 
   V$ARCHIVE_DEST:
     min_version: all
+    columns_exhaustive: true
+    columns:
+      dest_id:       {min_version: all}
+      dest_name:      {min_version: all}
+      target:          {min_version: all}
+      status:           {min_version: all}
+      archiver:          {min_version: all}
+      transmit_mode:      {min_version: all}
+      affirm:              {min_version: all}
+      valid_now:            {min_version: all}
 
   V$ARCHIVE_DEST_STATUS:
     min_version: all
+    columns_exhaustive: true
+    columns:
+      dest_id:       {min_version: all}
+      status:          {min_version: all}
+      error:            {min_version: all}
+      recovery_mode:     {min_version: all}
 
   V$ARCHIVED_LOG:
     min_version: all
+    columns_exhaustive: true
+    columns:
+      thread#:       {min_version: all}
+      sequence#:      {min_version: all}
+      applied:         {min_version: all}
+      first_time:       {min_version: all}
 
   DBA_TABLESPACES:
     min_version: all
@@ -344,3 +383,129 @@ views:
   GV$ASM_OPERATION:
     min_version: "11.2"
     notes: "Variante multi-instancia de V$ASM_OPERATION para RAC — misma columnas."
+
+  # --- Fase 5 (Data Guard) ---
+
+  V$DATAGUARD_STATS:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      transport_lag: {min_version: "11.0"}
+      apply_lag: {min_version: "11.0"}
+      name: {min_version: all}
+      value: {min_version: all}
+      unit: {min_version: all}
+    notes: "Vista disponible desde 10g; columnas TRANSPORT_LAG/APPLY_LAG con nombre estable desde 11g (en 10g la métrica equivalente se lee de la columna genérica NAME/VALUE). Usada por Q-DG-STATS-001 (dataguard/lag)."
+
+  V$DATAGUARD_STATUS:
+    min_version: all
+    notes: "Registrada por completitud del inventario (# 8 del prompt de Fase 5) — no consultada directamente por ninguna query certificada activa; su contenido (mensajes de estado Data Guard) se cubre de forma más estructurada vía Broker DGMGRL (dataguard/broker), no vía esta vista de texto libre."
+
+  V$MANAGED_STANDBY:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      process:         {min_version: all}
+      pid:              {min_version: all}
+      status:            {min_version: all}
+      client_process:     {min_version: all}
+      client_pid:          {min_version: all}
+      thread#:              {min_version: all}
+      sequence#:             {min_version: all}
+      block#:                 {min_version: all}
+      blocks:                  {min_version: all}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      PHASE 5 — DATA GUARD FINAL PROCESS-VIEW & PORTABILITY HARDENING (# 4, # 8, # 13 del prompt):
+      metadata corregida contra la documentación oficial de Oracle Database Reference — columnas
+      reales verificadas: PROCESS, PID, STATUS, CLIENT_PROCESS, CLIENT_PID, CLIENT_DBID, GROUP#,
+      RESETLOG_ID, THREAD#, SEQUENCE#, BLOCK#, BLOCKS, DELAY_MINS, KNOWN_AGENTS, ACTIVE_AGENTS,
+      CON_ID (sólo se registran aquí las usadas por Q-DG-MANAGED-PROCESS-001 variante legacy).
+      **Deprecada oficialmente desde Oracle Database 12.2.0.1** — Oracle recomienda V$DATAGUARD_PROCESS
+      en su lugar. Se retiene como legacy únicamente para 10.2–12.1 (Q-DG-MANAGED-PROCESS-001 variante
+      legacy) — nunca como default universal permanente para versiones donde la vista moderna ya
+      está disponible (# 8: no usar la vista deprecated como universal permanent default).
+
+  GV$MANAGED_STANDBY:
+    min_version: "11.2"
+    notes: >
+      Variante multi-instancia de V$MANAGED_STANDBY para RAC — mismas columnas + INST_ID (regla
+      general de vistas GV$ documentada en Oracle Database Reference / RAC Administration). Usada
+      por Q-DG-MANAGED-PROCESS-001 variante legacy cuando el sitio consultado es RAC. Igual que su
+      contraparte V$, deprecada desde 12.2.0.1 en favor de GV$DATAGUARD_PROCESS.
+
+  V$DATAGUARD_PROCESS:
+    min_version: "12.2"
+    columns_exhaustive: true
+    columns:
+      name:              {min_version: "12.2"}
+      pid:                {min_version: "12.2"}
+      type:                {min_version: "12.2"}
+      role:                 {min_version: "12.2"}
+      action:                {min_version: "12.2"}
+      client_pid:             {min_version: "12.2"}
+      client_role:             {min_version: "12.2"}
+      thread#:                  {min_version: "12.2"}
+      sequence#:                 {min_version: "12.2"}
+      block#:                     {min_version: "12.2"}
+      block_count:                 {min_version: "12.2"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["12.2", "18", "19", "21", "23"]
+    notes: >
+      PHASE 5 — DATA GUARD FINAL PROCESS-VIEW & PORTABILITY HARDENING (# 4, # 13 del prompt):
+      metadata corregida contra la documentación oficial de Oracle Database Reference —
+      **min_version real es 12.2.0.1** (Oracle Database 12c Release 2), NO 11.2 como se declaró
+      incorrectamente en el hardening anterior (defecto real corregido, ver
+      docs/PHASE_5_FINAL_PROCESS_VIEW_PORTABILITY_HARDENING.md). STATUS y CLIENT_PROCESS NO son
+      columnas de esta vista (esas pertenecen a V$MANAGED_STANDBY) — eliminadas del registro; las
+      columnas reales son NAME, PID, TYPE, ROLE, PROC_TIME, TASK_TIME, TASK_DONE, ACTION, CLIENT_PID,
+      CLIENT_ROLE, GROUP#, RESETLOG_ID, THREAD#, SEQUENCE#, BLOCK#, BLOCK_COUNT, DELAY_MINS, DEST_ID,
+      DEST_MASK, DBID, DGID, INSTANCE, STOP_STATE, CON_ID (sólo se registran aquí las usadas por
+      Q-DG-MANAGED-PROCESS-001 variante moderna). A diferencia de lo asumido antes, SÍ expone
+      THREAD#/SEQUENCE#/BLOCK# — el modelo lógico común ya no necesita marcar esos campos
+      PARTIALLY_SUPPORTED en la variante moderna; sólo PROCESS_ROLE queda sin equivalente en la
+      variante legacy (V$MANAGED_STANDBY no tiene columna ROLE). Oracle recomienda esta vista en
+      lugar de la deprecada V$MANAGED_STANDBY desde 12.2.0.1.
+
+  GV$DATAGUARD_PROCESS:
+    min_version: "12.2"
+    notes: >
+      Variante multi-instancia de V$DATAGUARD_PROCESS para RAC — mismas columnas + INST_ID. No se
+      encontró una página de referencia Oracle dedicada a esta vista específica durante la
+      verificación documental de este hardening; se registra con base en la regla arquitectónica
+      general y documentada de Oracle para vistas GV$ (toda V$ fija tiene una contraparte GV$ con
+      INST_ID adicional — Oracle Database Reference, "GV$ Views"), no en una página GV$-específica
+      confirmada. Usada por Q-DG-MANAGED-PROCESS-001 variante moderna cuando el sitio consultado es
+      RAC. validation.status: DOCUMENTATION_VALIDATED por regla general, no por página dedicada.
+
+  V$RECOVERY_PROGRESS:
+    min_version: all
+    notes: "Registrada por completitud del inventario (# 8) — no usada por el catálogo certificado actual; candidata para una futura Q-DG-RECOVERY-PROGRESS-001 vía /change query si se requiere progreso detallado de recovery más allá de V$MANAGED_STANDBY."
+
+  V$STANDBY_LOG:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      thread#: {min_version: all}
+      groups: {min_version: all}
+      status: {min_version: all}
+      bytes: {min_version: all}
+    notes: "Usada por Q-DG-SRL-001 (dataguard/standby-redo-logs), junto con V$LOG (ya registrada) para comparar contra online redo del primary."
+
+  V$ARCHIVE_GAP:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      thread#:          {min_version: all}
+      low_sequence#:     {min_version: all}
+      high_sequence#:     {min_version: all}
+    notes: "Usada por Q-DG-ARCHIVE-GAP-001 (dataguard/archive-gaps), relocalizada a queries/dataguard/ en Fase 5. Columnas THREAD#/LOW_SEQUENCE#/HIGH_SEQUENCE# estables desde 10g."
+
+  GV$ARCHIVE_DEST_STATUS:
+    min_version: all
+    notes: "Variante multi-instancia de V$ARCHIVE_DEST_STATUS (ya registrada) para RAC — usada por Q-DG-DEST-001 cuando el primary es RAC."

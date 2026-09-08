@@ -1,0 +1,44 @@
+# Fixture: Oracle 19c — escenario de failover con exposición real a pérdida de datos (gap sin resolver)
+# Usada por: dataguard/failover-readiness
+fixture_id: FX-19c-failover-exposure
+
+target_profile:
+  schema_version: "2.2.0"
+  target_id: "fixture-19c-dg-failoverexp"
+  database: {name: "ORCL19FE", unique_name: "orcl19fe_sby", dbid: "1926223331"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: asm}
+  database_role: physical_standby
+  open_mode: "MOUNTED"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19fe", number: 1, host: "HOST_TOKEN_SBY13"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: SUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  dataguard: {enabled: true, role: physical_standby, db_unique_name: "DB_UNIQUE_NAME_TOKEN_001", protection_mode: MAXIMUM_PERFORMANCE, broker_enabled: true, fsfo_enabled: true, primary: "DB_UNIQUE_NAME_TOKEN_002", standbys: null}
+  discovery: {timestamp: "2026-02-16T09:00:00Z", evidence_refs: [EVD-FX-3501], confidence: OBSERVATION}
+
+compatibility_schema:
+  available_views: [V$DATABASE, V$DATAGUARD_STATS, V$ARCHIVE_DEST, V$ARCHIVE_DEST_STATUS,
+    V$ARCHIVED_LOG, V$ARCHIVE_GAP, V$MANAGED_STANDBY, GV$MANAGED_STANDBY, V$STANDBY_LOG, V$LOG]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-DG-STATS-001
+    result:
+      - {name: "apply lag", value: "+00 00:08:00", unit: "interval"}
+  - query_id: Q-DG-ARCHIVE-GAP-001
+    result:
+      - {thread#: 1, low_sequence#: 1501, high_sequence#: 1503}
+
+expected_findings:
+  - category: failover-readiness
+    severity: HIGH
+    confidence: OBSERVATION
+    reason: "gap de 3 secuencias no aplicadas + apply_lag=8min → data_loss_exposure reportado explícitamente (no nulo), readiness.status=NOT_READY o READY_WITH_WARNINGS según severidad de política, primary no alcanzable en el escenario real (INSUFFICIENT_EVIDENCE para el lado primary, nunca asumido en cero pérdida)"

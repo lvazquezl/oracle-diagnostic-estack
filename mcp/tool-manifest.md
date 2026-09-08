@@ -20,7 +20,7 @@ Cada tool mapea 1:1 (o 1:N) a entradas certificadas de [`queries/REGISTRY.md`](.
 | `get_redo_activity(target)` | `{target: string}` | volumen de redo y tasa de commit/rollback | `Q-PERF-REDO-001` |
 | `get_tablespace_usage(target)` | `{target: string}` | uso/autoextend por tablespace | `Q-DBA-TBS-USAGE-001`, `Q-DBA-TBS-DATAFILES-001` |
 | `get_asm_usage(target)` | `{target: string}` | espacio usable por disk group (`V$ASM_DISKGROUP_STAT`, sin disk discovery) | `Q-ASM-TOPOLOGY-001` |
-| `get_dataguard_status(target)` | `{target: string}` | rol, lag, gaps, destinos | `Q-DG-STATS-001`, `Q-DG-ARCHIVE-GAP-001` |
+| `get_dataguard_status(target)` | `{target: string}` | rol, lag, gaps, destinos | `Q-DG-ROLE-001`, `Q-DG-STATS-001`, `Q-DG-ARCHIVE-GAP-001` |
 | `get_listener_status(target)` | `{target: string}` | estado de listener/SCAN listener, servicios registrados | collector `get_listener_configuration`/`get_scan_configuration` (`docs/GI_READONLY_COLLECTORS.md`), sin query SQL detrás |
 | `get_os_cpu(target)` | `{target: string}` | load, run queue | `Q-OS-<plataforma>-CPU-001` *(registered por plataforma — Fase 6, salvo Linux representativo)* |
 | `get_os_memory(target)` | `{target: string}` | uso de memoria/swap/HugePages | `Q-OS-LINUX-MEM-001` (Linux, active); resto `registered` |
@@ -61,6 +61,15 @@ Cada tool mapea 1:1 (o 1:N) a entradas certificadas de [`queries/REGISTRY.md`](.
 | `get_asm_disk_health(target)` | `{target: string}` | discos ASM anómalos (header/mode/errores) | `Q-ASM-DISKS-001` |
 | `get_asm_rebalance_status(target)` | `{target: string}` | operaciones ASM en curso (lectura) | `Q-ASM-REBALANCE-001` |
 | `get_scan_resolution(target)` | `{target: string}` | resolución DNS de SCAN, IPs resueltas | collector `get_name_resolution` (`network/scan-resolution`) |
+| `get_dataguard_destinations(target)` | `{target: string}` | estado de destinos de archive, transporte SYNC/ASYNC | `Q-DG-DEST-001` |
+| `get_dataguard_archived_log(target, time_window_hours?)` | `{target: string, time_window_hours?: number}` | secuencias recibidas/aplicadas por thread (ventana acotada) | `Q-DG-ARCHIVED-LOG-001` |
+| `get_dataguard_processes(target)` | `{target: string}` | estado de MRP/RFS/LNS/ARCH | `Q-DG-MANAGED-PROCESS-001` |
+| `get_dataguard_srl(target)` | `{target: string}` | standby redo logs por thread | `Q-DG-SRL-001` |
+| `get_dataguard_configuration(target)` | `{target: string}` | miembros y estado de la configuración Broker | collector `get_dataguard_configuration` (`SHOW CONFIGURATION`) |
+| `get_dataguard_database_status(target, db_unique_name)` | `{target: string, db_unique_name: string}` | rol/estado/warnings de un miembro Broker | collector `get_dataguard_database_status` (`SHOW DATABASE <tokenized-db>`) |
+| `get_dataguard_verbose_status(target, db_unique_name)` | `{target: string, db_unique_name: string}` | detalle verbose de un miembro Broker | collector `get_dataguard_verbose_status` (`SHOW DATABASE VERBOSE <tokenized-db>`) |
+| `get_fsfo_status(target)` | `{target: string}` | estado FSFO/observer | collector `get_fsfo_status` (`SHOW FAST_START FAILOVER`) |
+| `get_relevant_alertlog_excerpt(target, window_start?, window_end?)` | `{target: string, window_start?, window_end?}` | fragmento de alert.log acotado por ventana y términos Data Guard | collector `get_relevant_alertlog_excerpt` (reutiliza `oracle-diag-collector` de Fase 2, filtrado a términos MRP/RFS/LNS/gap/transport/apply/broker) |
 
 ## MCP Query Certification (Compatibility Hardening)
 

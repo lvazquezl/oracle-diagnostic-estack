@@ -71,6 +71,7 @@ oracle-diagnostic-estack/
   scripts/                  Bootstrap y validación de estación de trabajo
   parsers/performance/      Parsers locales de reportes (AWR/Statspack/ADDM/Execution Plan) — Python 3, sólo stdlib
   parsers/rac/              Parsers locales de salida de collectors GI/Clusterware/ASM/red — Python 3, sólo stdlib
+  parsers/dataguard/        Parsers locales de salida DGMGRL Broker/alert.log — Python 3, sólo stdlib
   tests/                    Quality gates de seguridad, contratos y trazabilidad
   docs/                     Contratos definitivos y documentación complementaria
   .gitattributes            Política de line endings (LF forzado en *.sh/*.py/*.yaml/*.md)
@@ -101,6 +102,8 @@ oracle-diagnostic-estack/
 21. **Grid Infrastructure absorbido por `oracle-rac-analyst`, sin agente separado** (Fase 4 — RAC/GI/ASM/Network). *Agents for domains, skills for tasks*: GI vive en el dominio `rac` con prefijo `gi-` (`rac/gi-scan`, `rac/gi-ocr-status`, etc.), nunca un `oracle-gi-analyst` independiente — evita fragmentar un dominio de cluster único en dos agentes que necesitarían coordinarse constantemente. Ver `docs/RAC_DIAGNOSTIC_MODEL.md#gi-absorbido-no-un-agente-separado`.
 22. **Collector Contract para comandos no-SQL, paralelo al Query Contract** (Fase 4). `crsctl`/`srvctl`/`olsnodes`/`ocrcheck`/`lsnrctl`/`asmcmd`/`oifcfg` nunca se exponen como shell arbitrario — cada uno mapea a un `collector_id` semántico con `command_family` fijo, `side_effect_class: READ_ONLY` obligatorio (o `BLOCKED` si no puede garantizarse), parseado localmente por `parsers/rac/*.py` antes de llegar al modelo. Ver `docs/GI_READONLY_COLLECTORS.md`.
 23. **Recurso Clusterware vs. conectividad: mismo nombre de entidad (SCAN/VIP/listener), dos dominios sin duplicación de recolección** (Fase 4). `oracle-rac-analyst` (`rac/gi-scan`) ve el *estado del recurso*; `oracle-network-analyst` (`network/scan`) ve la *conectividad*. Ningún dato se recolecta dos veces — cada agente cita al otro por `evidence_refs`. Ver `docs/RAC_DIAGNOSTIC_MODEL.md#boundary-con-oracle-network-analyst`.
+24. **Lag es siempre una observación, nunca una causa raíz por sí sola** (Fase 5 — Data Guard). `dataguard/lag` fija `confidence: OBSERVATION` por defecto tanto para transport lag como para apply lag — subir a `PROBABLE_CAUSE` requiere explícitamente 2+ señales de correlación cross-domain (red/I/O/CPU/RAC). Decisión deliberada contra el patrón común de otros stacks de monitoreo que reportan lag alto directamente como "problema", sin distinguir observación de diagnóstico. Ver `docs/DATAGUARD_DIAGNOSTIC_MODEL.md#transport-lag--apply-lag--causa-raíz`.
+25. **Switchover readiness y failover readiness son skills separados con el mismo Readiness Result Contract, nunca el mismo workflow** (Fase 5). Aunque comparten forma de salida (`status/blocking_findings/warnings/data_loss_exposure/...`), la semántica difiere: switchover es una transición planificada (requiere `READY` sin ambigüedad); failover es una respuesta a desastre (`data_loss_exposure` es central, `INSUFFICIENT_EVIDENCE` es un resultado esperado cuando el primary no es alcanzable). Fusionarlos en un solo skill perdería esta distinción crítica de negocio. Ver `docs/DATAGUARD_DIAGNOSTIC_MODEL.md#switchover--failover--31`.
 
 ## 6. Referencias
 

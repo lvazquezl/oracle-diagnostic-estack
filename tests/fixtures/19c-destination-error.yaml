@@ -1,0 +1,41 @@
+# Fixture: Oracle 19c primary — destino de archive en ERROR
+# Usada por: dataguard/transport
+fixture_id: FX-19c-destination-error
+
+target_profile:
+  schema_version: "2.2.0"
+  target_id: "fixture-19c-dg-desterr"
+  database: {name: "ORCL19DE", unique_name: "orcl19de_pri", dbid: "1918223331"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19de", number: 1, host: "HOST_TOKEN_PRI01"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: SUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  dataguard: {enabled: true, role: primary, db_unique_name: "DB_UNIQUE_NAME_TOKEN_001", protection_mode: MAXIMUM_PERFORMANCE, broker_enabled: false, fsfo_enabled: false, primary: "DB_UNIQUE_NAME_TOKEN_001", standbys: ["DB_UNIQUE_NAME_TOKEN_003"]}
+  discovery: {timestamp: "2026-02-08T09:00:00Z", evidence_refs: [EVD-FX-2701], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$DATABASE, V$DATAGUARD_STATS, V$ARCHIVE_DEST, V$ARCHIVE_DEST_STATUS,
+    V$ARCHIVED_LOG, V$ARCHIVE_GAP, V$MANAGED_STANDBY, GV$MANAGED_STANDBY, V$STANDBY_LOG, V$LOG]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-DG-DEST-001
+    result:
+      - {dest_id: 2, dest_name: "LOG_ARCHIVE_DEST_2", target: "STANDBY", config_status: "VALID", transmit_mode: "ASYNC", affirm: false, valid_for: "STANDBY_LOGFILE", runtime_status: "ERROR", error: "ORA-12170: TNS:Connect timeout occurred"}
+
+expected_findings:
+  - category: transport
+    severity: HIGH
+    confidence: FACT
+    reason: "destino requerido en runtime_status=ERROR con ORA-12170 → clasificación DESTINATION_UNAVAILABLE; delega a oracle-network-analyst para confirmar causa de red, nunca asume la causa sin esa evidencia"

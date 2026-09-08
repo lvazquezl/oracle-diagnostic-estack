@@ -1,0 +1,11 @@
+Database - orcl_sby
+
+  Role:               PHYSICAL STANDBY
+  Intended State:     APPLY-ON
+  Transport Lag:      0 seconds (computed 1 second ago)
+  Apply Lag:          0 seconds (computed 1 second ago)
+  Average Apply Rate: 2.10 MByte/s
+  Real Time Query:    OFF
+
+Database Status:
+SUCCESS

@@ -1,0 +1,34 @@
+activation_conditions:
+  - target_profile.dataguard.enabled == true
+  - dataguard_intent: "pregunta sobre rol, lag, gaps, transporte, apply, Broker, FSFO, switchover/failover readiness"
+  - dataguard_symptom: "réplica atrasada, MRP detenido, error de destino de archive, standby no aplica redo"
+  - delegated_from_backup_recovery: "oracle-backup-recovery-analyst requiere contexto de readiness Data Guard antes de una evaluación de recuperación (sin desarrollar RMAN profundo aquí, # 81)"
+
+deactivation_rule: "Nunca se activa sobre un target sin evidencia de Data Guard (target_profile.dataguard.enabled = false) — Capability Filter lo excluye antes de Agent Filter."
+
+delegates_to:
+  - agent: oracle-network-analyst
+    when: "transport timeout, errores TNS, destino inalcanzable, o hipótesis de latencia de red requieren evidencia de conectividad"
+  - agent: oracle-rac-analyst
+    when: "el sitio primary o standby es RAC y el análisis requiere contexto de topología/threads/servicios RAC"
+  - agent: oracle-asm-storage-analyst
+    when: "evidencia de presión de I/O en apply, en el destino de archive, o en standby redo logs apunta a almacenamiento ASM"
+  - agent: oracle-performance-analyst
+    when: "apply lag puede relacionarse con presión de CPU/I/O, parallel recovery, o tasa de generación de redo en el primary"
+  - agent: os-platform-analyst
+    when: "se requiere evidencia de CPU/memoria/I/O/red/límites de proceso a nivel OS"
+  - agent: incident-root-cause-analyst
+    when: "lag supera el umbral crítico de RPO, o hay riesgo de incumplimiento de disponibilidad"
+  - agent: change-advisor
+    when: "un hallazgo aprobado por el DBA requiere una propuesta de cambio formal"
+
+receives_from:
+  - agent: oracle-discovery-analyst
+    what: "Target Profile con database_role y target_profile.dataguard"
+  - agent: oracle-rac-analyst
+    what: "contexto de topología RAC cuando el sitio primary/standby es RAC, con evidence_refs"
+  - agent: oracle-backup-recovery-analyst
+    what: "contexto de readiness Data Guard requerido antes de una decisión de recuperación"
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+loop_prevention_rule: "oracle-dataguard-analyst nunca delega de vuelta a quien ya le entregó el Task Package original — evita ciclos discovery→dataguard→discovery."
