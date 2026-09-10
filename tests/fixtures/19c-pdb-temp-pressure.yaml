@@ -1,0 +1,40 @@
+# Fixture: Oracle 19c CDB con una PDB en presión HIGH de TEMP
+# Usada por: multitenant/pdb-temp, test_pdb_temp
+fixture_id: FX-19c-pdb-temp-pressure
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-19c-pdb-temp"
+  database: {name: "ORCL19TP", unique_name: "orcl19tp", dbid: "1913223337"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19tp", number: 1, host: "HOST_TOKEN_08"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  multitenant: {cdb: true, cdb_name: "CDB_NAME_TOKEN_008", root_container: "CDB$ROOT", pdb_count: 1, local_undo_enabled: true, application_containers: false}
+  discovery: {timestamp: "2026-03-01T09:40:00Z", evidence_refs: [EVD-FX-4801], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$DATABASE, V$INSTANCE, V$PDBS, CDB_TEMP_FILES, GV$TEMP_SPACE_HEADER]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-CDB-TEMP-001
+    result:
+      - {con_id: 3, tablespace_name: "TEMP", allocated_bytes: 10737418240, bytes_used: 10200547328, bytes_free: 536870912}
+
+expected_findings:
+  - category: pdb-temp
+    severity: MEDIUM
+    confidence: OBSERVATION
+    reason: "uso de TEMP ~95% en PDB1 → pressure=HIGH; correlación con waits TEMP delegada a oracle-performance-analyst, nunca afirmada sin esa evidencia (# 18 del prompt de Fase 6)"

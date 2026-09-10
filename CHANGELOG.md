@@ -2,7 +2,63 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — 2026-09-07 — Fase 5: Oracle Data Guard
+## [Unreleased] — 2026-09-08 — Fase 6: Oracle Multitenant / CDB / PDB
+
+Sexta capa funcional del e-stack, sobre baseline `v0.5.0-dataguard`. Ver `docs/PHASE_6_ORACLE_MULTITENANT.md` para el reporte de cierre completo.
+
+### Added
+
+- `agents/oracle-multitenant-analyst/` (`v2.0.0`) — reestructurado de manifest plano a contrato estructurado completo, mismo patrón que Fase 4/5.
+- 26 skills `multitenant/*` completamente materializadas — `skills/REGISTRY.md` pasa de 141 a 166 skills `active`.
+- `queries/multitenant/` — 15 queries certificadas (`Q-CDB-PDB-STATE-001`, `Q-CDB-CONTAINERS-001`, `Q-CDB-PDB-SAVED-STATE-001`, `Q-CDB-SERVICES-001`, `Q-CDB-SESSION-DIST-001`, `Q-CDB-TABLESPACES-001`, `Q-CDB-TEMP-001`, `Q-CDB-PARAMETERS-001`, `Q-CDB-USERS-001`, `Q-CDB-ROLES-001`, `Q-CDB-COMPONENTS-001`, `Q-CDB-PLUGIN-VIOLATIONS-001`, `Q-CDB-RESOURCE-USAGE-001`, `Q-CDB-RESOURCE-MANAGER-001`, `Q-CDB-LOCKDOWN-001`).
+- `compatibility/oracle-dictionary/views.yaml` — 15 vistas Multitenant nuevas, 7 con `columns_exhaustive: true` (`V$PDBS`, `V$CONTAINERS`, `DBA_PDB_SAVED_STATES`, `PDB_PLUG_IN_VIOLATIONS`, `V$RSRCPDBMETRIC`, `DBA_CDB_RSRC_PLAN_DIRECTIVES`, `CDB_LOCKDOWN_PROFILES` — nombre/rango de las primeras 3 corregido en el hardening posterior, ver entrada `[Unreleased] Fase 6: Query Compatibility & Dictionary Certification Hardening` abajo).
+- `docs/PHASE_6_ORACLE_MULTITENANT.md` (incluye el Manual Action Contract), `docs/MULTITENANT_DIAGNOSTIC_MODEL.md`, `docs/CDB_PDB_QUERY_MODEL.md`, `docs/MULTITENANT_READONLY_PRIVILEGES.md`, `docs/PDB_HEALTHCHECK_MODEL.md`.
+- 14 fixtures de escenario (11g NON-CDB, 12.1/12.2/19c/21c/23ai CDB, RAC PDB placement, PDB mounted/restricted, plug-in violations, temp/resource pressure, contexto Data Guard, Application Container, versión futura desconocida).
+- 53 tests nuevos: 14 query/inventario, 7 versión, 4 RAC, 5 plug-in violations, 4 recursos, 15 seguridad específicos de Fase 6 (`# 62`: no create/drop/clone/unplug/plug PDB, no open/close/save-state execution, no alter session container si prohibido, no common/local user create, no lockdown/resource-manager/parameter change, queries SELECT-only), 4 contrato de agente.
+
+### Changed
+
+- `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` — Multitenant `PARTIAL → SUPPORTED` (12.1–23ai); columna `latest` reemplazada por `future_status: COMPATIBILITY_VALIDATION_REQUIRED` (mismo criterio que Data Guard Fase 5).
+- `queries/REGISTRY.md` — corregido un gap pre-existente: `Q-CDB-PDB-STATE-001`/`Q-CDB-CONTAINERS-001` (Foundation) nunca tuvieron archivo real ni `container_scope` correcto pese a figurar "materializadas"; ahora genuinamente construidas bajo `queries/multitenant/`.
+- `docs/TARGET_PROFILE.md` — schema `2.2.0 → 2.3.0` (aditivo): bloque `multitenant`.
+- `docs/ORACLE_READONLY_PRIVILEGES.md` — nota apuntando a `docs/MULTITENANT_READONLY_PRIVILEGES.md` (documento nuevo, no consolidado aquí).
+- `ARCHITECTURE.md` — 2 principios nuevos (26: Container Scope Contract; 27: `MESSAGE`/`ACTION` como DATA + Health Model sin score único).
+- `SECURITY.md` — caso concreto `PDB_PLUG_IN_VIOLATIONS.MESSAGE`/`.ACTION` como vector de inyección interno a la base de datos (distinto de los casos previos de salida de comando externo).
+
+### Known limitations
+
+Ver `docs/PHASE_6_ORACLE_MULTITENANT.md#known-limitations`. En resumen: Application Containers/Proxy PDB reconocidos por topología sin análisis profundo de lifecycle (`PARTIALLY_SUPPORTED`); 8 vistas `CDB_*` mirror estándar registradas sin `columns_exhaustive: true`; sin errores ORA-650xx/651xx específicos en `knowledge/errors/` (opcional, no inventado).
+
+### Fixed — PHASE 6 — Multitenant Query Compatibility & Dictionary Certification Hardening
+
+Cierre de 3 defectos de certificación detectados antes de aprobar `v0.6.0-multitenant`. Ver `docs/PHASE_6_QUERY_COMPATIBILITY_HARDENING.md` para el detalle completo.
+
+- **`Q-CDB-PDB-SAVED-STATE-001` (bug real)**: seleccionaba `FROM cdb_pdb_saved_states` — esa vista no existe (WebFetch: 404 en docs.oracle.com). Corregida a v2.0.0, usa `DBA_PDB_SAVED_STATES` (7 columnas reales). Además, la feature requiere patch level 12.1.0.2 — no existe en 12.1.0.0/12.1.0.1; `config/query-compatibility-matrix.yaml` y el dictionary ahora declaran `min: "12.1.0.2"` (patch-level), con una extensión aditiva del comparador de versión (`vernum3`) acotada a este caso.
+- **`Q-CDB-RESOURCE-USAGE-001` (rango de versión incorrecto)**: `V$RSRCPDBMETRIC` declarada disponible desde 12.1 sin verificación independiente — en realidad se introduce en 12.2.0.1 (WebFetch confirmado). Corregida a `min: "12.2"`; 12.1 degrada explícitamente a `capability_status: PARTIALLY_SUPPORTED` (sin fuente alternativa inventada) en `skills/multitenant/resource-usage/SKILL.md`.
+- **`Q-CDB-PLUGIN-VIOLATIONS-001` (rango de versión incorrecto)**: `CON_ID` seleccionado incondicionalmente desde 12.1 — esa columna no existe en la referencia 12.1 (9 columnas), se agrega en 12.2 (10 columnas, WebFetch confirmado en ambas versiones). Corregida a v2.0.0 con dos variantes reales (legacy 12.1 sin `CON_ID` / modern 12.2+ con `CON_ID`); `skills/multitenant/plugin-violations/SKILL.md` normaliza `container_id: NOT_AVAILABLE` en la variante legacy, nunca inventado.
+- **SQL Static Validator (causa raíz)**: sólo validaba existencia de columna en la vista, nunca si esa columna/vista ya existía en el `min_version` declarado del bloque SQL — por eso las 3 metadata incorrectas certificaron SQL incorrecto sin que ningún test lo detectara. Añadido un tercer chequeo (view-level y column-level `min_version` cross-check contra el rango declarado, patch-level-aware vía `vernum3`) sobre las 7 vistas Multitenant `columns_exhaustive: true`. Corregido de paso un efecto colateral: la derivación de `min` del bucle `implicit_full_range` (por etiqueta descriptiva "12c"→12.1) producía falsos positivos contra `Q-CDB-LOCKDOWN-001`/`Q-CDB-RESOURCE-USAGE-001` (ambas 12.2+-only) — sustituido por el `min` preciso de `config/query-compatibility-matrix.yaml` sólo para este chequeo nuevo, sin alterar el chequeo de version-gating original.
+- Dictionary certification: `CDB_PDB_SAVED_STATES` eliminada (no era una vista real); `V$CONTAINERS` completada con bloque `validation:` (ya estaba verificada, faltaba la trazabilidad declarada); 2 tests negativos (`FAKE_MULTITENANT_VIEW`/`fake_column`) confirman que un nombre fabricado nunca certifica.
+- 21 tests nuevos de regresión específicos de este hardening.
+
+### Fixed — PHASE 6 — Final PDB Identity & Patch-Level Resolver Hardening
+
+Cierre de los 2 últimos defectos antes de aprobar `v0.6.0-multitenant`. Ver `docs/PHASE_6_FINAL_PDB_IDENTITY_PATCH_RESOLVER_HARDENING.md` para el detalle completo.
+
+- **`PDB_PLUG_IN_VIOLATIONS.NAME` semantics (interpretación incorrecta)**: la construcción base y el hardening de compatibilidad asumían que `NAME` identifica "la violación/componente", no la PDB — verificado vía WebFetch (Oracle Database Reference 12.1 y 19c, ambas coinciden): *"The name of an existing PDB or a PDB intended to be created"*. `NAME` es identidad de PDB, disponible en todo el rango 12.1–23ai. Corregido: `Q-CDB-PLUGIN-VIOLATIONS-001.md` (v3.0.0) y `skills/multitenant/plugin-violations/SKILL.md` (v3.0.0) — en 12.1, `container_name`/`pdb_token` ahora se derivan de `NAME` (sanitizado, `container_id` sigue `NOT_AVAILABLE`); en 12.2+ se correlacionan `CON_ID`+`NAME`, publicando `IDENTITY_MISMATCH` si no coinciden. `name` corregido de sanitización `KEEP` a `MASK` (tokenizado, mismo criterio que `Q-CDB-PDB-STATE-001.name`). `ACTION`/`MESSAGE` mantienen su protección "siempre DATA" sin cambios.
+- **Query Variant Resolver sin implementación compartida (causa raíz)**: el "resolver" nunca fue un componente único — era un algoritmo documentado reimplementado ad-hoc como `vernum()`/`vernum3()` local en ~22 archivos de test, sólo uno de ellos (el Static Validator) con soporte patch-level real. Anti-patrón: un test podía declarar cobertura patch-level sin que ninguna implementación real la tuviera. Fix: `scripts/lib/version.sh` — librería única compartida (`normalize_oracle_version`, `compare_oracle_versions`, `version_gte`, `version_lte`, `version_in_range`; modelo de 5-tupla, patch-level-aware, preserva los alias de marketing y el sentinel `latest` ya usados por ~40 queries de fases anteriores). `tests/test_sql_static_validator.sh` y `tests/test_query_variant_resolver_{10g,11g}.sh` refactorizados para consumirla — sin cambio de comportamiento, verificado explícitamente contra el resultado previo al refactor.
+- 13 tests nuevos (identidad de PDB + librería de versión compartida + integración resolver) y 4 tests refactorizados sin cambio de comportamiento.
+- ~~Conocido: la librería compartida no se propagó a los ~17 archivos de test de resolución de variantes fuera de alcance...~~ — **resuelto**, ver subsección siguiente.
+
+### Fixed — PHASE 6 — Version Resolver Consolidation Finalization
+
+Cierra el último bloqueo antes de aprobar `v0.6.0-multitenant`. Ver `docs/PHASE_6_VERSION_RESOLVER_CONSOLIDATION_FINALIZATION.md` para el detalle completo.
+
+- **Migración completa**: los 17 archivos de test restantes que reimplementaban `vernum()`/`vernum3()` localmente (`test_query_variant_resolver_{12c,18c,19c,21c,23ai}.sh`, `test_dataguard_process_variant_resolution_{11g,121,122,19c,23ai}.sh`, `test_dataguard_{23ai_supported_when_certified,24_or_future_not_auto_supported}.sh`, `test_fixture_query_variant_resolution.sh`, `test_query_variant_ranges_do_not_overlap_invalidly.sh`, `test_version_resolver_{12101,12102}.sh`, `test_plugin_violation_variant_resolution.sh`) migrados a `scripts/lib/version.sh` — sin cambio de comportamiento verificado explícitamente, salvo un hallazgo real: `test_query_variant_resolver_12c.sh` detectó que `Q-CDB-PDB-SAVED-STATE-001` (min real `12.1.0.2`) resolvía incorrectamente como compatible para "12c" con el comparador 2-tier antiguo (patch level ignorado) — el comparador patch-level-aware corrige esto correctamente (no una regresión).
+- **Enforcement global endurecido**: `tests/test_query_variant_resolver_uses_shared_version_library.sh` reescrito de un allowlist fijo de 7 archivos a una verificación dinámica — delega la comprobación negativa a un nuevo test global (`tests/test_no_local_version_resolvers_in_tests.sh`, recorre `tests/**/*.sh`+`scripts/**/*.sh` excepto la librería canónica) y comprueba positivamente que todo test que invoque una función de la librería la sourcee, sin exigir el import a tests que no comparan versiones.
+- 2 tests nuevos (`test_no_local_version_resolvers_in_tests.sh`, `test_shared_version_library_exists.sh`).
+- Documentación obsoleta corregida: `queries/multitenant/Q-CDB-PDB-SAVED-STATE-001.md` y la cabecera de `compatibility/oracle-dictionary/views.yaml` ya no describen "el resolver genérico compara sólo major.minor" como limitación vigente — declaran `scripts/lib/version.sh` como la única implementación de comparación de versión autorizada en todo el repositorio.
+
+## [0.5.0-dataguard] — 2026-09-07 — Fase 5: Oracle Data Guard
 
 Quinta capa funcional del e-stack, sobre baseline `v0.4.0-rac-gi-asm-network`. Ver `docs/PHASE_5_ORACLE_DATAGUARD.md` para el reporte de cierre completo.
 

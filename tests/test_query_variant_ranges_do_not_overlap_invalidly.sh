@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # Valida que las variantes de un mismo logical query no se solapen de forma invalida (el mismo
 # rango de version cubierto por dos variantes distintas seria ambiguo para el Resolver).
+#
+# PHASE 6 — VERSION RESOLVER CONSOLIDATION FINALIZATION (# 6, # 16 del prompt): usa
+# scripts/lib/version.sh en vez de un vernum() local.
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$ROOT/scripts/lib/version.sh"
 FAIL=0
-
-vernum() { local v="$1"; [ "$v" = "latest" ] && { echo 99999; return; }; local maj min; maj=$(echo "$v"|cut -d. -f1); min=$(echo "$v"|cut -d. -f2); echo $((maj*100+min)); }
 
 for f in $(grep -rl '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null); do
   # Variantes distinguidas por proposito (default/on-demand, ej. Q-DISC-ASM-001: mismo rango de
@@ -26,9 +28,7 @@ for f in $(grep -rl '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null)
   ok=1
   for ((a=0; a<n; a++)); do
     for ((b=a+1; b<n; b++)); do
-      amin=$(vernum "${mins[$a]}"); amax=$(vernum "${maxs[$a]}")
-      bmin=$(vernum "${mins[$b]}"); bmax=$(vernum "${maxs[$b]}")
-      if [ "$amin" -le "$bmax" ] && [ "$bmin" -le "$amax" ]; then
+      if version_lte "${mins[$a]}" "${maxs[$b]}" && version_lte "${mins[$b]}" "${maxs[$a]}"; then
         echo "[FAIL] $f — variantes #$((a+1)) [${mins[$a]}-${maxs[$a]}] y #$((b+1)) [${mins[$b]}-${maxs[$b]}] se solapan"
         ok=0; FAIL=1
       fi

@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 # Valida que el Query Variant Resolver encuentre una variante compatible para Oracle 21c
-# (representado como version normalizada 2100) en cada logical query que declara cobertura
-# para esa version, y que NO encuentre match para los que legitimamente no la cubren
-# (docs/QUERY_VARIANTS.md, config/capability-matrix.yaml).
+# (representado como 21.0) en cada logical query que declara cobertura para esa version, y que NO
+# encuentre match para los que legitimamente no la cubren (docs/QUERY_VARIANTS.md,
+# config/capability-matrix.yaml).
+#
+# PHASE 6 — VERSION RESOLVER CONSOLIDATION FINALIZATION (# 5-6, # 11 del prompt): usa
+# scripts/lib/version.sh en vez de un vernum() local.
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$ROOT/scripts/lib/version.sh"
 FAIL=0
-TARGET=2100
+TARGET="21.0"
 EXPECTED_UNSUPPORTED=""
-
-vernum() { local v="$1"; [ "$v" = "latest" ] && { echo 99999; return; }; local maj min; maj=$(echo "$v"|cut -d. -f1); min=$(echo "$v"|cut -d. -f2); echo $((maj*100+min)); }
 
 for f in $(grep -rl '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null); do
   qid=$(grep -m1 '^query_id:' "$f" | awk '{print $2}')
@@ -18,8 +20,7 @@ for f in $(grep -rl '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null)
   while IFS= read -r r; do
     m=$(echo "$r" | grep -oE 'min: "[^"]+"' | grep -oE '"[^"]+"' | tr -d '"')
     x=$(echo "$r" | grep -oE 'max: [^}]+' | sed -E 's/max: *"?//; s/"?$//')
-    mn=$(vernum "$m"); mx=$(vernum "$x")
-    if [ "$TARGET" -ge "$mn" ] && [ "$TARGET" -le "$mx" ]; then match=1; fi
+    if version_in_range "$TARGET" "$m" "$x"; then match=1; fi
   done <<< "$ranges"
 
   is_expected_unsupported=0

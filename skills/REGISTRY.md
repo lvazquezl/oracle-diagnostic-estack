@@ -12,7 +12,7 @@ Este registro identifica cada skill **exclusivamente** por su `skill_id` complet
 - `active` — materializado por completo (19 secciones del Skill Contract), archivo real en el dominio.
 - `registered` — nombre, dominio y propósito fijados en este registro; su materialización completa es Fase 2+ según `README.md#fases-de-construcción`. No es un placeholder vacío: es la entrada de catálogo que gobierna qué se puede construir y en qué orden vía `/change skill`.
 
-Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total); **Fase 5 (Data Guard) materializa las 21 skills del dominio `dataguard` completo** (141 activos en total). El resto queda `registered` para materialización gobernada en Fases 6–9, en el orden de `README.md`.
+Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total); **Fase 5 (Data Guard) materializa las 21 skills del dominio `dataguard` completo** (141 activos en total); **Fase 6 (Multitenant/CDB/PDB) materializa las 26 skills del dominio `multitenant` completo** (166 activos en total). El resto queda `registered` para materialización gobernada en Fases 7–9, en el orden de `README.md`.
 
 ## core (20)
 
@@ -183,22 +183,38 @@ Reconciliación de la lista Foundation (sólo `lag` estaba `active`): `discovery
 | `dataguard/troubleshooting` | **active** ([dataguard/troubleshooting/SKILL.md](dataguard/troubleshooting/SKILL.md)) |
 | `dataguard/incident-analysis` | **active** ([dataguard/incident-analysis/SKILL.md](dataguard/incident-analysis/SKILL.md)) |
 
-## multitenant (12)
+## multitenant (26 — Fase 6, todos active)
+
+> **Fase 6**: reconciliación de la lista Foundation (12 nombres `registered`, sólo `container-state` activo) a las 26 skills reales del dominio `multitenant` completo. Mapeo: `discovery`/`cdb`→`cdb-discovery`, `pdb`→`pdb-inventory`, `container-state`→`pdb-state` (migrado, contenido expandido — `multitenant/container-state.md` eliminado), `services`→`pdb-services`, `storage`→`pdb-tablespaces`, `temp`→`pdb-temp`, `undo`→`pdb-undo`, `resource-manager`→`resource-manager` (sin cambio de nombre), `common-users`/`local-users`→`common-local-users`/`common-local-roles` (separados por identidad de usuario vs. rol), `troubleshooting`→`troubleshooting` (sin cambio). Nuevos sin equivalente Foundation: `architecture`, `pdb-open-mode`, `pdb-rac-placement`, `pdb-sessions`, `local-undo`, `parameters`, `components`, `plugin-violations`, `resource-usage`, `lockdown-profiles`, `application-containers`, `proxy-pdb`, `configuration-drift`, `healthcheck`, `assessment`.
 
 | skill_id | status |
 |---|---|
-| `multitenant/discovery` | registered |
-| `multitenant/cdb` | registered |
-| `multitenant/pdb` | registered |
-| `multitenant/container-state` | **active** ([multitenant/container-state.md](multitenant/container-state.md)) |
-| `multitenant/services` | registered |
-| `multitenant/storage` | registered |
-| `multitenant/temp` | registered |
-| `multitenant/undo` | registered |
-| `multitenant/resource-manager` | registered |
-| `multitenant/common-users` | registered |
-| `multitenant/local-users` | registered |
-| `multitenant/troubleshooting` | registered |
+| `multitenant/architecture` | **active** ([multitenant/architecture/SKILL.md](multitenant/architecture/SKILL.md)) |
+| `multitenant/cdb-discovery` | **active** ([multitenant/cdb-discovery/SKILL.md](multitenant/cdb-discovery/SKILL.md)) |
+| `multitenant/pdb-inventory` | **active** ([multitenant/pdb-inventory/SKILL.md](multitenant/pdb-inventory/SKILL.md)) |
+| `multitenant/pdb-state` | **active** ([multitenant/pdb-state/SKILL.md](multitenant/pdb-state/SKILL.md)) |
+| `multitenant/pdb-open-mode` | **active** ([multitenant/pdb-open-mode/SKILL.md](multitenant/pdb-open-mode/SKILL.md)) |
+| `multitenant/pdb-services` | **active** ([multitenant/pdb-services/SKILL.md](multitenant/pdb-services/SKILL.md)) |
+| `multitenant/pdb-rac-placement` | **active** ([multitenant/pdb-rac-placement/SKILL.md](multitenant/pdb-rac-placement/SKILL.md)) |
+| `multitenant/pdb-sessions` | **active** ([multitenant/pdb-sessions/SKILL.md](multitenant/pdb-sessions/SKILL.md)) |
+| `multitenant/pdb-tablespaces` | **active** ([multitenant/pdb-tablespaces/SKILL.md](multitenant/pdb-tablespaces/SKILL.md)) |
+| `multitenant/pdb-temp` | **active** ([multitenant/pdb-temp/SKILL.md](multitenant/pdb-temp/SKILL.md)) |
+| `multitenant/pdb-undo` | **active** ([multitenant/pdb-undo/SKILL.md](multitenant/pdb-undo/SKILL.md)) |
+| `multitenant/local-undo` | **active** ([multitenant/local-undo/SKILL.md](multitenant/local-undo/SKILL.md)) |
+| `multitenant/parameters` | **active** ([multitenant/parameters/SKILL.md](multitenant/parameters/SKILL.md)) |
+| `multitenant/common-local-users` | **active** ([multitenant/common-local-users/SKILL.md](multitenant/common-local-users/SKILL.md)) |
+| `multitenant/common-local-roles` | **active** ([multitenant/common-local-roles/SKILL.md](multitenant/common-local-roles/SKILL.md)) |
+| `multitenant/components` | **active** ([multitenant/components/SKILL.md](multitenant/components/SKILL.md)) |
+| `multitenant/plugin-violations` | **active** ([multitenant/plugin-violations/SKILL.md](multitenant/plugin-violations/SKILL.md)) |
+| `multitenant/resource-usage` | **active** ([multitenant/resource-usage/SKILL.md](multitenant/resource-usage/SKILL.md)) |
+| `multitenant/resource-manager` | **active** ([multitenant/resource-manager/SKILL.md](multitenant/resource-manager/SKILL.md)) |
+| `multitenant/lockdown-profiles` | **active** ([multitenant/lockdown-profiles/SKILL.md](multitenant/lockdown-profiles/SKILL.md)) |
+| `multitenant/application-containers` | **active** ([multitenant/application-containers/SKILL.md](multitenant/application-containers/SKILL.md)) |
+| `multitenant/proxy-pdb` | **active** ([multitenant/proxy-pdb/SKILL.md](multitenant/proxy-pdb/SKILL.md)) |
+| `multitenant/configuration-drift` | **active** ([multitenant/configuration-drift/SKILL.md](multitenant/configuration-drift/SKILL.md)) |
+| `multitenant/healthcheck` | **active** ([multitenant/healthcheck/SKILL.md](multitenant/healthcheck/SKILL.md)) |
+| `multitenant/assessment` | **active** ([multitenant/assessment/SKILL.md](multitenant/assessment/SKILL.md)) |
+| `multitenant/troubleshooting` | **active** ([multitenant/troubleshooting/SKILL.md](multitenant/troubleshooting/SKILL.md)) |
 
 ## rman (14)
 

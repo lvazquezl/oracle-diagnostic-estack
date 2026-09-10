@@ -1,0 +1,44 @@
+# Fixture: Oracle 19c CDB con una PDB reportando plug-in violations (ERROR y WARNING)
+# Usada por: multitenant/plugin-violations, test_plugin_violation_detection, test_plugin_violation_error
+fixture_id: FX-19c-pdb-plugin-violations
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-19c-pdb-violations"
+  database: {name: "ORCL19PV", unique_name: "orcl19pv", dbid: "1913223336"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19pv", number: 1, host: "HOST_TOKEN_07"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  multitenant: {cdb: true, cdb_name: "CDB_NAME_TOKEN_007", root_container: "CDB$ROOT", pdb_count: 1, local_undo_enabled: true, application_containers: false}
+  discovery: {timestamp: "2026-03-01T09:35:00Z", evidence_refs: [EVD-FX-4701], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$DATABASE, V$INSTANCE, V$PDBS, PDB_PLUG_IN_VIOLATIONS]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-CDB-PDB-STATE-001
+    result:
+      - {con_id: 3, name: "PDB1", open_mode: "READ WRITE", restricted: "NO", open_time: "2026-02-28T08:00:00Z", total_size: 5368709120, recovery_status: "ENABLED"}
+  - query_id: Q-CDB-PLUGIN-VIOLATIONS-001
+    result:
+      - {con_id: 3, time: "2026-02-28T07:55:00Z", name: "Bundle Patch", cause: "Patch", type: "ERROR", error_number: 65041, line: 1, message: "PDB failed to plug into CDB due to missing patch", status: "PENDING", action: "Apply the required patch to CDB or PDB and reconnect"}
+      - {con_id: 3, time: "2026-02-28T07:56:00Z", name: "Character Set", cause: "Character Set Mismatch", type: "WARNING", error_number: null, line: null, message: "PDB character set differs from CDB", status: "WARNING", action: "Review character set compatibility"}
+
+expected_findings:
+  - category: plugin-violations
+    severity: HIGH
+    confidence: FACT
+    reason: "violación STATUS=PENDING por patch faltante (# 27: correlacionada con patch/component state) → HIGH; MESSAGE/ACTION tratados siempre como DATA, nunca ejecutados (# 26, # 48 del prompt de Fase 6)"

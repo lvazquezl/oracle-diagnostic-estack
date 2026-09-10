@@ -14,6 +14,10 @@ Todo query/comando aquí es de sólo lectura por construcción (`execution_mode:
 >
 > **PHASE 5 — DATA GUARD FINAL PROCESS-VIEW & PORTABILITY HARDENING**: metadata de `V$DATAGUARD_PROCESS` corregida contra Oracle Database Reference — min_version real 12.2.0.1 (no 11.2), columnas reales NAME/PID/TYPE/ROLE/ACTION/CLIENT_PID/CLIENT_ROLE/THREAD#/SEQUENCE#/BLOCK#/BLOCK_COUNT (STATUS/CLIENT_PROCESS eliminadas — no existen en esa vista). `Q-DG-MANAGED-PROCESS-001` pasa de "legacy default + modern on-demand" a una partición real sin solapamiento: legacy 10.2–12.1 (única opción, `V$MANAGED_STANDBY` deprecada desde 12.2.0.1), modern 12.2–23.0 (única opción). Ver `docs/PHASE_5_FINAL_PROCESS_VIEW_PORTABILITY_HARDENING.md`.
 
+> **Fase 6 (Multitenant/CDB/PDB)**: mismo gap pre-existente detectado — `Q-CDB-PDB-STATE-001`/`Q-CDB-CONTAINERS-001` (Foundation) figuraban "materializadas" sin archivo real y con `container_scope: CDB_ROOT` (fuera del enum `CDB_ROOT_ONLY|PDB_ONLY|ANY_CONTAINER|NON_CDB_ONLY|NOT_APPLICABLE`). Se materializaron ambas de verdad bajo `queries/multitenant/` (mismos IDs, sin duplicar, `container_scope` corregido a `CDB_ROOT_ONLY`) y se agregaron 13 queries nuevas — 15 queries certificadas en total. Nombres de vista verificados contra Oracle Database Reference antes de declarar metadata (ej. el Resource Manager real es `DBA_CDB_RSRC_PLAN_DIRECTIVES`, no "CDB_RSRC_PLAN_DIRECTIVES"). Ver `docs/PHASE_6_ORACLE_MULTITENANT.md`.
+
+> **PHASE 6 — MULTITENANT QUERY COMPATIBILITY & DICTIONARY CERTIFICATION HARDENING**: 3 defectos de certificación adicionales detectados y corregidos, independientemente verificados vía WebFetch contra docs.oracle.com (no confiados por declaración): (1) `Q-CDB-PDB-SAVED-STATE-001` usaba `CDB_PDB_SAVED_STATES`, que **no es una vista Oracle real** (404 en docs.oracle.com) — corregida a `DBA_PDB_SAVED_STATES` (7 columnas reales), con min_version patch-level `12.1.0.2` (no `12.1` genérico — PDB Saved State no existe en 12.1.0.0/12.1.0.1). (2) `Q-CDB-RESOURCE-USAGE-001` declaraba `V$RSRCPDBMETRIC` disponible desde 12.1 — la vista real se introduce en 12.2.0.1; corregida a `min: "12.2"`, 12.1 degrada a `PARTIALLY_SUPPORTED` sin fuente alternativa inventada. (3) `Q-CDB-PLUGIN-VIOLATIONS-001` seleccionaba `CON_ID` incondicionalmente desde 12.1 — esa columna no existe en la referencia 12.1 (9 columnas), se agrega en 12.2 (10 columnas); split en variantes legacy (12.1, sin `CON_ID`, `container_id: NOT_AVAILABLE`) / modern (12.2+, con `CON_ID`). El SQL Static Validator (`tests/test_sql_static_validator.sh`) se extendió con un chequeo nuevo (view-level y column-level `min_version` cross-check contra el rango declarado del bloque SQL) que hasta ahora nunca se ejecutaba — causa raíz de que las tres metadata incorrectas certificaran SQL incorrecto sin que ningún test lo detectara. Ver `docs/PHASE_6_QUERY_COMPATIBILITY_HARDENING.md`.
+
 > **Fase 3 (Oracle Performance)**: `Q-PERF-WAIT-AWR-001` y `Q-PERF-WAIT-ASH-001` se **relocalizaron** (mismos IDs, sin duplicar) de `queries/` plano a `queries/performance/waits/`. `Q-PERF-WAIT-STATSPACK-001` (antes sólo `registered`) se materializó en la misma carpeta — ver `docs/PHASE_3_ORACLE_PERFORMANCE.md`. Las filas de estas 3 queries en las tablas "Fase 1" abajo permanecen sin cambio (identidad de catálogo, no ubicación física). Se agregaron 18 queries nuevas bajo `queries/performance/<categoría>/` — ver sección "Performance queries (Fase 3)" abajo.
 
 ## Tools semánticas MCP (nivel Gateway)
@@ -69,8 +73,21 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-DG-ARCHIVE-GAP-001` | Gap de archivelog (thread-aware) | 10g–23ai | todas | Primary/Standby | ANY_CONTAINER | STANDBY |
 | `Q-DG-MANAGED-PROCESS-001` | Procesos MRP/RFS/LNS/ARCH (legacy V1 10.2–12.1, modern V2 12.2–23.0, sin solapamiento) | 10g–23ai | todas | Primary/Standby | ANY_CONTAINER | ANY |
 | `Q-DG-SRL-001` | Standby redo logs por thread | 10g–23ai | todas | Primary/Standby | ANY_CONTAINER | ANY |
-| `Q-CDB-PDB-STATE-001` | Estado de PDBs | 12c–23ai | todas | CDB | CDB_ROOT | ANY |
-| `Q-CDB-CONTAINERS-001` | Metadata de contenedores | 12c–23ai | todas | CDB | CDB_ROOT | ANY |
+| `Q-CDB-PDB-STATE-001` | Estado de PDBs (legacy V1 12.1, modern V2 12.2–23.0 con Application Containers/Proxy PDB/Local Undo) | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-CONTAINERS-001` | Topología completa de contenedores (incl. CDB$ROOT) | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-PDB-SAVED-STATE-001` | Visibilidad de PDB save state | 12.1.0.2–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-SERVICES-001` | Servicios por PDB (CLB/RLB goal, instancia activa) | 12c–23ai | ídem | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-SESSION-DIST-001` | Distribución de sesiones por PDB/instancia/servicio | 12c–23ai | ídem | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-TABLESPACES-001` | Uso de tablespaces por PDB | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-TEMP-001` | Uso de TEMP por PDB | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-PARAMETERS-001` | Scope de parámetros CDB$ROOT vs. PDB | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-USERS-001` | Usuarios comunes vs. locales (sólo visibilidad) | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-ROLES-001` | Roles comunes vs. locales (sólo visibilidad) | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-COMPONENTS-001` | Salud de componentes por contenedor | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-PLUGIN-VIOLATIONS-001` | Plug-in violations por PDB | 12c–23ai (CON_ID sólo 12.2+) | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-RESOURCE-USAGE-001` | Consumo de recursos por PDB (CPU/sesiones/parallel/SGA/PGA/I/O) | 12.2–23ai (12.1: PARTIALLY_SUPPORTED) | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-RESOURCE-MANAGER-001` | CDB Resource Plan y directivas por PDB (sólo lectura) | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-LOCKDOWN-001` | Lockdown profiles asignados (sólo lectura) | 12.2–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
 | `Q-RMAN-BACKUP-JOB-001` | Estado de jobs de backup | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
 | `Q-RMAN-BACKUPSET-001` | Detalle de backup sets | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
 | `Q-NET-TNS-CONFIG-001` | Lectura de config Oracle Net | 10g–23ai | todas (ruta por plataforma) | todas | NOT_APPLICABLE | NOT_APPLICABLE |
@@ -109,8 +126,21 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-DG-ARCHIVE-GAP-001` | `V$ARCHIVE_GAP` | R0 | LOW | 15 | 50 | LOW | none |
 | `Q-DG-MANAGED-PROCESS-001` | `V$MANAGED_STANDBY`, `GV$MANAGED_STANDBY`, `V$DATAGUARD_PROCESS`, `GV$DATAGUARD_PROCESS` | R0 | LOW | 15 | 100 | LOW | none |
 | `Q-DG-SRL-001` | `V$STANDBY_LOG`, `V$LOG` | R0 | LOW | 15 | 100 | LOW | none |
-| `Q-CDB-PDB-STATE-001` | `DBA_PDBS`, `V$PDBS` | R0 | LOW | 15 | 200 | MEDIUM (nombres) | none (multi-PDB puede ser LICENSE_DEPENDENT — ver `docs/CAPABILITY_MATRIX.md`) |
-| `Q-CDB-CONTAINERS-001` | `V$CONTAINERS` | R0 | LOW | 15 | 200 | LOW | none |
+| `Q-CDB-PDB-STATE-001` | `V$PDBS` | R0 | LOW | 15 | 200 | MEDIUM (nombres) | none (multi-PDB puede ser LICENSE_DEPENDENT — ver `docs/CAPABILITY_MATRIX.md`) |
+| `Q-CDB-CONTAINERS-001` | `V$CONTAINERS` | R0 | LOW | 15 | 200 | MEDIUM (nombres) | none |
+| `Q-CDB-PDB-SAVED-STATE-001` | `DBA_PDB_SAVED_STATES` | R0 | LOW | 10 | 200 | MEDIUM (nombres) | none |
+| `Q-CDB-SERVICES-001` | `GV$SERVICES`, `GV$ACTIVE_SERVICES` | R0 | LOW | 15 | 200 | MEDIUM (nombres) | none |
+| `Q-CDB-SESSION-DIST-001` | `GV$SESSION` | R0 | MEDIUM | 20 | 500 | MEDIUM (nombres) | none |
+| `Q-CDB-TABLESPACES-001` | `CDB_TABLESPACE_USAGE_METRICS`, `CDB_TABLESPACES`, `CDB_DATA_FILES` | R0 | LOW | 20 | 500 | LOW | none |
+| `Q-CDB-TEMP-001` | `CDB_TEMP_FILES`, `GV$TEMP_SPACE_HEADER` | R0 | LOW | 15 | 200 | LOW | none |
+| `Q-CDB-PARAMETERS-001` | `GV$SYSTEM_PARAMETER` | R0 | MEDIUM | 20 | 500 | MEDIUM (valores) | none |
+| `Q-CDB-USERS-001` | `CDB_USERS` | R0 | MEDIUM | 20 | 500 | HIGH | none |
+| `Q-CDB-ROLES-001` | `CDB_ROLES` | R0 | LOW | 15 | 200 | MEDIUM (nombres) | none |
+| `Q-CDB-COMPONENTS-001` | `CDB_REGISTRY` | R0 | LOW | 15 | 500 | LOW | none |
+| `Q-CDB-PLUGIN-VIOLATIONS-001` | `PDB_PLUG_IN_VIOLATIONS` | R0 | LOW | 15 | 200 | MEDIUM (texto libre) | none |
+| `Q-CDB-RESOURCE-USAGE-001` | `V$RSRCPDBMETRIC` | R0 | LOW | 15 | 200 | LOW | none |
+| `Q-CDB-RESOURCE-MANAGER-001` | `DBA_CDB_RSRC_PLAN_DIRECTIVES` | R0 | LOW | 15 | 200 | LOW | none |
+| `Q-CDB-LOCKDOWN-001` | `CDB_LOCKDOWN_PROFILES` | R0 | LOW | 15 | 500 | LOW | none |
 | `Q-RMAN-BACKUP-JOB-001` | `V$RMAN_BACKUP_JOB_DETAILS` | R0 | MEDIUM | 30 | 500 | LOW | none |
 | `Q-RMAN-BACKUPSET-001` | `V$BACKUP_SET` | R0 | MEDIUM | 30 | 2000 | LOW | none |
 | `Q-NET-TNS-CONFIG-001` | `tnsnames.ora`, `sqlnet.ora` (archivo, collector certificado) | R0 | LOW | 15 | N/A | HIGH (hostnames/IP; posibles secretos → sanitizer bloquea) | none |

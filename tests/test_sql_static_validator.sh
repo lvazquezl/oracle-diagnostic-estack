@@ -24,6 +24,12 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DICT="$ROOT/compatibility/oracle-dictionary/views.yaml"
 FAIL=0
 
+# PHASE 6 — FINAL PDB IDENTITY & PATCH-LEVEL RESOLVER HARDENING (# 22 del prompt): la comparación
+# de versión ya no se reimplementa localmente (vernum()/vernum3() de hardenings anteriores) — usa
+# la misma librería compartida que tests/test_query_variant_resolver_{10g,11g}.sh y las queries de
+# saved-state, patch-level-aware desde el día uno (scripts/lib/version.sh).
+source "$ROOT/scripts/lib/version.sh"
+
 # Nombres de vista (y su contraparte GV$, si aplica) marcadas columns_exhaustive:true — usado como
 # filtro rápido de "vale la pena analizar este bloque" antes de la extracción completa (rendimiento).
 # Comparación por texto literal (grep -F), no regex — evita problemas de escapado de "$".
@@ -51,26 +57,14 @@ RISKY_COLUMNS=(
   "instance_role:11.0"
 )
 
-vernum() { # "12.1" -> 1201 ; "18.0" -> 1800 ; "10.2" -> 1002
-  local v="$1"
-  local maj min
-  maj=$(echo "$v" | cut -d. -f1)
-  min=$(echo "$v" | cut -d. -f2)
-  printf "%d" $((maj * 100 + min))
-}
-
 check_block() {
   local file="$1" block_content="$2" range_min="$3" range_label="$4"
-  local range_min_num
-  range_min_num=$(vernum "$range_min")
   block_content=$(echo "$block_content" | sed -E 's/--.*$//')
   for entry in "${RISKY_COLUMNS[@]}"; do
     local col="${entry%%:*}"
     local col_min="${entry##*:}"
-    local col_min_num
-    col_min_num=$(vernum "$col_min")
     if echo "$block_content" | grep -Eiq "$col"; then
-      if [ "$range_min_num" -lt "$col_min_num" ]; then
+      if ! version_gte "$range_min" "$col_min"; then
         echo "[FAIL] $file — bloque '$range_label' (min declarado $range_min) usa columna gated a $col_min sin guardia"
         FAIL=1
       fi
@@ -215,8 +209,108 @@ split_select_items() {
   done
 }
 
+# --- Chequeo 3 (nuevo, PHASE 6 — QUERY COMPATIBILITY & DICTIONARY CERTIFICATION HARDENING,
+# # 27 del prompt): view-level y column-level min_version cross-check contra el rango declarado
+# del bloque SQL. Causa raíz de que V$RSRCPDBMETRIC (min_version "12.1" incorrecto, real "12.2") y
+# PDB_PLUG_IN_VIOLATIONS.CON_ID (min_version "12.1" incorrecto, real "12.2") certificaran SQL
+# incorrecto sin que ningún test lo detectara: chequeo 2 sólo validaba EXISTENCIA de columna,
+# nunca si esa columna/vista ya existía en el mínimo declarado del bloque. Este chequeo compara
+# min_version (de la vista y, para vistas columns_exhaustive:true, de cada columna) contra el
+# range_min del bloque, con soporte de patch-level (ej. "12.1.0.2") vía scripts/lib/version.sh
+# (PHASE 6 — FINAL PDB IDENTITY & PATCH-LEVEL RESOLVER HARDENING, # 22 del prompt: "el Static
+# Validator debe utilizar la misma comparación... no mantener lógica paralela"). El chequeo 1
+# (RISKY_COLUMNS) usa la misma librería — ver arriba.
+
+get_view_min_version() {
+  local dict="$1" target="$2"
+  awk -v target="$target" '
+    BEGIN { IGNORECASE=1; inview=0 }
+    /^  [A-Za-z$#0-9_]+:[ \t]*$/ {
+      line=$0; sub(/^  /,"",line); sub(/:[ \t]*$/,"",line)
+      inview = (tolower(line) == tolower(target)) ? 1 : 0
+      next
+    }
+    inview && /^    min_version:/ {
+      line=$0
+      sub(/^    min_version:[ \t]*/,"",line)
+      gsub(/"/,"",line)
+      sub(/[ \t]*$/,"",line)
+      print line
+      exit
+    }
+  ' "$dict"
+}
+
+get_view_column_min_versions() {
+  local dict="$1" target="$2"
+  awk -v target="$target" '
+    BEGIN { IGNORECASE=1; inview=0; incols=0; exhaustive=0 }
+    /^  [A-Za-z$#0-9_]+:[ \t]*$/ {
+      line=$0; sub(/^  /,"",line); sub(/:[ \t]*$/,"",line)
+      inview = (tolower(line) == tolower(target)) ? 1 : 0
+      incols=0; exhaustive=0
+      next
+    }
+    inview && /^    columns_exhaustive:[ \t]*true[ \t]*$/ { exhaustive=1; next }
+    inview && /^    columns:[ \t]*$/ { incols=1; next }
+    inview && incols {
+      if (!exhaustive) { next }
+      if ($0 ~ /^      [A-Za-z_#][A-Za-z0-9_#]*:.*min_version:/) {
+        line=$0
+        sub(/^      /,"",line)
+        colname=line
+        sub(/:.*/,"",colname)
+        # min_version puede ser un string entre comillas ("12.1", "12.1.0.2") o el bareword
+        # especial "all" (= disponible desde 10g, ver cabecera del dictionary) — sin comillas.
+        mv=line
+        sub(/.*min_version:[ \t]*/,"",mv)
+        gsub(/"/,"",mv)
+        sub(/}.*/,"",mv)
+        sub(/[ \t]*$/,"",mv)
+        print tolower(colname) ":" mv
+        next
+      }
+      if ($0 ~ /^[ \t]*#/) { next }
+      if ($0 ~ /^[ \t]*$/) { incols=0; next }
+      incols=0
+    }
+  ' "$dict"
+}
+
+declare -A __VIEW_MINVER_CACHE
+resolve_view_min_version() {
+  local view_lc="$1"
+  if [ -n "${__VIEW_MINVER_CACHE[$view_lc]+x}" ]; then
+    printf '%s' "${__VIEW_MINVER_CACHE[$view_lc]}"
+    return
+  fi
+  local mv
+  mv=$(get_view_min_version "$DICT" "$view_lc")
+  if [ -z "$mv" ] && [[ "$view_lc" == gv\$* ]]; then
+    mv=$(get_view_min_version "$DICT" "v\$${view_lc#gv\$}")
+  fi
+  __VIEW_MINVER_CACHE["$view_lc"]="$mv"
+  printf '%s' "$mv"
+}
+
+declare -A __VIEW_COLVER_CACHE
+resolve_col_min_versions_for_view() {
+  local view_lc="$1"
+  if [ -n "${__VIEW_COLVER_CACHE[$view_lc]+x}" ]; then
+    printf '%s' "${__VIEW_COLVER_CACHE[$view_lc]}"
+    return
+  fi
+  local cv
+  cv=$(get_view_column_min_versions "$DICT" "$view_lc")
+  if [ -z "$cv" ] && [[ "$view_lc" == gv\$* ]]; then
+    cv=$(get_view_column_min_versions "$DICT" "v\$${view_lc#gv\$}")
+  fi
+  __VIEW_COLVER_CACHE["$view_lc"]="$cv"
+  printf '%s' "$cv"
+}
+
 check_columns_exist() {
-  local file="$1" block="$2" label="$3"
+  local file="$1" block="$2" label="$3" range_min="${4:-}"
 
   # Salida rápida (rendimiento): si el bloque no menciona ninguna de las vistas registradas como
   # columns_exhaustive:true, no hay nada que verificar — evita el costo de extracción/tokenizado
@@ -248,6 +342,28 @@ check_columns_exist() {
   alias_map=$(extract_aliases "$from_seg")
   local nviews
   nviews=$(echo "$alias_map" | grep -c ':' || true)
+
+  # Chequeo 3a (view-level): el bloque declara un range_min explícito y alguna vista referenciada
+  # tiene min_version registrado en el dictionary por encima de ese range_min.
+  if [ -n "$range_min" ]; then
+    local seen_views=""
+    while IFS= read -r pair; do
+      [ -z "$pair" ] && continue
+      local vw
+      vw=$(echo "$pair" | cut -d: -f2)
+      [ -z "$vw" ] && continue
+      echo "$seen_views" | grep -qx "$vw" && continue
+      seen_views="$seen_views
+$vw"
+      local view_min
+      view_min=$(resolve_view_min_version "$vw")
+      [ -z "$view_min" ] && continue
+      if ! version_gte "$range_min" "$view_min"; then
+        echo "[FAIL] $file — bloque '$label' (min declarado $range_min) referencia '$vw', cuyo min_version real es $view_min (compatibility/oracle-dictionary/views.yaml)"
+        FAIL=1
+      fi
+    done <<< "$alias_map"
+  fi
 
   local items
   items=$(split_select_items "$select_list")
@@ -291,24 +407,40 @@ check_columns_exist() {
       if ! echo "$valid_cols" | grep -qx "$col_name_l"; then
         echo "[FAIL] $file — bloque '$label' referencia columna '$col_name_l' que no existe en '$target_view' (compatibility/oracle-dictionary/views.yaml)"
         FAIL=1
+      elif [ -n "$range_min" ]; then
+        # Chequeo 3b (column-level): la columna existe, pero ¿existe ya en el range_min declarado
+        # del bloque? (causa raíz real de PDB_PLUG_IN_VIOLATIONS.CON_ID: existía en la vista desde
+        # siempre según el chequeo 2, pero no desde el min_version que el bloque declaraba).
+        local col_min
+        col_min=$(resolve_col_min_versions_for_view "$target_view" | grep "^${col_name_l}:" | head -1 | cut -d: -f2)
+        if [ -n "$col_min" ]; then
+          if ! version_gte "$range_min" "$col_min"; then
+            echo "[FAIL] $file — bloque '$label' (min declarado $range_min) selecciona '$target_view.$col_name_l', cuyo min_version real es $col_min (compatibility/oracle-dictionary/views.yaml)"
+            FAIL=1
+          fi
+        fi
       fi
     done <<< "$tokens"
   done <<< "$items"
 }
 
 # --- Queries CON variantes explícitas: validar cada bloque contra el min de SU variante ---
+# Patrón de extracción patch-level-aware ([0-9]+(\.[0-9]+){1,3}, no sólo major.minor) — PHASE 6 —
+# QUERY COMPATIBILITY & DICTIONARY CERTIFICATION HARDENING, # 6/# 28: Q-CDB-PDB-SAVED-STATE-001
+# declara min: "12.1.0.2" (patch-level), el patrón 2-tier anterior no la capturaba en absoluto.
 for f in $(grep -rl '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null); do
-  mins=$(grep -oE 'oracle_versions: \{min: "[0-9]+\.[0-9]+"' "$f" | grep -oE '"[0-9]+\.[0-9]+"' | tr -d '"')
+  mins=$(grep -oE 'oracle_versions: \{min: "[0-9]+(\.[0-9]+){1,3}"' "$f" | grep -oE '"[0-9]+(\.[0-9]+){1,3}"' | tr -d '"')
   i=0
   while IFS= read -r min; do
     i=$((i+1))
     block=$(awk -v n="$i" '/```sql/{c++} c==n && /```sql/{flag=1;next} flag && /```/{flag=0} flag' "$f")
     check_block "$f" "$block" "$min" "variant #$i"
-    check_columns_exist "$f" "$block" "variant #$i"
+    check_columns_exist "$f" "$block" "variant #$i" "$min"
   done <<< "$mins"
 done
 
 # --- Queries SIN variantes (implicit_full_range): validar cada bloque SQL del archivo por separado ---
+QCM="$ROOT/config/query-compatibility-matrix.yaml"
 for f in $(grep -rL '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null); do
   raw=$(grep -oE '^supported_oracle_versions: \[[^]]*\]' "$f" | head -1)
   first=$(echo "$raw" | sed -E 's/.*\[([^],]*).*/\1/' | tr -d ' ')
@@ -322,13 +454,26 @@ for f in $(grep -rL '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null)
     23ai) min="23.0" ;;
     *) min="10.2" ;;
   esac
+
+  # Chequeo 3 usa un min MÁS PRECISO que el derivado arriba (chequeo 1, sin cambios — la etiqueta
+  # "12c" descriptiva de supported_oracle_versions no distingue 12.1/12.2, ver Q-CDB-LOCKDOWN-001/
+  # Q-CDB-RESOURCE-USAGE-001, ambas 12.2+-only pero con "12c" en la lista por convención — # 39 del
+  # prompt de hardening: "no marcar soporte superior al realmente certificado"). Fuente real:
+  # config/query-compatibility-matrix.yaml (min declarado por logical query, implicit_full_range).
+  qid=$(grep -m1 '^query_id:' "$f" | awk '{print $2}')
+  precise_min="$min"
+  if [ -n "$qid" ]; then
+    qm=$(grep -m1 "^  ${qid}:" "$QCM" | grep -oE 'min: "[0-9]+(\.[0-9]+){1,3}"' | head -1 | grep -oE '"[0-9]+(\.[0-9]+){1,3}"' | tr -d '"')
+    [ -n "$qm" ] && precise_min="$qm"
+  fi
+
   nblocks=$(grep -c '```sql' "$f" || true)
   i=0
   while [ "$i" -lt "$nblocks" ]; do
     i=$((i+1))
     block=$(awk -v n="$i" '/```sql/{c++} c==n && /```sql/{flag=1;next} flag && /```/{flag=0} flag' "$f")
     check_block "$f" "$block" "$min" "implicit_full_range #$i"
-    check_columns_exist "$f" "$block" "implicit_full_range #$i"
+    check_columns_exist "$f" "$block" "implicit_full_range #$i" "$precise_min"
   done
 done
 

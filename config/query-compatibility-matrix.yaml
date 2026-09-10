@@ -189,6 +189,59 @@ queries:
     validation_status: COMPATIBLE
     was: WRONG_MIN_VERSION_AND_WRONG_COLUMNS
 
+  # --- Fase 6 (Multitenant / CDB / PDB) ---
+  # "max" siempre explicito ("23.0"), nunca "latest" — leccion aplicada desde PHASE 5 — DATA GUARD
+  # COMPATIBILITY & QUERY CERTIFICATION HARDENING (vernum("latest") resolvia sin limite real).
+
+  Q-CDB-PDB-STATE-001:
+    file: queries/multitenant/Q-CDB-PDB-STATE-001.md
+    variants:
+      - {variant_id: Q-CDB-PDB-STATE-001-V1, label: legacy_121, min: "12.1", max: "12.1", container_scope: CDB_ROOT_ONLY}
+      - {variant_id: Q-CDB-PDB-STATE-001-V2, label: modern_122plus, min: "12.2", max: "23.0", container_scope: CDB_ROOT_ONLY}
+    required_views: [V$PDBS]
+    role_scope: ANY
+    cost_class: LOW
+    license_requirements: none
+    validation_status: COMPATIBLE
+    was: MATERIALIZED_WITHOUT_REAL_FILE
+
+  Q-CDB-CONTAINERS-001: {file: queries/multitenant/Q-CDB-CONTAINERS-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [V$CONTAINERS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, was: MATERIALIZED_WITHOUT_REAL_FILE}
+
+  Q-CDB-PDB-SAVED-STATE-001:
+    file: queries/multitenant/Q-CDB-PDB-SAVED-STATE-001.md
+    variants:
+      - {variant_id: Q-CDB-PDB-SAVED-STATE-001-V1, label: pdb_saved_state_1210x2plus, min: "12.1.0.2", max: "23.0", container_scope: CDB_ROOT_ONLY}
+    required_views: [DBA_PDB_SAVED_STATES]
+    role_scope: ANY
+    cost_class: LOW
+    license_requirements: none
+    validation_status: COMPATIBLE
+    was: INCORRECT_VERSION_RANGE   # Fase 6 Hardening: además del rango (min "12.1" -> "12.1.0.2" patch-level), CDB_PDB_SAVED_STATES (no existe) se corrigió a DBA_PDB_SAVED_STATES -- no hay categoría "nombre de vista incorrecto" en el enum de docs/QUERY_VARIANTS.md, se usa la más cercana
+
+  Q-CDB-SERVICES-001: {file: queries/multitenant/Q-CDB-SERVICES-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [GV$SERVICES, GV$ACTIVE_SERVICES], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-CDB-SESSION-DIST-001: {file: queries/multitenant/Q-CDB-SESSION-DIST-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [GV$SESSION], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-CDB-TABLESPACES-001: {file: queries/multitenant/Q-CDB-TABLESPACES-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [CDB_TABLESPACE_USAGE_METRICS, CDB_TABLESPACES, CDB_DATA_FILES], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-CDB-TEMP-001: {file: queries/multitenant/Q-CDB-TEMP-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [CDB_TEMP_FILES, GV$TEMP_SPACE_HEADER], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-CDB-PARAMETERS-001: {file: queries/multitenant/Q-CDB-PARAMETERS-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [GV$SYSTEM_PARAMETER], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-CDB-USERS-001: {file: queries/multitenant/Q-CDB-USERS-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [CDB_USERS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-CDB-ROLES-001: {file: queries/multitenant/Q-CDB-ROLES-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [CDB_ROLES], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-CDB-COMPONENTS-001: {file: queries/multitenant/Q-CDB-COMPONENTS-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [CDB_REGISTRY], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-CDB-PLUGIN-VIOLATIONS-001:
+    file: queries/multitenant/Q-CDB-PLUGIN-VIOLATIONS-001.md
+    variants:
+      - {variant_id: Q-CDB-PLUGIN-VIOLATIONS-001-V1, label: legacy_121_no_con_id, min: "12.1", max: "12.1", container_scope: CDB_ROOT_ONLY}
+      - {variant_id: Q-CDB-PLUGIN-VIOLATIONS-001-V2, label: modern_122plus_con_id, min: "12.2", max: "23.0", container_scope: CDB_ROOT_ONLY}
+    required_views: [PDB_PLUG_IN_VIOLATIONS]
+    role_scope: ANY
+    cost_class: LOW
+    license_requirements: none
+    validation_status: COMPATIBLE
+    was: INCORRECT_VERSION_RANGE   # Fase 6 Hardening: CON_ID se declaraba disponible desde 12.1; en realidad es 12.2+ — split en 2 variantes
+
+  Q-CDB-RESOURCE-USAGE-001: {file: queries/multitenant/Q-CDB-RESOURCE-USAGE-001.md, variants: implicit_full_range, min: "12.2", max: "23.0", required_views: [V$RSRCPDBMETRIC], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, was: INCORRECT_VERSION_RANGE}
+  Q-CDB-RESOURCE-MANAGER-001: {file: queries/multitenant/Q-CDB-RESOURCE-MANAGER-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [DBA_CDB_RSRC_PLAN_DIRECTIVES], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-CDB-LOCKDOWN-001: {file: queries/multitenant/Q-CDB-LOCKDOWN-001.md, variants: implicit_full_range, min: "12.2", max: "23.0", required_views: [CDB_LOCKDOWN_PROFILES], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+
 notes: >
   "implicit_full_range" significa: la query no requirió split porque su SQL, verificado contra
   compatibility/oracle-dictionary/views.yaml, no referencia ninguna columna/vista fuera de su

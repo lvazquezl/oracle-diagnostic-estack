@@ -1,0 +1,23 @@
+name: pdb-temp
+display_name: "PDB TEMP Pressure"
+id: multitenant/pdb-temp
+version: 1.0.0
+domain: multitenant
+status: active
+
+supported_oracle_versions: [12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: CDB_ROOT_ONLY
+database_role_scope: ANY
+
+license_requirements: none
+
+required_evidence:
+  - query_id: Q-CDB-TEMP-001
+optional_evidence: []
+
+data_sensitivity: LOW
+context_budget: LOW
+
+related_skills: [multitenant/pdb-tablespaces, multitenant/pdb-undo]

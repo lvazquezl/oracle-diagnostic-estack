@@ -6,7 +6,7 @@ status: active
 
 # Trigger/intent
 
-Comando `/healthcheck`. Solicitud general de salud de un target Oracle (todo el ambiente o un módulo específico). Invocaciones acotadas por módulo (Fase 4): `/healthcheck rac` (orquesta `rac/healthcheck`), `/healthcheck asm` (orquesta `asm/healthcheck`), `/healthcheck network` (orquesta `network/healthcheck`) — cada una activa únicamente el agente correspondiente, sin recorrer Oracle Core completo. `/healthcheck dataguard` (Fase 5) orquesta `dataguard/healthcheck` — Data Guard Health Model por dimensión (`ROLE, TRANSPORT, APPLY, LAG, GAPS, BROKER, SRL, PROTECTION, FSFO, READINESS`).
+Comando `/healthcheck`. Solicitud general de salud de un target Oracle (todo el ambiente o un módulo específico). Invocaciones acotadas por módulo (Fase 4): `/healthcheck rac` (orquesta `rac/healthcheck`), `/healthcheck asm` (orquesta `asm/healthcheck`), `/healthcheck network` (orquesta `network/healthcheck`) — cada una activa únicamente el agente correspondiente, sin recorrer Oracle Core completo. `/healthcheck dataguard` (Fase 5) orquesta `dataguard/healthcheck` — Data Guard Health Model por dimensión (`ROLE, TRANSPORT, APPLY, LAG, GAPS, BROKER, SRL, PROTECTION, FSFO, READINESS`). `/healthcheck cdb` y `/healthcheck pdb` (Fase 6) orquestan `multitenant/healthcheck` — CDB Health Model (`ARCHITECTURE, ROOT, PDB STATES, SERVICES, STORAGE, TEMP/UNDO, COMPONENTS, PLUG-IN VIOLATIONS, RESOURCE GOVERNANCE, RAC PLACEMENT, DATAGUARD CONTEXT`) y PDB Health Model por PDB (`OPEN STATE, SERVICES, SESSIONS, TABLESPACES, TEMP, UNDO, COMPONENTS, PLUG-IN VIOLATIONS, RESOURCE USAGE, RAC PLACEMENT`) — `/healthcheck pdb` acepta una PDB específica por token/nombre sanitizado.
 
 # Prerequisites
 

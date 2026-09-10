@@ -1,0 +1,44 @@
+# Fixture: Oracle 19c RAC 2 nodos, CDB con una PDB con placement parcial (abierta sólo en 1 de 2 instancias)
+# Usada por: multitenant/pdb-rac-placement, multitenant/pdb-services, test_pdb_rac_open_state
+fixture_id: FX-19c-rac-cdb-pdb-placement
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-19c-rac-cdb"
+  database: {name: "ORCL19RC", unique_name: "orcl19rac", dbid: "1913223333"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: rac, multitenant_mode: cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19rac1", number: 1, host: "HOST_TOKEN_RAC01"}
+  cluster: {detected: true, instance_count: 2}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: SUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  rac: {enabled: true, node_count: 2, instances: ["INSTANCE_TOKEN_RAC1", "INSTANCE_TOKEN_RAC2"]}
+  multitenant: {cdb: true, cdb_name: "CDB_NAME_TOKEN_004", root_container: "CDB$ROOT", pdb_count: 1, local_undo_enabled: true, application_containers: false}
+  discovery: {timestamp: "2026-03-01T09:20:00Z", evidence_refs: [EVD-FX-4401], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$DATABASE, V$INSTANCE, V$PDBS, V$CONTAINERS, GV$SERVICES, GV$ACTIVE_SERVICES]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-CDB-SERVICES-001
+    result:
+      - {con_id: 3, service_name: "APP_SVC", clb_goal: "SHORT", rlb_goal: "SERVICE_TIME", active_instance: 1}
+  - query_id: Q-CDB-PDB-STATE-001
+    result:
+      - {con_id: 3, name: "PDB1", open_mode: "READ WRITE", restricted: "NO", open_time: "2026-02-28T08:00:00Z", total_size: 5368709120, recovery_status: "ENABLED"}
+
+expected_findings:
+  - category: pdb-rac-placement
+    severity: MEDIUM
+    confidence: OBSERVATION
+    reason: "servicio APP_SVC de PDB1 sólo activo en instancia 1 de 2 — no se asume automáticamente que deba estar en ambas, se correlaciona con el diseño de servicio antes de reportar MISMATCH (# 13 del prompt de Fase 6)"

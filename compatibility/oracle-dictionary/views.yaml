@@ -19,6 +19,18 @@
 # diseño, porque su lista nunca pretendió ser exhaustiva (ver bug real encontrado en V$ASM_DISK:
 # GROUP_NUMBER/DISK_NUMBER/NAME son columnas reales usadas por Q-ASM-DISKS-001 pero no estaban
 # registradas, porque esa entrada sólo listaba las columnas relevantes al chequeo de Fase 4).
+#
+# PATCH-LEVEL min_version (introducido en PHASE 6 — MULTITENANT QUERY COMPATIBILITY & DICTIONARY
+# CERTIFICATION HARDENING): normalmente min_version es major.minor ("12.1", "18.0"). Una feature
+# cuya disponibilidad real depende del patch level dentro de una misma minor release usa una
+# tercera componente explícita ("12.1.0.2") — único caso hoy: DBA_PDB_SAVED_STATES (PDB Saved
+# State no existe en 12.1.0.0/12.1.0.1, introducida en 12.1.0.2). El Query Variant Resolver
+# compartido (scripts/lib/version.sh — normalize_oracle_version/compare_oracle_versions/
+# version_gte/version_lte/version_in_range) es patch-level-aware y es la ÚNICA implementación de
+# comparación de versión permitida en todo el repositorio (Query Variant Resolver, Static
+# Validator, compatibility tests) — ver PHASE 6 — VERSION RESOLVER CONSOLIDATION FINALIZATION,
+# docs/PHASE_6_FINAL_PDB_IDENTITY_PATCH_RESOLVER_HARDENING.md. Ningún test reimplementa esta
+# comparación localmente (enforcement: tests/test_no_local_version_resolvers_in_tests.sh).
 
 schema_version: 1
 
@@ -509,3 +521,230 @@ views:
   GV$ARCHIVE_DEST_STATUS:
     min_version: all
     notes: "Variante multi-instancia de V$ARCHIVE_DEST_STATUS (ya registrada) para RAC — usada por Q-DG-DEST-001 cuando el primary es RAC."
+
+  # --- Fase 6 (Multitenant / CDB / PDB) ---
+  # Vistas verificadas contra Oracle Database Reference (WebFetch, no circular) durante esta fase
+  # están marcadas columns_exhaustive:true + validation: (mismo criterio establecido en Fase 5
+  # Compatibility/Final Hardening). Las que se registran por convención documentada sin fetch
+  # dedicado quedan sin ese flag — el SQL Static Validator las trata permisivamente.
+
+  V$PDBS:
+    min_version: "12.1"
+    columns_exhaustive: true
+    columns:
+      con_id:              {min_version: "12.1"}
+      name:                 {min_version: "12.1"}
+      open_mode:             {min_version: "12.1"}
+      restricted:             {min_version: "12.1"}
+      open_time:               {min_version: "12.1"}
+      total_size:               {min_version: "12.1"}
+      recovery_status:           {min_version: "12.1"}
+      application_root:           {min_version: "12.2"}
+      application_pdb:              {min_version: "12.2"}
+      application_seed:               {min_version: "12.2"}
+      proxy_pdb:                        {min_version: "12.2"}
+      local_undo:                        {min_version: "12.2"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 6. Vista central de inventario de PDB, verificada contra Oracle Database Reference 19c.
+      APPLICATION_ROOT/APPLICATION_PDB/APPLICATION_SEED/PROXY_PDB/LOCAL_UNDO introducidas en 12.2
+      (Application Containers y Local Undo no existen en 12.1 — # 5, # 19 del prompt de Fase 6).
+      Usada por Q-CDB-PDB-STATE-001.
+
+  V$CONTAINERS:
+    min_version: "12.1"
+    columns_exhaustive: true
+    columns:
+      con_id: {min_version: "12.1"}
+      name:    {min_version: "12.1"}
+      open_mode: {min_version: "12.1"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 6. Superset de V$PDBS que además incluye CDB$ROOT (con_id=1) — verificado contra Oracle
+      Database Reference 19c (31 columnas totales; sólo se registran/certifican aquí con_id/name/
+      open_mode, las usadas por Q-CDB-CONTAINERS-001). Usada para topología general, no para el
+      inventario detallado de PDB (eso lo cubre V$PDBS). Bloque validation: agregado en PHASE 6 —
+      QUERY COMPATIBILITY & DICTIONARY CERTIFICATION HARDENING (# 23-24) — la vista ya estaba
+      verificada en la construcción base de Fase 6, pero el bloque de trazabilidad no se había
+      declarado explícitamente.
+
+  # CDB_PDB_SAVED_STATES eliminada (PHASE 6 — QUERY COMPATIBILITY & DICTIONARY CERTIFICATION
+  # HARDENING, # 4-8 del prompt): no es una vista real de Oracle — WebFetch contra
+  # https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/CDB_PDB_SAVED_STATES.html
+  # devuelve HTTP 404. La vista real, verificada, es DBA_PDB_SAVED_STATES (abajo). Registrada
+  # aquí sin respaldo documental en la construcción base de Fase 6 — corregido en este hardening.
+  DBA_PDB_SAVED_STATES:
+    min_version: "12.1.0.2"
+    columns_exhaustive: true
+    columns:
+      con_id:        {min_version: "12.1.0.2"}
+      con_name:       {min_version: "12.1.0.2"}
+      instance_name:   {min_version: "12.1.0.2"}
+      con_uid:          {min_version: "12.1.0.2"}
+      guid:              {min_version: "12.1.0.2"}
+      state:              {min_version: "12.1.0.2"}
+      restricted:          {min_version: "12.1.0.2"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["12.1.0.2", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 6 Hardening. Verificada contra Oracle Database Reference 19c
+      (docs.oracle.com/en/database/oracle/oracle-database/19/refrn/DBA_PDB_SAVED_STATES.html) —
+      7 columnas confirmadas (CON_ID, CON_NAME, INSTANCE_NAME, CON_UID, GUID, STATE, RESTRICTED).
+      Es un data link — visible también desde dentro de la PDB, aunque esta query sólo la consulta
+      desde CDB$ROOT. PDB Saved State (la feature, no sólo la vista) requiere patch level 12.1.0.2
+      — no existe en 12.1.0.0/12.1.0.1 (corroborado por múltiples fuentes técnicas independientes;
+      no hay una nota "New Features" de docs.oracle.com indexada que lo confirme con URL propia,
+      documentado como limitación de trazabilidad, no como hecho no verificado — # 6 del prompt).
+      Usada por Q-CDB-PDB-SAVED-STATE-001 — sólo visibilidad, nunca SAVE STATE/DISCARD STATE
+      (# 12 del prompt de Fase 6 base).
+
+  CDB_TABLESPACE_USAGE_METRICS:
+    min_version: "12.1"
+    notes: "Fase 6. Mirror de DBA_TABLESPACE_USAGE_METRICS (ya certificada en Oracle Core) + con_id. Registrada por convención documentada de vistas CDB_*, sin fetch dedicado — permisiva para el SQL Static Validator. Usada por Q-CDB-TABLESPACES-001."
+
+  CDB_TABLESPACES:
+    min_version: "12.1"
+    notes: "Fase 6. Mirror de DBA_TABLESPACES + con_id. Usada por Q-CDB-TABLESPACES-001 (columna contents para distinguir PERMANENT/TEMPORARY/UNDO)."
+
+  CDB_DATA_FILES:
+    min_version: "12.1"
+    notes: "Fase 6. Mirror de DBA_DATA_FILES (ya certificada en Oracle Core) + con_id. Usada por Q-CDB-TABLESPACES-001."
+
+  CDB_TEMP_FILES:
+    min_version: "12.1"
+    notes: "Fase 6. Mirror de DBA_TEMP_FILES (ya certificada en Oracle Core) + con_id. Usada por Q-CDB-TEMP-001."
+
+  GV$TEMP_SPACE_HEADER:
+    min_version: "12.1"
+    notes: "Fase 6. Variante multi-instancia/multitenant de V$TEMP_SPACE_HEADER (ya registrada) con con_id. Usada por Q-CDB-TEMP-001."
+
+  GV$SYSTEM_PARAMETER:
+    min_version: "12.1"
+    notes: "Fase 6. Variante multi-instancia de V$SYSTEM_PARAMETER con con_id/ispdb_modifiable (multitenant-aware desde 12.1). Usada por Q-CDB-PARAMETERS-001."
+
+  CDB_USERS:
+    min_version: "12.1"
+    notes: "Fase 6. Mirror de DBA_USERS + con_id/common/oracle_maintained. Usada por Q-CDB-USERS-001 — sólo visibilidad, nunca password hashes (# 23 del prompt de Fase 6)."
+
+  CDB_ROLES:
+    min_version: "12.1"
+    notes: "Fase 6. Mirror de DBA_ROLES + con_id/common/oracle_maintained. Usada por Q-CDB-ROLES-001."
+
+  PDB_PLUG_IN_VIOLATIONS:
+    min_version: "12.1"
+    columns_exhaustive: true
+    columns:
+      time:             {min_version: "12.1"}
+      name:              {min_version: "12.1"}
+      cause:              {min_version: "12.1"}
+      type:                {min_version: "12.1"}
+      error_number:         {min_version: "12.1"}
+      line:                  {min_version: "12.1"}
+      message:                {min_version: "12.1"}
+      status:                  {min_version: "12.1"}
+      action:                   {min_version: "12.1"}
+      con_id:          {min_version: "12.2"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 6 Hardening. CORRECCIÓN: con_id se registraba con min_version "12.1" en la construcción
+      base de Fase 6 — verificado directamente contra las referencias 12.1 (docs.oracle.com/database
+      /121/REFRN/GUID-845E5369-CCB0-4F8D-AE09-447EF0CAC93F.htm, 9 columnas, SIN con_id) y 12.2
+      (docs.oracle.com/en/database/oracle/oracle-database/12.2/refrn/PDB_PLUG_IN_VIOLATIONS.html,
+      10 columnas, CON con_id): con_id no existe en 12.1, se agrega en 12.2. Q-CDB-PLUGIN-VIOLATIONS-001
+      usa dos variantes (legacy 12.1 sin con_id / modern 12.2+ con con_id) reflejando exactamente este
+      boundary — nunca se selecciona con_id en la variante legacy (# 15-19 del prompt de hardening
+      de compatibilidad). CORRECCIÓN 2 (PHASE 6 — FINAL PDB IDENTITY & PATCH-LEVEL RESOLVER
+      HARDENING): la nota anterior afirmaba "no tiene columna de nombre de PDB propia" — incorrecto.
+      NAME sí es identidad de PDB: verificado (WebFetch, ambas referencias 12.1 y 19c) — descripción
+      textual de Oracle: "The name of an existing PDB or a PDB intended to be created (if a row was
+      entered as a result of running DBMS_PDB.CHECK_PLUG_COMPATIBILITY)". El skill deriva
+      container_name/pdb_token de NAME (sanitizado) en la variante legacy (container_id sigue
+      NOT_AVAILABLE, sin con_id no hay forma de correlacionar contra V$PDBS por con_id); en la
+      variante moderna correlaciona con_id (vía V$PDBS) Y name, publicando IDENTITY_MISMATCH si no
+      coinciden — nunca oculta la inconsistencia. MESSAGE/ACTION siempre tratados como DATA (# 26,
+      # 48 del prompt de Fase 6 base; # 20/# 8 de los hardenings posteriores). Usada por
+      Q-CDB-PLUGIN-VIOLATIONS-001.
+
+  V$RSRCPDBMETRIC:
+    min_version: "12.2"
+    columns_exhaustive: true
+    columns:
+      con_id:                         {min_version: "12.2"}
+      cpu_consumed_time:                {min_version: "12.2"}
+      cpu_wait_time:                      {min_version: "12.2"}
+      num_cpus:                            {min_version: "12.2"}
+      cpu_utilization_limit:                 {min_version: "12.2"}
+      avg_cpu_utilization:                     {min_version: "12.2"}
+      avg_running_sessions:                      {min_version: "12.2"}
+      avg_waiting_sessions:                        {min_version: "12.2"}
+      running_sessions_limit:                        {min_version: "12.2"}
+      avg_active_parallel_servers:                     {min_version: "12.2"}
+      avg_queued_parallel_servers:                   {min_version: "12.2"}
+      parallel_servers_limit:                      {min_version: "12.2"}
+      sga_bytes:                                 {min_version: "12.2"}
+      pga_bytes:                                {min_version: "12.2"}
+      iops:                                    {min_version: "12.2"}
+      iombps:                                {min_version: "12.2"}
+      plan_name:                            {min_version: "12.2"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 6 Hardening. CORRECCIÓN: registrada con min_version "12.1" en la construcción base de
+      Fase 6 — verificado directamente contra docs.oracle.com/en/database/oracle/oracle-database/
+      12.2/refrn/V-RSRCPDBMETRIC.html, que declara explícitamente "introduced in Oracle Database
+      12c Release 2 (12.2.0.1)". La vista NO existe en 12.1 — ninguna fuente equivalente certificada
+      de métricas de recursos por PDB existe para 12.1 (no se inventa una alternativa, # 11 del
+      prompt de hardening); en 12.1, PDB Resource Metrics degrada explícitamente a
+      capability_status: PARTIALLY_SUPPORTED (ver skills/multitenant/resource-usage/SKILL.md,
+      config/capability-matrix.yaml). Todas las 17 columnas seleccionadas por
+      Q-CDB-RESOURCE-USAGE-001 confirmadas reales en la referencia 12.2. Licensing-safe — no
+      requiere Diagnostics/Tuning Pack (# 30 del prompt de Fase 6 base).
+
+  DBA_CDB_RSRC_PLAN_DIRECTIVES:
+    min_version: "12.1"
+    columns_exhaustive: true
+    columns:
+      plan:                 {min_version: "12.1"}
+      pluggable_database:     {min_version: "12.1"}
+      shares:                   {min_version: "12.1"}
+      utilization_limit:         {min_version: "12.1"}
+      parallel_server_limit:       {min_version: "12.1"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 6. Nombre real verificado contra Oracle Database Reference — NO es "CDB_RSRC_PLAN_
+      DIRECTIVES" como aparece en el ejemplo conceptual del prompt de Fase 6 (# 8); ese nombre no
+      corresponde a ninguna vista real. DBA_RSRC_PLAN_DIRECTIVES (sin CDB) es la vista legacy de
+      consumer groups intra-instancia, un objeto distinto. Usada por Q-CDB-RESOURCE-MANAGER-001.
+
+  CDB_LOCKDOWN_PROFILES:
+    min_version: "12.2"
+    columns_exhaustive: true
+    columns:
+      con_id:            {min_version: "12.2"}
+      profile_name:        {min_version: "12.2"}
+      rule_type:             {min_version: "12.2"}
+      rule:                    {min_version: "12.2"}
+      clause:                    {min_version: "12.2"}
+      clause_option:                {min_version: "12.2"}
+      status:                         {min_version: "12.2"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["12.2", "18", "19", "21", "23"]
+    notes: "Fase 6. Verificada contra Oracle Database Reference 19c. Lockdown Profiles introducidos en 12.2 — no existen en 12.1. Usada por Q-CDB-LOCKDOWN-001 — sólo visibilidad, nunca ALTER LOCKDOWN PROFILE (# 32 del prompt)."

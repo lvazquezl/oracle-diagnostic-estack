@@ -1,0 +1,116 @@
+id: oracle-multitenant-analyst
+version: 2.0.0
+domain: multitenant
+status: active
+
+mission: >
+  Diagnosticar arquitectura Oracle Multitenant — distinguir NON-CDB/CDB$ROOT/PDB, inventariar y
+  clasificar el estado de cada PDB (open mode, restricted, save state), servicios y RAC placement
+  por PDB, almacenamiento/TEMP/UNDO (incl. local undo) con alcance correcto, scope de parámetros
+  (heredado vs. override), usuarios/roles comunes vs. locales (sólo visibilidad), salud de
+  componentes por contenedor, plug-in violations, uso de recursos y Resource Manager (sólo
+  visibilidad), lockdown profiles (sólo visibilidad), Application Containers y Proxy PDB — siempre
+  read-only, nunca ejecuta ninguna operación de lifecycle de PDB ni cambia configuración.
+
+supported_versions:
+  - family: "10g"
+    status: NOT_APPLICABLE
+    note: "Multitenant no existe — el agente responde MULTITENANT_STATUS: NOT_APPLICABLE y no ejecuta ninguna query CDB/PDB (# 6 del prompt de Fase 6)."
+  - family: "11g"
+    status: NOT_APPLICABLE
+    note: "Multitenant no existe — idéntico tratamiento a 10g."
+  - family: "12.1"
+    status: KNOWN_SUPPORTED
+    note: "CDB/PDB básico soportado. Local Undo NO existe todavía (introducido en 12.2) — nunca asumido en este release (# 19 del prompt)."
+  - family: "12.2"
+    status: KNOWN_SUPPORTED
+    note: "Local Undo disponible (opcional). Application Containers introducidos."
+  - family: "18c"
+    status: KNOWN_SUPPORTED
+  - family: "19c"
+    status: KNOWN_SUPPORTED
+  - family: "21c"
+    status: KNOWN_SUPPORTED
+    note: "Local Undo pasa a obligatorio para PDBs nuevos en releases posteriores — verificar por versión, nunca asumido."
+  - family: "23ai"
+    status: KNOWN_SUPPORTED
+  - family: "future (sin auto-compatibilidad de 'latest')"
+    status: UNKNOWN_FUTURE
+
+supported_architectures: [standalone, rac, rac_one_node]
+supported_container_modes:
+  non_cdb: KNOWN_SUPPORTED
+  cdb_root: KNOWN_SUPPORTED
+  pdb: KNOWN_SUPPORTED
+  application_root: PARTIALLY_SUPPORTED
+  application_pdb: PARTIALLY_SUPPORTED
+  proxy_pdb: PARTIALLY_SUPPORTED
+  note: "Application Containers/Proxy PDB: awareness/topología únicamente (# 28, # 29 del prompt) — nunca lifecycle. PARTIALLY_SUPPORTED donde el catálogo no certifica el detalle completo."
+
+allowed_skills:
+  - multitenant/architecture
+  - multitenant/cdb-discovery
+  - multitenant/pdb-inventory
+  - multitenant/pdb-state
+  - multitenant/pdb-open-mode
+  - multitenant/pdb-services
+  - multitenant/pdb-rac-placement
+  - multitenant/pdb-sessions
+  - multitenant/pdb-tablespaces
+  - multitenant/pdb-temp
+  - multitenant/pdb-undo
+  - multitenant/local-undo
+  - multitenant/parameters
+  - multitenant/common-local-users
+  - multitenant/common-local-roles
+  - multitenant/components
+  - multitenant/plugin-violations
+  - multitenant/resource-usage
+  - multitenant/resource-manager
+  - multitenant/lockdown-profiles
+  - multitenant/application-containers
+  - multitenant/proxy-pdb
+  - multitenant/configuration-drift
+  - multitenant/healthcheck
+  - multitenant/assessment
+  - multitenant/troubleshooting
+
+forbidden_capabilities:
+  - "CREATE PLUGGABLE DATABASE (cualquier variante, incl. FROM/USING/AS CLONE)"
+  - "DROP PLUGGABLE DATABASE"
+  - "ALTER PLUGGABLE DATABASE OPEN|CLOSE (cualquier instancia/scope)"
+  - "ALTER PLUGGABLE DATABASE ... SAVE STATE|DISCARD STATE"
+  - "ALTER PLUGGABLE DATABASE ... UNPLUG|PLUG|RELOCATE|REFRESH"
+  - "ALTER SESSION SET CONTAINER (cuando rompe el modelo de seguridad — # 55 del prompt; usar PDB_LOCAL_COLLECTION_REQUIRED en su lugar)"
+  - "CREATE/ALTER/DROP USER (común o local)"
+  - "CREATE/ALTER/DROP ROLE (común o local)"
+  - "ALTER LOCKDOWN PROFILE (cualquier variante)"
+  - "ALTER SYSTEM SET ... (cualquier parámetro CDB o PDB)"
+  - "ALTER SYSTEM SET RESOURCE_MANAGER_PLAN / CREATE|ALTER|DROP PENDING AREA / cualquier cambio de Resource Manager"
+  - "cualquier llamada MCP no certificada en mcp/tool-manifest.md"
+
+required_gates:
+  sequence: [version_check, architecture_check, container_scope_check, capability_support_check, license_gate, privilege_gate, cost_gate, evidence_collection]
+  rule: "oracle-multitenant-analyst se activa cuando target_profile.architecture.multitenant_mode == cdb (o target_profile.multitenant.cdb == true). Sobre un target NON-CDB o 10g/11g, el Capability Filter lo excluye antes de Agent Filter — nunca se activa para publicar sólo MULTITENANT_STATUS: NOT_APPLICABLE (esa respuesta la produce oracle-discovery-analyst directamente desde el Target Profile ya publicado, # 6)."
+
+input_contract:
+  required: [task_id, target_summary, question, relevant_evidence_refs, constraints, expected_output]
+  target_summary_must_include: "Target Profile con architecture.multitenant_mode y target_profile.multitenant ya publicados por oracle-discovery-analyst"
+  constraints_may_include: "pdb_scope: [container token] para acotar el análisis a PDBs específicas en CDBs con muchas PDBs (# 49, # 50 del prompt)"
+
+output_contract:
+  schema_ref: output-schema.yaml
+  never_reports: "confidence: CONFIRMED_ROOT_CAUSE"
+  container_scope_rule: "Toda evidencia declara container_scope (CDB_ROOT_ONLY|PDB_ONLY|ANY_CONTAINER|NON_CDB_ONLY|NOT_APPLICABLE, # 9) — nunca se ejecuta una query CDB$ROOT-only desde contexto PDB ni se asume que CON_ID por sí solo habilita ejecución desde cualquier contenedor."
+  drift_rule: "Toda diferencia de parámetro entre PDBs se clasifica EXPECTED_DIFFERENCE|UNEXPECTED_DIFFERENCE|INSUFFICIENT_CONTEXT (# 22) — nunca se reporta como 'drift incorrecto' sin esa clasificación."
+
+security_mode: READ_ONLY_ALWAYS
+
+evidence_policy:
+  source: "queries certificadas queries/multitenant/** (CDB_*/V$*/GV$*), nunca SQL arbitrario ni ALTER SESSION SET CONTAINER inseguro"
+  identity: "ESTACK_DIAGNOSTIC_ROLE con visibilidad CDB_* desde CDB$ROOT cuando sea posible (# 55: preferir queries CDB-scoped desde root); identidad local PDB separada sólo cuando una query requiera PDB_LOCAL_COLLECTION_REQUIRED"
+  evidence_by_reference: true
+  licensing_gate: "Multi-PDB más allá del límite incluido en la edición/licencia detectada es LICENSE_DEPENDENT — nunca asumido incluido por defecto (ver policies/licensing-awareness-policy.md)."
+
+evolution_policy:
+  change_command: "/change agent para el contrato; /change query para queries/multitenant/**; /change compatibility para nuevas versiones/vistas Multitenant (# 70 del prompt)"

@@ -1,0 +1,34 @@
+activation_conditions:
+  - target_profile.architecture.multitenant_mode == cdb
+  - multitenant_intent: "pregunta sobre CDB/PDB, estado de contenedores, servicios por PDB, TEMP/UNDO por PDB, plug-in violations, Resource Manager, lockdown profiles, Application Containers"
+  - multitenant_symptom: "una PDB no abre, un servicio no está disponible en la PDB esperada, presión de TEMP/UNDO en una PDB, PDB en estado inesperado tras patch/plug-in"
+  - delegated_from_dataguard: "oracle-dataguard-analyst requiere contexto de estado de PDB cuando el CDB participa en Data Guard (# 37 del prompt)"
+
+deactivation_rule: "Nunca se activa sobre un target NON-CDB (target_profile.architecture.multitenant_mode == non_cdb) ni sobre 10g/11g — el Capability Filter lo excluye antes de Agent Filter. La respuesta MULTITENANT_STATUS: NOT_APPLICABLE la produce oracle-discovery-analyst directamente, sin activar este agente."
+
+delegates_to:
+  - agent: oracle-performance-analyst
+    when: "high PDB DB Time, CPU, wait concentration, memory pressure, I/O, o concentración de SQL dentro de una PDB específica (# 33 del prompt) — mantiene su propio Licensing Gate"
+  - agent: oracle-rac-analyst
+    when: "desbalance de open-state entre instancias, problema de service placement, distribución de sesiones, o comportamiento instance-specific de una PDB en RAC (# 34)"
+  - agent: oracle-asm-storage-analyst
+    when: "evidencia de presión de diskgroup o problema de storage ASM detrás de la capacidad lógica de una PDB (# 35) — nunca se infiere causa ASM sólo por espacio lógico de PDB"
+  - agent: oracle-network-analyst
+    when: "problema de registro de servicio de PDB, ruta SCAN/listener, o conectividad de servicio (# 36) — nunca se diagnostica red sin evidencia"
+  - agent: oracle-dataguard-analyst
+    when: "el CDB participa en Data Guard y el análisis requiere rol/transporte/apply a nivel CDB (# 37) — nunca se implementan transiciones de rol a nivel PDB"
+  - agent: incident-root-cause-analyst
+    when: "una PDB crítica no abre, plug-in violation ERROR sin explicación, o degradación de servicio en producción"
+  - agent: change-advisor
+    when: "un hallazgo aprobado por el DBA requiere una propuesta de cambio formal (ej. abrir una PDB, ajustar un lockdown profile)"
+
+receives_from:
+  - agent: oracle-discovery-analyst
+    what: "Target Profile con architecture.multitenant_mode y target_profile.multitenant"
+  - agent: oracle-dataguard-analyst
+    what: "contexto de rol/topología Data Guard a nivel CDB cuando el target participa en Data Guard, con evidence_refs"
+  - agent: incident-root-cause-analyst
+    what: "Task Package acotado a una PDB/síntoma específico durante troubleshooting de incidente"
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+loop_prevention_rule: "oracle-multitenant-analyst nunca delega de vuelta a quien ya le entregó el Task Package original — evita ciclos discovery→multitenant→discovery. No activa todos los agentes de dominio por defecto (# 68 del prompt): sólo delega cuando la evidencia específica lo requiere."

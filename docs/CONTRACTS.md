@@ -152,7 +152,7 @@ supported_oracle_versions: []   # ej. [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
 supported_os: []                 # ej. [todas] o lista explícita
 supported_architectures: []      # Standalone/RAC/RAC One Node según aplique
 
-container_scope: NON_CDB|CDB_ROOT|PDB|ANY_CONTAINER|NOT_APPLICABLE
+container_scope: NON_CDB_ONLY|CDB_ROOT_ONLY|PDB_ONLY|ANY_CONTAINER|NOT_APPLICABLE
 database_role_scope: PRIMARY|STANDBY|ANY|NOT_APPLICABLE
 open_mode_scope: []           # opcional (Compatibility Hardening, sección 19) — subconjunto de
                                # [READ WRITE, READ ONLY, MOUNTED, ANY]; se declara sólo cuando el
@@ -182,7 +182,9 @@ status: candidate|active|deprecated
 
 ### `container_scope`
 
-`NON_CDB` (sólo aplica fuera de multitenant) · `CDB_ROOT` (sólo a nivel CDB$ROOT) · `PDB` (dentro de un PDB específico) · `ANY_CONTAINER` (válida en cualquiera de los tres) · `NOT_APPLICABLE` (la query no tiene relación con tenancy, ej. una query de OS).
+`NON_CDB_ONLY` (sólo aplica fuera de multitenant) · `CDB_ROOT_ONLY` (sólo a nivel CDB$ROOT — la presencia de `CON_ID` en la vista nunca implica por sí sola que ejecutar desde otro contenedor sea seguro, ver `docs/CDB_PDB_QUERY_MODEL.md`) · `PDB_ONLY` (dentro de un PDB específico) · `ANY_CONTAINER` (válida en cualquiera de los tres) · `NOT_APPLICABLE` (la query no tiene relación con tenancy, ej. una query de OS).
+
+**Nota de nomenclatura (Fase 6 — Multitenant)**: los valores `NON_CDB`/`CDB_ROOT`/`PDB` de versiones anteriores de este contrato se renombraron a `NON_CDB_ONLY`/`CDB_ROOT_ONLY`/`PDB_ONLY` para eliminar la ambigüedad entre "esta query sólo aplica en este contenedor" y una lectura más laxa de "este es el contenedor típico". Ningún query materializado antes de Fase 6 usaba los valores bareword (`CDB_ROOT`/`PDB`/`NON_CDB`) — el catálogo Oracle Core corrigió esos casos en Compatibility Hardening (Fase 2) hacia `ANY_CONTAINER`, así que el renombrado no requirió migrar ninguna query existente, sólo las 15 nuevas `queries/multitenant/*`.
 
 ### `database_role_scope`
 

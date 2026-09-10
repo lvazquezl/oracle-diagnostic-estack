@@ -1,0 +1,22 @@
+minimum_context: "Target Profile (architecture.multitenant_mode, target_profile.multitenant) + la pregunta puntual — nunca la conversación completa."
+
+evidence_by_reference: true
+evidence_by_reference_rule: "Toda evidencia de inventario de PDBs/sesiones/objetos se referencia por EVD-*, nunca se reenvía el dump crudo de CDB_OBJECTS/GV$SESSION entre agentes."
+
+top_n:
+  pdb_inventory_default: 20
+  sessions_default: 20
+  plugin_violations_default: 20
+  configurable: true
+
+large_cdb_flow: "CDB summary -> anomaly detection -> deep analysis sólo para las PDBs afectadas (# 50 del prompt) — nunca se activa análisis profundo por cada PDB automáticamente en un CDB con muchas PDBs."
+
+no_full_pdb_inventory_by_default: true
+no_full_pdb_inventory_rule: "Si hay cientos de PDBs, nunca se envía el inventario completo — se prefiere pdb_count, open_state_summary, top anomalies, tokens de PDB afectadas y evidence_refs (# 49)."
+no_application_data: true
+no_application_data_rule: "multitenant/pdb-sessions nunca expone SQL text ni bind values — sólo metadata de sesión (CON_ID, PDB, instance, service, session count, active/inactive) (# 15)."
+
+context_budget:
+  relative_level: MEDIUM
+  scaling_rule: "Escala con pdb_count; el Task Package puede acotar constraints.pdb_scope para limitar el alcance a PDBs específicas."
+  reuse_rule: "Reutiliza el Target Profile ya publicado por oracle-discovery-analyst — nunca vuelve a determinar multitenant_mode/container.type por su cuenta."

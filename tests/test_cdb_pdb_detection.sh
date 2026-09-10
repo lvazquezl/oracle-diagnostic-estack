@@ -12,10 +12,12 @@ else
   FAIL=1
 fi
 
-if [ -f "$ROOT/skills/multitenant/container-state.md" ] && grep -q 'status: active' "$ROOT/skills/multitenant/container-state.md"; then
-  echo "[PASS] skills/multitenant/container-state.md materializado y activo"
+# skills/multitenant/container-state.md (Foundation) fue migrado/expandido a
+# skills/multitenant/pdb-state/SKILL.md en Fase 6 -- ver skills/REGISTRY.md#multitenant.
+if [ -f "$ROOT/skills/multitenant/pdb-state/SKILL.md" ] && grep -q 'status: active' "$ROOT/skills/multitenant/pdb-state/manifest.yaml"; then
+  echo "[PASS] skills/multitenant/pdb-state/SKILL.md materializado y activo"
 else
-  echo "[FAIL] skills/multitenant/container-state.md ausente o no activo"
+  echo "[FAIL] skills/multitenant/pdb-state/SKILL.md ausente o no activo"
   FAIL=1
 fi
 

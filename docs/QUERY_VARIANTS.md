@@ -42,9 +42,13 @@ variants:
 
 Cada `sql_block` referencia un heading `# Statement / procedure (read-only) — Variant <ID> (<label>, <rango>)` en el mismo archivo Markdown del query — **no se crean archivos `.sql` separados ni sub-carpetas por variante**: mantener todo en un único Markdown por logical query evita duplicar Query Contract/metadata y sigue el principio de Fuente Única de Verdad (`docs/CONTRACTS.md`). Esto es la adaptación explícitamente permitida por la sección 5 del prompt de hardening ("la estructura exacta puede adaptarse al repositorio existente").
 
+### Patch-level `min`/`max` (PHASE 6 — FINAL PDB IDENTITY & PATCH-LEVEL RESOLVER HARDENING, `# 29`)
+
+`oracle_versions.min`/`.max` no están limitados a `major.minor` (`"12.1"`) — pueden declarar hasta 5 componentes (`major.minor.update.patch.revision`, ej. `"12.1.0.2"`) cuando la disponibilidad real de una feature depende de un patch level específico dentro de una misma minor release. Único caso hoy: `Q-CDB-PDB-SAVED-STATE-001` (`min: "12.1.0.2"` — PDB Saved State no existe en 12.1.0.0/12.1.0.1). La comparación de versión (marketing aliases, patch-level, sentinel `latest`) vive en `scripts/lib/version.sh` — única implementación compartida, consumida por `tests/test_sql_static_validator.sh` y los tests de resolución de variantes directamente relacionados con queries patch-level-sensibles; ver `docs/PHASE_6_FINAL_PDB_IDENTITY_PATCH_RESOLVER_HARDENING.md`.
+
 ## Query Variant Resolver
 
-Componente lógico (documentado aquí; sin runtime ejecutable — el Gateway MCP real es Fase 7, igual que el resto de collectors):
+Componente lógico (documentado aquí; sin runtime ejecutable — el Gateway MCP real es Fase 7, igual que el resto de collectors). La comparación de versión que implementa este algoritmo la provee `scripts/lib/version.sh` (patch-level-aware) — no una reimplementación local por test.
 
 ```text
 Target Profile

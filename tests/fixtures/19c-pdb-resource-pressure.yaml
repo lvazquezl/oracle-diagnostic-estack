@@ -1,0 +1,43 @@
+# Fixture: Oracle 19c CDB con una PDB cerca de su límite de CPU (Resource Manager)
+# Usada por: multitenant/resource-usage, multitenant/resource-manager, test_pdb_resource_usage
+fixture_id: FX-19c-pdb-resource-pressure
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-19c-pdb-resource"
+  database: {name: "ORCL19RP", unique_name: "orcl19rp", dbid: "1913223338"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19rp", number: 1, host: "HOST_TOKEN_09"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  multitenant: {cdb: true, cdb_name: "CDB_NAME_TOKEN_009", root_container: "CDB$ROOT", pdb_count: 2, local_undo_enabled: true, application_containers: false}
+  discovery: {timestamp: "2026-03-01T09:45:00Z", evidence_refs: [EVD-FX-4901], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$DATABASE, V$INSTANCE, V$PDBS, V$RSRCPDBMETRIC, DBA_CDB_RSRC_PLAN_DIRECTIVES]
+  available_columns:
+    "V$INSTANCE.version_full": true
+    "V$DATABASE.cdb": true
+    "V$ACTIVE_INSTANCES.con_id": true
+    "V$INSTANCE.instance_role": true
+
+mock_evidence:
+  - query_id: Q-CDB-RESOURCE-USAGE-001
+    result:
+      - {con_id: 3, cpu_consumed_time: 590000, cpu_wait_time: 120000, num_cpus: 8, cpu_utilization_limit: 60, avg_cpu_utilization: 58, avg_running_sessions: 12, avg_waiting_sessions: 3, running_sessions_limit: 20, avg_active_parallel_servers: 2, avg_queued_parallel_servers: 1, parallel_servers_limit: 4, sga_bytes: 2147483648, pga_bytes: 536870912, iops: 450, iombps: 12, plan_name: "CDB_PLAN_01"}
+  - query_id: Q-CDB-RESOURCE-MANAGER-001
+    result:
+      - {plan: "CDB_PLAN_01", pluggable_database: "PDB1", shares: 2, utilization_limit: 60, parallel_server_limit: 25}
+
+expected_findings:
+  - category: resource-usage
+    severity: MEDIUM
+    confidence: OBSERVATION
+    reason: "avg_cpu_utilization=58% cerca de cpu_utilization_limit=60% → MEDIUM, correlacionado con la directiva de Resource Manager real (utilization_limit=60) antes de afirmar throttling (# 31 del prompt de Fase 6)"

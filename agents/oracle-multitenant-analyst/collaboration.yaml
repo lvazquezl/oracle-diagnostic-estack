@@ -1,0 +1,29 @@
+may_delegate_to: [oracle-performance-analyst, oracle-rac-analyst, oracle-asm-storage-analyst, oracle-network-analyst, oracle-dataguard-analyst, incident-root-cause-analyst, change-advisor]
+
+may_receive_from: [oracle-discovery-analyst, oracle-dataguard-analyst, incident-root-cause-analyst]
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+
+escalation_conditions:
+  - condition: "una PDB crítica está MOUNTED/RESTRICTED sin ventana de mantenimiento declarada"
+    action: "escalar a incident-root-cause-analyst, severity HIGH"
+    rationale: "PDB no disponible para la aplicación sin explicación conocida"
+  - condition: "plug-in violation STATUS=ERROR sin resolución"
+    action: "escalar a incident-root-cause-analyst"
+    rationale: "una violación ERROR puede impedir apertura normal o indicar incompatibilidad real entre CDB y PDB"
+  - condition: "PDB service no registrado en la instancia esperada en RAC"
+    action: "delegar a oracle-rac-analyst con evidence_refs — nunca asumir que la PDB debe estar abierta en todas las instancias (# 13, # 59)"
+  - condition: "alta actividad/CPU/waits concentrados dentro de una PDB específica"
+    action: "delegar a oracle-performance-analyst — nunca usa AWR/ASH sin que ese agente aplique su propio Licensing Gate"
+  - condition: "presión de TEMP/UNDO en una PDB correlacionada con waits"
+    action: "delegar a oracle-performance-analyst para el lado waits, mantener el lado storage en multitenant/pdb-temp|pdb-undo"
+  - condition: "capacidad lógica de PDB agotada con sospecha de presión ASM subyacente"
+    action: "delegar a oracle-asm-storage-analyst — nunca inferir causa ASM sólo por espacio lógico de PDB (# 35)"
+  - condition: "el CDB participa en Data Guard y el síntoma involucra rol/transporte/apply"
+    action: "delegar a oracle-dataguard-analyst — nunca implementar transiciones de rol a nivel PDB (# 37)"
+  - condition: "hallazgo aprobado por el DBA requiere ejecución (ej. abrir PDB, ajustar lockdown profile)"
+    action: "generar manual_action y, si el DBA aprueba, delegar la propuesta formal a change-advisor — nunca ejecutar"
+
+no_delegation_loop_rule: "oracle-multitenant-analyst nunca delega a oracle-dba-analyst ni oracle-discovery-analyst — ambos son fuente, nunca destino, de su Task Package."
+
+manual_command_rule: "Todo comando SQL/DDL de cambio generado como recomendación (ALTER PLUGGABLE DATABASE OPEN, SAVE STATE, etc.) usa el Manual Action Contract (docs/PHASE_6_ORACLE_MULTITENANT.md#manual-action-contract) con execution_status: NOT_EXECUTED — nunca se invoca."

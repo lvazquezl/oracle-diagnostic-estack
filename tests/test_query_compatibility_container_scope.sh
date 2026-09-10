@@ -8,10 +8,10 @@ FAIL=0
 for name in Q-CDB-PDB-STATE-001 Q-CDB-CONTAINERS-001; do
   f=$(find "$ROOT/queries" -name "$name.md" 2>/dev/null)
   if [ -n "$f" ]; then
-    if grep -q '^container_scope: CDB_ROOT$' "$f"; then
-      echo "[PASS] $name declara container_scope: CDB_ROOT (no se ejecutará sobre NON-CDB)"
+    if grep -q '^container_scope: CDB_ROOT_ONLY$' "$f"; then
+      echo "[PASS] $name declara container_scope: CDB_ROOT_ONLY (no se ejecutará sobre NON-CDB)"
     else
-      echo "[FAIL] $name no declara container_scope: CDB_ROOT"
+      echo "[FAIL] $name no declara container_scope: CDB_ROOT_ONLY"
       FAIL=1
     fi
   else

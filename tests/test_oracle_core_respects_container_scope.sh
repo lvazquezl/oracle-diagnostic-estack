@@ -4,7 +4,7 @@
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
-VALID='^container_scope: (NON_CDB|CDB_ROOT|PDB|ANY_CONTAINER|NOT_APPLICABLE)$'
+VALID='^container_scope: (NON_CDB_ONLY|CDB_ROOT_ONLY|PDB_ONLY|ANY_CONTAINER|NOT_APPLICABLE)$'
 
 for f in $(find "$ROOT/queries/oracle" -name 'Q-*.md'); do
   line=$(grep '^container_scope:' "$f" || true)

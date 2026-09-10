@@ -3,11 +3,13 @@
 # una variante cuyas columnas version-gated sean consistentes con compatibility_schema.available_columns
 # de esa fixture (seccion 26 del prompt de Compatibility Hardening: "Los tests deberan validar la
 # query seleccionada contra ese fixture").
+#
+# PHASE 6 — VERSION RESOLVER CONSOLIDATION FINALIZATION (# 6, # 17 del prompt): usa
+# scripts/lib/version.sh en vez de un vernum() local.
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$ROOT/scripts/lib/version.sh"
 FAIL=0
-
-vernum() { local v="$1"; [ "$v" = "latest" ] && { echo 99999; return; }; local maj min; maj=$(echo "$v"|cut -d. -f1); min=$(echo "$v"|cut -d. -f2); [ -z "$min" ] && min=0; echo $((maj*100+min)); }
 
 RISKY_COLUMNS=("version_full:V\$INSTANCE.version_full" "\bcdb\b:V\$DATABASE.cdb" "con_id:V\$ACTIVE_INSTANCES.con_id" "instance_role:V\$INSTANCE.instance_role")
 
@@ -17,7 +19,7 @@ for fx in "$ROOT"/tests/fixtures/*.yaml; do
 
   major=$(grep -m1 'oracle_version:' "$fx" | grep -oE 'major: [0-9]+' | grep -oE '[0-9]+')
   minor=$(grep -m1 'oracle_version:' "$fx" | grep -oE 'minor: [0-9]+' | grep -oE '[0-9]+')
-  target_num=$(vernum "${major}.${minor}")
+  target="${major}.${minor}"
 
   for f in $(grep -rl '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null); do
     qid=$(grep -m1 '^query_id:' "$f" | awk '{print $2}')
@@ -28,8 +30,7 @@ for fx in "$ROOT"/tests/fixtures/*.yaml; do
       i=$((i+1))
       m=$(echo "$r" | grep -oE 'min: "[^"]+"' | grep -oE '"[^"]+"' | tr -d '"')
       x=$(echo "$r" | grep -oE 'max: [^}]+' | sed -E 's/max: *"?//; s/"?$//')
-      mn=$(vernum "$m"); mx=$(vernum "$x")
-      if [ "$target_num" -ge "$mn" ] && [ "$target_num" -le "$mx" ] && [ "$resolved_i" -eq 0 ]; then
+      if version_in_range "$target" "$m" "$x" && [ "$resolved_i" -eq 0 ]; then
         resolved_i=$i
       fi
     done <<< "$ranges"

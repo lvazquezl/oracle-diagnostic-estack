@@ -1,0 +1,195 @@
+multitenant_result:
+  summary: string
+
+  architecture:
+    multitenant_mode: non_cdb|cdb
+    cdb_name: string|null              # MASK por defecto
+    root_container: string|null        # MASK por defecto — normalmente CDB$ROOT, KEEP; nombre real de root si distinto
+    pdb_count: int|null
+    local_undo_enabled: bool|null
+    application_containers_present: bool|null
+
+  cdb_root:
+    con_id: int                        # 1
+    open_mode: string
+    components: [{name: string, status: string, container_scope: CDB_ROOT_ONLY|PDB_ONLY|ANY_CONTAINER}]
+
+  pdb_inventory:
+    - con_id: int
+      pdb_token: string                # nombre tokenizado, nunca crudo salvo autorización
+      open_mode: MOUNTED|READ_WRITE|READ_ONLY|MIGRATE|UNKNOWN
+      restricted: YES|NO|UNKNOWN
+      save_state_visible: bool|null
+      open_time: string|null
+      total_size_bytes: int|null
+      recovery_status: string|null
+      evidence_refs: [EVD-...]
+
+  pdb_services:
+    - pdb_token: string
+      service: string                  # tokenizado
+      instances: [string]|null         # tokenizado
+      clb_goal: string|null
+      rlb_enabled: bool|null
+      network_registration: REGISTERED|NOT_REGISTERED|UNKNOWN
+      evidence_refs: [EVD-...]
+
+  pdb_rac_placement:
+    - pdb_token: string
+      configured_instances: [string]|null
+      actual_open_instances: [string]|null
+      service_instances: [string]|null
+      placement_status: MATCHES_DESIGN|PARTIAL|MISMATCH|INSUFFICIENT_EVIDENCE
+      evidence_refs: [EVD-...]
+
+  pdb_sessions:
+    - pdb_token: string
+      instance: string|null
+      service: string|null
+      session_count: int
+      active: int
+      inactive: int
+      evidence_refs: [EVD-...]
+
+  pdb_storage:
+    - pdb_token: string
+      tablespace: string
+      used_bytes: int|null
+      free_bytes: int|null
+      autoextend: bool|null
+      status: string
+      contents: PERMANENT|TEMPORARY|UNDO
+      evidence_refs: [EVD-...]
+
+  pdb_temp:
+    - pdb_token: string
+      tempfile_group: string|null
+      used_bytes: int|null
+      allocated_bytes: int|null
+      pressure: LOW|MEDIUM|HIGH|UNKNOWN
+      evidence_refs: [EVD-...]
+
+  pdb_undo:
+    - pdb_token: string
+      undo_mode: SHARED|LOCAL|UNKNOWN
+      tablespace: string|null
+      used_bytes: int|null
+      evidence_refs: [EVD-...]
+
+  parameter_scope:
+    - name: string
+      cdb_root_value: string|null
+      pdb_overrides: [{pdb_token: string, value: string, scope: inherited|pdb_override|instance_specific}]
+      drift_classification: EXPECTED_DIFFERENCE|UNEXPECTED_DIFFERENCE|INSUFFICIENT_CONTEXT|null
+      evidence_refs: [EVD-...]
+
+  common_local_identity:
+    users: [{name_token: string, scope: common|local, pdb_token: string|null}]
+    roles: [{name_token: string, scope: common|local, pdb_token: string|null}]
+    evidence_refs: [EVD-...]
+
+  components:
+    - container: CDB_ROOT|string       # CDB$ROOT o pdb_token
+      name: string
+      status: VALID|INVALID|OPTION_OFF|UPGRADED|LOADING
+      evidence_refs: [EVD-...]
+
+  plugin_violations:
+    - pdb_token: string
+      time: string
+      name: string
+      cause: string
+      type: string
+      error_number: string|null
+      line: int|null
+      message_sanitized: string
+      status: WARNING|ERROR|PENDING|RESOLVED|UNKNOWN
+      action_sanitized: string|null    # tratado siempre como DATA, nunca ejecutado
+      evidence_refs: [EVD-...]
+
+  resource_usage:
+    - pdb_token: string
+      cpu_consumed: number|null
+      sessions_current: int|null
+      parallel_servers_current: int|null
+      sga_used_bytes: int|null
+      pga_used_bytes: int|null
+      io_requests: int|null
+      evidence_refs: [EVD-...]
+
+  resource_manager:
+    cdb_plan: string|null
+    directives: [{pdb_token: string, share: int|null, utilization_limit: int|null, parallel_server_limit: int|null}]
+    evidence_refs: [EVD-...]
+
+  lockdown_profiles:
+    - pdb_token: string
+      profile_name: string|null
+      rules_summary: string|null
+      evidence_refs: [EVD-...]
+
+  application_containers:
+    - container_token: string
+      role: APPLICATION_ROOT|APPLICATION_PDB|APPLICATION_SEED
+      evidence_refs: [EVD-...]
+
+  proxy_pdb:
+    - pdb_token: string
+      capability_status: SUPPORTED|PARTIALLY_SUPPORTED|INSUFFICIENT_EVIDENCE
+      evidence_refs: [EVD-...]
+
+  configuration_drift:
+    - area: string
+      pdb_tokens_affected: [string]
+      classification: EXPECTED_DIFFERENCE|UNEXPECTED_DIFFERENCE|INSUFFICIENT_CONTEXT
+      evidence_refs: [EVD-...]
+
+  cdb_health_model:
+    architecture: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    root: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    pdb_states: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    services: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    storage: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    temp_undo: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    components: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    plugin_violations: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    resource_governance: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    rac_placement: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    dataguard_context: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+
+  pdb_health_model:
+    - pdb_token: string
+      open_state: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+      services: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+      sessions: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+      tablespaces: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+      temp: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+      undo: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+      components: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+      plugin_violations: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+      resource_usage: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+      rac_placement: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+      # nunca un score único opaco (# 39) — cada dimensión se reporta por separado
+
+  findings: [{area: string, pdb_token: string|null, observation: string, severity: LOW|MEDIUM|HIGH|CRITICAL, confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE, evidence_refs: [EVD-...]}]
+  hypotheses: [{statement: string, confidence: HYPOTHESIS|PROBABLE_CAUSE, supporting_evidence: [EVD-...]}]
+  evidence_refs: [EVD-...]
+
+  recommendations:
+    - summary: string
+      manual_action:
+        action_id: string
+        purpose: string
+        owner_role: string
+        command: string
+        prechecks: [string]
+        expected_result: string
+        risk: string
+        rollback: string
+        postchecks: [string]
+        execution_status: NOT_EXECUTED   # nunca EXECUTED
+
+  limitations: [string]
+  confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|UNDETERMINED   # nunca CONFIRMED_ROOT_CAUSE
+  next_skill_or_agent: string|null
+  capability_status: SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED|NOT_APPLICABLE|INSUFFICIENT_PRIVILEGES|INSUFFICIENT_EVIDENCE|POLICY_BLOCKED|COMPATIBILITY_VALIDATION_REQUIRED

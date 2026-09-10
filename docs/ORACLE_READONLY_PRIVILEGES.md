@@ -158,7 +158,7 @@ Ver `queries/REGISTRY.md` (secciones "Identity & Scope" y "Oracle Core queries")
 
 ## Limitations
 
-- Esta lista cubre Oracle Core (Fase 2) + Discovery + Performance (Fase 3) + RAC/GI/ASM/Network (Fase 4) + Data Guard (Fase 5). Fases futuras (Multitenant/RMAN/Security profundos) requerirán privilegios adicionales, documentados incrementalmente vía `/change` cuando esas fases se implementen.
+- Esta lista cubre Oracle Core (Fase 2) + Discovery + Performance (Fase 3) + RAC/GI/ASM/Network (Fase 4) + Data Guard (Fase 5). Multitenant (Fase 6) se documenta en `docs/MULTITENANT_READONLY_PRIVILEGES.md` (nombrada explícitamente como entregable de esa fase) en vez de una sección aquí — consolidar aquí queda pendiente para un `/change` futuro si se decide unificar. Fases futuras (RMAN/Security profundos) requerirán privilegios adicionales, documentados incrementalmente vía `/change` cuando esas fases se implementen.
 - La instancia ASM ahora está cubierta (ver "Required privileges — ASM (Fase 4)" arriba) — sigue siendo una conexión/rol separado de la base de datos, arquitectura estándar Oracle.
 - El acceso a `alert.log` depende de la configuración de permisos del sistema operativo del target, fuera del control de Oracle SQL — se documenta como prerequisito operativo, no como un `GRANT`.
 
