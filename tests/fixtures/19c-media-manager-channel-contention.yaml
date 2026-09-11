@@ -1,0 +1,39 @@
+# Fixture: Oracle 19c, contención de canales SBT (segunda base esperando canal de media manager)
+# Usada por: rman/channel-contention
+fixture_id: FX-19c-media-manager-channel-contention
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-19c-media-manager-channel-contention"
+  database: {name: "ORCL19CC", unique_name: "orcl19cc", dbid: "1955001199"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19cc", number: 1, host: "HOST_TOKEN_29"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: not_applicable, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  discovery: {timestamp: "2026-03-01T09:45:00Z", evidence_refs: [EVD-FX-7010], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$RMAN_CONFIGURATION, V$RMAN_STATUS, V$BACKUP_DEVICE]
+
+mock_evidence:
+  - query_id: Q-RMAN-CONFIGURATION-001
+    result:
+      - {"conf#": 1, name: "DEVICE TYPE SBT_TAPE PARALLELISM", value: "2"}
+  - query_id: Q-RMAN-STATUS-001
+    result:
+      - {session_recid: 901, row_type: "SESSION", operation: "BACKUP", status: "RUNNING", output_device_type: "SBT_TAPE"}
+      - {session_recid: 902, row_type: "SESSION", operation: "BACKUP", status: "RUNNING", output_device_type: "SBT_TAPE"}
+      - {session_recid: 903, row_type: "SESSION", operation: "BACKUP", status: "RUNNING", output_device_type: "SBT_TAPE"}
+
+expected_findings:
+  - category: channel-contention
+    severity: HIGH
+    confidence: OBSERVATION
+    reason: "3 sesiones SBT RUNNING concurrentes con SBT_TAPE PARALLELISM 2 — contención detectada, correlacionada con RMAN parallelism/media manager concurrency, single_cause_asserted: false (# 23 del prompt de Fase 7)"

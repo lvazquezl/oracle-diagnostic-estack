@@ -1,0 +1,24 @@
+name: channel-contention
+display_name: "Channel Contention Analysis"
+id: rman/channel-contention
+version: 1.0.0
+domain: rman
+status: active
+
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+
+license_requirements: none
+
+required_evidence:
+  - query_id: Q-RMAN-CONFIGURATION-001
+  - query_id: Q-RMAN-BACKUP-DEVICE-001
+  - query_id: Q-RMAN-STATUS-001
+optional_evidence: []
+data_sensitivity: MEDIUM
+context_budget: MEDIUM
+
+related_skills: [rman/channels, rman/sbt-media-manager, rman/rac-awareness, rman/backup-duration]

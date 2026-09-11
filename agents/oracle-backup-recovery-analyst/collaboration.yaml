@@ -1,0 +1,30 @@
+may_delegate_to: [oracle-performance-analyst, oracle-rac-analyst, oracle-asm-storage-analyst, oracle-dataguard-analyst, oracle-multitenant-analyst, oracle-network-analyst, os-platform-analyst, incident-root-cause-analyst, change-advisor]
+
+may_receive_from: [oracle-discovery-analyst, incident-root-cause-analyst, oracle-dataguard-analyst, oracle-multitenant-analyst]
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+
+escalation_conditions:
+  - condition: "un job de backup reciente terminó FAILED sin resolución"
+    action: "escalar a incident-root-cause-analyst, severity HIGH si es el backup de producción crítico"
+    rationale: "un backup FAILED sostenido degrada RPO real"
+  - condition: "FRA en CRITICAL (SPACE_USED cerca de SPACE_LIMIT sin SPACE_RECLAIMABLE suficiente)"
+    action: "escalar a incident-root-cause-analyst — correlacionar con archivelog generation/retención/deletion policy antes de escalar (# 18)"
+    rationale: "FRA llena detiene backups y puede detener la base en NOARCHIVELOG si no hay espacio para redo"
+  - condition: "restore_readiness = NOT_READY o recovery_readiness = INSUFFICIENT_EVIDENCE en un target de producción"
+    action: "escalar a incident-root-cause-analyst"
+    rationale: "gap de recuperabilidad no debe descubrirse durante un incidente real"
+  - condition: "contención de canales sostenida (RMAN esperando canal SBT/media manager)"
+    action: "delegar a os-platform-analyst/oracle-network-analyst para el lado proceso/conectividad, mantener el lado RMAN en rman/channel-contention — nunca asumir causa Oracle única (# 23)"
+  - condition: "duración/throughput de backup degradado sin explicación obvia"
+    action: "delegar a oracle-performance-analyst — nunca inferir root cause por una sola métrica (# 11)"
+  - condition: "el CDB participa en Data Guard y el síntoma involucra archivelog deletion policy/backup offload"
+    action: "delegar a oracle-dataguard-analyst — nunca ejecutar standby recovery (# 28)"
+  - condition: "PDB PITR requiere contexto de local undo/archive coverage por PDB"
+    action: "delegar a oracle-multitenant-analyst — nunca tratar la PDB como DB física independiente (# 29)"
+  - condition: "hallazgo aprobado por el DBA requiere ejecución (ej. ajustar retention policy, mover snapshot controlfile)"
+    action: "generar manual_action y, si el DBA aprueba, delegar la propuesta formal a change-advisor — nunca ejecutar"
+
+no_delegation_loop_rule: "oracle-backup-recovery-analyst nunca delega a oracle-dba-analyst ni oracle-discovery-analyst — ambos son fuente, nunca destino, de su Task Package."
+
+manual_command_rule: "Todo comando RMAN de cambio generado como recomendación (RESTORE, RECOVER, CONFIGURE RETENTION POLICY, etc.) usa el Manual Action Contract (docs/PHASE_7_ORACLE_BACKUP_RECOVERY_RMAN.md#manual-action-contract) con execution_status: NOT_EXECUTED — nunca se invoca."

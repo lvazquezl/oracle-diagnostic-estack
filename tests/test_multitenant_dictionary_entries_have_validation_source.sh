@@ -8,8 +8,13 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 DICT="$ROOT/compatibility/oracle-dictionary/views.yaml"
 
-# Recorta sólo la sección Fase 6 (línea "--- Fase 6 (Multitenant / CDB / PDB) ---" hasta EOF).
-section=$(awk '/# --- Fase 6 \(Multitenant \/ CDB \/ PDB\) ---/{f=1} f{print}' "$DICT")
+# Recorta sólo la sección Fase 6 (línea "--- Fase 6 (Multitenant / CDB / PDB) ---" hasta el
+# siguiente marcador de fase, ej. "--- PHASE 7 --- ..." — NUNCA hasta EOF: Fase 6 dejó de ser la
+# última fase con la sección "--- PHASE 7 — ORACLE BACKUP & RECOVERY / RMAN ---" añadida a
+# continuación en el mismo archivo (defecto real detectado y corregido en PHASE 7 — sin este
+# límite, las 13 vistas RMAN columns_exhaustive:true nuevas se contaban como si fueran de
+# Multitenant, rompiendo el conteo hardcodeado de esta prueba).
+section=$(awk '/# --- Fase 6 \(Multitenant \/ CDB \/ PDB\) ---/{f=1;print;next} f && /^  # --- (PHASE|Fase) [0-9]/{exit} f{print}' "$DICT")
 
 views=$(echo "$section" | awk '/^  [A-Za-z$#0-9_]+:[ \t]*$/{line=$0; sub(/^  /,"",line); sub(/:[ \t]*$/,"",line); print line}')
 

@@ -1,0 +1,41 @@
+# Fixture: Oracle 23ai, configuración RMAN moderna (compresión/encriptación)
+# Usada por: rman/configuration, rman/backup-optimization
+fixture_id: FX-23ai-modern-rman-configuration
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-23ai-modern-rman-configuration"
+  database: {name: "ORCL23AI", unique_name: "orcl23ai", dbid: "2355112233"}
+  oracle_version: {major: 23, minor: 0, release: 0, ru: "23.5", raw: "23.5.0.24.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: asm}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl23ai", number: 1, host: "HOST_TOKEN_34"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: SUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  asm: {enabled: true, instance_count: 1}
+  multitenant: {cdb: true, cdb_name: "CDB_NAME_TOKEN_012", root_container: "CDB$ROOT", pdb_count: 1, local_undo_enabled: true, application_containers: false}
+  discovery: {timestamp: "2026-03-01T10:10:00Z", evidence_refs: [EVD-FX-7015], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$RMAN_CONFIGURATION, V$BACKUP_SET]
+  available_columns:
+    "V$RMAN_CONFIGURATION.con_id": true
+    "V$BACKUP_SET.con_id": true
+
+mock_evidence:
+  - query_id: Q-RMAN-CONFIGURATION-001
+    result:
+      - {"conf#": 1, name: "RETENTION POLICY", value: "TO RECOVERY WINDOW OF 14 DAYS"}
+      - {"conf#": 2, name: "ENCRYPTION FOR DATABASE", value: "ON"}
+      - {"conf#": 3, name: "COMPRESSION ALGORITHM", value: "'MEDIUM'"}
+
+expected_findings:
+  - category: configuration
+    severity: LOW
+    confidence: FACT
+    reason: "encriptación y compresión explícitas en 23ai — certificado 10g-23ai sin variante especial (V$RMAN_CONFIGURATION estable desde 9i)"

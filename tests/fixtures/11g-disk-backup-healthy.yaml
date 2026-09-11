@@ -1,0 +1,43 @@
+# Fixture: Oracle 11g standalone, backup a disco saludable (full + archivelog + controlfile)
+# Usada por: rman/backup-status, rman/backup-freshness, rman/full-backup
+fixture_id: FX-11g-disk-backup-healthy
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-11g-disk-backup-healthy"
+  database: {name: "ORCL11G", unique_name: "orcl11g", dbid: "1122334455"}
+  oracle_version: {major: 11, minor: 2, release: 0, ru: null, raw: "11.2.0.4.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl11g", number: 1, host: "HOST_TOKEN_20"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: not_applicable, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  discovery: {timestamp: "2026-03-01T09:00:00Z", evidence_refs: [EVD-FX-7001], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$RMAN_CONFIGURATION, V$RMAN_STATUS, V$BACKUP_SET, V$BACKUP_PIECE, V$BACKUP_DATAFILE, V$BACKUP_REDOLOG, V$BACKUP_SPFILE]
+  available_columns:
+    "V$BACKUP_SET.con_id": false
+    "V$RMAN_STATUS.con_id": false
+
+mock_evidence:
+  - query_id: Q-RMAN-CONFIGURATION-001
+    result:
+      - {"conf#": 1, name: "RETENTION POLICY", value: "TO REDUNDANCY 2"}
+      - {"conf#": 2, name: "CONTROLFILE AUTOBACKUP", value: "ON"}
+      - {"conf#": 3, name: "DEFAULT DEVICE TYPE", value: "DISK"}
+  - query_id: Q-RMAN-BACKUP-SET-001
+    result:
+      - {recid: 501, backup_type: "D", incremental_level: null, controlfile_included: "YES", completion_time: "2026-02-28T02:00:00Z"}
+      - {recid: 502, backup_type: "L", incremental_level: null, controlfile_included: "NO", completion_time: "2026-03-01T02:00:00Z"}
+
+expected_findings:
+  - category: backup-freshness
+    severity: LOW
+    confidence: FACT
+    reason: "full + archivelog recientes, controlfile autobackup ON — completeness: COMPLETE (# 10 del prompt de Fase 7)"

@@ -1,0 +1,31 @@
+# Fixture: versión mayor Oracle futura desconocida (ej. 25) — nunca auto-certificada
+# Usada por: test_rman_query_version_compatibility, test_unknown_future_version_policy (reuso Fase 6)
+fixture_id: FX-future-unknown-major-rman
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-future-unknown-major-rman"
+  database: {name: "ORCLFUT", unique_name: "orclfut", dbid: "2599001122"}
+  oracle_version: {major: 25, minor: 0, release: 0, ru: null, raw: "25.1.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orclfut", number: 1, host: "HOST_TOKEN_35"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  discovery: {timestamp: "2026-03-01T10:15:00Z", evidence_refs: [EVD-FX-7016], confidence: OBSERVATION}
+
+compatibility_schema:
+  available_views: []
+
+mock_evidence: []
+
+expected_findings:
+  - category: version-compatibility
+    severity: MEDIUM
+    confidence: UNDETERMINED
+    reason: "major 25 no certificado por ninguna variante Q-RMAN-* (max declarado 23.0 en todas) — capability_status: COMPATIBILITY_VALIDATION_REQUIRED, nunca 'latest: SUPPORTED' (# 5 del prompt de Fase 7)"

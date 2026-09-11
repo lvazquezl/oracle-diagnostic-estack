@@ -1,0 +1,57 @@
+# Oracle SQL Syntax Feature Compatibility Model — PHASE 7 — RMAN LEGACY SQL SYNTAX & QUERY
+# CERTIFICATION HARDENING.
+#
+# Modela DISPONIBILIDAD DE SINTAXIS SQL por versión Oracle — una dimensión de certificación
+# ortogonal a compatibility/oracle-dictionary/ (que modela vistas/columnas, NUNCA sintaxis del
+# lenguaje SQL en sí). Un bloque SQL certificado puede referenciar únicamente vistas/columnas
+# válidas para su min_version declarado y AÚN ASÍ ser NOT_CERTIFIED si usa una construcción de
+# sintaxis (ej. la row limiting clause FETCH FIRST/OFFSET, ANSI SQL:2008, introducida en Oracle
+# Database 12c Release 1 / 12.1) que no existe en ese min_version — exactamente el defecto real
+# detectado en 10 queries queries/rman/Q-RMAN-*.md, todas declaradas min_version 10.2 mientras
+# usaban FETCH FIRST en su SQL (ver docs/PHASE_7_RMAN_LEGACY_SQL_SYNTAX_HARDENING.md).
+#
+# NO es un parser SQL completo (mismo principio que compatibility/oracle-dictionary/, # 13/# 15
+# del prompt de este hardening) — cada feature se detecta por patrón de texto (regex,
+# case/whitespace-insensitive), nunca por análisis sintáctico real. Sólo se registran features
+# genuinamente verificadas — no se convierte esto en un catálogo especulativo de todo ANSI SQL.
+#
+# min_version usa la representación normalizada de scripts/lib/version.sh (major.minor[.update
+# [.patch[.revision]]]) — nunca "latest" (# 14 del prompt: "No marcar latest").
+
+schema_version: 1
+
+features:
+  FETCH_FIRST:
+    feature_id: FETCH_FIRST
+    display_name: "Row limiting clause — FETCH FIRST"
+    syntax_patterns:
+      # Case-insensitive, tolerante a espacios múltiples/tabs entre FETCH y FIRST (# 15 del
+      # prompt — "no depender de una sola cadena exacta"), y a "ROW"/"ROWS" indistintamente.
+      - 'FETCH[[:space:]]+FIRST[[:space:]]+[0-9]+[[:space:]]+ROWS?[[:space:]]+ONLY'
+      - 'FETCH[[:space:]]+FIRST[[:space:]]+[0-9]+[[:space:]]+ROWS?[[:space:]]+ONLY[[:space:]]+WITH[[:space:]]+TIES'
+      - 'FETCH[[:space:]]+NEXT[[:space:]]+[0-9]+[[:space:]]+ROWS?[[:space:]]+ONLY'
+    min_version: "12.1"
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_versions: ["12.1", "12.2", "18", "19", "21", "23"]
+      source_ref: "docs.oracle.com/en/database/oracle/oracle-database/12.2/sqlrf/SELECT.html — row_limiting_clause; sintaxis ANSI SQL:2008, no disponible en 10g/11g (row limiting sólo vía ROWNUM/analytic functions en esas versiones)."
+    notes: >
+      Ninguna variante certificada con oracle_versions.min < 12.1 puede usar este patrón — ver
+      tests/test_no_fetch_first_in_pre12c_queries.sh (enforcement global).
+
+  OFFSET_ROWS:
+    feature_id: OFFSET_ROWS
+    display_name: "Row limiting clause — OFFSET ... ROWS"
+    syntax_patterns:
+      - 'OFFSET[[:space:]]+[0-9]+[[:space:]]+ROWS?'
+    min_version: "12.1"
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_versions: ["12.1", "12.2", "18", "19", "21", "23"]
+      source_ref: "docs.oracle.com/en/database/oracle/oracle-database/12.2/sqlrf/SELECT.html — row_limiting_clause, mismo boundary que FETCH_FIRST (ambos forman parte de la misma cláusula ANSI)."
+    notes: >
+      Registrada preventivamente aunque ningún query certificado de Fase 7 la usa todavía (# 16
+      del prompt: "el feature model debe quedar listo para evitar otra incompatibilidad"). Ver
+      tests/test_no_offset_in_pre12c_queries.sh.

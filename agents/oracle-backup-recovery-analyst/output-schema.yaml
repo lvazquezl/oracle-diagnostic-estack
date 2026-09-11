@@ -1,0 +1,204 @@
+backup_recovery_result:
+  summary: string
+
+  repository:
+    mode: CONTROLFILE_REPOSITORY|RECOVERY_CATALOG|BOTH|UNKNOWN
+    recovery_catalog_accessible: bool|null
+
+  configuration:
+    retention_policy: string|null
+    backup_optimization: ON|OFF|UNKNOWN
+    default_device_type: DISK|SBT_TAPE|UNKNOWN
+    controlfile_autobackup: ON|OFF|UNKNOWN
+    controlfile_autobackup_format: string|null   # MASK por defecto
+    disk_parallelism: int|null
+    sbt_parallelism: int|null
+    snapshot_controlfile_path: string|null        # MASK por defecto
+    archivelog_deletion_policy: string|null
+    encryption_enabled: bool|null
+    compression_algorithm: string|null
+    evidence_refs: [EVD-...]
+
+  backup_inventory:
+    - key: string
+      type: FULL|INCREMENTAL_LEVEL_0|LEVEL_1_DIFFERENTIAL|LEVEL_1_CUMULATIVE|ARCHIVELOG|CONTROLFILE|SPFILE|IMAGE_COPY
+      device_type: DISK|SBT_TAPE|UNKNOWN
+      start_time: string|null
+      completion_time: string|null
+      elapsed_seconds: int|null
+      status: COMPLETED|COMPLETED_WITH_WARNINGS|FAILED|RUNNING|UNKNOWN
+      size_bytes: int|null
+      pieces: int|null
+      tag_token: string|null
+      controlfile_included: bool|null
+      spfile_included: bool|null
+      con_id: int|null
+      evidence_refs: [EVD-...]
+
+  freshness:
+    last_full_or_level0: string|null
+    last_incremental: string|null
+    last_archivelog_backup: string|null
+    last_controlfile_backup: string|null
+    last_spfile_backup: string|null
+    completeness: COMPLETE|PARTIAL|STALE|UNKNOWN|INSUFFICIENT_EVIDENCE
+    evidence_refs: [EVD-...]
+
+  duration_throughput:
+    - job_key: string
+      elapsed_seconds: int|null
+      input_bytes: int|null
+      output_bytes: int|null
+      aggregate_mb_per_sec: number|null
+      device_type: DISK|SBT_TAPE|UNKNOWN
+      evidence_refs: [EVD-...]
+
+  archivelog_coverage:
+    - thread: int
+      sequence: int
+      generated: bool
+      backed_up: bool
+      applied: bool|null
+      deleted: bool|null
+      destination_token: string|null
+      evidence_refs: [EVD-...]
+
+  controlfile_spfile:
+    controlfile_autobackup_latest: string|null
+    spfile_protected: bool|null
+    dbid: string|null                # MASK por defecto
+    evidence_refs: [EVD-...]
+
+  fra:
+    space_limit_bytes: int|null
+    space_used_bytes: int|null
+    space_reclaimable_bytes: int|null
+    number_of_files: int|null
+    pressure: LOW|MEDIUM|HIGH|CRITICAL|UNKNOWN
+    correlated_with: [string]        # ej. archivelog_generation, backup_cadence, retention, deletion_policy, flashback_logs, restore_points, dataguard
+    evidence_refs: [EVD-...]
+
+  obsolete_expired:
+    note: "Sólo disponible vía ingest de REPORT OBSOLETE/CROSSCHECK ya ejecutados manualmente por el DBA — nunca ejecutados por el e-stack."
+    obsolete_count: int|null
+    expired_count: int|null
+    unavailable_count: int|null
+    evidence_refs: [EVD-...]
+
+  channels:
+    - channel_id: string|null
+      device_type: DISK|SBT_TAPE|UNKNOWN
+      parallelism: int|null
+      instance_affinity: string|null   # MASK por defecto
+      allocation_type: AUTOMATIC|MANUAL|UNKNOWN
+      evidence_refs: [EVD-...]
+
+  channel_contention:
+    detected: bool
+    correlated_with: [string]        # ej. rman_parallelism, media_manager_concurrency, server_limits, sbt_pools, job_scheduler
+    single_cause_asserted: false     # siempre false — nunca se asume causa Oracle única (# 23)
+    evidence_refs: [EVD-...]
+
+  sbt_media_manager:
+    library_detected: bool|null
+    vendor_token: string|null        # MASK por defecto — ej. Commvault/Simpana como conocimiento de dominio, nunca credenciales
+    channel_allocation_visible: bool|null
+    error_classification: string|null
+    evidence_refs: [EVD-...]
+
+  restore_readiness:
+    status: READY|READY_WITH_WARNINGS|NOT_READY|INSUFFICIENT_EVIDENCE
+    blockers: [string]
+    evidence_refs: [EVD-...]
+
+  recovery_readiness:
+    restore_readiness: READY|READY_WITH_WARNINGS|NOT_READY|INSUFFICIENT_EVIDENCE
+    media_recovery_readiness: READY|READY_WITH_WARNINGS|NOT_READY|INSUFFICIENT_EVIDENCE
+    complete_recovery: bool|null
+    incomplete_recovery_possible: bool|null
+    pitr_awareness: {supported: bool|null, methods: [UNTIL_TIME, UNTIL_SCN, UNTIL_SEQUENCE]}
+    pdb_pitr_awareness: {supported: bool|null, pdb_token: string|null, capability_status: SUPPORTED|PARTIALLY_SUPPORTED|INSUFFICIENT_EVIDENCE}
+    evidence_refs: [EVD-...]
+
+  rac_awareness:
+    channel_distribution: string|null
+    snapshot_controlfile_shared: bool|null
+    fra_shared: bool|null
+    evidence_refs: [EVD-...]
+
+  dataguard_awareness:
+    backup_on_primary: bool|null
+    backup_on_standby: bool|null
+    backup_offload_detected: bool|null
+    archivelog_deletion_policy_dataguard_aware: bool|null
+    evidence_refs: [EVD-...]
+
+  multitenant_awareness:
+    cdb_backup_scope: string|null
+    pdb_datafile_coverage: [{pdb_token: string, covered: bool|null}]
+    capability_status: SUPPORTED|PARTIALLY_SUPPORTED|INSUFFICIENT_EVIDENCE
+    evidence_refs: [EVD-...]
+
+  rpo_rto:
+    rpo_minutes_target: int|null
+    rto_minutes_target: int|null
+    rpo_basis: RECOVERABLE_POINT|BACKUP_FRESHNESS_ONLY|INSUFFICIENT_REQUIREMENTS
+    rto_estimate_qualitative: string|null
+    rto_estimate_basis: THROUGHPUT_EVIDENCE|RESTORE_TEST_EVIDENCE|QUALITATIVE_ONLY|INSUFFICIENT_REQUIREMENTS
+    evidence_refs: [EVD-...]
+
+  manual_recovery_plan:
+    scope: string|null
+    scenario: string|null
+    assumptions: [string]
+    required_evidence: [string]
+    prechecks: [string]
+    manual_commands: [string]
+    expected_state_transitions: [string]
+    validation: [string]
+    rollback_fallback: string|null
+    postchecks: [string]
+    owner_roles: [string]
+    execution_status: NOT_EXECUTED   # nunca EXECUTED
+
+  health_model:
+    configuration: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    database_backup: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    archivelog_backup: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    controlfile: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    spfile: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    retention: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    fra: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    channels: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    media_manager: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    rac: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    dataguard: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    multitenant: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    restore_readiness: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    recovery_readiness: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE
+    # nunca un score único opaco — cada dimensión se reporta por separado
+
+  findings: [{area: string, observation: string, severity: LOW|MEDIUM|HIGH|CRITICAL, confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE, evidence_refs: [EVD-...]}]
+  hypotheses: [{statement: string, confidence: HYPOTHESIS|PROBABLE_CAUSE, supporting_evidence: [EVD-...]}]
+  evidence_refs: [EVD-...]
+
+  recommendations:
+    - summary: string
+      manual_action:
+        action_id: string
+        purpose: string
+        owner_role: string
+        command: string
+        prechecks: [string]
+        expected_result: string
+        risk: string
+        rollback: string
+        postchecks: [string]
+        execution_status: NOT_EXECUTED   # nunca EXECUTED
+
+  not_certified_queries: [string]
+  not_certified_collectors: [string]
+  limitations: [string]
+  confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|UNDETERMINED   # nunca CONFIRMED_ROOT_CAUSE
+  next_skill_or_agent: string|null
+  capability_status: SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED|NOT_APPLICABLE|INSUFFICIENT_PRIVILEGES|INSUFFICIENT_EVIDENCE|POLICY_BLOCKED|COMPATIBILITY_VALIDATION_REQUIRED

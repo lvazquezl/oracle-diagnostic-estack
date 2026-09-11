@@ -107,13 +107,51 @@ queries:
 
   # --- Fase 3 (Oracle Performance) ---
 
-  Q-PERF-WAIT-AWR-001: {file: queries/performance/waits/Q-PERF-WAIT-AWR-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_HIST_SYSTEM_EVENT, DBA_HIST_SNAPSHOT], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE, license_requirements: [Diagnostics Pack]}
+  Q-PERF-WAIT-AWR-001:
+    file: queries/performance/waits/Q-PERF-WAIT-AWR-001.md
+    variants:
+      - {variant_id: Q-PERF-WAIT-AWR-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-PERF-WAIT-AWR-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_HIST_SYSTEM_EVENT, DBA_HIST_SNAPSHOT]
+    role_scope: PRIMARY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    license_requirements: [Diagnostics Pack]
+    was: VARIANT_REQUIRED   # PHASE 7 — RMAN LEGACY SQL SYNTAX HARDENING: FETCH FIRST certificado con min 10.2 desde Fase 3 — split legacy ROWNUM/modern FETCH FIRST, detectado por test_no_fetch_first_in_pre12c_queries.sh (enforcement global, no específico de RMAN)
   Q-PERF-WAIT-ASH-001: {file: queries/performance/waits/Q-PERF-WAIT-ASH-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$ACTIVE_SESSION_HISTORY, DBA_HIST_ACTIVE_SESS_HISTORY], role_scope: PRIMARY, cost_class: HIGH, validation_status: COMPATIBLE, license_requirements: [Diagnostics Pack]}
-  Q-PERF-WAIT-STATSPACK-001: {file: queries/performance/waits/Q-PERF-WAIT-STATSPACK-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [STATS$SYSTEM_EVENT, STATS$SNAPSHOT], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-PERF-WAIT-STATSPACK-001:
+    file: queries/performance/waits/Q-PERF-WAIT-STATSPACK-001.md
+    variants:
+      - {variant_id: Q-PERF-WAIT-STATSPACK-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-PERF-WAIT-STATSPACK-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [STATS$SYSTEM_EVENT, STATS$SNAPSHOT]
+    role_scope: PRIMARY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
   Q-PERF-DBTIME-001: {file: queries/performance/db-time/Q-PERF-DBTIME-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_HIST_SYS_TIME_MODEL, DBA_HIST_SNAPSHOT], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE, license_requirements: [Diagnostics Pack]}
   Q-PERF-DBTIME-CURRENT-001: {file: queries/performance/db-time/Q-PERF-DBTIME-CURRENT-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SYS_TIME_MODEL, V$INSTANCE], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
-  Q-PERF-TOPSQL-001: {file: queries/performance/sql/Q-PERF-TOPSQL-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_HIST_SQLSTAT, DBA_HIST_SNAPSHOT], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE, license_requirements: [Diagnostics Pack]}
-  Q-PERF-TOPSQL-CURRENT-001: {file: queries/performance/sql/Q-PERF-TOPSQL-CURRENT-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SQLSTATS], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-PERF-TOPSQL-001:
+    file: queries/performance/sql/Q-PERF-TOPSQL-001.md
+    variants:
+      - {variant_id: Q-PERF-TOPSQL-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-PERF-TOPSQL-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_HIST_SQLSTAT, DBA_HIST_SNAPSHOT]
+    role_scope: PRIMARY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    license_requirements: [Diagnostics Pack]
+    was: VARIANT_REQUIRED
+  Q-PERF-TOPSQL-CURRENT-001:
+    file: queries/performance/sql/Q-PERF-TOPSQL-CURRENT-001.md
+    variants:
+      - {variant_id: Q-PERF-TOPSQL-CURRENT-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-PERF-TOPSQL-CURRENT-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$SQLSTATS]
+    role_scope: PRIMARY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
   Q-PERF-PLAN-001: {file: queries/performance/plans/Q-PERF-PLAN-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SQL_PLAN], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-PERF-PLAN-HIST-001: {file: queries/performance/plans/Q-PERF-PLAN-HIST-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_HIST_SQLSTAT, DBA_HIST_SNAPSHOT], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE, license_requirements: [Diagnostics Pack]}
   Q-PERF-SGA-001: {file: queries/performance/memory/Q-PERF-SGA-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SGA, V$SGAINFO, V$SGASTAT], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
@@ -122,10 +160,46 @@ queries:
   Q-PERF-LIBCACHE-001: {file: queries/performance/memory/Q-PERF-LIBCACHE-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$LIBRARYCACHE], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-PERF-SHAREDPOOL-001: {file: queries/performance/memory/Q-PERF-SHAREDPOOL-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SGASTAT, V$ROWCACHE], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-PERF-IO-001: {file: queries/performance/io/Q-PERF-IO-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SYSTEM_EVENT], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
-  Q-PERF-IO-FILESTAT-001: {file: queries/performance/io/Q-PERF-IO-FILESTAT-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$FILESTAT, V$DATAFILE], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE}
-  Q-PERF-TEMP-001: {file: queries/performance/temp/Q-PERF-TEMP-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SORT_USAGE, V$SESSION], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE}
-  Q-PERF-BLOCKING-001: {file: queries/performance/concurrency/Q-PERF-BLOCKING-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SESSION], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE}
-  Q-PERF-LOCKS-001: {file: queries/performance/concurrency/Q-PERF-LOCKS-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$LOCK, V$SESSION], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-PERF-IO-FILESTAT-001:
+    file: queries/performance/io/Q-PERF-IO-FILESTAT-001.md
+    variants:
+      - {variant_id: Q-PERF-IO-FILESTAT-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-PERF-IO-FILESTAT-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$FILESTAT, V$DATAFILE]
+    role_scope: PRIMARY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
+  Q-PERF-TEMP-001:
+    file: queries/performance/temp/Q-PERF-TEMP-001.md
+    variants:
+      - {variant_id: Q-PERF-TEMP-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-PERF-TEMP-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$SORT_USAGE, V$SESSION]
+    role_scope: PRIMARY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
+  Q-PERF-BLOCKING-001:
+    file: queries/performance/concurrency/Q-PERF-BLOCKING-001.md
+    variants:
+      - {variant_id: Q-PERF-BLOCKING-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-PERF-BLOCKING-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$SESSION]
+    role_scope: PRIMARY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
+  Q-PERF-LOCKS-001:
+    file: queries/performance/concurrency/Q-PERF-LOCKS-001.md
+    variants:
+      - {variant_id: Q-PERF-LOCKS-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-PERF-LOCKS-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$LOCK, V$SESSION]
+    role_scope: PRIMARY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
   Q-PERF-PARALLEL-001: {file: queries/performance/parallel/Q-PERF-PARALLEL-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$PX_SESSION], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-PERF-REDO-001: {file: queries/performance/redo/Q-PERF-REDO-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SYSSTAT], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
 
@@ -241,6 +315,119 @@ queries:
   Q-CDB-RESOURCE-USAGE-001: {file: queries/multitenant/Q-CDB-RESOURCE-USAGE-001.md, variants: implicit_full_range, min: "12.2", max: "23.0", required_views: [V$RSRCPDBMETRIC], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, was: INCORRECT_VERSION_RANGE}
   Q-CDB-RESOURCE-MANAGER-001: {file: queries/multitenant/Q-CDB-RESOURCE-MANAGER-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [DBA_CDB_RSRC_PLAN_DIRECTIVES], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-CDB-LOCKDOWN-001: {file: queries/multitenant/Q-CDB-LOCKDOWN-001.md, variants: implicit_full_range, min: "12.2", max: "23.0", required_views: [CDB_LOCKDOWN_PROFILES], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+
+  # --- PHASE 7 — ORACLE BACKUP & RECOVERY / RMAN ---
+  Q-RMAN-CONFIGURATION-001: {file: queries/rman/Q-RMAN-CONFIGURATION-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$RMAN_CONFIGURATION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-RMAN-STATUS-001:
+    file: queries/rman/Q-RMAN-STATUS-001.md
+    variants:
+      - {variant_id: Q-RMAN-STATUS-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-RMAN-STATUS-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$RMAN_STATUS]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED   # PHASE 7 — RMAN LEGACY SQL SYNTAX HARDENING: V1 (implicit_full_range, min 10.2) usaba FETCH FIRST (12.1+) — split en legacy ROWNUM/modern FETCH FIRST
+
+  Q-RMAN-OUTPUT-001:
+    file: queries/rman/Q-RMAN-OUTPUT-001.md
+    variants:
+      - {variant_id: Q-RMAN-OUTPUT-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-RMAN-OUTPUT-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$RMAN_OUTPUT]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
+  Q-RMAN-BACKUP-JOB-001:
+    file: queries/rman/Q-RMAN-BACKUP-JOB-001.md
+    variants:
+      - {variant_id: Q-RMAN-BACKUP-JOB-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-RMAN-BACKUP-JOB-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$RMAN_BACKUP_JOB_DETAILS]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED   # Fase 7: REGISTERED desde Foundation sin archivo real (cerrado en PHASE 7 — ORACLE BACKUP & RECOVERY / RMAN); PHASE 7 — RMAN LEGACY SQL SYNTAX HARDENING re-split legacy/modern por FETCH FIRST (12.1+)
+  Q-RMAN-BACKUP-SET-001:
+    file: queries/rman/Q-RMAN-BACKUP-SET-001.md
+    variants:
+      - {variant_id: Q-RMAN-BACKUP-SET-001-V1, label: legacy_pre_multitenant, min: "10.2", max: "11.2", container_scope: NOT_APPLICABLE}
+      - {variant_id: Q-RMAN-BACKUP-SET-001-V2, label: multitenant_aware, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$BACKUP_SET]
+    role_scope: ANY
+    cost_class: MEDIUM
+    license_requirements: none
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED   # Fase 7: reemplaza el stub Q-RMAN-BACKUPSET-001 (Foundation, registrado sin archivo real, nombre sin guion) -- mismo propósito (V$BACKUP_SET), nombre corregido a la convención hyphenated del resto de Q-RMAN-*, y split legacy/multitenant_aware por CON_ID (mismo patrón verificado que PDB_PLUG_IN_VIOLATIONS en Fase 6)
+  Q-RMAN-BACKUP-PIECE-001:
+    file: queries/rman/Q-RMAN-BACKUP-PIECE-001.md
+    variants:
+      - {variant_id: Q-RMAN-BACKUP-PIECE-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-RMAN-BACKUP-PIECE-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$BACKUP_PIECE]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
+
+  Q-RMAN-BACKUP-DATAFILE-001:
+    file: queries/rman/Q-RMAN-BACKUP-DATAFILE-001.md
+    variants:
+      - {variant_id: Q-RMAN-BACKUP-DATAFILE-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-RMAN-BACKUP-DATAFILE-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$BACKUP_DATAFILE]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
+
+  Q-RMAN-ARCHIVELOG-BACKUP-001:
+    file: queries/rman/Q-RMAN-ARCHIVELOG-BACKUP-001.md
+    variants:
+      - {variant_id: Q-RMAN-ARCHIVELOG-BACKUP-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-RMAN-ARCHIVELOG-BACKUP-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$BACKUP_REDOLOG]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
+
+  Q-RMAN-ARCHIVED-LOG-COVERAGE-001:
+    file: queries/rman/Q-RMAN-ARCHIVED-LOG-COVERAGE-001.md
+    variants:
+      - {variant_id: Q-RMAN-ARCHIVED-LOG-COVERAGE-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-RMAN-ARCHIVED-LOG-COVERAGE-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$ARCHIVED_LOG]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
+
+  Q-RMAN-CONTROLFILE-BACKUP-001:
+    file: queries/rman/Q-RMAN-CONTROLFILE-BACKUP-001.md
+    variants:
+      - {variant_id: Q-RMAN-CONTROLFILE-BACKUP-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-RMAN-CONTROLFILE-BACKUP-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$BACKUP_SET]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
+
+  Q-RMAN-SPFILE-BACKUP-001:
+    file: queries/rman/Q-RMAN-SPFILE-BACKUP-001.md
+    variants:
+      - {variant_id: Q-RMAN-SPFILE-BACKUP-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-RMAN-SPFILE-BACKUP-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$BACKUP_SPFILE]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: VARIANT_REQUIRED
+  Q-RMAN-BACKUP-DEVICE-001: {file: queries/rman/Q-RMAN-BACKUP-DEVICE-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$BACKUP_DEVICE], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-RMAN-FRA-USAGE-001: {file: queries/rman/Q-RMAN-FRA-USAGE-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$FLASH_RECOVERY_AREA_USAGE, V$RECOVERY_FILE_DEST], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-RMAN-CONTROLFILE-RECORD-SECTION-001: {file: queries/rman/Q-RMAN-CONTROLFILE-RECORD-SECTION-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$CONTROLFILE_RECORD_SECTION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
 
 notes: >
   "implicit_full_range" significa: la query no requirió split porque su SQL, verificado contra

@@ -1,0 +1,23 @@
+name: retention-policy
+display_name: "Retention Policy Alignment"
+id: rman/retention-policy
+version: 1.0.0
+domain: rman
+status: active
+
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: ANY_CONTAINER
+database_role_scope: ANY
+
+license_requirements: none
+
+required_evidence:
+  - query_id: Q-RMAN-CONFIGURATION-001
+optional_evidence:
+  - query_id: Q-RMAN-BACKUP-SET-001
+data_sensitivity: LOW
+context_budget: LOW
+
+related_skills: [rman/configuration, rman/backup-freshness, rman/fra-pressure]

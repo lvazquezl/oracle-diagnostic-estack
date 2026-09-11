@@ -1,0 +1,37 @@
+# Fixture: Oracle 19c CDB con backup whole-CDB (CON_ID=1) cubriendo la PDB sin fila PDB-level explícita
+# Usada por: rman/multitenant-awareness, rman/pdb-pitr-awareness
+fixture_id: FX-19c-pdb-backup-context
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-19c-pdb-backup-context"
+  database: {name: "ORCL19PB", unique_name: "orcl19pb", dbid: "1955223311"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19pb", number: 1, host: "HOST_TOKEN_31"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  multitenant: {cdb: true, cdb_name: "CDB_NAME_TOKEN_011", root_container: "CDB$ROOT", pdb_count: 2, local_undo_enabled: true, application_containers: false}
+  discovery: {timestamp: "2026-03-01T09:55:00Z", evidence_refs: [EVD-FX-7012], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$BACKUP_SET]
+  available_columns:
+    "V$BACKUP_SET.con_id": true
+
+mock_evidence:
+  - query_id: Q-RMAN-BACKUP-SET-001
+    result:
+      - {recid: 1001, backup_type: "D", incremental_level: 0, completion_time: "2026-02-28T02:00:00Z", con_id: 1}
+
+expected_findings:
+  - category: multitenant-awareness
+    severity: LOW
+    confidence: OBSERVATION
+    reason: "backup CON_ID=1 (whole CDB) cubre ambas PDBs sin filas CON_ID=n individuales — comportamiento normal, no un gap de cobertura PDB (# 29 del prompt de Fase 7)"

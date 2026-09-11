@@ -1,0 +1,36 @@
+# Fixture: Oracle 19c, gap real de secuencias sin backup dentro del mismo thread
+# Usada por: rman/archivelog-backup
+fixture_id: FX-19c-archivelog-backup-lag
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-19c-archivelog-backup-lag"
+  database: {name: "ORCL19AL", unique_name: "orcl19al", dbid: "1955551144"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19al", number: 1, host: "HOST_TOKEN_24"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: not_applicable, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  discovery: {timestamp: "2026-03-01T09:20:00Z", evidence_refs: [EVD-FX-7005], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$ARCHIVED_LOG, V$BACKUP_REDOLOG]
+
+mock_evidence:
+  - query_id: Q-RMAN-ARCHIVED-LOG-COVERAGE-001
+    result:
+      - {"thread#": 1, "sequence#": 8001, applied: "N/A", deleted: "NO", backup_count: 1, archived: "YES"}
+      - {"thread#": 1, "sequence#": 8002, applied: "N/A", deleted: "NO", backup_count: 0, archived: "YES"}
+      - {"thread#": 1, "sequence#": 8003, applied: "N/A", deleted: "NO", backup_count: 0, archived: "YES"}
+
+expected_findings:
+  - category: archivelog-backup
+    severity: HIGH
+    confidence: FACT
+    reason: "secuencias 8002/8003 del mismo thread 1 sin backup (backup_count=0) — gap real, nunca comparado contra otro thread (# 17 del prompt de Fase 7)"

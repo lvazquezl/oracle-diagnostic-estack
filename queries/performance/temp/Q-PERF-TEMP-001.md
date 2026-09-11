@@ -1,6 +1,6 @@
 ---
 query_id: Q-PERF-TEMP-001
-version: 1.0.0
+version: 1.1.0
 
 domain: performance
 purpose: Uso activo de TEMP por sesión/SQL_ID (sorts/hashes con spill a disco), snapshot actual
@@ -29,11 +29,43 @@ license_requirements: none
 
 execution_mode: READ_ONLY
 
-tests: [tests/test_no_write_operations.sh, tests/test_query_limits.sh, tests/test_query_contract_requires_container_scope.sh, tests/test_query_contract_requires_role_scope.sh, tests/test_query_contract_requires_cost_class.sh, tests/test_query_contract_requires_license_metadata.sh, tests/test_query_cost_medium.sh]
+variants:
+  - variant_id: Q-PERF-TEMP-001-V1
+    label: legacy_10g_11g
+    oracle_versions: {min: "10.2", max: "11.2"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V1 (legacy_10g_11g, 10g-11g)"
+  - variant_id: Q-PERF-TEMP-001-V2
+    label: modern_12plus
+    oracle_versions: {min: "12.1", max: "23.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V2 (modern_12plus, 12.1+)"
+
+tests: [tests/test_no_write_operations.sh, tests/test_query_limits.sh, tests/test_query_contract_requires_container_scope.sh, tests/test_query_contract_requires_role_scope.sh, tests/test_query_contract_requires_cost_class.sh, tests/test_query_contract_requires_license_metadata.sh, tests/test_query_cost_medium.sh, tests/test_rman_legacy_variant_10g.sh, tests/test_rman_legacy_variant_11g.sh]
 status: active
 ---
 
-# Statement / procedure (read-only)
+# Statement / procedure (read-only) — Variant V1 (legacy_10g_11g, 10g-11g)
+
+```sql
+SELECT *
+FROM (
+  SELECT su.session_addr,
+         s.sid,
+         s.serial#,
+         s.sql_id,
+         su.tablespace,
+         su.contents,
+         su.blocks * (SELECT value FROM v$parameter WHERE name = 'db_block_size') AS bytes_used
+  FROM   v$sort_usage su
+  JOIN   v$session s
+         ON  s.saddr = su.session_addr
+  ORDER  BY bytes_used DESC
+)
+WHERE  ROWNUM <= 50;
+```
+
+# Statement / procedure (read-only) — Variant V2 (modern_12plus, 12.1+)
 
 ```sql
 SELECT su.session_addr,
@@ -47,7 +79,7 @@ FROM   v$sort_usage su
 JOIN   v$session s
        ON  s.saddr = su.session_addr
 ORDER  BY bytes_used DESC
-FETCH FIRST 50 ROWS ONLY;                 -- 12c+; usar ROWNUM <= 50 en 10g/11g
+FETCH  FIRST 50 ROWS ONLY;
 ```
 
 A diferencia de `Q-ORA-TEMP-001` (Oracle Core — capacidad/configuración de tempfiles vía `DBA_TEMP_FILES`/`DBA_TEMP_FREE_SPACE`), esta query mide **uso activo en este momento**: qué sesión/SQL_ID está consumiendo TEMP ahora mismo por spill de sort/hash a disco — la dimensión de rendimiento, no de capacidad. `performance/temp` usa ambas: `Q-ORA-TEMP-001` para el contexto de capacidad, `Q-PERF-TEMP-001` para atribuir el consumo actual a una sesión/SQL_ID concreto.
@@ -55,6 +87,8 @@ A diferencia de `Q-ORA-TEMP-001` (Oracle Core — capacidad/configuración de te
 # Notes by version
 
 `V$SORT_USAGE` disponible desde 10g (requiere `SELECT_CATALOG_ROLE` o el grant equivalente en `ESTACK_DIAGNOSTIC_ROLE`). Sin diferencias estructurales relevantes 10g–23ai.
+
+**PHASE 7 — RMAN LEGACY SQL SYNTAX & QUERY CERTIFICATION HARDENING**: mismo defecto/corrección que `Q-PERF-BLOCKING-001` — `FETCH FIRST` con `min_version` 10.2 sin variante legacy real, detectado por `tests/test_no_fetch_first_in_pre12c_queries.sh`.
 
 # Notes by platform
 

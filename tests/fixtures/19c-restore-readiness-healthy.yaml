@@ -1,0 +1,43 @@
+# Fixture: Oracle 19c, restore readiness READY (evidencia completa)
+# Usada por: rman/restore-readiness, rman/recovery-readiness
+fixture_id: FX-19c-restore-readiness-healthy
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-19c-restore-readiness-healthy"
+  database: {name: "ORCL19RH", unique_name: "orcl19rh", dbid: "1955445533"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19rh", number: 1, host: "HOST_TOKEN_33"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: not_applicable, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  discovery: {timestamp: "2026-03-01T10:05:00Z", evidence_refs: [EVD-FX-7014], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$BACKUP_SET, V$BACKUP_PIECE, V$BACKUP_DATAFILE, V$BACKUP_SPFILE]
+
+mock_evidence:
+  - query_id: Q-RMAN-BACKUP-SET-001
+    result:
+      - {recid: 1201, backup_type: "D", incremental_level: 0, controlfile_included: "YES", completion_time: "2026-02-28T02:00:00Z"}
+  - query_id: Q-RMAN-BACKUP-PIECE-001
+    result:
+      - {recid: 1202, device_type: "DISK", handle: "/backup/orcl19rh_full_01.bkp", status: "A"}
+  - query_id: Q-RMAN-CONTROLFILE-BACKUP-001
+    result:
+      - {recid: 1201, completion_time: "2026-02-28T02:00:00Z"}
+  - query_id: Q-RMAN-SPFILE-BACKUP-001
+    result:
+      - {recid: 1203, completion_time: "2026-02-28T02:00:00Z"}
+
+expected_findings:
+  - category: restore-readiness
+    severity: LOW
+    confidence: FACT
+    reason: "controlfile, SPFILE, datafiles y pieza disponible (STATUS=A) — status: READY (# 25 del prompt de Fase 7)"

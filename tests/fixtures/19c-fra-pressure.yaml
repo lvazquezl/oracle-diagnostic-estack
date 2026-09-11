@@ -1,0 +1,37 @@
+# Fixture: Oracle 19c, FRA cerca del límite sin espacio reclamable suficiente
+# Usada por: rman/fra, rman/fra-pressure
+fixture_id: FX-19c-fra-pressure
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-19c-fra-pressure"
+  database: {name: "ORCL19FR", unique_name: "orcl19fr", dbid: "1955441133"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19fr", number: 1, host: "HOST_TOKEN_23"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: not_applicable, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  discovery: {timestamp: "2026-03-01T09:15:00Z", evidence_refs: [EVD-FX-7004], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$FLASH_RECOVERY_AREA_USAGE, V$RECOVERY_FILE_DEST, V$ARCHIVED_LOG]
+
+mock_evidence:
+  - query_id: Q-RMAN-FRA-USAGE-001
+    result:
+      - {file_type: "ARCHIVED LOG", percent_space_used: 92.5, percent_space_reclaimable: 3.0, number_of_files: 480, dest_name: "PATH_TOKEN_FRA_01", space_limit: 107374182400, space_used: 99321528320}
+  - query_id: Q-RMAN-ARCHIVED-LOG-COVERAGE-001
+    result:
+      - {"thread#": 1, "sequence#": 9001, applied: "YES", deleted: "NO", backup_count: 1, archived: "YES"}
+
+expected_findings:
+  - category: fra-pressure
+    severity: CRITICAL
+    confidence: OBSERVATION
+    reason: "SPACE_USED 92.5% con SPACE_RECLAIMABLE sólo 3% — pressure: CRITICAL, correlacionado con archivelog generation (# 18 del prompt de Fase 7)"

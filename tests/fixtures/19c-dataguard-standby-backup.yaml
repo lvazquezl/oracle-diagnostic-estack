@@ -1,0 +1,38 @@
+# Fixture: Oracle 19c, backup offload en standby con archivelog deletion policy consciente
+# Usada por: rman/dataguard-awareness
+fixture_id: FX-19c-dataguard-standby-backup
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-19c-dataguard-standby-backup"
+  database: {name: "ORCL19DG", unique_name: "orcl19dg_stby", dbid: "1955112200"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: physical_standby
+  open_mode: "MOUNTED"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19dg_stby", number: 1, host: "HOST_TOKEN_30"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: not_applicable, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: SUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  dataguard: {enabled: true, role: physical_standby, db_unique_name: "DBUNIQUENAME_TOKEN_01", protection_mode: MAXIMUM_PERFORMANCE, broker_enabled: true, fsfo_enabled: false, primary: "DBUNIQUENAME_TOKEN_00", standbys: null}
+  discovery: {timestamp: "2026-03-01T09:50:00Z", evidence_refs: [EVD-FX-7011], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$RMAN_CONFIGURATION, V$ARCHIVED_LOG]
+
+mock_evidence:
+  - query_id: Q-RMAN-CONFIGURATION-001
+    result:
+      - {"conf#": 1, name: "ARCHIVELOG DELETION POLICY", value: "TO APPLIED ON ALL STANDBY"}
+  - query_id: Q-RMAN-ARCHIVED-LOG-COVERAGE-001
+    result:
+      - {"thread#": 1, "sequence#": 9501, applied: "YES", deleted: "NO", backup_count: 1, archived: "YES"}
+
+expected_findings:
+  - category: dataguard-awareness
+    severity: LOW
+    confidence: FACT
+    reason: "deletion policy consciente de standby, offload detectado en standby — nunca se ejecuta standby recovery (# 28 del prompt de Fase 7)"

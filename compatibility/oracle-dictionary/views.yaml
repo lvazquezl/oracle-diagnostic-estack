@@ -96,8 +96,10 @@ views:
   V$CONTROLFILE:
     min_version: all
 
-  V$CONTROLFILE_RECORD_SECTION:
-    min_version: all
+  # V$CONTROLFILE_RECORD_SECTION ya está registrada abajo (Fase 7 — RMAN, entrada completa con
+  # columns_exhaustive: true) — este stub minimal (sin columns:) de una fase anterior era
+  # inofensivo para el validador (nunca entraba en incols:1) pero quedaba como clave duplicada;
+  # eliminado en favor de la única entrada canónica.
 
   V$LOG:
     min_version: all
@@ -137,7 +139,25 @@ views:
       thread#:       {min_version: all}
       sequence#:      {min_version: all}
       applied:         {min_version: all}
+      deleted:          {min_version: all}
+      backup_count:      {min_version: all}
+      archived:           {min_version: all}
       first_time:       {min_version: all}
+      next_time:           {min_version: all}
+      name:                 {min_version: all}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 5 (Data Guard): THREAD#/SEQUENCE#/APPLIED/FIRST_TIME certificadas para Q-DG-ARCHIVED-LOG-001.
+      Fase 7 (RMAN) extiende con DELETED/BACKUP_COUNT/ARCHIVED/NEXT_TIME/NAME para
+      Q-RMAN-ARCHIVED-LOG-COVERAGE-001 — vista pre-10g, mismas columnas en ambos usos, una sola
+      entrada canónica (evita la duplicación de clave detectada y corregida en PHASE 7: dos bloques
+      `V$ARCHIVED_LOG:` separados en este archivo rompían el column-existence check del SQL Static
+      Validator para cualquier columna sólo declarada en el segundo bloque). APPLIED puede reportar
+      IN-MEMORY (Real-Time Apply) además de YES/NO — reportado tal cual, nunca forzado a un booleano.
+      NAME siempre TOKENIZE.
 
   DBA_TABLESPACES:
     min_version: all
@@ -748,3 +768,272 @@ views:
       status: DOCUMENTATION_VALIDATED
       validated_for: ["12.2", "18", "19", "21", "23"]
     notes: "Fase 6. Verificada contra Oracle Database Reference 19c. Lockdown Profiles introducidos en 12.2 — no existen en 12.1. Usada por Q-CDB-LOCKDOWN-001 — sólo visibilidad, nunca ALTER LOCKDOWN PROFILE (# 32 del prompt)."
+
+  # --- PHASE 7 — ORACLE BACKUP & RECOVERY / RMAN ---
+  #
+  # V$RMAN_CONFIGURATION disponible desde Oracle9i (verificado vía mirror del 10gR2 Database
+  # Reference); V$RMAN_STATUS/V$RMAN_OUTPUT/V$BACKUP_FILES introducidas en Oracle Database 10g
+  # (verificado vía oracle-base.com "RMAN Enhancements in Oracle Database 10g") — ambos hechos
+  # confirman que el piso "10g" declarado por el prompt de Fase 7 (# 5) es real, no asumido. Todas
+  # las vistas V$BACKUP_*/V$ARCHIVED_LOG/V$CONTROLFILE_RECORD_SECTION son pre-10g. CON_ID aparece en
+  # V$RMAN_CONFIGURATION/V$RMAN_STATUS/V$RMAN_OUTPUT/V$BACKUP_SET sólo 12.1+ (verificado, Oracle
+  # Database Reference 19c) — mismo patrón de riesgo que PDB_PLUG_IN_VIOLATIONS.CON_ID en Fase 6:
+  # ninguna variante certificada <12.1 selecciona esta columna (ver Q-RMAN-BACKUP-SET-001-V1).
+
+  V$RMAN_CONFIGURATION:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      conf#:   {min_version: all}
+      name:       {min_version: all}
+      value:       {min_version: all}
+      con_id:       {min_version: "12.1"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 7. Disponible desde Oracle9i (estable, certificada 10g-23ai). CON_ID (0=whole CDB/
+      non-CDB, 1=root, n=PDB) sólo 12.1+ — Q-RMAN-CONFIGURATION-001 nunca la selecciona por nombre
+      para permanecer válida en todas las versiones certificadas.
+
+  V$RMAN_STATUS:
+    min_version: "10.2"
+    columns_exhaustive: true
+    columns:
+      sid:                {min_version: "10.2"}
+      recid:                {min_version: "10.2"}
+      stamp:                 {min_version: "10.2"}
+      session_recid:           {min_version: "10.2"}
+      session_stamp:            {min_version: "10.2"}
+      row_type:                  {min_version: "10.2"}
+      operation:                   {min_version: "10.2"}
+      status:                       {min_version: "10.2"}
+      start_time:                    {min_version: "10.2"}
+      end_time:                       {min_version: "10.2"}
+      input_bytes:                     {min_version: "10.2"}
+      output_bytes:                     {min_version: "10.2"}
+      output_device_type:                {min_version: "10.2"}
+      object_type:                        {min_version: "10.2"}
+      con_id:                               {min_version: "12.1"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 7. Introducida en Oracle Database 10g (verificado, oracle-base.com). STATUS real:
+      COMPLETED/COMPLETED WITH WARNINGS/FAILED/RUNNING — nunca se inventa un mapping adicional
+      (# 12 del prompt).
+
+  V$RMAN_BACKUP_JOB_DETAILS:
+    min_version: "10.2"
+    columns_exhaustive: true
+    columns:
+      session_key:                {min_version: "10.2"}
+      input_type:                   {min_version: "10.2"}
+      status:                         {min_version: "10.2"}
+      start_time:                      {min_version: "10.2"}
+      end_time:                          {min_version: "10.2"}
+      elapsed_seconds:                     {min_version: "10.2"}
+      input_bytes:                          {min_version: "10.2"}
+      output_bytes:                           {min_version: "10.2"}
+      input_bytes_per_sec:                     {min_version: "10.2"}
+      output_bytes_per_sec:                      {min_version: "10.2"}
+      compression_ratio:                           {min_version: "10.2"}
+      con_id:                                        {min_version: "12.1"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 7. Vista derivada de V$RMAN_STATUS/V$RMAN_OUTPUT, por lo que hereda su piso de
+      certificación (10g). Ya estaba REGISTERED en queries/REGISTRY.md desde Foundation
+      (Q-RMAN-BACKUP-JOB-001) sin archivo real ni entrada de diccionario — mismo gap que
+      Q-CDB-PDB-STATE-001/Q-CDB-CONTAINERS-001 en Fase 6, cerrado en esta fase.
+
+  V$RMAN_OUTPUT:
+    min_version: "10.2"
+    columns_exhaustive: true
+    columns:
+      sid:            {min_version: "10.2"}
+      recid:            {min_version: "10.2"}
+      session_recid:      {min_version: "10.2"}
+      output:               {min_version: "10.2"}
+      con_id:                 {min_version: "12.1"}
+      guid:                     {min_version: "19"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 7. Vista en memoria (no registrada en controlfile), máx. 32768 filas. Introducida en
+      Oracle Database 10g junto con V$RMAN_STATUS. Tratada siempre como DATA — nunca ejecutada como
+      instrucción (# 36 del prompt).
+
+  V$BACKUP_SET:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      recid:                  {min_version: all}
+      set_stamp:                {min_version: all}
+      backup_type:                {min_version: all}
+      controlfile_included:         {min_version: all}
+      incremental_level:              {min_version: all}
+      pieces:                           {min_version: all}
+      start_time:                        {min_version: all}
+      completion_time:                    {min_version: all}
+      elapsed_seconds:                      {min_version: all}
+      con_id:                                 {min_version: "12.1"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 7. Vista pre-10g. BACKUP_TYPE ('D'=full/incremental level 0, 'I'=incremental level 1,
+      'L'=archivelog) — el nivel real se distingue por INCREMENTAL_LEVEL, nunca por heurística de
+      TAG (# 9 del prompt). CON_ID sólo 12.1+ — Q-RMAN-BACKUP-SET-001-V1 (10g-11g) nunca la
+      selecciona; V2 (12.1+) sí.
+
+  V$BACKUP_PIECE:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      recid:          {min_version: all}
+      set_stamp:        {min_version: all}
+      device_type:        {min_version: all}
+      handle:               {min_version: all}
+      tag:                    {min_version: all}
+      status:                   {min_version: all}
+      completion_time:            {min_version: all}
+      bytes:                        {min_version: all}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 7. Vista pre-10g. HANDLE → TOKENIZE siempre (sensitivity HIGH) — puede revelar
+      convención de filesystem/ASM/SBT.
+
+  V$BACKUP_DATAFILE:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      file#:                {min_version: all}
+      checkpoint_time:           {min_version: all}
+      completion_time:             {min_version: all}
+      incremental_level:             {min_version: all}
+      blocks:                          {min_version: all}
+      block_size:                        {min_version: all}
+      used_change_tracking:                {min_version: all}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 7. Vista pre-10g. FILE# = 0 representa el controlfile en algunas versiones — excluido
+      explícitamente (Q-RMAN-BACKUP-DATAFILE-001 filtra FILE# > 0).
+
+  V$BACKUP_REDOLOG:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      thread#:       {min_version: all}
+      sequence#:       {min_version: all}
+      first_time:          {min_version: all}
+      next_time:             {min_version: all}
+      completion_time:        {min_version: all}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 7. Vista pre-10g. Siempre agrupada por THREAD# antes que SEQUENCE# — nunca mezclada
+      entre threads (# 17 del prompt).
+
+  V$BACKUP_SPFILE:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      recid:              {min_version: all}
+      set_stamp:             {min_version: all}
+      modification_time:       {min_version: all}
+      completion_time:           {min_version: all}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 7. Vista pre-10g.
+
+  V$BACKUP_DEVICE:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      device_type:              {min_version: all}
+      device_name:                {min_version: all}
+      physical_device_name:         {min_version: all}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 7. Vista pre-10g. Refleja sólo canales actualmente asignados durante un job en curso —
+      vacía si no hay backup/restore corriendo (comportamiento documentado, no error).
+
+  V$CONTROLFILE_RECORD_SECTION:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      type:            {min_version: all}
+      record_size:       {min_version: all}
+      records_total:       {min_version: all}
+      records_used:          {min_version: all}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 7. Vista pre-10g.
+
+  V$FLASH_RECOVERY_AREA_USAGE:
+    min_version: "10.2"
+    columns_exhaustive: true
+    columns:
+      file_type:                   {min_version: "10.2"}
+      percent_space_used:            {min_version: "10.2"}
+      percent_space_reclaimable:       {min_version: "10.2"}
+      number_of_files:                   {min_version: "10.2"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 7. Feature FRA introducida en Oracle Database 10g — el nombre de la vista se conserva
+      "FLASH" (no "FAST") en todas las versiones pese al rebranding a "Fast Recovery Area" en 11g,
+      no hay una V$FAST_RECOVERY_AREA_USAGE separada. Nunca usada para ejecutar limpieza — sólo
+      awareness (# 18 del prompt).
+
+  V$RECOVERY_FILE_DEST:
+    min_version: "10.2"
+    columns_exhaustive: true
+    columns:
+      name:                {min_version: "10.2"}
+      space_limit:           {min_version: "10.2"}
+      space_used:              {min_version: "10.2"}
+      space_reclaimable:         {min_version: "10.2"}
+      number_of_files:             {min_version: "10.2"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 7. Introducida en Oracle Database 10g junto con FRA.
+
+  # V$ARCHIVED_LOG ya está registrada arriba (Fase 5 — Data Guard, extendida en Fase 7 — RMAN con
+  # DELETED/BACKUP_COUNT/ARCHIVED/NEXT_TIME/NAME en una única entrada canónica). Ver esa entrada —
+  # un segundo bloque `V$ARCHIVED_LOG:` separado aquí (defecto real detectado y corregido en esta
+  # fase) rompía el column-existence check del SQL Static Validator para las columnas sólo
+  # declaradas en este segundo bloque, porque la primera línea de columna quedaba entre comillas
+  # ("thread#":) y el line-scanner de tests/test_sql_static_validator.sh#get_view_columns no
+  # reconoce claves de columna citadas — corta la extracción de columnas del bloque completo en la
+  # primera línea no reconocida (ver tests/test_no_variant_references_unknown_column.sh).

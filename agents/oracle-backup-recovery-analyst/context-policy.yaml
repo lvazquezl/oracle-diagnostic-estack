@@ -1,0 +1,22 @@
+minimum_context: "Target Profile (oracle_version, architecture, dataguard, multitenant) + la pregunta puntual — nunca la conversación completa."
+
+evidence_by_reference: true
+evidence_by_reference_rule: "Todo inventario de backups/piezas/archivelogs se referencia por EVD-*, nunca se reenvía el dump crudo de V$BACKUP_SET/V$BACKUP_PIECE/V$ARCHIVED_LOG entre agentes."
+
+top_n:
+  backup_inventory_default: 20
+  failed_jobs_default: 20
+  longest_jobs_default: 10
+  archivelog_gap_default: 20
+  configurable: true
+
+no_full_history_by_default: true
+no_full_history_rule: "Nunca se consultan años de historia por defecto (# 35 del prompt) — toda query de inventario grande declara time_window/status_filter/device_filter/thread_filter/max_rows/timeout/max_output_bytes explícitos. Preferir: last successful full/level0, last incremental, last archivelog backup, failed jobs, longest jobs, top anomalies, readiness blockers, evidence refs (# 37)."
+
+no_application_data: true
+no_application_data_rule: "Ningún skill expone contenido de datafiles/backup pieces — sólo metadata (tipo, nivel, tamaño, tiempos, estado, tags, handles tokenizados)."
+
+context_budget:
+  relative_level: MEDIUM
+  scaling_rule: "Escala con backup_count/archivelog_count; el Task Package puede acotar constraints.time_window para limitar el alcance."
+  reuse_rule: "Reutiliza el Target Profile ya publicado por oracle-discovery-analyst — nunca vuelve a determinar oracle_version/architecture/multitenant/dataguard por su cuenta."

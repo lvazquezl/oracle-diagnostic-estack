@@ -1,0 +1,41 @@
+# Fixture: Oracle 19c, backup vía SBT_TAPE (media manager configurado)
+# Usada por: rman/sbt-media-manager, rman/device-types
+fixture_id: FX-19c-sbt-backup
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-19c-sbt-backup"
+  database: {name: "ORCL19SB", unique_name: "orcl19sb", dbid: "1955991188"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19sb", number: 1, host: "HOST_TOKEN_28"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: not_applicable, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  discovery: {timestamp: "2026-03-01T09:40:00Z", evidence_refs: [EVD-FX-7009], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$RMAN_CONFIGURATION, V$BACKUP_SET, V$BACKUP_DEVICE]
+
+mock_evidence:
+  - query_id: Q-RMAN-CONFIGURATION-001
+    result:
+      - {"conf#": 1, name: "DEFAULT DEVICE TYPE", value: "SBT_TAPE"}
+      - {"conf#": 2, name: "CHANNEL DEVICE TYPE SBT_TAPE PARMS", value: "'SBT_LIBRARY=libobk.so ENV=(...)'"}
+  - query_id: Q-RMAN-BACKUP-SET-001
+    result:
+      - {recid: 801, backup_type: "D", incremental_level: 0, completion_time: "2026-02-28T03:00:00Z"}
+  - query_id: Q-RMAN-BACKUP-PIECE-001
+    result:
+      - {recid: 802, device_type: "SBT_TAPE", handle: "c-1955991188-20260228-00", status: "A"}
+
+expected_findings:
+  - category: sbt-media-manager
+    severity: LOW
+    confidence: FACT
+    reason: "librería SBT detectada, backup completado sin error — library_detected: true, PARMS nunca expuesto crudo (# 24 del prompt de Fase 7)"

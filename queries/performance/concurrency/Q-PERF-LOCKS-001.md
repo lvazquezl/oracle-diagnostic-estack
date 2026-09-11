@@ -1,6 +1,6 @@
 ---
 query_id: Q-PERF-LOCKS-001
-version: 1.0.0
+version: 1.1.0
 
 domain: performance
 purpose: Enqueue locks activos por modo/tipo, snapshot actual
@@ -29,11 +29,44 @@ license_requirements: none
 
 execution_mode: READ_ONLY
 
-tests: [tests/test_no_write_operations.sh, tests/test_query_limits.sh, tests/test_query_contract_requires_container_scope.sh, tests/test_query_contract_requires_role_scope.sh, tests/test_query_contract_requires_cost_class.sh, tests/test_query_contract_requires_license_metadata.sh, tests/test_query_cost_medium.sh, tests/test_locking_analysis.sh]
+variants:
+  - variant_id: Q-PERF-LOCKS-001-V1
+    label: legacy_10g_11g
+    oracle_versions: {min: "10.2", max: "11.2"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V1 (legacy_10g_11g, 10g-11g)"
+  - variant_id: Q-PERF-LOCKS-001-V2
+    label: modern_12plus
+    oracle_versions: {min: "12.1", max: "23.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V2 (modern_12plus, 12.1+)"
+
+tests: [tests/test_no_write_operations.sh, tests/test_query_limits.sh, tests/test_query_contract_requires_container_scope.sh, tests/test_query_contract_requires_role_scope.sh, tests/test_query_contract_requires_cost_class.sh, tests/test_query_contract_requires_license_metadata.sh, tests/test_query_cost_medium.sh, tests/test_locking_analysis.sh, tests/test_rman_legacy_variant_10g.sh, tests/test_rman_legacy_variant_11g.sh]
 status: active
 ---
 
-# Statement / procedure (read-only)
+# Statement / procedure (read-only) — Variant V1 (legacy_10g_11g, 10g-11g)
+
+```sql
+SELECT *
+FROM (
+  SELECT l.sid,
+         s.serial#,
+         l.type,
+         DECODE(l.lmode, 0,'None',1,'Null',2,'Row-S',3,'Row-X',4,'Share',5,'S/Row-X',6,'Exclusive', 'Unknown') AS lock_mode,
+         l.id1,
+         l.id2,
+         l.block,
+         s.sql_id
+  FROM   v$lock l
+  JOIN   v$session s ON s.sid = l.sid
+  WHERE  l.lmode > 0
+  ORDER  BY l.block DESC, l.sid
+)
+WHERE  ROWNUM <= 200;
+```
+
+# Statement / procedure (read-only) — Variant V2 (modern_12plus, 12.1+)
 
 ```sql
 SELECT l.sid,
@@ -48,7 +81,7 @@ FROM   v$lock l
 JOIN   v$session s ON s.sid = l.sid
 WHERE  l.lmode > 0
 ORDER  BY l.block DESC, l.sid
-FETCH FIRST 200 ROWS ONLY;                -- 12c+; usar ROWNUM <= 200 en 10g/11g
+FETCH  FIRST 200 ROWS ONLY;
 ```
 
 Complementa `Q-PERF-BLOCKING-001` (cadena blocker/waiter) con el detalle de tipo/modo de lock (`TX`, `TM`, `UL`, etc.) para `performance/locking`, distinto de `performance/blocking` que se centra en la relación sesión-a-sesión.
@@ -56,6 +89,8 @@ Complementa `Q-PERF-BLOCKING-001` (cadena blocker/waiter) con el detalle de tipo
 # Notes by version
 
 `V$LOCK` estable 10g–23ai en las columnas usadas.
+
+**PHASE 7 — RMAN LEGACY SQL SYNTAX & QUERY CERTIFICATION HARDENING**: mismo defecto y corrección que `Q-PERF-BLOCKING-001` — `FETCH FIRST` certificado con `min_version` 10.2 sin variante legacy real. Detectado por `tests/test_no_fetch_first_in_pre12c_queries.sh`.
 
 # Notes by platform
 

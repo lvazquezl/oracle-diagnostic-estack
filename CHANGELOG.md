@@ -2,6 +2,55 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — 2026-09-09 — Fase 7: Oracle Backup & Recovery / RMAN
+
+Séptima capa funcional del e-stack, sobre baseline `v0.6.0-multitenant`. Ver `docs/PHASE_7_ORACLE_BACKUP_RECOVERY_RMAN.md` para el reporte de cierre completo.
+
+### Added
+
+- `agents/oracle-backup-recovery-analyst/` (`v1.0.0`) — contrato estructurado completo (`AGENT.md`/`manifest.yaml`/`routing.yaml`/`context-policy.yaml`/`collaboration.yaml`/`output-schema.yaml`/`tests/`/`CHANGELOG.md`), mismo patrón que Fase 4/5/6.
+- 30 skills `rman/*` completamente materializadas — `skills/REGISTRY.md` pasa de 166 a 196 skills `active` (reemplaza el placeholder de 14 skills `registered` de Foundation).
+- `queries/rman/` — 14 queries certificadas (`Q-RMAN-CONFIGURATION-001`, `Q-RMAN-STATUS-001`, `Q-RMAN-OUTPUT-001`, `Q-RMAN-BACKUP-JOB-001`, `Q-RMAN-BACKUP-SET-001`, `Q-RMAN-BACKUP-PIECE-001`, `Q-RMAN-BACKUP-DATAFILE-001`, `Q-RMAN-ARCHIVELOG-BACKUP-001`, `Q-RMAN-ARCHIVED-LOG-COVERAGE-001`, `Q-RMAN-CONTROLFILE-BACKUP-001`, `Q-RMAN-SPFILE-BACKUP-001`, `Q-RMAN-BACKUP-DEVICE-001`, `Q-RMAN-FRA-USAGE-001`, `Q-RMAN-CONTROLFILE-RECORD-SECTION-001`).
+- `compatibility/oracle-dictionary/views.yaml` — 14 vistas RMAN nuevas, todas `columns_exhaustive: true`, verificadas vía WebFetch contra docs.oracle.com/oracle-base.com (`V$RMAN_CONFIGURATION` desde 9i, `V$RMAN_STATUS`/`V$RMAN_OUTPUT`/`V$RMAN_BACKUP_JOB_DETAILS` desde 10g).
+- `parsers/rman/` — 6 parsers (`show_all_parser.py`, `list_backup_parser.py`, `list_backup_summary_parser.py`, `report_obsolete_parser.py`, `report_need_backup_parser.py`, `restore_preview_parser.py`) + `common.py`, para ingest de output RMAN ya producido manualmente por el DBA — nunca ejecutado.
+- `docs/PHASE_7_ORACLE_BACKUP_RECOVERY_RMAN.md`, `docs/RMAN_DIAGNOSTIC_MODEL.md`, `docs/RMAN_READONLY_QUERY_MODEL.md`, `docs/RMAN_COMMAND_SAFETY_MODEL.md`, `docs/RMAN_RECOVERY_READINESS_MODEL.md`, `docs/RMAN_RAC_DATAGUARD_MULTITENANT_INTEGRATION.md`, `docs/RMAN_READONLY_PRIVILEGES.md`.
+- 16 fixtures de escenario (11g/19c/23ai disk backup, incremental strategy, FRA pressure, archivelog backup lag, controlfile autobackup disabled, snapshot controlfile local-path RAC risk, RAC multiple channels, SBT backup, media manager contention, Data Guard standby backup, PDB backup context, restore readiness healthy/incomplete, versión futura desconocida).
+- 69 tests nuevos: 11 query/inventario, 7 parsers, 19 canales/FRA/readiness, 13 RAC/DG/MT/SBT, 15 seguridad específicos de Fase 7 (`# 46`: no arbitrary RMAN, no backup/restore/recover/delete/crosscheck/change/configure/catalog/uncatalog/duplicate/switch-database/channel-allocate execution, SQL/secrets domain-scoped), 4 contrato de agente.
+
+### Changed
+
+- `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` — RMAN `PARTIAL → SUPPORTED` (10g–23ai); `future_status: COMPATIBILITY_VALIDATION_REQUIRED` (mismo criterio que Data Guard/Multitenant).
+- `queries/REGISTRY.md` — corregido un gap pre-existente: `Q-RMAN-BACKUP-JOB-001`/`Q-RMAN-BACKUPSET-001` (Foundation) figuraban "materializadas" sin archivo real. `Q-RMAN-BACKUP-JOB-001` materializado de verdad (`V$RMAN_BACKUP_JOB_DETAILS`, verificado real vía WebFetch); `Q-RMAN-BACKUPSET-001` reemplazado por `Q-RMAN-BACKUP-SET-001` (mismo propósito, nombre corregido a la convención hyphenated del resto de `Q-RMAN-*`).
+- `agents/REGISTRY.md` — corregido un gap pre-existente: apuntaba a `agents/oracle-backup-recovery-analyst.md` (plano), archivo que nunca existió realmente (dangling reference desde Foundation) — ahora apunta a `agents/oracle-backup-recovery-analyst/AGENT.md`.
+- `skills/rman/backup-status.md` (plano, Foundation) → `skills/rman/backup-status/{SKILL.md,manifest.yaml}` (carpeta), mismo patrón de migración que `agents/oracle-multitenant-analyst.md` en Fase 6.
+- `docs/TARGET_PROFILE.md` — schema `2.3.0 → 2.4.0` (aditivo): bloque `backup_recovery`.
+- `ARCHITECTURE.md` — 2 principios nuevos (28: `ANALYTICAL_PREVIEW` como categoría nunca invocada; 29: recoverability nunca inferida de la existencia de un backup set).
+- `SECURITY.md` — caso concreto parsers RMAN (SBT `PARMS` tokenizado, `RESTORE ... PREVIEW` nunca ejecutado).
+
+### Known limitations
+
+Ver `docs/PHASE_7_ORACLE_BACKUP_RECOVERY_RMAN.md#known-limitations`. En resumen: `rman/multitenant-awareness`/`rman/pdb-pitr-awareness` degradan a `PARTIALLY_SUPPORTED` para el detalle completo de PDB-level RMAN backup/restore por versión (mejoras 12.1→12.2, sin verificación exhaustiva); `rman/sbt-media-manager` sin integración profunda de ningún vendor específico (awareness genérica únicamente); Gateway MCP/ejecución real de collectors semánticos fuera de alcance.
+
+### Fixed — PHASE 7 — RMAN Legacy SQL Syntax & Query Certification Hardening
+
+Cierre de un defecto de compatibilidad SQL detectado antes de aprobar `v0.7.0-backup-recovery-rman`. Ver `docs/PHASE_7_RMAN_LEGACY_SQL_SYNTAX_HARDENING.md` para el detalle completo.
+
+- **10 queries RMAN certificaban `FETCH FIRST ... ROWS ONLY` con `min_version: "10.2"`** (bug real): la row limiting clause (ANSI SQL:2008) requiere Oracle Database 12.1+ (verificado vía WebFetch), no disponible en 10g/11g. Ninguno de los 3 chequeos existentes del Static Validator (view/column version-gating, column existence) podía detectarlo — el repositorio nunca había modelado la dimensión "sintaxis SQL por versión". Corregidas las 9 queries `implicit_full_range` afectadas (split en variantes `-V1 legacy_10g_11g`/`-V2 modern_12plus`, `ROWNUM` sobre inline view ya ordenado para 10g/11g) y `Q-RMAN-BACKUP-SET-001` (sólo su variante V1 in-place, split preexistente por `CON_ID` no rehecho). `Q-RMAN-CONFIGURATION-001`/`Q-RMAN-BACKUP-DEVICE-001`/`Q-RMAN-CONTROLFILE-RECORD-SECTION-001`/`Q-RMAN-FRA-USAGE-001` sin cambios (nunca usaron row limiting).
+- **SQL Syntax Feature Compatibility Model (causa raíz)**: nuevo `compatibility/oracle-sql-syntax/features.yaml` (`FETCH_FIRST`, `OFFSET_ROWS`, ambas `min_version: "12.1"`), deliberadamente separado del dictionary de vistas/columnas. `tests/test_sql_static_validator.sh` extendido con un Chequeo 4 (`check_syntax_features`) que detecta cláusulas de sintaxis version-gated en cualquier bloque SQL certificado de todo el catálogo (`queries/**`, no sólo RMAN) usando `scripts/lib/version.sh` exclusivamente — verificado unitariamente contra los 5 casos del prompt antes de tocar ningún query real.
+- `config/query-compatibility-matrix.yaml` — 9 entradas `Q-RMAN-*` migradas de `implicit_full_range` a variantes explícitas `-V1`/`-V2`.
+- 14 tests nuevos (matriz de features, boundary FETCH_FIRST/OFFSET_ROWS, 3 fixtures positivos/negativo embebidos, 2 tests de regresión global sobre todo el catálogo, 5 tests de resolución de variante RMAN-scoped por versión 10g/11g/12c/19c/23ai).
+- `docs/ORACLE_SQL_SYNTAX_COMPATIBILITY_MODEL.md`, `docs/PHASE_7_RMAN_LEGACY_SQL_SYNTAX_HARDENING.md` — nuevos. `docs/QUERY_VARIANTS.md` — certificación ahora declara 4 dimensiones (view/column/**SQL syntax**/version compatibility), no 3.
+
+### Fixed — PHASE 7 — RMAN Security Test Robustness Micro-Hardening
+
+Cierre de un falso negativo detectado en `tests/test_no_arbitrary_rman.sh` antes de aprobar `v0.7.0-backup-recovery-rman`. Ver `docs/PHASE_7_RMAN_SECURITY_TEST_ROBUSTNESS_HARDENING.md` para el detalle completo.
+
+- **`tests/test_no_arbitrary_rman.sh` fallaba sobre `agents/oracle-backup-recovery-analyst/manifest.yaml:91`** pese a que esa línea vive dentro del bloque `forbidden_capabilities:` (línea 78). Causa doble: la ventana de sólo 3 líneas hacia atrás no alcanzaba a ver la clave YAML envolvente, y el wildcard `ning.n` no empareja los 2 bytes UTF-8 de "ningún" en este entorno (Git Bash/MSYS). El problema estaba en el test, no en la arquitectura — el manifest ya declaraba correctamente la prohibición.
+- Test reescrito para ser structure-aware sobre YAML (`classify_yaml_section()`, vía `awk` — no un parser YAML completo): `forbidden_capabilities`/`blocked_capabilities`/`prohibited_capabilities`/`prohibited` → PASS estructural; `allowed_tools`/`allowed_capabilities`/`collectors`/`tools`/`execution`/`runtime`/`actions` → FAIL duro; sección no reconocida o archivo no-YAML → fallback al chequeo de lenguaje de prohibición previo, con el wildcard UTF-8 corregido (`ningún|ningun` explícitos en vez de `ning.n`).
+- 3 fixtures controladas embebidas en el propio test (sin tocar `queries/rman/**`/`skills/rman/**`/`parsers/rman/**`): negativa (`allowed_tools` + los 3 nombres peligrosos → FAIL), positiva (`forbidden_capabilities` + los 3 nombres → PASS), UTF-8 (`ningún` con tilde en texto libre → PASS).
+- Sin debilitar detección: `execute_rman`/`run_rman`/`rman_shell` se siguen buscando en todo el dominio; la mejora es de clasificación de contexto, no de cobertura.
+- `TEST_SCOPE: TARGETED` — sólo se modificó lógica de un test de seguridad, ninguna infraestructura compartida (`scripts/lib/version.sh`, Static Validator, Query Variant Resolver, harness global, escáner de seguridad global). 16/16 tests targeted (incluye los 14 tests de seguridad RMAN directamente relacionados, el contrato del agente y portabilidad LF) en PASS, sin full regression.
+
 ## [Unreleased] — 2026-09-08 — Fase 6: Oracle Multitenant / CDB / PDB
 
 Sexta capa funcional del e-stack, sobre baseline `v0.5.0-dataguard`. Ver `docs/PHASE_6_ORACLE_MULTITENANT.md` para el reporte de cierre completo.

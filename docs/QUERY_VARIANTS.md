@@ -42,6 +42,10 @@ variants:
 
 Cada `sql_block` referencia un heading `# Statement / procedure (read-only) — Variant <ID> (<label>, <rango>)` en el mismo archivo Markdown del query — **no se crean archivos `.sql` separados ni sub-carpetas por variante**: mantener todo en un único Markdown por logical query evita duplicar Query Contract/metadata y sigue el principio de Fuente Única de Verdad (`docs/CONTRACTS.md`). Esto es la adaptación explícitamente permitida por la sección 5 del prompt de hardening ("la estructura exacta puede adaptarse al repositorio existente").
 
+### SQL syntax compatibility (PHASE 7 — RMAN LEGACY SQL SYNTAX & QUERY CERTIFICATION HARDENING, `# 33`)
+
+La certificación de una variante incluye **4 dimensiones**, no 3: **view compatibility**, **column compatibility** (`compatibility/oracle-dictionary/`), **SQL syntax compatibility** (`compatibility/oracle-sql-syntax/features.yaml` — nunca mezclado con el dictionary de vistas/columnas), **version compatibility** (`oracle_versions.min/max`). Una variante puede referenciar únicamente vistas/columnas válidas para su rango declarado y aun así ser `NOT_CERTIFIED` si su SQL usa una cláusula de lenguaje (ej. `FETCH FIRST`/`OFFSET`, ANSI SQL:2008, 12.1+) no disponible en ese rango — defecto real detectado y corregido en 10 queries `queries/rman/Q-RMAN-*.md`, ver `docs/ORACLE_SQL_SYNTAX_COMPATIBILITY_MODEL.md` y `docs/PHASE_7_RMAN_LEGACY_SQL_SYNTAX_HARDENING.md`. `tests/test_sql_static_validator.sh#check_syntax_features` (Chequeo 4) valida esta dimensión con la misma disciplina que las 3 anteriores: `scripts/lib/version.sh` exclusivamente, nunca un comparador local.
+
 ### Patch-level `min`/`max` (PHASE 6 — FINAL PDB IDENTITY & PATCH-LEVEL RESOLVER HARDENING, `# 29`)
 
 `oracle_versions.min`/`.max` no están limitados a `major.minor` (`"12.1"`) — pueden declarar hasta 5 componentes (`major.minor.update.patch.revision`, ej. `"12.1.0.2"`) cuando la disponibilidad real de una feature depende de un patch level específico dentro de una misma minor release. Único caso hoy: `Q-CDB-PDB-SAVED-STATE-001` (`min: "12.1.0.2"` — PDB Saved State no existe en 12.1.0.0/12.1.0.1). La comparación de versión (marketing aliases, patch-level, sentinel `latest`) vive en `scripts/lib/version.sh` — única implementación compartida, consumida por `tests/test_sql_static_validator.sh` y los tests de resolución de variantes directamente relacionados con queries patch-level-sensibles; ver `docs/PHASE_6_FINAL_PDB_IDENTITY_PATCH_RESOLVER_HARDENING.md`.
@@ -126,6 +130,7 @@ Variant coverage         PASS
 Version compatibility    PASS
 View compatibility       PASS
 Column compatibility     PASS
+SQL syntax compatibility PASS   # Fase 7 — RMAN Legacy SQL Syntax Hardening
 Container compatibility  PASS
 Role compatibility       PASS
 Open-mode compatibility  PASS

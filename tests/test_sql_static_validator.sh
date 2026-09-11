@@ -424,6 +424,64 @@ $vw"
   done <<< "$items"
 }
 
+# --- Chequeo 4 (nuevo, PHASE 7 — RMAN LEGACY SQL SYNTAX & QUERY CERTIFICATION HARDENING, # 17-18
+# del prompt): SQL syntax feature version-gating. Dimensión ortogonal a los chequeos 1-3 (vistas/
+# columnas) — un bloque puede referenciar sólo vistas/columnas válidas para su min_version y AÚN
+# ASÍ ser NOT_CERTIFIED si usa una construcción de sintaxis SQL (ej. la row limiting clause FETCH
+# FIRST/OFFSET, ANSI SQL:2008, 12.1+) no disponible en ese min_version — causa raíz real de que 10
+# queries queries/rman/Q-RMAN-*.md certificaran FETCH FIRST con min_version 10.2 sin que ningún
+# chequeo existente lo detectara (# 5 del prompt de este hardening: "por qué pudo pasar").
+SYNTAX_FEATURES="$ROOT/compatibility/oracle-sql-syntax/features.yaml"
+
+get_feature_ids() {
+  awk '/^  [A-Za-z_][A-Za-z0-9_]*:[ \t]*$/ { line=$0; sub(/^  /,"",line); sub(/:[ \t]*$/,"",line); print line }' "$SYNTAX_FEATURES"
+}
+
+get_feature_block() {
+  local target="$1"
+  awk -v target="$target" '
+    BEGIN{IGNORECASE=1; inf=0; started=0}
+    /^  [A-Za-z_][A-Za-z0-9_]*:[ \t]*$/ {
+      line=$0; sub(/^  /,"",line); sub(/:[ \t]*$/,"",line)
+      if (inf && !(tolower(line)==tolower(target))) exit
+      inf=(tolower(line)==tolower(target))?1:0
+      if (inf) started=1
+      next
+    }
+    inf { print }
+  ' "$SYNTAX_FEATURES"
+}
+
+check_syntax_features() {
+  local file="$1" block_content="$2" label="$3" range_min="${4:-}"
+  [ -z "$range_min" ] && return 0
+  local flat
+  flat=$(echo "$block_content" | sed -E 's/--.*$//' | tr '\n' ' ')
+
+  local feature_id
+  while IFS= read -r feature_id; do
+    [ -z "$feature_id" ] && continue
+    local fblock
+    fblock=$(get_feature_block "$feature_id")
+    local feat_min
+    feat_min=$(echo "$fblock" | grep -m1 '^    min_version:' | sed -E "s/.*min_version:[ \t]*\"?//; s/\"?[ \t]*\$//")
+    [ -z "$feat_min" ] && continue
+
+    local patterns
+    patterns=$(echo "$fblock" | grep -E "^      - '" | sed -E "s/^      - '//; s/'[ \t]*\$//")
+
+    while IFS= read -r pat; do
+      [ -z "$pat" ] && continue
+      if echo "$flat" | grep -qiE "$pat"; then
+        if ! version_gte "$range_min" "$feat_min"; then
+          echo "[FAIL] $file — bloque '$label' (min declarado $range_min) usa sintaxis '$feature_id', que requiere min_version $feat_min (compatibility/oracle-sql-syntax/features.yaml)"
+          FAIL=1
+        fi
+      fi
+    done <<< "$patterns"
+  done <<< "$(get_feature_ids)"
+}
+
 # --- Queries CON variantes explícitas: validar cada bloque contra el min de SU variante ---
 # Patrón de extracción patch-level-aware ([0-9]+(\.[0-9]+){1,3}, no sólo major.minor) — PHASE 6 —
 # QUERY COMPATIBILITY & DICTIONARY CERTIFICATION HARDENING, # 6/# 28: Q-CDB-PDB-SAVED-STATE-001
@@ -436,6 +494,7 @@ for f in $(grep -rl '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null)
     block=$(awk -v n="$i" '/```sql/{c++} c==n && /```sql/{flag=1;next} flag && /```/{flag=0} flag' "$f")
     check_block "$f" "$block" "$min" "variant #$i"
     check_columns_exist "$f" "$block" "variant #$i" "$min"
+    check_syntax_features "$f" "$block" "variant #$i" "$min"
   done <<< "$mins"
 done
 
@@ -474,9 +533,10 @@ for f in $(grep -rL '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null)
     block=$(awk -v n="$i" '/```sql/{c++} c==n && /```sql/{flag=1;next} flag && /```/{flag=0} flag' "$f")
     check_block "$f" "$block" "$min" "implicit_full_range #$i"
     check_columns_exist "$f" "$block" "implicit_full_range #$i" "$precise_min"
+    check_syntax_features "$f" "$block" "implicit_full_range #$i" "$precise_min"
   done
 done
 
-[ $FAIL -eq 0 ] && echo "[PASS] SQL Static Validator: ningún bloque SQL certificado referencia una columna fuera de su rango de versión declarado, ni una columna inexistente en la vista referenciada"
+[ $FAIL -eq 0 ] && echo "[PASS] SQL Static Validator: ningún bloque SQL certificado referencia una columna fuera de su rango de versión declarado, una columna inexistente en la vista referenciada, ni una sintaxis SQL (FETCH FIRST/OFFSET) por debajo de su min_version real"
 
 exit $FAIL

@@ -216,25 +216,42 @@ Reconciliación de la lista Foundation (sólo `lag` estaba `active`): `discovery
 | `multitenant/assessment` | **active** ([multitenant/assessment/SKILL.md](multitenant/assessment/SKILL.md)) |
 | `multitenant/troubleshooting` | **active** ([multitenant/troubleshooting/SKILL.md](multitenant/troubleshooting/SKILL.md)) |
 
-## rman (14)
+## rman (30 — Fase 7, todos `active`)
+
+Reemplaza el placeholder de 14 skills `registered` de Foundation (nombres provisionales: `rman/backup-history`, `rman/sbt`, `rman/controlfile`, `rman/spfile`, `rman/archivelog`, `rman/rac`, `rman/dataguard`, `rman/performance` nunca materializados) — la única excepción `active` de Foundation (`rman/backup-status.md`, plano) fue reestructurada a carpeta completa, mismo patrón que `oracle-multitenant-analyst.md` en Fase 6.
 
 | skill_id | status |
 |---|---|
-| `rman/configuration` | registered |
-| `rman/backup-status` | **active** ([rman/backup-status.md](rman/backup-status.md)) |
-| `rman/backup-history` | registered |
-| `rman/channels` | registered |
-| `rman/sbt` | registered |
-| `rman/controlfile` | registered |
-| `rman/spfile` | registered |
-| `rman/archivelog` | registered |
-| `rman/fra` | registered |
-| `rman/recovery-readiness` | registered |
-| `rman/restore-readiness` | registered |
-| `rman/rac` | registered |
-| `rman/dataguard` | registered |
-| `rman/performance` | registered |
-| `rman/troubleshooting` | registered |
+| `rman/configuration` | **active** ([rman/configuration/SKILL.md](rman/configuration/SKILL.md)) |
+| `rman/backup-inventory` | **active** ([rman/backup-inventory/SKILL.md](rman/backup-inventory/SKILL.md)) |
+| `rman/backup-status` | **active** ([rman/backup-status/SKILL.md](rman/backup-status/SKILL.md)) |
+| `rman/backup-freshness` | **active** ([rman/backup-freshness/SKILL.md](rman/backup-freshness/SKILL.md)) |
+| `rman/backup-duration` | **active** ([rman/backup-duration/SKILL.md](rman/backup-duration/SKILL.md)) |
+| `rman/backup-throughput` | **active** ([rman/backup-throughput/SKILL.md](rman/backup-throughput/SKILL.md)) |
+| `rman/full-backup` | **active** ([rman/full-backup/SKILL.md](rman/full-backup/SKILL.md)) |
+| `rman/incremental-backup` | **active** ([rman/incremental-backup/SKILL.md](rman/incremental-backup/SKILL.md)) |
+| `rman/archivelog-backup` | **active** ([rman/archivelog-backup/SKILL.md](rman/archivelog-backup/SKILL.md)) |
+| `rman/controlfile-backup` | **active** ([rman/controlfile-backup/SKILL.md](rman/controlfile-backup/SKILL.md)) |
+| `rman/spfile-backup` | **active** ([rman/spfile-backup/SKILL.md](rman/spfile-backup/SKILL.md)) |
+| `rman/retention-policy` | **active** ([rman/retention-policy/SKILL.md](rman/retention-policy/SKILL.md)) |
+| `rman/backup-optimization` | **active** ([rman/backup-optimization/SKILL.md](rman/backup-optimization/SKILL.md)) |
+| `rman/channels` | **active** ([rman/channels/SKILL.md](rman/channels/SKILL.md)) |
+| `rman/device-types` | **active** ([rman/device-types/SKILL.md](rman/device-types/SKILL.md)) |
+| `rman/sbt-media-manager` | **active** ([rman/sbt-media-manager/SKILL.md](rman/sbt-media-manager/SKILL.md)) |
+| `rman/fra` | **active** ([rman/fra/SKILL.md](rman/fra/SKILL.md)) |
+| `rman/fra-pressure` | **active** ([rman/fra-pressure/SKILL.md](rman/fra-pressure/SKILL.md)) |
+| `rman/obsolete-expired-awareness` | **active** ([rman/obsolete-expired-awareness/SKILL.md](rman/obsolete-expired-awareness/SKILL.md)) |
+| `rman/snapshot-controlfile` | **active** ([rman/snapshot-controlfile/SKILL.md](rman/snapshot-controlfile/SKILL.md)) |
+| `rman/rac-awareness` | **active** ([rman/rac-awareness/SKILL.md](rman/rac-awareness/SKILL.md)) |
+| `rman/dataguard-awareness` | **active** ([rman/dataguard-awareness/SKILL.md](rman/dataguard-awareness/SKILL.md)) |
+| `rman/multitenant-awareness` | **active** ([rman/multitenant-awareness/SKILL.md](rman/multitenant-awareness/SKILL.md)) |
+| `rman/restore-readiness` | **active** ([rman/restore-readiness/SKILL.md](rman/restore-readiness/SKILL.md)) |
+| `rman/recovery-readiness` | **active** ([rman/recovery-readiness/SKILL.md](rman/recovery-readiness/SKILL.md)) |
+| `rman/pitr-readiness` | **active** ([rman/pitr-readiness/SKILL.md](rman/pitr-readiness/SKILL.md)) |
+| `rman/pdb-pitr-awareness` | **active** ([rman/pdb-pitr-awareness/SKILL.md](rman/pdb-pitr-awareness/SKILL.md)) |
+| `rman/troubleshooting` | **active** ([rman/troubleshooting/SKILL.md](rman/troubleshooting/SKILL.md)) |
+| `rman/channel-contention` | **active** ([rman/channel-contention/SKILL.md](rman/channel-contention/SKILL.md)) |
+| `rman/manual-recovery-plan` | **active** ([rman/manual-recovery-plan/SKILL.md](rman/manual-recovery-plan/SKILL.md)) |
 
 ## network (14 — Fase 4, todos `active`)
 

@@ -1,0 +1,38 @@
+# Fixture: Oracle 19c, restore readiness NOT_READY (sin controlfile ni SPFILE protegidos)
+# Usada por: rman/restore-readiness, rman/recovery-readiness
+fixture_id: FX-19c-restore-readiness-incomplete
+
+target_profile:
+  schema_version: "2.3.0"
+  target_id: "fixture-19c-restore-readiness-incomplete"
+  database: {name: "ORCL19RI", unique_name: "orcl19ri", dbid: "1955334422"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19ri", number: 1, host: "HOST_TOKEN_32"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: not_applicable, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  discovery: {timestamp: "2026-03-01T10:00:00Z", evidence_refs: [EVD-FX-7013], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$BACKUP_SET, V$BACKUP_PIECE, V$BACKUP_DATAFILE]
+
+mock_evidence:
+  - query_id: Q-RMAN-BACKUP-SET-001
+    result:
+      - {recid: 1101, backup_type: "D", incremental_level: 0, controlfile_included: "NO", completion_time: "2026-01-01T02:00:00Z"}
+  - query_id: Q-RMAN-CONTROLFILE-BACKUP-001
+    result: []
+  - query_id: Q-RMAN-SPFILE-BACKUP-001
+    result: []
+
+expected_findings:
+  - category: restore-readiness
+    severity: CRITICAL
+    confidence: OBSERVATION
+    reason: "sin backup de controlfile ni SPFILE — status: NOT_READY, nunca inferido READY por la sola existencia del backup set de datafiles (# 10, # 25 del prompt de Fase 7)"

@@ -18,6 +18,8 @@ Todo query/comando aquí es de sólo lectura por construcción (`execution_mode:
 
 > **PHASE 6 — MULTITENANT QUERY COMPATIBILITY & DICTIONARY CERTIFICATION HARDENING**: 3 defectos de certificación adicionales detectados y corregidos, independientemente verificados vía WebFetch contra docs.oracle.com (no confiados por declaración): (1) `Q-CDB-PDB-SAVED-STATE-001` usaba `CDB_PDB_SAVED_STATES`, que **no es una vista Oracle real** (404 en docs.oracle.com) — corregida a `DBA_PDB_SAVED_STATES` (7 columnas reales), con min_version patch-level `12.1.0.2` (no `12.1` genérico — PDB Saved State no existe en 12.1.0.0/12.1.0.1). (2) `Q-CDB-RESOURCE-USAGE-001` declaraba `V$RSRCPDBMETRIC` disponible desde 12.1 — la vista real se introduce en 12.2.0.1; corregida a `min: "12.2"`, 12.1 degrada a `PARTIALLY_SUPPORTED` sin fuente alternativa inventada. (3) `Q-CDB-PLUGIN-VIOLATIONS-001` seleccionaba `CON_ID` incondicionalmente desde 12.1 — esa columna no existe en la referencia 12.1 (9 columnas), se agrega en 12.2 (10 columnas); split en variantes legacy (12.1, sin `CON_ID`, `container_id: NOT_AVAILABLE`) / modern (12.2+, con `CON_ID`). El SQL Static Validator (`tests/test_sql_static_validator.sh`) se extendió con un chequeo nuevo (view-level y column-level `min_version` cross-check contra el rango declarado del bloque SQL) que hasta ahora nunca se ejecutaba — causa raíz de que las tres metadata incorrectas certificaran SQL incorrecto sin que ningún test lo detectara. Ver `docs/PHASE_6_QUERY_COMPATIBILITY_HARDENING.md`.
 
+> **Fase 7 (Backup & Recovery/RMAN)**: mismo gap pre-existente detectado — `Q-RMAN-BACKUP-JOB-001`/`Q-RMAN-BACKUPSET-001` (Foundation) figuraban "materializadas" sin archivo real. `Q-RMAN-BACKUP-JOB-001` se materializó de verdad (mismo ID, sin duplicar, `V$RMAN_BACKUP_JOB_DETAILS` verificado real vía WebFetch) bajo `queries/rman/`; `Q-RMAN-BACKUPSET-001` se reemplazó por `Q-RMAN-BACKUP-SET-001` (mismo propósito — `V$BACKUP_SET` —, nombre corregido a la convención hyphenated del resto del catálogo `Q-RMAN-*`). Se agregaron 12 queries nuevas — 14 queries certificadas en total bajo `queries/rman/`. Nombres de vista verificados vía WebFetch contra docs.oracle.com (`V$RMAN_CONFIGURATION` desde 9i, `V$RMAN_STATUS`/`V$RMAN_OUTPUT`/`V$RMAN_BACKUP_JOB_DETAILS` desde 10g — piso "10g" del prompt confirmado real, no asumido). `CON_ID` (multitenant) sólo 12.1+ en las vistas que lo exponen — `Q-RMAN-BACKUP-SET-001` split en variantes legacy (10g-11g, sin `CON_ID`)/modern (12.1+, con `CON_ID`), mismo patrón que `PDB_PLUG_IN_VIOLATIONS` en Fase 6. Ver `docs/PHASE_7_ORACLE_BACKUP_RECOVERY_RMAN.md`.
+
 > **Fase 3 (Oracle Performance)**: `Q-PERF-WAIT-AWR-001` y `Q-PERF-WAIT-ASH-001` se **relocalizaron** (mismos IDs, sin duplicar) de `queries/` plano a `queries/performance/waits/`. `Q-PERF-WAIT-STATSPACK-001` (antes sólo `registered`) se materializó en la misma carpeta — ver `docs/PHASE_3_ORACLE_PERFORMANCE.md`. Las filas de estas 3 queries en las tablas "Fase 1" abajo permanecen sin cambio (identidad de catálogo, no ubicación física). Se agregaron 18 queries nuevas bajo `queries/performance/<categoría>/` — ver sección "Performance queries (Fase 3)" abajo.
 
 ## Tools semánticas MCP (nivel Gateway)
@@ -88,8 +90,20 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-CDB-RESOURCE-USAGE-001` | Consumo de recursos por PDB (CPU/sesiones/parallel/SGA/PGA/I/O) | 12.2–23ai (12.1: PARTIALLY_SUPPORTED) | todas | CDB | CDB_ROOT_ONLY | ANY |
 | `Q-CDB-RESOURCE-MANAGER-001` | CDB Resource Plan y directivas por PDB (sólo lectura) | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
 | `Q-CDB-LOCKDOWN-001` | Lockdown profiles asignados (sólo lectura) | 12.2–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
-| `Q-RMAN-BACKUP-JOB-001` | Estado de jobs de backup | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
-| `Q-RMAN-BACKUPSET-001` | Detalle de backup sets | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+| `Q-RMAN-CONFIGURATION-001` | Configuración RMAN persistente (retention/optimization/device/channels/snapshot/deletion policy) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-STATUS-001` | Estado/progreso de jobs RMAN | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-OUTPUT-001` | Mensajes recientes de RMAN (troubleshooting) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-BACKUP-JOB-001` | Resumen de jobs de backup (duración/throughput) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-BACKUP-SET-001` | Inventario de backup sets | 10g–23ai (CON_ID sólo 12.1+) | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-BACKUP-PIECE-001` | Inventario de piezas físicas de backup | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-BACKUP-DATAFILE-001` | Cobertura de backup por datafile | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-ARCHIVELOG-BACKUP-001` | Cobertura de backup de archivelogs por thread | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-ARCHIVED-LOG-COVERAGE-001` | Generación/aplicación/eliminación de archivelogs | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-CONTROLFILE-BACKUP-001` | Backups que incluyen controlfile | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-SPFILE-BACKUP-001` | Backups de SPFILE | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-BACKUP-DEVICE-001` | Canales actualmente asignados | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+| `Q-RMAN-FRA-USAGE-001` | Uso/límite de la Fast Recovery Area | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+| `Q-RMAN-CONTROLFILE-RECORD-SECTION-001` | Utilización de secciones de registro del controlfile | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
 | `Q-NET-TNS-CONFIG-001` | Lectura de config Oracle Net | 10g–23ai | todas (ruta por plataforma) | todas | NOT_APPLICABLE | NOT_APPLICABLE |
 | `Q-NET-LISTENER-LOG-001` | Extracto de listener.log | 10g–23ai | todas | todas | NOT_APPLICABLE | NOT_APPLICABLE |
 | `Q-OS-LINUX-MEM-001` | Memoria/swap (Linux) | N/A | Oracle Linux/RHEL/SUSE | todas | NOT_APPLICABLE | NOT_APPLICABLE |
@@ -141,8 +155,20 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-CDB-RESOURCE-USAGE-001` | `V$RSRCPDBMETRIC` | R0 | LOW | 15 | 200 | LOW | none |
 | `Q-CDB-RESOURCE-MANAGER-001` | `DBA_CDB_RSRC_PLAN_DIRECTIVES` | R0 | LOW | 15 | 200 | LOW | none |
 | `Q-CDB-LOCKDOWN-001` | `CDB_LOCKDOWN_PROFILES` | R0 | LOW | 15 | 500 | LOW | none |
+| `Q-RMAN-CONFIGURATION-001` | `V$RMAN_CONFIGURATION` | R0 | LOW | 10 | 100 | MEDIUM | none |
+| `Q-RMAN-STATUS-001` | `V$RMAN_STATUS` | R0 | MEDIUM | 20 | 500 | MEDIUM | none |
+| `Q-RMAN-OUTPUT-001` | `V$RMAN_OUTPUT` | R0 | MEDIUM | 15 | 1000 | HIGH | none |
 | `Q-RMAN-BACKUP-JOB-001` | `V$RMAN_BACKUP_JOB_DETAILS` | R0 | MEDIUM | 30 | 500 | LOW | none |
-| `Q-RMAN-BACKUPSET-001` | `V$BACKUP_SET` | R0 | MEDIUM | 30 | 2000 | LOW | none |
+| `Q-RMAN-BACKUP-SET-001` | `V$BACKUP_SET` | R0 | MEDIUM | 20 | 500 | MEDIUM | none |
+| `Q-RMAN-BACKUP-PIECE-001` | `V$BACKUP_PIECE` | R0 | MEDIUM | 20 | 500 | HIGH | none |
+| `Q-RMAN-BACKUP-DATAFILE-001` | `V$BACKUP_DATAFILE` | R0 | MEDIUM | 20 | 500 | MEDIUM | none |
+| `Q-RMAN-ARCHIVELOG-BACKUP-001` | `V$BACKUP_REDOLOG` | R0 | MEDIUM | 20 | 1000 | LOW | none |
+| `Q-RMAN-ARCHIVED-LOG-COVERAGE-001` | `V$ARCHIVED_LOG` | R0 | MEDIUM | 20 | 1000 | MEDIUM | none |
+| `Q-RMAN-CONTROLFILE-BACKUP-001` | `V$BACKUP_SET` | R0 | LOW | 15 | 200 | LOW | none |
+| `Q-RMAN-SPFILE-BACKUP-001` | `V$BACKUP_SPFILE` | R0 | LOW | 15 | 200 | LOW | none |
+| `Q-RMAN-BACKUP-DEVICE-001` | `V$BACKUP_DEVICE` | R0 | LOW | 10 | 100 | MEDIUM | none |
+| `Q-RMAN-FRA-USAGE-001` | `V$FLASH_RECOVERY_AREA_USAGE`, `V$RECOVERY_FILE_DEST` | R0 | LOW | 15 | 50 | LOW | none |
+| `Q-RMAN-CONTROLFILE-RECORD-SECTION-001` | `V$CONTROLFILE_RECORD_SECTION` | R0 | LOW | 10 | 50 | LOW | none |
 | `Q-NET-TNS-CONFIG-001` | `tnsnames.ora`, `sqlnet.ora` (archivo, collector certificado) | R0 | LOW | 15 | N/A | HIGH (hostnames/IP; posibles secretos → sanitizer bloquea) | none |
 | `Q-NET-LISTENER-LOG-001` | `listener.log` (ventana acotada) | R0 | MEDIUM | 30 | 5000 líneas | MEDIUM | none |
 | `Q-OS-LINUX-MEM-001` | `/proc/meminfo` | R0 | LOW | 10 | N/A | LOW | none |

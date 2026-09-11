@@ -1,0 +1,41 @@
+activation_conditions:
+  - backup_recovery_intent: "pregunta sobre configuración RMAN, inventario/estado/frescura de backups, retención, FRA, canales, SBT/media manager, restore/recovery readiness, PITR"
+  - backup_recovery_symptom: "backup falló o quedó COMPLETED WITH WARNINGS, FRA cerca de su límite, canal en contención, archivelog sin backup, controlfile/SPFILE sin backup reciente, duda sobre si el target puede recuperarse"
+  - delegated_from_incident: "incident-root-cause-analyst requiere recovery readiness durante un incidente activo"
+  - delegated_from_dataguard: "oracle-dataguard-analyst requiere contexto de backup en primary/standby (offload, archivelog deletion policy)"
+  - delegated_from_multitenant: "oracle-multitenant-analyst requiere contexto de backup/PITR a nivel PDB"
+
+deactivation_rule: "Nunca se activa para ejecutar BACKUP/RESTORE/RECOVER/DELETE/CROSSCHECK/CHANGE/CONFIGURE/CATALOG/UNCATALOG/DUPLICATE/SWITCH DATABASE/ALLOCATE CHANNEL — esas capacidades no existen en el e-stack (# 34, # 53 del prompt de Fase 7). No se activa Security Deep (privilege assessment, audit policy, TDE, Database Vault) — fuera de alcance (# 53)."
+
+delegates_to:
+  - agent: oracle-performance-analyst
+    when: "correlación de duración/throughput de backup con contención CPU/I/O/compresión/workload (# 11 del prompt) — nunca se infiere root cause por una sola métrica"
+  - agent: oracle-rac-analyst
+    when: "distribución de canales por instancia, afinidad, o comportamiento instance-specific en RAC (# 22, # 23)"
+  - agent: oracle-asm-storage-analyst
+    when: "FRA/backup destination/restore destination en ASM requiere visibilidad de capacidad de diskgroup (# 30) — nunca se infiere causa ASM sólo por presión de FRA"
+  - agent: oracle-dataguard-analyst
+    when: "archivelog deletion policy, backup offload o disponibilidad de standby en contexto Data Guard (# 28) — nunca se ejecuta standby recovery"
+  - agent: oracle-multitenant-analyst
+    when: "CDB/PDB backup scope, PDB PITR requiere contexto de topología/local undo/archive coverage de PDB (# 27, # 29) — nunca se trata una PDB como DB física independiente"
+  - agent: oracle-network-analyst
+    when: "conectividad SBT/media server/NFS/Recovery Catalog requiere diagnóstico de red (# 30) — nunca se diagnostica red sin evidencia"
+  - agent: os-platform-analyst
+    when: "filesystem/proceso de media manager/mount NFS requiere visibilidad de OS (# 30)"
+  - agent: incident-root-cause-analyst
+    when: "backup FAILED repetido, FRA CRITICAL, o restore readiness NOT_READY en producción"
+  - agent: change-advisor
+    when: "un hallazgo aprobado por el DBA requiere una propuesta de cambio formal (ej. ajustar retention policy, mover snapshot controlfile)"
+
+receives_from:
+  - agent: oracle-discovery-analyst
+    what: "Target Profile con oracle_version, architecture, dataguard, multitenant ya publicados"
+  - agent: incident-root-cause-analyst
+    what: "Task Package acotado a recovery readiness durante un incidente activo, con evidence_refs"
+  - agent: oracle-dataguard-analyst
+    what: "contexto de rol/topología Data Guard cuando el target participa en Data Guard"
+  - agent: oracle-multitenant-analyst
+    what: "contexto de topología CDB/PDB, local undo, archive coverage por PDB para PDB PITR awareness"
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+loop_prevention_rule: "oracle-backup-recovery-analyst nunca delega de vuelta a quien ya le entregó el Task Package original. No activa todos los agentes de dominio por defecto — sólo delega cuando la evidencia específica lo requiere (mismo principio que Multitenant/Data Guard, # 30 del prompt: 'sólo cuando haya evidencia')."

@@ -1,6 +1,6 @@
 ---
 query_id: Q-PERF-IO-FILESTAT-001
-version: 1.0.0
+version: 1.1.0
 
 domain: performance
 purpose: Latencia de lectura/escritura por datafile, snapshot actual acumulado desde el arranque de la instancia
@@ -29,11 +29,40 @@ license_requirements: none
 
 execution_mode: READ_ONLY
 
-tests: [tests/test_no_write_operations.sh, tests/test_query_limits.sh, tests/test_query_contract_requires_container_scope.sh, tests/test_query_contract_requires_role_scope.sh, tests/test_query_contract_requires_cost_class.sh, tests/test_query_contract_requires_license_metadata.sh, tests/test_query_cost_medium.sh, tests/test_no_storage_root_cause_without_external_evidence.sh]
+variants:
+  - variant_id: Q-PERF-IO-FILESTAT-001-V1
+    label: legacy_10g_11g
+    oracle_versions: {min: "10.2", max: "11.2"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V1 (legacy_10g_11g, 10g-11g)"
+  - variant_id: Q-PERF-IO-FILESTAT-001-V2
+    label: modern_12plus
+    oracle_versions: {min: "12.1", max: "23.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V2 (modern_12plus, 12.1+)"
+
+tests: [tests/test_no_write_operations.sh, tests/test_query_limits.sh, tests/test_query_contract_requires_container_scope.sh, tests/test_query_contract_requires_role_scope.sh, tests/test_query_contract_requires_cost_class.sh, tests/test_query_contract_requires_license_metadata.sh, tests/test_query_cost_medium.sh, tests/test_no_storage_root_cause_without_external_evidence.sh, tests/test_rman_legacy_variant_10g.sh, tests/test_rman_legacy_variant_11g.sh]
 status: active
 ---
 
-# Statement / procedure (read-only)
+# Statement / procedure (read-only) — Variant V1 (legacy_10g_11g, 10g-11g)
+
+```sql
+SELECT *
+FROM (
+  SELECT d.name                                              AS file_name,
+         f.phyrds,
+         f.phywrts,
+         ROUND(f.readtim  / NULLIF(f.phyrds, 0), 2)           AS avg_read_latency_ms,
+         ROUND(f.writetim / NULLIF(f.phywrts, 0), 2)          AS avg_write_latency_ms
+  FROM   v$filestat f
+  JOIN   v$datafile d ON d.file# = f.file#
+  ORDER  BY avg_read_latency_ms DESC NULLS LAST
+)
+WHERE  ROWNUM <= 50;
+```
+
+# Statement / procedure (read-only) — Variant V2 (modern_12plus, 12.1+)
 
 ```sql
 SELECT d.name                                              AS file_name,
@@ -44,7 +73,7 @@ SELECT d.name                                              AS file_name,
 FROM   v$filestat f
 JOIN   v$datafile d ON d.file# = f.file#
 ORDER  BY avg_read_latency_ms DESC NULLS LAST
-FETCH FIRST 50 ROWS ONLY;                 -- 12c+; usar ROWNUM <= 50 en 10g/11g
+FETCH  FIRST 50 ROWS ONLY;
 ```
 
 Complementa `Q-PERF-IO-001` con el desglose por archivo que AWR/`DBA_HIST_SYSTEM_EVENT` no provee a este nivel de detalle. `max_rows: 500` acota el costo en bases de datos con muchos datafiles (`cost_class: MEDIUM`, escala con `DBA_DATA_FILES`).
@@ -52,6 +81,8 @@ Complementa `Q-PERF-IO-001` con el desglose por archivo que AWR/`DBA_HIST_SYSTEM
 # Notes by version
 
 `V$FILESTAT`/`V$DATAFILE` estables 10g–23ai en las columnas usadas. `READTIM`/`WRITETIM` están en centésimas de segundo — la conversión a ms ya está aplicada en el `SELECT`.
+
+**PHASE 7 — RMAN LEGACY SQL SYNTAX & QUERY CERTIFICATION HARDENING**: mismo defecto/corrección que `Q-PERF-BLOCKING-001` — `FETCH FIRST` con `min_version` 10.2 sin variante legacy real, detectado por `tests/test_no_fetch_first_in_pre12c_queries.sh`.
 
 # Notes by platform
 
