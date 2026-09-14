@@ -12,7 +12,7 @@ Este registro identifica cada skill **exclusivamente** por su `skill_id` complet
 - `active` — materializado por completo (19 secciones del Skill Contract), archivo real en el dominio.
 - `registered` — nombre, dominio y propósito fijados en este registro; su materialización completa es Fase 2+ según `README.md#fases-de-construcción`. No es un placeholder vacío: es la entrada de catálogo que gobierna qué se puede construir y en qué orden vía `/change skill`.
 
-Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total); **Fase 5 (Data Guard) materializa las 21 skills del dominio `dataguard` completo** (141 activos en total); **Fase 6 (Multitenant/CDB/PDB) materializa las 26 skills del dominio `multitenant` completo** (166 activos en total); **Fase 7 (Backup & Recovery/RMAN) materializa las 30 skills del dominio `rman` completo** (196 activos en total); **Fase 8 (Security & Compliance) materializa las 39 skills del dominio `security` completo, genuinamente nuevo** (235 activos en total); **PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING agrega `network/oracle-net-security`** (236 activos en total). El resto queda `registered` para materialización gobernada en Fase 9, en el orden de `README.md`.
+Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total); **Fase 5 (Data Guard) materializa las 21 skills del dominio `dataguard` completo** (141 activos en total); **Fase 6 (Multitenant/CDB/PDB) materializa las 26 skills del dominio `multitenant` completo** (166 activos en total); **Fase 7 (Backup & Recovery/RMAN) materializa las 30 skills del dominio `rman` completo** (196 activos en total); **Fase 8 (Security & Compliance) materializa las 39 skills del dominio `security` completo, genuinamente nuevo** (235 activos en total); **PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING agrega `network/oracle-net-security`** (236 activos en total); **Fase 9 (OS Platform Diagnostics & Hardening) materializa las 45 skills del dominio `os` completo** (reemplaza el modelo `os/<plataforma>/<skill>` de Foundation — 1 activo previo, `os/linux/memory`, absorbido en `os/memory` — 280 activos en total). El resto (`capacity`, `documentation`, AIX/HP-UX de `os`) queda `registered` para materialización gobernada en una fase futura.
 
 ## core (20)
 
@@ -324,21 +324,74 @@ Reconciliación de la lista Foundation (ninguna estaba `active`): `network/tns` 
 | `network/troubleshooting` | **active** ([network/troubleshooting/SKILL.md](network/troubleshooting/SKILL.md)) |
 | `network/oracle-net-security` | **active** ([network/oracle-net-security/SKILL.md](network/oracle-net-security/SKILL.md)) — PHASE 8 SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING |
 
-## os (18 × 5 plataformas: linux, solaris, aix, windows, hpux)
+## os (45 — Fase 9, todos `active`)
 
-Implementación por plataforma bajo `skills/os/<plataforma>/`, `skill_id` = `os/<plataforma>/<skill>` (ej. `os/linux/memory`). Lista de skills (idéntica por plataforma, contenido específico):
+**PHASE 9 — OS PLATFORM DIAGNOSTICS & HARDENING**: reemplaza el modelo Foundation
+**platform-per-skill-id** (`os/<plataforma>/<skill>`, 18 skills × 5 plataformas, sólo
+`os/linux/memory` materializado) por un modelo **domain-per-skill-id** (`os/<capability>`),
+consistente con cómo el resto del e-stack modela dominios multiplataforma/multiversión
+(`network/*`, `security/*`) — un skill por capacidad diagnóstica, con awareness de plataforma
+interna (campo `platforms:` en el manifest — `SUPPORTED|PARTIALLY_SUPPORTED|NOT_APPLICABLE|
+COMPATIBILITY_VALIDATION_REQUIRED` por plataforma), nunca un archivo separado por plataforma. El
+contenido real de `os/linux/memory.md` (única implementación materializada de Foundation) se
+fusionó en `os/memory` (v2.0.0) como base Linux, ampliado con Windows/Solaris. Ver
+`agents/os-platform-analyst/AGENT.md#reconciliación-del-modelo-de-skills` y
+`docs/PHASE_9_OS_PLATFORM_DIAGNOSTICS_HARDENING.md#reconciliación-de-skills`.
 
-cpu, memory, swap, hugepages, numa, processes, load, filesystems, io, kernel, limits, network, tcp, dns, time, users, groups, oracle-processes.
+AIX/HP-UX quedan fuera del alcance explícito de Fase 9 (`# 5` del prompt: Oracle Linux, RHEL,
+SUSE, LinuxONE, Solaris, Windows Server — AIX/HP-UX no listadas) — sus entradas `registered` de
+Foundation (`os/aix/*`, `os/hpux/*`, 18 skills cada una) permanecen intactas, sin materializar,
+para una fase futura.
 
-| plataforma | status |
+| skill_id | status |
 |---|---|
-| `os/linux/memory` | **active** ([os/linux/memory.md](os/linux/memory.md)) — representativo; resto de `os/linux/*` y las otras 4 plataformas (17 skills × 5 plataformas restantes + 17 de Linux) quedan `registered` bajo `os/<plataforma>/<skill>` |
-| `os/solaris/*` (18) | registered |
-| `os/aix/*` (18) | registered |
-| `os/windows/*` (18) | registered |
-| `os/hpux/*` (18) | registered |
-
-`hugepages`/`numa` no aplican a Windows — su entrada `registered` (`os/windows/hugepages`, `os/windows/numa`) se materializará como `N/A` documentado explícitamente, no se omite del registro (ver `_SKILL_CONTRACT_TEMPLATE.md#supported-os-platforms`).
+| `os/discovery` | **active** ([os/discovery/SKILL.md](os/discovery/SKILL.md)) |
+| `os/platform-version` | **active** ([os/platform-version/SKILL.md](os/platform-version/SKILL.md)) |
+| `os/cpu-topology` | **active** ([os/cpu-topology/SKILL.md](os/cpu-topology/SKILL.md)) |
+| `os/numa` | **active** ([os/numa/SKILL.md](os/numa/SKILL.md)) |
+| `os/memory` | **active** ([os/memory/SKILL.md](os/memory/SKILL.md)) — v2.0.0, absorbe `os/linux/memory.md` de Foundation |
+| `os/swap` | **active** ([os/swap/SKILL.md](os/swap/SKILL.md)) |
+| `os/memory-pressure` | **active** ([os/memory-pressure/SKILL.md](os/memory-pressure/SKILL.md)) |
+| `os/hugepages` | **active** ([os/hugepages/SKILL.md](os/hugepages/SKILL.md)) |
+| `os/transparent-hugepages` | **active** ([os/transparent-hugepages/SKILL.md](os/transparent-hugepages/SKILL.md)) |
+| `os/process-limits` | **active** ([os/process-limits/SKILL.md](os/process-limits/SKILL.md)) |
+| `os/open-files` | **active** ([os/open-files/SKILL.md](os/open-files/SKILL.md)) |
+| `os/ulimits` | **active** ([os/ulimits/SKILL.md](os/ulimits/SKILL.md)) |
+| `os/systemd-limits` | **active** ([os/systemd-limits/SKILL.md](os/systemd-limits/SKILL.md)) |
+| `os/shared-memory` | **active** ([os/shared-memory/SKILL.md](os/shared-memory/SKILL.md)) |
+| `os/semaphores` | **active** ([os/semaphores/SKILL.md](os/semaphores/SKILL.md)) |
+| `os/aio` | **active** ([os/aio/SKILL.md](os/aio/SKILL.md)) |
+| `os/kernel-parameter-assessment` | **active** ([os/kernel-parameter-assessment/SKILL.md](os/kernel-parameter-assessment/SKILL.md)) |
+| `os/ephemeral-ports` | **active** ([os/ephemeral-ports/SKILL.md](os/ephemeral-ports/SKILL.md)) |
+| `os/tcp-socket-awareness` | **active** ([os/tcp-socket-awareness/SKILL.md](os/tcp-socket-awareness/SKILL.md)) |
+| `os/filesystems` | **active** ([os/filesystems/SKILL.md](os/filesystems/SKILL.md)) |
+| `os/inodes` | **active** ([os/inodes/SKILL.md](os/inodes/SKILL.md)) |
+| `os/mount-options` | **active** ([os/mount-options/SKILL.md](os/mount-options/SKILL.md)) |
+| `os/block-devices` | **active** ([os/block-devices/SKILL.md](os/block-devices/SKILL.md)) |
+| `os/multipath-awareness` | **active** ([os/multipath-awareness/SKILL.md](os/multipath-awareness/SKILL.md)) |
+| `os/io-performance` | **active** ([os/io-performance/SKILL.md](os/io-performance/SKILL.md)) |
+| `os/network-interfaces` | **active** ([os/network-interfaces/SKILL.md](os/network-interfaces/SKILL.md)) — formaliza `get_interfaces`, collector ya certificado desde Fase 4 |
+| `os/bonding` | **active** ([os/bonding/SKILL.md](os/bonding/SKILL.md)) |
+| `os/vlan` | **active** ([os/vlan/SKILL.md](os/vlan/SKILL.md)) |
+| `os/mtu` | **active** ([os/mtu/SKILL.md](os/mtu/SKILL.md)) |
+| `os/routing` | **active** ([os/routing/SKILL.md](os/routing/SKILL.md)) — formaliza `get_routes`, collector ya certificado desde Fase 4 |
+| `os/dns` | **active** ([os/dns/SKILL.md](os/dns/SKILL.md)) — formaliza `get_name_resolution`, collector ya certificado desde Fase 4 |
+| `os/time-sync` | **active** ([os/time-sync/SKILL.md](os/time-sync/SKILL.md)) |
+| `os/ssh-sshd-awareness` | **active** ([os/ssh-sshd-awareness/SKILL.md](os/ssh-sshd-awareness/SKILL.md)) |
+| `os/oracle-groups` | **active** ([os/oracle-groups/SKILL.md](os/oracle-groups/SKILL.md)) |
+| `os/oracle-processes` | **active** ([os/oracle-processes/SKILL.md](os/oracle-processes/SKILL.md)) |
+| `os/grid-processes` | **active** ([os/grid-processes/SKILL.md](os/grid-processes/SKILL.md)) |
+| `os/cgroups` | **active** ([os/cgroups/SKILL.md](os/cgroups/SKILL.md)) |
+| `os/log-pressure` | **active** ([os/log-pressure/SKILL.md](os/log-pressure/SKILL.md)) |
+| `os/rac-interconnect-awareness` | **active** ([os/rac-interconnect-awareness/SKILL.md](os/rac-interconnect-awareness/SKILL.md)) |
+| `os/dataguard-network-awareness` | **active** ([os/dataguard-network-awareness/SKILL.md](os/dataguard-network-awareness/SKILL.md)) |
+| `os/rman-media-manager-awareness` | **active** ([os/rman-media-manager-awareness/SKILL.md](os/rman-media-manager-awareness/SKILL.md)) |
+| `os/security-filesystem-awareness` | **active** ([os/security-filesystem-awareness/SKILL.md](os/security-filesystem-awareness/SKILL.md)) |
+| `os/platform-healthcheck` | **active** ([os/platform-healthcheck/SKILL.md](os/platform-healthcheck/SKILL.md)) |
+| `os/platform-assessment` | **active** ([os/platform-assessment/SKILL.md](os/platform-assessment/SKILL.md)) |
+| `os/manual-hardening-plan` | **active** ([os/manual-hardening-plan/SKILL.md](os/manual-hardening-plan/SKILL.md)) |
+| `os/aix/*` (18) | registered — fuera de alcance de Fase 9 |
+| `os/hpux/*` (18) | registered — fuera de alcance de Fase 9 |
 
 ## capacity (16)
 

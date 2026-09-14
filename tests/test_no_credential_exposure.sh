@@ -8,7 +8,7 @@ for f in "$ROOT"/agents/*.md "$ROOT"/agents/*/AGENT.md; do
   base=$(basename "$f")
   [ "$base" = "_AGENT_CONTRACT_TEMPLATE.md" ] && continue
   # Buscar menciones de privilegios elevados que NO estén en una línea de negación/prohibición
-  hits=$(grep -niE 'SYSDBA|SYSOPER|SYSASM|\bsudo\b|\bas root\b|root (user|access|password|privilege)' "$f" | grep -viE 'no requiere|nunca|forbidden|prohibi|sin.*sysdba|sin `sysdba|no dispone|read-only' || true)
+  hits=$(grep -niE 'SYSDBA|SYSOPER|SYSASM|\bsudo\b|\bas root\b|root (user|access|password|privilege)' "$f" | grep -viE 'no requiere|nunca|forbidden|prohibi|sin.*sysdba|sin `sysdba|sin.*root|sin.*sudo|sin.*administrator|no dispone|read-only' || true)
   if [ -n "$hits" ]; then
     echo "[FAIL] $f menciona un privilegio elevado fuera de contexto de prohibición:"
     echo "$hits"

@@ -1,0 +1,22 @@
+# Fixture: Oracle Linux 8, chrony sin fuente de tiempo válida en un nodo RAC.
+# Usada por: os/time-sync.
+fixture_id: FX-OS-ol8-chrony-unsynced
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_115"
+
+mock_evidence:
+  - collector_id: get_time_sync_status
+    result: {service: "chrony", status: "UNSYNCED", offset_ms: null}
+
+expected_findings:
+  - category: time-sync
+    severity: CRITICAL
+    confidence: FACT
+    reason: "UNSYNCED en un nodo RAC — riesgo de eviction por Clusterware (# 41 del prompt)"

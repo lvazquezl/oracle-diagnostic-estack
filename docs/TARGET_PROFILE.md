@@ -10,7 +10,7 @@ Un Target Profile es la única fuente de verdad sobre "qué es este ambiente" de
 
 ```yaml
 target_profile:
-  schema_version: "2.5.0"
+  schema_version: "2.6.0"
   target_id: string                    # referencia local (alias), nunca connection string con credenciales
 
   database:
@@ -141,6 +141,23 @@ target_profile:
     tls_required: bool|null
     licensing_profile: [string]|null            # features explícitamente confirmadas licenciadas por el DBA — sin esto, security/licensing-gates nunca reporta INCLUDED
 
+  # --- Fase 9 (OS Platform Diagnostics & Hardening) — aditivo, schema_version 2.6.0, ningún campo previo removido/renombrado ---
+
+  os_platform:
+    family: linux|solaris|windows|undetermined
+    distribution: string|null              # ej. "Oracle Linux", "RHEL", "SUSE", "Windows Server" — MASK/TOKENIZE si revela convención interna
+    version: string|null                   # ej. "8.9", "2022" — versión mayor/menor, nunca patch-level completo si es sensible
+    kernel: string|null                    # release de kernel/build — KEEP, no identifica por sí solo
+    architecture: string|null              # ej. x86_64, ppc64le (LinuxONE/s390x cuando aplique)
+    virtualization: bare_metal|vm|container|undetermined
+    oracle_home_owner: string|null         # TOKENIZE por defecto — nunca UID/GID crudo sin contexto
+    grid_home_owner: string|null           # TOKENIZE por defecto
+    oracle_groups: [string]|null           # nombres de grupo (oinstall/dba/asmadmin/...), nunca membresía completa aquí (ver os/oracle-groups)
+    expected_hugepages_policy: string|null       # policy declarada por el DBA (ej. "enabled, sin margen fijo") — null -> os/hugepages nunca inventa una policy
+    expected_thp_policy: string|null             # ej. "never", "madvise" — null -> os/transparent-hugepages cita sólo el estado real, sin comparar contra una recomendación no declarada
+    expected_time_sync: string|null              # ej. "chrony contra NTP corporativo" — null -> os/time-sync reporta sólo el estado, sin asumir la fuente esperada
+    expected_network_model: string|null          # ej. "bonded active-backup + VLAN dedicada interconnect" — null -> os/bonding, os/vlan reportan sin comparar contra un diseño no declarado
+
   discovery:
     timestamp: ISO-8601
     evidence_refs: [EVD-...]
@@ -160,6 +177,7 @@ target_profile:
 - **`multitenant.cdb` es un espejo directo de `architecture.multitenant_mode == cdb` (Fase 6), nunca una segunda fuente de verdad.** Un target NON-CDB o 10g/11g publica `multitenant.cdb: false` con el resto del bloque en `null` — `oracle-multitenant-analyst` no se activa (Capability Filter); la respuesta `MULTITENANT_STATUS: NOT_APPLICABLE` la produce `oracle-discovery-analyst` directamente desde este campo, sin activar el agente (`# 6` del prompt de Fase 6). `multitenant.local_undo_enabled` nunca se determina por adivinanza en 12.1 (Local Undo no existe en ese release) — queda `null` ahí por diseño de versión, no por falta de evidencia.
 - **`backup_recovery.repository` nunca se asume `recovery_catalog` por defecto (Fase 7, `# 7` del prompt).** Sin confirmación de acceso de lectura al Recovery Catalog, `repository: controlfile_repository`, `recovery_catalog: false` — `oracle-backup-recovery-analyst` opera exclusivamente sobre metadata de controlfile. `backup_recovery.rpo_minutes`/`rto_minutes` quedan `null` sin declaración explícita del DBA — `rman/retention-policy`/`rman/recovery-readiness` publican `INSUFFICIENT_REQUIREMENTS` en ese caso, nunca un RPO/RTO inventado (`# 31` del prompt de Fase 7).
 - **`security.password_policy`/`security.account_inactivity_policy_days`/`security.encryption_required`/`security.tls_required`/`security.licensing_profile` nunca se inventan sin declaración explícita del DBA (Fase 8, `# 15`, `# 43` del prompt).** Sin `password_policy` definido, todo `security/password-policy-strength` publica `POLICY_NOT_DEFINED` por control, nunca un target inventado. Sin `licensing_profile` confirmando una feature específica, `security/licensing-gates` nunca reporta `status: INCLUDED` — la disponibilidad técnica (`V$OPTION`) nunca implica derecho de uso. `security.password_policy` en el ejemplo de `docs/PHASE_8_ORACLE_SECURITY_COMPLIANCE.md` es un baseline corporativo de EJEMPLO, no un default universal del e-stack.
+- **`os_platform.expected_hugepages_policy`/`expected_thp_policy`/`expected_time_sync`/`expected_network_model` nunca se inventan sin declaración explícita del DBA (Fase 9).** Sin esos campos, `os/hugepages`/`os/transparent-hugepages`/`os/time-sync`/`os/bonding`/`os/vlan` reportan el estado real leído directamente, nunca lo comparan contra un diseño esperado no declarado — evita falsos positivos por asumir un diseño estándar que el host real no sigue. `os_platform.family`/`distribution`/`version` nunca se determinan por adivinanza: si `os/discovery` no puede leerlos con evidencia, quedan `undetermined`/`null` y el consumidor (`os-platform-analyst`) reporta `COMPATIBILITY_VALIDATION_REQUIRED`, nunca asume Linux/Oracle Linux por defecto. `os_platform.oracle_home_owner`/`grid_home_owner`/`oracle_groups` nunca contienen membresía completa de usuarios — eso vive en la evidencia de `os/oracle-groups`, tokenizada por defecto.
 
 ## Versionado del schema
 
@@ -167,4 +185,4 @@ target_profile:
 
 ## Consumidores
 
-`oracle-dba-analyst` (Oracle Core), `oracle-performance-analyst` (Fase 3), `oracle-rac-analyst`/`oracle-asm-storage-analyst`/`oracle-network-analyst` (Fase 4 — consumen los bloques `rac`/`gi`/`asm`/`network` respectivamente, nunca vuelven a determinar `cluster_mode`/`storage_mode`/SCAN por su cuenta), `oracle-dataguard-analyst` (Fase 5 — consume el bloque `dataguard`, nunca vuelve a determinar `database_role`/`protection_mode` por su cuenta), `oracle-multitenant-analyst` (Fase 6 — consume el bloque `multitenant`, nunca vuelve a determinar `multitenant_mode`/`pdb_count` por su cuenta), `oracle-backup-recovery-analyst` (Fase 7 — consume el bloque `backup_recovery`, nunca vuelve a determinar `repository`/`default_device_type` por su cuenta; consume también `dataguard`/`multitenant` para `rman/dataguard-awareness`/`rman/multitenant-awareness`, nunca re-implementa esos dominios); `oracle-security-analyst` (Fase 8 — consume el bloque `security`, nunca inventa `password_policy`/`account_inactivity_policy_days`/`licensing_profile` por su cuenta; consume también `multitenant`/`dataguard`/`backup_recovery` para `security/common-local-users`/integración con Data Guard y Backup/Recovery, nunca re-implementa esos dominios).
+`oracle-dba-analyst` (Oracle Core), `oracle-performance-analyst` (Fase 3), `oracle-rac-analyst`/`oracle-asm-storage-analyst`/`oracle-network-analyst` (Fase 4 — consumen los bloques `rac`/`gi`/`asm`/`network` respectivamente, nunca vuelven a determinar `cluster_mode`/`storage_mode`/SCAN por su cuenta), `oracle-dataguard-analyst` (Fase 5 — consume el bloque `dataguard`, nunca vuelve a determinar `database_role`/`protection_mode` por su cuenta), `oracle-multitenant-analyst` (Fase 6 — consume el bloque `multitenant`, nunca vuelve a determinar `multitenant_mode`/`pdb_count` por su cuenta), `oracle-backup-recovery-analyst` (Fase 7 — consume el bloque `backup_recovery`, nunca vuelve a determinar `repository`/`default_device_type` por su cuenta; consume también `dataguard`/`multitenant` para `rman/dataguard-awareness`/`rman/multitenant-awareness`, nunca re-implementa esos dominios); `oracle-security-analyst` (Fase 8 — consume el bloque `security`, nunca inventa `password_policy`/`account_inactivity_policy_days`/`licensing_profile` por su cuenta; consume también `multitenant`/`dataguard`/`backup_recovery` para `security/common-local-users`/integración con Data Guard y Backup/Recovery, nunca re-implementa esos dominios); `os-platform-analyst` (Fase 9 — consume el bloque `os_platform`, nunca vuelve a determinar `family`/`distribution`/`version` por adivinanza; consume también `rac`/`dataguard`/`backup_recovery`/`security` para `os/rac-interconnect-awareness`/`os/dataguard-network-awareness`/`os/rman-media-manager-awareness`/`os/security-filesystem-awareness`, nunca re-implementa esos dominios).

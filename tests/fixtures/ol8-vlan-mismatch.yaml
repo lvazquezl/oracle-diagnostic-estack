@@ -1,0 +1,23 @@
+# Fixture: Oracle Linux 8, mismatch de VLAN ID del interconnect entre dos nodos RAC.
+# Usada por: os/vlan.
+fixture_id: FX-OS-ol8-vlan-mismatch
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_113"
+
+mock_evidence:
+  - collector_id: get_vlan_summary
+    node1: {interface: "bond1.100", vlan_id: 100, parent_interface: "bond1", state: "up", mtu: 9000}
+    node2: {interface: "bond1.101", vlan_id: 101, parent_interface: "bond1", state: "up", mtu: 9000}
+
+expected_findings:
+  - category: vlan
+    severity: HIGH
+    confidence: FACT
+    reason: "VLAN ID mismatch (100 vs 101) entre nodos que deberían compartir la misma red de interconnect (# 37 del prompt)"

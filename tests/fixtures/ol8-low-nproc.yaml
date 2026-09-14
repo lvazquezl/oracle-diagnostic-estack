@@ -1,0 +1,22 @@
+# Fixture: Oracle Linux 8, límite nproc insuficiente para el usuario oracle en RAC.
+# Usada por: os/process-limits.
+fixture_id: FX-OS-ol8-low-nproc
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_105"
+
+mock_evidence:
+  - collector_id: get_process_limits
+    result: {nproc_soft: 2047, nproc_hard: 16384, pid_max: 4194304, current_process_count: 1980}
+
+expected_findings:
+  - category: process-limits
+    severity: HIGH
+    confidence: FACT
+    reason: "current_process_count (1980) a <10% de margen de nproc_soft (2047) — riesgo real en RAC con procesos LMS/LMD adicionales (# 25 del prompt)"

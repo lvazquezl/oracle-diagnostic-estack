@@ -1,0 +1,17 @@
+name: platform-healthcheck
+display_name: "OS Platform Healthcheck"
+id: os/platform-healthcheck
+version: 1.0.0
+domain: os
+status: active
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [Oracle Linux, RHEL, SUSE, LinuxONE, Solaris, Windows Server]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence: []
+optional_evidence: []
+data_sensitivity: MEDIUM
+context_budget: MEDIUM
+related_skills: [os/platform-assessment, os/manual-hardening-plan]

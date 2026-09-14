@@ -1,0 +1,22 @@
+# Fixture: Oracle Linux 8, aio-max-nr cerca de agotarse.
+# Usada por: os/aio.
+fixture_id: FX-OS-ol8-low-aio-max-nr
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_106"
+
+mock_evidence:
+  - collector_id: get_aio_limits
+    result: {aio_max_nr: 1048576, aio_nr_current: 1040000}
+
+expected_findings:
+  - category: aio
+    severity: HIGH
+    confidence: FACT
+    reason: "aio_nr_current > 95% de aio_max_nr — riesgo de fallos de I/O asíncrono bajo carga (# 23 del prompt)"

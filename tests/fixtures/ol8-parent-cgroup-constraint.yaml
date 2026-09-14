@@ -1,0 +1,29 @@
+# Fixture: parent slice (system.slice) pids.max=800, oracle.service pids.max=1024 -- dos
+# cgroup_path_token distintos -- deben preservarse como dos constraints separados; el parent
+# puede terminar siendo el binding constraint pese a estar "más arriba" en la jerarquía.
+# Usada por: os/process-limits, os/cgroups.
+fixture_id: FX-OS-ol8-parent-cgroup-constraint
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_135"
+
+mock_evidence:
+  - collector_id: get_oracle_process_summary
+    result: {pid_token: "PID_TOKEN_603", process_family: "pmon", owner_token: "USER_TOKEN_ORACLE"}
+  - collector_id: get_cgroup_summary
+    result:
+      - {cgroup_path_token: "CGROUP_PATH_TOKEN_SYSTEM_SLICE", relation: PARENT, pids_max: 800, pids_current: 750, membership_confirmed: true}
+      - {cgroup_path_token: "CGROUP_PATH_TOKEN_ORACLE_UNIT", parent_path_token: "CGROUP_PATH_TOKEN_SYSTEM_SLICE", relation: UNIT, pids_max: 1024, pids_current: 750, membership_confirmed: true}
+
+expected_findings:
+  - category: process-limits
+    constraints_count: 2
+    deduplicated: false
+    binding_constraint_candidate: "CGROUP_PATH_TOKEN_SYSTEM_SLICE"
+    reason: "system.slice (parent) y oracle.service (unit) son cgroup_path_token distintos -- dos constraints separados preservados, el parent puede ser el binding constraint real pese a estar más arriba en la jerarquía"

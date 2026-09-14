@@ -1,0 +1,30 @@
+# Fixture: oracle.service pids.max=max (unlimited), pero un cgroup hijo/delegado dentro de ese
+# scope tiene su propio pids.max=512 -- el constraint del hijo debe preservarse, nunca
+# deduplicado con el de la unit.
+# Usada por: os/process-limits, os/cgroups.
+fixture_id: FX-OS-ol8-child-delegated-cgroup-constraint
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_136"
+
+mock_evidence:
+  - collector_id: get_oracle_process_summary
+    result: {pid_token: "PID_TOKEN_604", process_family: "pmon", owner_token: "USER_TOKEN_ORACLE"}
+  - collector_id: get_cgroup_summary
+    result:
+      - {cgroup_path_token: "CGROUP_PATH_TOKEN_ORACLE_UNIT", relation: UNIT, pids_max: "max", pids_current: 500, membership_confirmed: true}
+      - {cgroup_path_token: "CGROUP_PATH_TOKEN_ORACLE_DELEGATED", parent_path_token: "CGROUP_PATH_TOKEN_ORACLE_UNIT", relation: DELEGATED, pids_max: 512, pids_current: 480, membership_confirmed: true}
+
+expected_findings:
+  - category: process-limits
+    constraints_count: 2
+    child_constraint_preserved: true
+    unit_pids_max: UNLIMITED
+    delegated_pids_max: 512
+    reason: "el cgroup delegado tiene su propio pids.max distinto del de la unit (unlimited) -- se preserva como constraint separado, nunca deduplicado con el de la unit"

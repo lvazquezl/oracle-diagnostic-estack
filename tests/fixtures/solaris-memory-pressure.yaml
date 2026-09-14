@@ -1,0 +1,23 @@
+# Fixture: Solaris, presión de memoria con actividad de paging sostenida.
+fixture_id: FX-OS-solaris-memory-pressure
+
+os_target:
+  family: solaris
+  distribution: "Solaris"
+  version: "11.4"
+  kernel: "5.11"
+  architecture: sparc
+  virtualization: "LDOM"
+  hostname_token: "HOST_TOKEN_302"
+
+mock_evidence:
+  - collector_id: get_memory_summary
+    result: {physical_memory_bytes: 34359738368, available_memory_bytes: 1073741824}
+  - collector_id: get_swap_summary
+    result: {swap_configured_bytes: 17179869184, swap_used_bytes: 8589934592, paging_activity_sustained: true}
+
+expected_findings:
+  - category: memory-pressure
+    severity: HIGH
+    confidence: PROBABLE_CAUSE
+    reason: "memoria disponible baja + actividad de paging sostenida — presión real (# 14-15 del prompt)"

@@ -1,0 +1,22 @@
+# Fixture: wallet TDE con permisos world-readable — hallazgo CRITICAL.
+# Usada por: os/security-filesystem-awareness.
+fixture_id: FX-OS-security-wallet-permission
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_504"
+
+mock_evidence:
+  - collector_id: get_mount_summary
+    result: {path_token: "WALLET_PATH_TOKEN_1", owner: "oracle", permissions: "644"}
+
+expected_findings:
+  - category: security-filesystem-awareness
+    severity: CRITICAL
+    confidence: FACT
+    reason: "wallet con permisos 644 (group/world readable) — exposición potencial de material de clave (# 50 del prompt)"

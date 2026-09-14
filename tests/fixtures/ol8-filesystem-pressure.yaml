@@ -1,0 +1,23 @@
+# Fixture: Oracle Linux 8, FRA al 96% de capacidad durante ventana de backup activa.
+# Usada por: os/filesystems, os/rman-media-manager-awareness.
+fixture_id: FX-OS-ol8-filesystem-pressure
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_108"
+
+mock_evidence:
+  - collector_id: get_filesystem_usage
+    result:
+      - {mount_point: "MOUNT_TOKEN_FRA", filesystem_type: "xfs", capacity_bytes: 2199023255552, used_bytes: 2111061835776, percent_used: 96.0, oracle_role: "fra"}
+
+expected_findings:
+  - category: filesystems
+    severity: CRITICAL
+    confidence: FACT
+    reason: "FRA al 96% (>95% umbral CRITICAL para mount con rol crítico), correlacionado con ventana de backup activa (# 29 del prompt)"

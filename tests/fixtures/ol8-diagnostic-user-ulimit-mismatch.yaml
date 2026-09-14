@@ -1,0 +1,28 @@
+# Fixture: el usuario/sesión de diagnóstico tiene ulimit -n = 1024 (su propio contexto), pero el
+# proceso Oracle real tiene un nofile efectivo de 65536 — el ulimit del diagnóstico nunca debe
+# reportarse ni interpretarse como el límite del proceso Oracle.
+# Usada por: os/ulimits, os/process-limits.
+fixture_id: FX-OS-ol8-diagnostic-user-ulimit-mismatch
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_112"
+
+mock_evidence:
+  - collector_id: get_process_limits
+    result: {nofile_soft: 1024, nofile_hard: 1024}   # ulimit del propio collector de diagnóstico
+  - collector_id: get_oracle_process_summary
+    result: {pid_token: "PID_TOKEN_503", process_family: "pmon", owner_token: "USER_TOKEN_ORACLE"}
+  - collector_id: get_process_effective_limits
+    result: {pid_token: "PID_TOKEN_503", nofile_soft: 65536, nofile_hard: 65536}
+
+expected_findings:
+  - category: process-limits
+    effective_nofile: 65536
+    diagnostic_session_nofile_ignored_as_oracle_evidence: true
+    reason: "el ulimit -n=1024 del usuario de diagnóstico representa sólo su propio contexto — el límite efectivo real del proceso Oracle (65536) es el reportado, nunca el del diagnóstico"

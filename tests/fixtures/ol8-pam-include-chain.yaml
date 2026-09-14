@@ -1,0 +1,34 @@
+# Fixture: el servicio PAM "oracle" no declara pam_limits.so literalmente, pero incluye
+# "system-auth", que sí lo declara — el resolver de includes debe seguir la cadena de forma
+# controlada y confirmar pam_limits_module_present: true.
+# Usada por: os/systemd-limits.
+fixture_id: FX-OS-ol8-pam-include-chain
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_123"
+
+mock_evidence:
+  - collector_id: get_service_limit_configuration
+    result: {unit: "oracle-db.service", pam_name: "oracle"}
+  - collector_id: get_pam_limits_applicability
+    result:
+      service: "oracle"
+      stack_readable: true
+      include_chain: ["oracle", "system-auth"]
+      pam_limits_module_present: true
+      module_found_in: "system-auth"
+      max_depth_used: 2
+      visited_services: ["oracle", "system-auth"]
+
+expected_findings:
+  - category: systemd-limits
+    pam_limits_module_present: true
+    applicability: APPLICABLE
+    include_chain_followed: true
+    reason: "pam_limits.so declarado en system-auth, incluido por el servicio oracle vía include -- el resolver sigue la cadena de forma controlada (max_depth/visited set), nunca asume que debe aparecer literalmente en el archivo principal"

@@ -15,6 +15,15 @@ RISKY_COLUMNS=("version_full:V\$INSTANCE.version_full" "\bcdb\b:V\$DATABASE.cdb"
 
 for fx in "$ROOT"/tests/fixtures/*.yaml; do
   fx_name=$(basename "$fx")
+
+  # Fixtures del dominio OS (Fase 9, os/*) no versionan por Oracle version -- oracle_version/
+  # compatibility_schema no aplican, el Query Variant Resolver no interviene en su dominio (evidencia
+  # de collectors semanticos, no queries SQL). Se marcan por el top-level os_target: en vez de
+  # oracle_version:, y quedan fuera de alcance de este test, no un fallo.
+  if grep -q '^os_target:' "$fx" && ! grep -q 'oracle_version:' "$fx"; then
+    continue
+  fi
+
   grep -q '^compatibility_schema:' "$fx" || { echo "[FAIL] $fx_name — sin compatibility_schema (seccion 26)"; FAIL=1; continue; }
 
   major=$(grep -m1 'oracle_version:' "$fx" | grep -oE 'major: [0-9]+' | grep -oE '[0-9]+')

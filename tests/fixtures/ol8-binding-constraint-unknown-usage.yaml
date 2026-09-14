@@ -1,0 +1,32 @@
+# Fixture: RLIMIT_NPROC/TasksMax/pids.max configurados, pero el uso actual no está disponible en
+# ningún scope -- el binding constraint debe ser UNKNOWN, nunca inferido eligiendo el menor valor
+# configurado.
+# Usada por: os/process-limits.
+fixture_id: FX-OS-ol8-binding-constraint-unknown-usage
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_126"
+
+mock_evidence:
+  - collector_id: get_process_effective_limits
+    result: {nproc_soft: 4096, current_process_count: null}
+  - collector_id: get_service_limit_configuration
+    result: {unit: "oracle-db.service", tasks_max: 1024, current_unit_tasks: null}
+  - collector_id: get_cgroup_summary
+    result: {pids_max: 2048, current_cgroup_tasks: null, membership_confirmed: true}
+
+expected_findings:
+  - category: process-limits
+    constraints:
+      - {type: RLIMIT_NPROC, scope: USER, configured: 4096, current_usage: null, headroom: UNKNOWN}
+      - {type: SYSTEMD_TASKS_MAX, scope: UNIT, configured: 1024, current_usage: null, headroom: UNKNOWN}
+      - {type: CGROUP_PIDS_MAX, scope: CGROUP, configured: 2048, current_usage: null, headroom: UNKNOWN}
+    binding_constraint: UNKNOWN
+    binding_constraint_chosen_by_min_configured: false
+    reason: "sin uso actual medido en ningún scope, el binding constraint es UNKNOWN -- nunca se elige TasksMax=1024 (el menor valor configurado) como sustituto"

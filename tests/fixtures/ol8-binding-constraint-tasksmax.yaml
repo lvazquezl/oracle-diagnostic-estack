@@ -1,0 +1,33 @@
+# Fixture: 3 scopes con headroom distinto -- RLIMIT_NPROC amplio, TasksMax ajustado, pids.max
+# amplio. El binding constraint debe ser SYSTEMD_TASKS_MAX (menor headroom relativo), nunca el
+# menor valor configurado (que sería pids.max=2048, mayor que TasksMax=1024, así que un mínimo
+# numérico ingenuo también fallaría distinto -- el punto real es que RLIMIT_NPROC=4096 es el
+# configurado más alto pero el headroom real más ajustado es el de TasksMax).
+# Usada por: os/process-limits.
+fixture_id: FX-OS-ol8-binding-constraint-tasksmax
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_124"
+
+mock_evidence:
+  - collector_id: get_process_effective_limits
+    result: {nproc_soft: 4096, current_process_count: 200}
+  - collector_id: get_service_limit_configuration
+    result: {unit: "oracle-db.service", tasks_max: 1024, current_unit_tasks: 950}
+  - collector_id: get_cgroup_summary
+    result: {pids_max: 2048, current_cgroup_tasks: 1000, membership_confirmed: true}
+
+expected_findings:
+  - category: process-limits
+    constraints:
+      - {type: RLIMIT_NPROC, scope: USER, configured: 4096, current_usage: 200, headroom: 3896}
+      - {type: SYSTEMD_TASKS_MAX, scope: UNIT, configured: 1024, current_usage: 950, headroom: 74}
+      - {type: CGROUP_PIDS_MAX, scope: CGROUP, configured: 2048, current_usage: 1000, headroom: 1048}
+    binding_constraint: SYSTEMD_TASKS_MAX
+    reason: "TasksMax tiene el headroom relativo más ajustado (74) pese a que RLIMIT_NPROC tiene el valor configurado más alto -- el binding constraint se determina por headroom real, nunca por el menor valor configurado"

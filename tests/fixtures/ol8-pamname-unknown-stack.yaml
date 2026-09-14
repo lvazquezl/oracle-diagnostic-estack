@@ -1,0 +1,27 @@
+# Fixture: PAMName confirmado, pero la pila PAM del servicio no es legible con la identidad
+# diagnóstica — debe producir INSUFFICIENT_EVIDENCE, nunca asumir APPLICABLE ni NOT_APPLICABLE.
+# Usada por: os/systemd-limits.
+fixture_id: FX-OS-ol8-pamname-unknown-stack
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_122"
+
+mock_evidence:
+  - collector_id: get_service_limit_configuration
+    result: {unit: "oracle-db.service", pam_name: "oracle", limit_nofile: 65536}
+  - collector_id: get_pam_limits_applicability
+    result: {service: "oracle", stack_readable: false}
+    collection_status: INSUFFICIENT_PRIVILEGES
+
+expected_findings:
+  - category: systemd-limits
+    pam_session_present: true
+    applicability: INSUFFICIENT_EVIDENCE
+    applicability_assumed: false
+    reason: "PAMName confirmado, pero la pila PAM efectiva no es legible — nunca se asume APPLICABLE por la sola presencia de PAMName="

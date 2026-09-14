@@ -1,0 +1,24 @@
+# Fixture: Data Guard — ruta ausente hacia el standby declarado, correlacionado con transport lag.
+# Usada por: os/dataguard-network-awareness.
+fixture_id: FX-OS-dataguard-network-issue
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_503"
+
+mock_evidence:
+  - collector_id: get_routes
+    result: {default_route: {gateway: "GW_TOKEN_1", interface: "IFACE_TOKEN_PUB"}, specific_routes: []}
+  - target_profile_dataguard: {standby_db_unique_name: "STANDBY_TOKEN_1"}
+  - external_correlation: "oracle-dataguard-analyst reporta transport lag sostenido hacia STANDBY_TOKEN_1"
+
+expected_findings:
+  - category: dataguard-network-awareness
+    severity: HIGH
+    confidence: PROBABLE_CAUSE
+    reason: "ninguna ruta específica hacia el standby declarado, correlacionado con transport lag reportado (# 48 del prompt)"

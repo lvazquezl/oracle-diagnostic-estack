@@ -1,0 +1,23 @@
+# Fixture: Oracle Linux 8, mismatch de MTU del interconnect entre dos nodos RAC.
+# Usada por: os/mtu.
+fixture_id: FX-OS-ol8-mtu-mismatch
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_114"
+
+mock_evidence:
+  - collector_id: get_mtu_summary
+    node1: {interface: "bond1", mtu: 9000, layer: "bond"}
+    node2: {interface: "bond1", mtu: 1500, layer: "bond"}
+
+expected_findings:
+  - category: mtu
+    severity: HIGH
+    confidence: FACT
+    reason: "MTU mismatch (9000 vs 1500) entre nodos del interconnect — causa documentada de degradación intermitente de Cache Fusion (# 38 del prompt)"

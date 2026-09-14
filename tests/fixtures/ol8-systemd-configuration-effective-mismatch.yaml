@@ -1,0 +1,27 @@
+# Fixture: la unit systemd declara LimitNOFILE=65536, pero el límite efectivo real leído del PID
+# es 4096 — CONFIGURATION_EFFECTIVE_MISMATCH, sin inferir una causa única automáticamente.
+# Usada por: os/systemd-limits.
+fixture_id: FX-OS-ol8-systemd-configuration-effective-mismatch
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_114"
+
+mock_evidence:
+  - collector_id: get_oracle_process_summary
+    result: {pid_token: "PID_TOKEN_505", process_family: "pmon", owner_token: "USER_TOKEN_ORACLE"}
+  - collector_id: get_service_limit_configuration
+    result: {unit: "oracle-db.service", limit_nofile: 65536}
+  - collector_id: get_process_effective_limits
+    result: {pid_token: "PID_TOKEN_505", nofile_soft: 4096, nofile_hard: 4096}
+
+expected_findings:
+  - category: systemd-limits
+    configuration_effective_mismatch: true
+    single_cause_inferred: false
+    reason: "configurado (65536) != efectivo (4096) — reportado como CONFIGURATION_EFFECTIVE_MISMATCH a investigar (restart pendiente/override no aplicado/launch context distinto/shell heredado/cgroup/desconocida), nunca una causa única asumida"

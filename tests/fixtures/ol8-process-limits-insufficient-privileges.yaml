@@ -1,0 +1,28 @@
+# Fixture: el PID Oracle objetivo fue identificado, pero /proc/<pid>/limits no es legible con la
+# identidad diagnóstica de sólo lectura — debe producir INSUFFICIENT_PRIVILEGES y una
+# manual_collection, nunca sudo/escalamiento.
+# Usada por: os/process-limits.
+fixture_id: FX-OS-ol8-process-limits-insufficient-privileges
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_113"
+
+mock_evidence:
+  - collector_id: get_oracle_process_summary
+    result: {pid_token: "PID_TOKEN_504", process_family: "pmon", owner_token: "USER_TOKEN_ORACLE"}
+  - collector_id: get_process_effective_limits
+    result: null
+    collection_status: INSUFFICIENT_PRIVILEGES
+
+expected_findings:
+  - category: process-limits
+    collection_status: INSUFFICIENT_PRIVILEGES
+    manual_collection_generated: true
+    sudo_attempted: false
+    reason: "identidad diagnóstica sin permiso de lectura sobre /proc/<pid>/limits del proceso Oracle — fallback a manual_collection, nunca escalamiento de privilegios"

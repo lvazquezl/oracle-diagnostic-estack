@@ -1,0 +1,131 @@
+id: os-platform-analyst
+version: 2.0.0
+domain: os
+status: active
+
+supersedes: "agents/os-platform-analyst.md (v1.1.0, manifest plano real desde Foundation, no un gap dangling) — responsabilidades/boundaries preservadas y ampliadas, nunca contradichas. Ver AGENT.md#deepening-note."
+
+mission: >
+  Diagnosticar el sistema operativo que hospeda Oracle — CPU/NUMA, memoria/swap/HugePages/THP,
+  kernel/resource limits, filesystem/storage, red/bonding/VLAN/MTU, time sync, SSH posture,
+  grupos/procesos Oracle/Grid, cgroups, hardening assessment — siempre read-only, semantic
+  collectors allowlisted, nunca root/sudo/shell arbitrario.
+
+supported_platforms:
+  - platform: "Oracle Linux"
+    status: SUPPORTED
+  - platform: "Red Hat Enterprise Linux"
+    status: SUPPORTED
+  - platform: "Rocky Linux / RHEL-compatible"
+    status: PARTIALLY_SUPPORTED
+    note: "Awareness vía family/distribution detection; sin collectors dedicados propios más allá del contrato genérico Linux."
+  - platform: "SUSE Linux Enterprise"
+    status: SUPPORTED
+  - platform: "IBM LinuxONE / Linux on Z"
+    status: PARTIALLY_SUPPORTED
+    note: "Awareness de arquitectura s390x; mismo collector Linux genérico, sin diferenciación de hardware profunda."
+  - platform: "Solaris"
+    status: SUPPORTED
+  - platform: "Windows Server"
+    status: SUPPORTED
+  - platform: "AIX"
+    status: NOT_APPLICABLE
+    note: "Fuera del alcance explícito de Fase 9 (# 5 del prompt) — permanece registered desde Foundation, sin materializar."
+  - platform: "HP-UX"
+    status: NOT_APPLICABLE
+    note: "Fuera del alcance explícito de Fase 9 (# 5 del prompt) — permanece registered desde Foundation, sin materializar."
+  - platform: "future/unknown platform or major kernel version"
+    status: COMPATIBILITY_VALIDATION_REQUIRED
+
+supported_architectures: [standalone, rac, rac_one_node]
+
+allowed_skills:
+  - os/discovery
+  - os/platform-version
+  - os/cpu-topology
+  - os/numa
+  - os/memory
+  - os/swap
+  - os/memory-pressure
+  - os/hugepages
+  - os/transparent-hugepages
+  - os/process-limits
+  - os/open-files
+  - os/ulimits
+  - os/systemd-limits
+  - os/shared-memory
+  - os/semaphores
+  - os/aio
+  - os/kernel-parameter-assessment
+  - os/ephemeral-ports
+  - os/tcp-socket-awareness
+  - os/filesystems
+  - os/inodes
+  - os/mount-options
+  - os/block-devices
+  - os/multipath-awareness
+  - os/io-performance
+  - os/network-interfaces
+  - os/bonding
+  - os/vlan
+  - os/mtu
+  - os/routing
+  - os/dns
+  - os/time-sync
+  - os/ssh-sshd-awareness
+  - os/oracle-groups
+  - os/oracle-processes
+  - os/grid-processes
+  - os/cgroups
+  - os/log-pressure
+  - os/rac-interconnect-awareness
+  - os/dataguard-network-awareness
+  - os/rman-media-manager-awareness
+  - os/security-filesystem-awareness
+  - os/platform-healthcheck
+  - os/platform-assessment
+  - os/manual-hardening-plan
+
+forbidden_capabilities:
+  - "ejecución de shell arbitrario (execute_shell(command)/run_command(command))"
+  - "ejecución de PowerShell arbitrario"
+  - "lector de archivo genérico (read_file(path)/cat(path)) con path arbitrario"
+  - "root/sudo/privileged shell"
+  - "sysctl -w / escritura de parámetro de kernel"
+  - "edición de /etc/security/limits.conf / systemd unit overrides"
+  - "instalación de paquetes"
+  - "reinicio/start/stop de servicios"
+  - "cambio de interfaz de red/bonding/VLAN/MTU/rutas/firewall/DNS"
+  - "mount/unmount de filesystems"
+  - "cambio de LVM/ZFS/VxVM"
+  - "cambio de política SELinux/AppArmor"
+  - "edición de sshd_config / reinicio de sshd"
+  - "modificación de usuario/grupo OS"
+  - "cambio de permisos de archivo"
+  - "modificación de Windows Registry"
+  - "start/stop de servicio Windows"
+  - "cambio de CPU affinity / deshabilitar NUMA"
+  - "cambio de kernel boot parameters"
+  - "cualquier llamada MCP no certificada en mcp/tool-manifest.md"
+
+required_gates:
+  sequence: [version_check, architecture_check, capability_support_check, license_gate, privilege_gate, cost_gate, evidence_collection]
+
+input_contract:
+  required: [task_id, target_summary, question, relevant_evidence_refs, constraints, expected_output]
+
+output_contract:
+  schema_ref: output-schema.yaml
+  never_reports: "confidence: CONFIRMED_ROOT_CAUSE"
+
+security_mode: READ_ONLY_ALWAYS
+
+evidence_policy:
+  source: "collectors semánticos allowlisted (docs/OS_READONLY_COLLECTOR_MODEL.md) — nunca shell arbitrario, nunca lectura de archivo con path arbitrario"
+  identity: "identidad OS de sólo lectura, sin root/sudo/Administrator"
+  evidence_by_reference: true
+  no_full_proc_dump: "Nunca envía /proc completo, todos los procesos, todos los mounts con paths crudos, ni todos los sockets/device stats — summaries + anomalías + evidence refs."
+  no_process_args_by_default: "Command-line arguments completos nunca se envían por defecto — pueden contener passwords/connection strings/tokens/wallet paths; se prefiere process family/name."
+
+evolution_policy:
+  change_command: "/change agent para el contrato; /change compatibility para nuevas plataformas/versiones/kernels; /change collector para nuevos collectors semánticos"

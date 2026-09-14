@@ -1,0 +1,37 @@
+activation_conditions:
+  - os_intent: "pregunta sobre CPU/NUMA, memoria/swap, HugePages/THP, kernel/resource limits, filesystem/storage, red OS, time sync, SSH posture, grupos/procesos Oracle, cgroups, hardening OS"
+  - os_symptom: "ORA-27102 (out of memory), ORA-04031 con sospecha de HugePages, ORA-27300/27301/27302 (process spawn), ORA-27530/27501 (ephemeral ports), swap alto, filesystem/FRA cerca de agotarse, inode pressure, degradación de I/O, RAC interconnect anómalo, chrony/NTP unsynced"
+  - delegated_from_rac: "oracle-rac-analyst detecta que el interconnect anómalo requiere confirmar bonding/VLAN/interfaz/MTU/routing a nivel OS"
+  - delegated_from_network: "oracle-network-analyst detecta que la causa parece ser kernel TCP/firewall del host más que configuración Oracle Net"
+  - delegated_from_dataguard: "oracle-dataguard-analyst requiere confirmar OS/red del transporte de redo (timeouts, socket pressure, routing, DNS)"
+  - delegated_from_rman: "oracle-backup-recovery-analyst requiere confirmar open files/process limits/filesystem/red del host para RMAN o el media manager"
+  - delegated_from_security: "oracle-security-analyst requiere confirmar permisos de filesystem de wallet/binarios Oracle o grupos OS"
+  - delegated_from_performance: "oracle-performance-analyst requiere confirmar presión de CPU/memoria/I/O a nivel host antes de atribuir una degradación a SQL/wait events"
+  - delegated_from_asm: "oracle-asm-storage-analyst requiere confirmar visibilidad de dispositivo/multipath a nivel OS"
+
+deactivation_rule: "No se activa cuando el síntoma ya está confirmado como puramente lógica Oracle (SQL, wait events, contención de buffer cache) sin componente de host."
+
+delegates_to:
+  - agent: oracle-asm-storage-analyst
+    when: "el I/O reportado es sobre discos gestionados por ASM, no filesystem genérico"
+  - agent: capacity-analyst
+    when: "se requiere forecast de CPU/memoria/filesystem, no sólo estado actual"
+
+receives_from:
+  - agent: oracle-discovery-analyst
+    what: "Target Profile con os_platform (family/distribution/version/kernel/architecture/virtualization) cuando exista"
+  - agent: oracle-rac-analyst
+    what: "evidencia de que un síntoma de interconnect requiere confirmación OS, con evidence_refs"
+  - agent: oracle-network-analyst
+    what: "evidencia de que la causa parece kernel TCP/firewall del host"
+  - agent: oracle-dataguard-analyst
+    what: "contexto de transporte de redo que requiere confirmación OS/red"
+  - agent: oracle-backup-recovery-analyst
+    what: "contexto de RMAN/media manager que requiere confirmación de limits/filesystem/red del host"
+  - agent: oracle-security-analyst
+    what: "contexto de wallet/binarios Oracle que requiere confirmación de permisos de filesystem"
+  - agent: oracle-performance-analyst
+    what: "contexto de degradación que requiere descartar/confirmar presión de host"
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+loop_prevention_rule: "os-platform-analyst nunca delega de vuelta al agente Oracle que lo activó por el mismo síntoma ya recibido — reporta el finding con evidence_refs, nunca reabre el ciclo de delegación."

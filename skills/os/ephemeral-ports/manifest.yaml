@@ -1,0 +1,19 @@
+name: ephemeral-ports
+display_name: "Ephemeral Port Range"
+id: os/ephemeral-ports
+version: 1.0.0
+domain: os
+status: active
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [Oracle Linux, RHEL, SUSE, LinuxONE, Solaris, Windows Server]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence:
+  - collector_id: get_ephemeral_port_range
+optional_evidence:
+  - collector_id: get_socket_summary
+data_sensitivity: LOW
+context_budget: LOW
+related_skills: [os/tcp-socket-awareness, os/rac-interconnect-awareness]

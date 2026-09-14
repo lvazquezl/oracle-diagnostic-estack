@@ -1,0 +1,27 @@
+# Fixture: Oracle Linux 8, inodes cerca de agotarse en destino de trace/diagnostic (espacio en
+# bytes aún con margen).
+# Usada por: os/inodes.
+fixture_id: FX-OS-ol8-inode-pressure
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_109"
+
+mock_evidence:
+  - collector_id: get_filesystem_usage
+    result:
+      - {mount_point: "MOUNT_TOKEN_DIAG", filesystem_type: "xfs", capacity_bytes: 107374182400, used_bytes: 21474836480, percent_used: 20.0, oracle_role: "diagnostic_dest"}
+  - collector_id: get_inode_usage
+    result:
+      - {mount_point: "MOUNT_TOKEN_DIAG", inode_total: 6553600, inode_used: 6291456, inode_percent: 96.0}
+
+expected_findings:
+  - category: inodes
+    severity: HIGH
+    confidence: FACT
+    reason: "inode_percent 96% mientras espacio en bytes está sólo al 20% — muchos archivos pequeños (trace) sin purga (# 30 del prompt)"

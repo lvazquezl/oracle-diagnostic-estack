@@ -1,0 +1,21 @@
+# Fixture: IBM LinuxONE / Linux on Z — awareness de arquitectura s390x, PARTIALLY_SUPPORTED.
+fixture_id: FX-OS-linuxone-awareness
+
+os_target:
+  family: linux
+  distribution: "LinuxONE"
+  version: "Oracle Linux 8.9 on s390x"
+  kernel: "5.15.0-200.131.31.el8uek.s390x"
+  architecture: s390x
+  virtualization: "LPAR"
+  hostname_token: "HOST_TOKEN_203"
+
+mock_evidence:
+  - collector_id: get_os_identity
+    result: {family: linux, distribution: "LinuxONE", architecture: "s390x"}
+
+expected_findings:
+  - category: platform-version
+    severity: INFO
+    confidence: FACT
+    reason: "LinuxONE/s390x: PARTIALLY_SUPPORTED — mismo collector Linux genérico, sin diferenciación de hardware profunda (agents/os-platform-analyst/manifest.yaml#supported_platforms)"

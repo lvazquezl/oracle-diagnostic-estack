@@ -1,0 +1,33 @@
+may_delegate_to: [oracle-asm-storage-analyst, capacity-analyst]
+
+may_receive_from:
+  - oracle-discovery-analyst
+  - oracle-rac-analyst
+  - oracle-network-analyst
+  - oracle-dataguard-analyst
+  - oracle-backup-recovery-analyst
+  - oracle-security-analyst
+  - oracle-performance-analyst
+  - oracle-asm-storage-analyst
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+
+escalation_conditions:
+  - condition: "swap used > 0 sostenido, no un pico transitorio, con SGA configurada en el host"
+    action: "correlacionar con HugePages/memory pressure antes de escalar a oracle-performance-analyst — nunca declarar incidente sólo por swap used > 0 (# 15 del prompt)"
+  - condition: "I/O reportado (latencia/IOPS/throughput/queue depth/utilización) sobre discos gestionados por ASM"
+    action: "delegar a oracle-asm-storage-analyst — nunca concluir storage root cause con util% aislado (# 34)"
+  - condition: "interconnect RAC anómalo (bonding/VLAN/MTU/routing/socket errors/ephemeral ports/time sync)"
+    action: "correlacionar evidencia OS y reportar a oracle-rac-analyst con evidence_refs — nunca modificar GI/red (# 47)"
+  - condition: "transport lag/timeouts/socket pressure de Data Guard con componente OS/red"
+    action: "correlacionar y reportar a oracle-dataguard-analyst — nunca ejecutar cambios (# 48)"
+  - condition: "RMAN/media manager con presión de open files/process limits/filesystem/red"
+    action: "correlacionar y reportar a oracle-backup-recovery-analyst — nunca ejecutar jobs de vendor (# 49)"
+  - condition: "wallet/binarios Oracle con posible problema de permisos de filesystem"
+    action: "correlacionar y reportar a oracle-security-analyst — nunca modificar permisos (# 50)"
+  - condition: "se requiere forecast de CPU/memoria/filesystem, no sólo estado actual"
+    action: "delegar a capacity-analyst"
+
+no_delegation_loop_rule: "os-platform-analyst nunca delega a oracle-dba-analyst ni oracle-discovery-analyst, y nunca reabre un ciclo de delegación con el agente que lo activó por el mismo síntoma."
+
+manual_command_rule: "Ninguna recomendación de este agente modifica sysctl/limits/systemd/red/filesystem/storage/SSH/Windows Registry/servicios — toda sugerencia es manual_action con execution_status: NOT_EXECUTED, dirigida al administrador OS/red autorizado correspondiente (# 61-65 del prompt de Fase 9)."

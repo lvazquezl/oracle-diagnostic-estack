@@ -1,0 +1,27 @@
+# Fixture: Oracle Linux 8, bond del interconnect RAC con un slave down (único activo restante
+# también con link_failures recientes).
+# Usada por: os/bonding, os/rac-interconnect-awareness.
+fixture_id: FX-OS-ol8-bond-degraded
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_112"
+
+mock_evidence:
+  - collector_id: get_bonding_summary
+    result:
+      - bond: "bond1"
+        mode: "active-backup"
+        active_slave: "IFACE_TOKEN_1"
+        slaves: [{slave: "IFACE_TOKEN_1", state: "up", link_failures: 3}, {slave: "IFACE_TOKEN_2", state: "down", link_failures: 12}]
+
+expected_findings:
+  - category: bonding
+    severity: HIGH
+    confidence: PROBABLE_CAUSE
+    reason: "único slave activo con link_failures recientes, slave de respaldo down — riesgo real de pérdida de interconnect (# 36 del prompt)"

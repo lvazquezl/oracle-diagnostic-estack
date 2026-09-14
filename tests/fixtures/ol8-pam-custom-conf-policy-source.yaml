@@ -1,0 +1,31 @@
+# Fixture: session required pam_limits.so conf=/opt/oracle/security/custom-limits.conf -- mode
+# debe ser CUSTOM_CONF, y limits.conf/limits.d por defecto NUNCA se asumen concurrentes.
+# Usada por: os/systemd-limits, os/ulimits.
+fixture_id: FX-OS-ol8-pam-custom-conf-policy-source
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_131"
+
+mock_evidence:
+  - collector_id: get_pam_limits_applicability
+    result: {service: "oracle", pam_limits_module_present: true, stack_readable: true}
+  - collector_id: get_pam_limits_policy_source
+    result:
+      service: "oracle"
+      invocations:
+        - module: "pam_limits.so"
+          arguments: {conf: "/opt/oracle/security/custom-limits.conf"}
+          mode: CUSTOM_CONF
+          source_token: "SOURCE_TOKEN_CUSTOM_001"
+
+expected_findings:
+  - category: systemd-limits
+    mode: CUSTOM_CONF
+    default_source_assumed: false
+    reason: "conf=/opt/oracle/security/custom-limits.conf reemplaza la fuente por defecto para esta invocación -- limits.conf/limits.d nunca se agregan como fuente concurrente"

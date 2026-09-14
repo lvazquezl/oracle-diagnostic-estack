@@ -1,0 +1,28 @@
+# Fixture: Oracle Linux 8, HugePages insuficientes para la SGA total del host (2 instancias).
+# Usada por: os/hugepages.
+fixture_id: FX-OS-ol8-low-hugepages
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_102"
+
+sga_inventory:
+  - instance: "PRODDB1"
+    sga_bytes: 34359738368
+  - instance: "PRODDB2"
+    sga_bytes: 17179869184
+
+mock_evidence:
+  - collector_id: get_hugepages_status
+    result: {hugepagesize_bytes: 2097152, hugepages_total: 8192, hugepages_free: 100, hugepages_rsvd: 0}
+
+expected_findings:
+  - category: hugepages
+    severity: HIGH
+    confidence: FACT
+    reason: "required_pages = ceil((34359738368+17179869184)/2097152) = 24576; configured_pages = 8192; shortfall_pages = 16384 (# 16-18 del prompt)"

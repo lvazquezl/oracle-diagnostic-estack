@@ -3,7 +3,7 @@
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
-F="$ROOT/agents/os-platform-analyst.md"
+F="$ROOT/agents/os-platform-analyst/AGENT.md"
 
 for plat in "Oracle Linux" "RHEL" "SUSE" "Solaris" "AIX" "Windows Server" "HP-UX"; do
   if grep -q "$plat" "$F"; then
@@ -15,7 +15,7 @@ for plat in "Oracle Linux" "RHEL" "SUSE" "Solaris" "AIX" "Windows Server" "HP-UX
 done
 
 for plat in linux solaris aix windows hpux; do
-  if grep -q "$plat" "$ROOT/skills/REGISTRY.md"; then
+  if grep -qi "$plat" "$ROOT/skills/REGISTRY.md"; then
     echo "[PASS] skills/REGISTRY.md registra plataforma $plat"
   else
     echo "[FAIL] skills/REGISTRY.md no registra plataforma $plat"

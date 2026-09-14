@@ -1,0 +1,18 @@
+name: grid-processes
+display_name: "Grid Infrastructure Process Summary"
+id: os/grid-processes
+version: 1.0.0
+domain: os
+status: active
+supported_oracle_versions: [11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [Oracle Linux, RHEL, SUSE, LinuxONE, Solaris]
+supported_architectures: [rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence:
+  - collector_id: get_grid_process_summary
+optional_evidence: []
+data_sensitivity: HIGH
+context_budget: LOW
+related_skills: [os/oracle-processes, os/rac-interconnect-awareness]

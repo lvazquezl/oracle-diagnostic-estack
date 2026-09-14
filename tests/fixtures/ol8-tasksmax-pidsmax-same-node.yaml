@@ -1,0 +1,33 @@
+# Fixture: oracle.service TasksMax=1024, y el cgroup de esa misma unit reporta pids.max=1024/
+# pids.current=900 -- mismo cgroup_path_token -- debe deduplicarse en un único constraint
+# canónico PID_CONTROLLER.
+# Usada por: os/process-limits.
+fixture_id: FX-OS-ol8-tasksmax-pidsmax-same-node
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_133"
+
+mock_evidence:
+  - collector_id: get_oracle_process_summary
+    result: {pid_token: "PID_TOKEN_601", process_family: "pmon", owner_token: "USER_TOKEN_ORACLE"}
+  - collector_id: get_unit_cgroup_path
+    result: {unit: "oracle.service", cgroup_path_token: "CGROUP_PATH_TOKEN_ORACLE_UNIT"}
+  - collector_id: get_service_limit_configuration
+    result: {unit: "oracle.service", tasks_max: 1024}
+  - collector_id: get_cgroup_summary
+    result: {cgroup_path_token: "CGROUP_PATH_TOKEN_ORACLE_UNIT", relation: UNIT, pids_max: 1024, pids_current: 900, membership_confirmed: true}
+
+expected_findings:
+  - category: process-limits
+    canonical_type: PID_CONTROLLER
+    deduplicated: true
+    configured: 1024
+    current_usage: 900
+    headroom: 124
+    reason: "TasksMax de la unit y pids.max de su cgroup resuelven al mismo cgroup_path_token -- un único constraint PID_CONTROLLER con ambas fuentes referenciadas, nunca dos entradas independientes"

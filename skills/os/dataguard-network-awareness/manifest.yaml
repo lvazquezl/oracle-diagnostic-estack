@@ -1,0 +1,19 @@
+name: dataguard-network-awareness
+display_name: "Data Guard Network OS Awareness"
+id: os/dataguard-network-awareness
+version: 1.0.0
+domain: os
+status: active
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [Oracle Linux, RHEL, SUSE, LinuxONE, Solaris, Windows Server]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence:
+  - collector_id: get_routes
+  - collector_id: get_socket_summary
+optional_evidence: []
+data_sensitivity: MEDIUM
+context_budget: LOW
+related_skills: [os/routing, os/dns, os/tcp-socket-awareness, os/time-sync]

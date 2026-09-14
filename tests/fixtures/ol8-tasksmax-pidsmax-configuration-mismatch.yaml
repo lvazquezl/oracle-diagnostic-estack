@@ -1,0 +1,31 @@
+# Fixture: TasksMax=2048 configurado en la unit, pero el mismo cgroup runtime reporta
+# pids.max=1024 -- CONFIGURATION_EFFECTIVE_MISMATCH, con el estado runtime (1024) prevaleciendo
+# para la restricción efectiva, sin recomendar restart automáticamente.
+# Usada por: os/process-limits.
+fixture_id: FX-OS-ol8-tasksmax-pidsmax-configuration-mismatch
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_134"
+
+mock_evidence:
+  - collector_id: get_oracle_process_summary
+    result: {pid_token: "PID_TOKEN_602", process_family: "pmon", owner_token: "USER_TOKEN_ORACLE"}
+  - collector_id: get_unit_cgroup_path
+    result: {unit: "oracle.service", cgroup_path_token: "CGROUP_PATH_TOKEN_ORACLE_UNIT"}
+  - collector_id: get_service_limit_configuration
+    result: {unit: "oracle.service", tasks_max: 2048}
+  - collector_id: get_cgroup_summary
+    result: {cgroup_path_token: "CGROUP_PATH_TOKEN_ORACLE_UNIT", relation: UNIT, pids_max: 1024, pids_current: 900, membership_confirmed: true}
+
+expected_findings:
+  - category: process-limits
+    configuration_effective_mismatch: true
+    effective_runtime_constraint: 1024
+    restart_recommended_automatically: false
+    reason: "TasksMax configurado (2048) difiere del pids.max runtime del mismo cgroup (1024) -- el estado runtime prevalece para describir la restricción efectiva, nunca el valor configurado; ninguna recomendación de reinicio automática"

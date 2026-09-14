@@ -1,0 +1,23 @@
+# Fixture: Solaris, host correctamente dimensionado.
+fixture_id: FX-OS-solaris-healthy
+
+os_target:
+  family: solaris
+  distribution: "Solaris"
+  version: "11.4"
+  kernel: "5.11"
+  architecture: sparc
+  virtualization: "LDOM"
+  hostname_token: "HOST_TOKEN_301"
+
+mock_evidence:
+  - collector_id: get_memory_summary
+    result: {physical_memory_bytes: 68719476736, available_memory_bytes: 17179869184}
+  - collector_id: get_swap_summary
+    result: {swap_configured_bytes: 34359738368, swap_used_bytes: 0}
+
+expected_findings:
+  - category: platform-healthcheck
+    severity: LOW
+    confidence: FACT
+    reason: "Solaris certificado SUPPORTED, dimensionamiento saludable"

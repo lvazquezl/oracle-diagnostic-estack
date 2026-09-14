@@ -1,0 +1,135 @@
+os_platform_result:
+  summary: string
+
+  os_target:
+    family: string|null              # linux|solaris|windows|unknown
+    distribution: string|null        # Oracle Linux|RHEL|SUSE|LinuxONE|Solaris|Windows Server
+    version: string|null
+    kernel: string|null
+    architecture: string|null        # x86_64|s390x|sparc|...
+    virtualization: string|null      # VMware|KVM|Hyper-V|LPAR|bare_metal|unknown
+    hostname_token: string           # MASK por defecto
+
+  health:
+    # 25 dimensiones — ver docs/OS_PLATFORM_DIAGNOSTIC_MODEL.md#health-model
+    os_identity: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    cpu: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    numa: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    memory: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    swap: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    hugepages: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    thp: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    process_limits: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    open_files: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    ipc: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    aio: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    ephemeral_ports: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    filesystem: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    inodes: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    block_devices: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    multipath: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    io: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    network: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    bonding: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    vlan: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    mtu: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    dns: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    time_sync: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    oracle_groups: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    oracle_processes: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    cgroups: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+    security_posture: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|PARTIALLY_SUPPORTED
+
+  hugepages_assessment:
+    total_sga_bytes: int|null
+    hugepage_size_bytes: int|null
+    required_pages: int|null
+    configured_pages: int|null
+    free_pages: int|null
+    shortfall_pages: int|null
+    multiple_databases_considered: bool
+
+  # PHASE 9 — EFFECTIVE PROCESS LIMITS & SYSTEMD/PAM SOURCE-OF-TRUTH HARDENING
+  process_limits_assessment:
+    launch_context:
+      type: SYSTEMD|PAM_LOGIN|PAM_SU|MANUAL_SHELL|ORACLE_CLUSTERWARE|OTHER|UNKNOWN
+      source: string|null
+      confidence: FACT|OBSERVATION|UNDETERMINED
+      evidence_ids: [string]
+    effective_limits:
+      pid_token: string|null
+      process_family: string|null
+      owner_token: string|null
+      max_open_files: {soft: int|null, hard: int|null}
+      max_processes: {soft: int|null, hard: int|null}
+      max_locked_memory: {soft: int|null, hard: int|null}
+      max_stack: {soft: int|null, hard: int|null}
+      source: EFFECTIVE_TARGET_PROCESS_LIMITS|CERTIFIED_LAUNCH_CONTEXT_CONFIGURATION|USER_PAM_POLICY_CONFIGURATION|HOST_DEFAULTS|UNKNOWN
+      collection_status: FACT_COLLECTED|INSUFFICIENT_PRIVILEGES|NOT_APPLICABLE
+      evidence_ids: [string]
+    configured_sources:
+      systemd: {limit_nofile: int|null, limit_nproc: int|null, tasks_max: int|null, applicable: bool}
+      pam: {nofile_soft: int|null, nproc_soft: int|null, applicable: bool}
+      cgroup: {pids_max: int|null}
+      host: {file_max: int|null, pid_max: int|null}
+    conflicts:
+      - type: string        # ej. CONFIGURATION_EFFECTIVE_MISMATCH
+        description: string
+    diagnostic_session_limits: {nofile: int|null, nproc: int|null}   # nunca usado como evidencia Oracle
+
+    # PHASE 9 — PAM LIMITS APPLICABILITY & PROCESS CONSTRAINT SCOPE MICRO-HARDENING
+    pam_limits:
+      pam_session_present: bool|null        # PAMName= declarado -- sólo eso, nunca implica applicability
+      pam_service: string|null
+      pam_limits_module_present: bool|null  # confirmado en la pila PAM efectiva, nunca inferido
+      limits_policy_source_available: bool|null
+      applicability: APPLICABLE|NOT_APPLICABLE|INSUFFICIENT_EVIDENCE|NOT_ASSESSED
+      confidence: FACT|OBSERVATION|UNDETERMINED
+      evidence_ids: [string]
+    process_capacity:
+      constraints:
+        - type: RLIMIT_NPROC|SYSTEMD_TASKS_MAX|CGROUP_PIDS_MAX|KERNEL_PID_MAX
+          scope: USER|UNIT|CGROUP|HOST
+          configured: int|string|null       # int, "UNLIMITED", o null
+          current_usage: int|null
+          headroom: int|string|null         # int, "UNKNOWN", o null
+          applicable: bool                  # false si scope/membership no confirmados
+          confidence: FACT|OBSERVATION|UNDETERMINED
+      binding_constraint:
+        type: string|null
+        scope: string|null
+        headroom: int|string|null
+        rationale: string
+        confidence: FACT|OBSERVATION|UNDETERMINED
+
+  findings:
+    - area: string
+      platform: string
+      observation: string
+      severity: INFO|LOW|MEDIUM|HIGH|CRITICAL
+      confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE   # nunca CONFIRMED_ROOT_CAUSE
+      evidence_refs: [string]
+
+  hypotheses: [string]
+  evidence_refs: [string]
+
+  recommendations:
+    - manual_action:
+        action_id: string
+        purpose: string
+        owner_role: string
+        platform: string
+        command: string|null
+        config_file: string|null
+        prechecks: [string]
+        expected_result: string
+        risk: string
+        rollback: string
+        postchecks: [string]
+        reboot_required: bool
+        execution_status: NOT_EXECUTED
+
+  limitations: [string]
+  confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|UNDETERMINED
+  next_skill_or_agent: string|null
+  capability_status: SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED|LICENSE_RESTRICTED|INSUFFICIENT_PRIVILEGES|INSUFFICIENT_EVIDENCE|POLICY_BLOCKED|ENVIRONMENT_UNKNOWN|COMPATIBILITY_VALIDATION_REQUIRED|null

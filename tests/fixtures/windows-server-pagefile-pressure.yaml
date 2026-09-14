@@ -1,0 +1,21 @@
+# Fixture: Windows Server, pagefile cerca de agotarse.
+fixture_id: FX-OS-windows-server-pagefile-pressure
+
+os_target:
+  family: windows
+  distribution: "Windows Server"
+  version: "2022"
+  kernel: "10.0.20348"
+  architecture: x86_64
+  virtualization: "Hyper-V"
+  hostname_token: "HOST_TOKEN_402"
+
+mock_evidence:
+  - collector_id: get_windows_pagefile_summary
+    result: {pagefile_configured_bytes: 8589934592, pagefile_used_bytes: 8400000000}
+
+expected_findings:
+  - category: swap
+    severity: HIGH
+    confidence: FACT
+    reason: "pagefile_used cerca de pagefile_configured (~98%) — riesgo real de agotamiento en Windows"

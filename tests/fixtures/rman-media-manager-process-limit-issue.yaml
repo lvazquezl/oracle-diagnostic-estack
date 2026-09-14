@@ -1,0 +1,23 @@
+# Fixture: RMAN con 16 canales SBT paralelos, open files del usuario oracle cerca del límite.
+# Usada por: os/rman-media-manager-awareness.
+fixture_id: FX-OS-rman-media-manager-process-limit
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_502"
+
+mock_evidence:
+  - collector_id: get_open_files_limits
+    result: {nofile_soft: 4096, current_usage: 3950}
+  - external_correlation: "oracle-backup-recovery-analyst reporta ventana de backup RMAN activa con 16 canales SBT paralelos"
+
+expected_findings:
+  - category: rman-media-manager-awareness
+    severity: HIGH
+    confidence: PROBABLE_CAUSE
+    reason: "open files cerca del límite durante ventana de backup activa con múltiples canales SBT (# 49 del prompt)"

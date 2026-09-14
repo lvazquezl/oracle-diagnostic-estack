@@ -1,0 +1,31 @@
+# Fixture: Oracle process lanzado por systemd — LimitNOFILE de la unit (65536) es la fuente
+# configurada; limits.conf (131072) NO se asume aplicable (sin PAMName= declarado); el límite
+# efectivo real leído del PID coincide con el de la unit systemd.
+# Usada por: os/systemd-limits, os/process-limits.
+fixture_id: FX-OS-ol8-systemd-oracle-effective-limit
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_110"
+
+mock_evidence:
+  - collector_id: get_oracle_process_summary
+    result: {pid_token: "PID_TOKEN_501", process_family: "pmon", owner_token: "USER_TOKEN_ORACLE"}
+  - collector_id: get_service_limit_configuration
+    result: {unit: "oracle-db.service", limit_nofile: 65536, limit_nproc: 16384, tasks_max: 4096}
+  - collector_id: get_process_effective_limits
+    result: {pid_token: "PID_TOKEN_501", nofile_soft: 65536, nofile_hard: 65536, nproc_soft: 16384}
+  - collector_id: get_pam_limit_configuration
+    result: {nofile_soft: 131072, nproc_soft: 32768}   # presente en el host, pero NO aplica a este launch context
+
+expected_findings:
+  - category: systemd-limits
+    launch_context: SYSTEMD
+    pam_applicable: false
+    effective_matches_configured: true
+    reason: "límite efectivo del PID (65536) coincide con LimitNOFILE de la unit systemd; limits.conf (131072) no aplica sin PAMName= confirmado — nunca combinado mediante regla de mínimo universal"

@@ -1,0 +1,23 @@
+# Fixture: SUSE Linux Enterprise Server, host correctamente dimensionado.
+fixture_id: FX-OS-sles-healthy
+
+os_target:
+  family: linux
+  distribution: "SUSE Linux Enterprise"
+  version: "15 SP5"
+  kernel: "5.14.21-150500.53-default"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_202"
+
+mock_evidence:
+  - collector_id: get_memory_summary
+    result: {physical_memory_bytes: 137438953472, available_memory_bytes: 34359738368}
+  - collector_id: get_hugepages_status
+    result: {hugepagesize_bytes: 2097152, hugepages_total: 24576, hugepages_free: 1024, hugepages_rsvd: 0}
+
+expected_findings:
+  - category: platform-healthcheck
+    severity: LOW
+    confidence: FACT
+    reason: "SLES certificado SUPPORTED, dimensionamiento saludable"

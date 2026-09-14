@@ -1,0 +1,27 @@
+# Fixture: systemd unit declara PAMName=oracle, pero la pila PAM efectiva del servicio "oracle"
+# NO carga pam_limits.so — la applicability debe ser NOT_APPLICABLE, nunca inferida APPLICABLE
+# por la sola presencia de PAMName=.
+# Usada por: os/systemd-limits.
+fixture_id: FX-OS-ol8-pamname-without-pam-limits
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_120"
+
+mock_evidence:
+  - collector_id: get_service_limit_configuration
+    result: {unit: "oracle-db.service", pam_name: "oracle", limit_nofile: 65536}
+  - collector_id: get_pam_limits_applicability
+    result: {service: "oracle", pam_limits_module_present: false, stack_readable: true}
+
+expected_findings:
+  - category: systemd-limits
+    pam_session_present: true
+    pam_limits_module_present: false
+    applicability: NOT_APPLICABLE
+    reason: "PAMName=oracle sólo prueba que se solicita una sesión PAM; la pila efectiva del servicio no carga pam_limits.so, por lo que limits.conf no aplica"

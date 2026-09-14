@@ -1,0 +1,30 @@
+# Fixture: headroom explícitamente decreciente por scope -- RLIMIT_NPROC=2000, TasksMax=500,
+# pids.max=10 -- el binding constraint debe ser CGROUP_PIDS_MAX.
+# Usada por: os/process-limits.
+fixture_id: FX-OS-ol8-binding-constraint-cgroup
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_125"
+
+mock_evidence:
+  - collector_id: get_process_effective_limits
+    result: {nproc_soft: 2500, current_process_count: 500}
+  - collector_id: get_service_limit_configuration
+    result: {unit: "oracle-db.service", tasks_max: 1200, current_unit_tasks: 700}
+  - collector_id: get_cgroup_summary
+    result: {pids_max: 1010, current_cgroup_tasks: 1000, membership_confirmed: true}
+
+expected_findings:
+  - category: process-limits
+    constraints:
+      - {type: RLIMIT_NPROC, scope: USER, headroom: 2000}
+      - {type: SYSTEMD_TASKS_MAX, scope: UNIT, headroom: 500}
+      - {type: CGROUP_PIDS_MAX, scope: CGROUP, headroom: 10}
+    binding_constraint: CGROUP_PIDS_MAX
+    reason: "pids.max tiene el headroom más bajo (10) de los tres scopes -- es la restricción vinculante real para este proceso"

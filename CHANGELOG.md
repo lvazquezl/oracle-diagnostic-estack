@@ -2,6 +2,161 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — 2026-09-14 — PHASE 9 — PAM LIMITS POLICY SOURCE & PID CONTROLLER IDENTITY MICRO-HARDENING
+
+Micro-hardening sobre la Fase 9 base + los dos hardenings previos (misma rama
+`phase/9-os-platform`), previo a aprobar `v0.9.0-os-platform`. Ver
+`docs/PHASE_9_PAM_POLICY_SOURCE_PID_CONTROLLER_IDENTITY_HARDENING.md` para el reporte de cierre
+completo.
+
+### Fixed
+
+- **`pam_limits.so` custom `conf=` source no modelado**: `pam_limits.applicability ==
+  APPLICABLE` se trataba como prueba de que `/etc/security/limits.conf`/`limits.d/*` eran la
+  fuente de policy efectiva, sin parsear los argumentos reales de la invocación de
+  `pam_limits.so`. Corregido: nuevo collector `get_pam_limits_policy_source(service)` parsea
+  `conf=`/`debug=`/`set_all=`/`utmp_early=` y determina `mode: DEFAULT|CUSTOM_CONF|
+  INSUFFICIENT_EVIDENCE|NOT_APPLICABLE` — con `conf=` presente, `limits.conf`/`limits.d` nunca se
+  agregan como fuente concurrente; múltiples invocaciones preservadas por separado.
+- **`TasksMax`/`pids.max` del mismo cgroup contados dos veces**: el Binding Constraint Model
+  siempre listaba `SYSTEMD_TASKS_MAX` y `CGROUP_PIDS_MAX` como constraints independientes, incluso
+  cuando resuelven al mismo control group. Corregido: nuevo collector `get_unit_cgroup_path(unit)`
+  y PID Controller Canonical Model en `os/process-limits` — deduplica en un único constraint
+  `PID_CONTROLLER` cuando `unit_cgroup_path_token == cgroup_path_token`; nodos `PARENT`/`CHILD`/
+  `DELEGATED` con path distinto permanecen separados, nunca deduplicados por similitud numérica.
+- Defecto de edición pre-existente en `skills/os/cgroups/SKILL.md` (secciones "Documentation
+  requirements"/"Change history" duplicadas al final, con la segunda copia truncada) — corregido.
+
+### Added
+
+- Collectors `get_pam_limits_policy_source(service)`, `get_unit_cgroup_path(unit)` —
+  `docs/OS_READONLY_COLLECTOR_MODEL.md`.
+- PID Controller Canonical Model (`process_constraint_pid_controller`,
+  `CONFIGURATION_EFFECTIVE_MISMATCH` a nivel de nodo) en `os/process-limits` v4.0.0.
+- Cgroup hierarchy model (`cgroup_constraint`, `relation: UNIT|PARENT|CHILD|DELEGATED|OTHER`) en
+  `os/cgroups` v3.0.0.
+- 7 fixtures y 21 tests nuevos — ver el reporte de cierre.
+- `docs/PHASE_9_PAM_POLICY_SOURCE_PID_CONTROLLER_IDENTITY_HARDENING.md`.
+
+### Changed
+
+- `os/systemd-limits` v3.0.0→v4.0.0, `os/process-limits` v3.0.0→v4.0.0, `os/ulimits`
+  v3.0.0→v4.0.0, `os/cgroups` v2.0.0→v3.0.0.
+- `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` — dominio `os`: notas extendidas con
+  PAM policy source/module arguments/PID controller identity/cgroup hierarchy.
+
+## [Unreleased] — 2026-09-14 — PHASE 9 — PAM LIMITS APPLICABILITY & PROCESS CONSTRAINT SCOPE MICRO-HARDENING
+
+Micro-hardening sobre la Fase 9 base + el hardening EFFECTIVE PROCESS LIMITS & SYSTEMD/PAM
+SOURCE-OF-TRUTH (misma rama `phase/9-os-platform`), previo a aprobar `v0.9.0-os-platform`. Ver
+`docs/PHASE_9_PAM_LIMITS_PROCESS_CONSTRAINT_SCOPE_HARDENING.md` para el reporte de cierre completo.
+
+### Fixed
+
+- **`os/systemd-limits` — `PAMName=` tratado como prueba suficiente de PAM applicability**: el
+  hardening anterior corrigió el merge systemd/PAM pero introdujo este defecto propio —
+  `pam_applicable: true` se derivaba de `PAMName=` confirmado sin verificar que `pam_limits.so`
+  estuviera realmente cargado en la pila PAM efectiva del servicio. Corregido: nuevo modelo
+  `pam_limits: {pam_session_present, pam_service, pam_limits_module_present, applicability}` con
+  estados `APPLICABLE|NOT_APPLICABLE|INSUFFICIENT_EVIDENCE|NOT_ASSESSED`, determinado vía el nuevo
+  collector `get_pam_limits_applicability(service)` (sigue `include`/`substack` con protección
+  contra loops).
+- **`os/cgroups` — regla de mínimo universal `min(nproc, TasksMax, pids.max)`**: v1.0.0 declaraba
+  "el valor efectivo es el más restrictivo entre cgroup, nproc y TasksMax systemd", ignorando scope
+  y membership de cada constraint. Corregido: `RLIMIT_NPROC`/`TasksMax`/`pids.max`/`pid_max` se
+  modelan como constraints paralelos (scopes `USER`/`UNIT`/`CGROUP`/`HOST`) en el nuevo Binding
+  Constraint Model de `os/process-limits` (`process_capacity`), que calcula la restricción
+  vinculante real desde `applicability`+`scope`+`current_usage`+`headroom`+membership — nunca por
+  comparación directa de valores configurados.
+
+### Added
+
+- Collector `get_pam_limits_applicability(service)` — `docs/OS_READONLY_COLLECTOR_MODEL.md`.
+- Binding Constraint Model (`process_capacity: {constraints, binding_constraint}`) en
+  `os/process-limits` v3.0.0; bloque `process_capacity`/`pam_limits` en
+  `agents/os-platform-analyst/output-schema.yaml`.
+- Manejo explícito de valores `UNLIMITED`/`FINITE`/`UNKNOWN` para constraints sin valor numérico.
+- 7 fixtures y 19 tests nuevos — ver el reporte de cierre.
+- `docs/PHASE_9_PAM_LIMITS_PROCESS_CONSTRAINT_SCOPE_HARDENING.md`.
+
+### Changed
+
+- `os/systemd-limits` v2.0.0→v3.0.0, `os/process-limits` v2.0.0→v3.0.0, `os/ulimits`
+  v2.0.0→v3.0.0, `os/cgroups` v1.0.0→v2.0.0.
+- `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` — dominio `os`: notas extendidas con
+  PAM session/pam_limits applicability/include-chain/binding-constraint.
+- `tests/test_systemd_limits.sh`, `tests/test_systemd_service_does_not_assume_pam_limits.sh`,
+  `tests/test_cgroup_pids_limit_awareness.sh` — aserciones actualizadas al nuevo modelo
+  (`pam_limits:`/`pids_constraint:` reemplazan a `pam_applicable`/`pids_max`).
+
+## [Unreleased] — 2026-09-14 — PHASE 9 — EFFECTIVE PROCESS LIMITS & SYSTEMD/PAM SOURCE-OF-TRUTH HARDENING
+
+Hardening sobre la Fase 9 base (misma rama `phase/9-os-platform`), previo a aprobar
+`v0.9.0-os-platform`. Ver `docs/PHASE_9_EFFECTIVE_PROCESS_LIMITS_SYSTEMD_PAM_HARDENING.md` para el
+reporte de cierre completo.
+
+### Fixed
+
+- **`os/systemd-limits` — regla universal incorrecta de "mínimo entre systemd y limits.conf"**:
+  un proceso lanzado directamente por systemd normalmente no pasa por una sesión PAM, así que
+  `/etc/security/limits.conf` no aplica automáticamente — la regla combinaba ambas fuentes sin esa
+  distinción. Corregido: PAM sólo se correlaciona con evidencia explícita de `PAMName=` en la
+  unit; el valor efectivo real se prioriza desde el PID objetivo (`get_process_effective_limits`),
+  nunca inferido calculando el mínimo entre fuentes configuradas. `docs/OS_KERNEL_LIMITS_MODEL.md`
+  corregido en el mismo sentido.
+- **`os/process-limits`/`os/open-files`/`os/ulimits` — diagnostic-user ulimit tratado
+  implícitamente como evidencia Oracle**: el `ulimit -a`/`prlimit` del propio proceso de
+  diagnóstico nunca representó explícitamente sólo su propio contexto — ahora `diagnostic_session_limits`
+  queda separado y nunca alimenta `effective_limits`.
+
+### Added
+
+- Modelo `launch_context` (`SYSTEMD|PAM_LOGIN|PAM_SU|MANUAL_SHELL|ORACLE_CLUSTERWARE|OTHER|UNKNOWN`)
+  en `os/process-limits` v2.0.0, determinado antes de interpretar cualquier fuente configurada.
+- Collectors `get_process_effective_limits` (PID-scoped, `/proc/<pid>/limits`),
+  `get_service_limit_configuration` (unit systemd allowlisted), `get_pam_limit_configuration`
+  (claves acotadas) — `docs/OS_READONLY_COLLECTOR_MODEL.md`.
+- Bloque `process_limits_assessment` en `agents/os-platform-analyst/output-schema.yaml`
+  (`launch_context`, `effective_limits`, `configured_sources`, `conflicts`).
+- Manual Collection Contract (`docs/OS_HARDENING_MANUAL_ACTION_MODEL.md`) — fallback
+  `INSUFFICIENT_PRIVILEGES` sin escalamiento de privilegios, distinto de `manual_action`.
+- 5 fixtures nuevas (systemd effective, PAM session, diagnostic-user mismatch, insufficient
+  privileges, configuration/effective mismatch) y 18 tests nuevos — ver el reporte de cierre.
+- `docs/PHASE_9_EFFECTIVE_PROCESS_LIMITS_SYSTEMD_PAM_HARDENING.md`.
+
+### Changed
+
+- `os/systemd-limits` v1.0.0→v2.0.0, `os/process-limits` v1.0.0→v2.0.0, `os/open-files`
+  v1.0.0→v2.0.0, `os/ulimits` v1.0.0→v2.0.0.
+- `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` — dominio `os`: notas extendidas con
+  el detalle de effective process limits/systemd/PAM/cgroup/Solaris/Windows/privilege escalation.
+- `tests/test_systemd_limits.sh` — eliminada la aserción que institucionalizaba la regla
+  incorrecta de mínimo universal.
+
+## [Unreleased] — 2026-09-13 — PHASE 9 — OS PLATFORM DIAGNOSTICS & HARDENING
+
+Sobre baseline `v0.8.0-security-compliance`, rama `phase/9-os-platform`. Ver `docs/PHASE_9_OS_PLATFORM_DIAGNOSTICS_HARDENING.md` para el reporte de cierre completo.
+
+### Added
+
+- `agents/os-platform-analyst/` — deepening de manifest plano de Foundation a contrato estructurado completo v2.0.0 (`AGENT.md`, `manifest.yaml`, `routing.yaml`, `context-policy.yaml`, `collaboration.yaml`, `output-schema.yaml`), mismo patrón que Security (Fase 8): `supersedes:` explícito, nunca reescrito desde cero. `agents/os-platform-analyst.md` (flat file de Foundation) eliminado, contenido preservado y ampliado.
+- 45 skills `os/*` completamente materializados, reemplazando el modelo `os/<plataforma>/<skill>` de Foundation (18 skills × 5 plataformas, sólo `os/linux/memory` materializado) por un modelo domain-per-skill-id `os/<capability>` con platform-awareness vía campo `platforms:` en cada manifest — igual que `network/*`/`security/*`. `os/linux/memory.md` fusionado como base de `os/memory` v2.0.0.
+- ~25 collectors OS semánticos (`docs/OS_READONLY_COLLECTOR_MODEL.md`), catalogados por Linux/Windows/Solaris — reutiliza (nunca duplica) los collectors ya certificados desde Fase 4 (`get_interfaces`, `get_routes`, `get_socket_summary`, `get_name_resolution`, `get_host_identity`).
+- 7 docs de modelo: `docs/OS_PLATFORM_DIAGNOSTIC_MODEL.md`, `docs/ORACLE_HUGEPAGES_ASSESSMENT_MODEL.md`, `docs/OS_KERNEL_LIMITS_MODEL.md`, `docs/OS_NETWORK_DIAGNOSTIC_MODEL.md`, `docs/OS_STORAGE_FILESYSTEM_MODEL.md`, `docs/OS_HARDENING_MANUAL_ACTION_MODEL.md`, `docs/OS_READONLY_PRIVILEGES.md`.
+- 26 fixtures (`tests/fixtures/*.yaml`) cubriendo Linux (Oracle Linux/RHEL/SUSE/LinuxONE), Solaris, Windows Server, y escenarios cross-domain (RAC interconnect, RMAN media manager, Data Guard network, security wallet).
+- 67 tests nuevos cubriendo collector safety/agent contract, discovery/CPU/memoria, HugePages/THP, límites/IPC/AIO, puertos/red, filesystem/storage, time/SSH/grupos/procesos, integración cross-domain, sanitización, y contratos de collector por plataforma.
+- Bloque `os_platform` en `docs/TARGET_PROFILE.md` (`schema_version` 2.5.0 → 2.6.0): `family`/`distribution`/`version`/`kernel`/`architecture`/`virtualization`/`oracle_home_owner`/`grid_home_owner`/`oracle_groups`/`expected_hugepages_policy`/`expected_thp_policy`/`expected_time_sync`/`expected_network_model` — sin secretos, campos `expected_*` nunca inventados sin declaración explícita del DBA.
+- `/healthcheck os`, `/assessment os-platform` y routing de síntomas OS en `/diagnose` (`workflows/healthcheck.md`, `workflows/assessment.md`, `workflows/diagnose.md`).
+
+### Changed
+
+- `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` — dominio `os` pasa de `PARTIAL` a `SUPPORTED` (10g–23ai, `future_status: COMPATIBILITY_VALIDATION_REQUIRED`, mismo criterio que Data Guard/Multitenant/RMAN/Security). Linux `SUPPORTED`, Windows Server `SUPPORTED` (con sub-capacidades `PARTIALLY_SUPPORTED`/`NOT_APPLICABLE`), Solaris `PARTIALLY_SUPPORTED`, AIX/HP-UX fuera de alcance.
+- `agents/REGISTRY.md`, `skills/REGISTRY.md` (`os` de 18×5 a 45 skills `active`) actualizados.
+
+### Fixed
+
+- Referencia obsoleta "entregables binarios (DOCX/XLSX/PDF/PPTX) son Fase 9" en `config/capability-matrix.yaml` y `templates/README.md` — factualmente incorrecta desde que la Fase 9 real pasó a ser OS Platform Diagnostics & Hardening; corregida a "fase de implementación aún no asignada".
+
 ## [Unreleased] — 2026-09-13 — PHASE 8 — FINAL DBA_USERS 12.1.0.2 SOURCE-OF-TRUTH CORRECTION
 
 Corrección final sobre la Fase 8 base (misma rama `phase/8-security-compliance`), previo a aprobar `v0.8.0-security-compliance`. Ver `docs/PHASE_8_FINAL_DBA_USERS_12102_SOURCE_OF_TRUTH_CORRECTION.md` para el reporte de cierre completo.

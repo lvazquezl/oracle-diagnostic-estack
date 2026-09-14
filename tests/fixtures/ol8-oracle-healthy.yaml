@@ -1,0 +1,30 @@
+# Fixture: Oracle Linux 8, host correctamente dimensionado para Oracle — baseline healthy.
+# Usada por: os/platform-healthcheck, os/platform-assessment.
+fixture_id: FX-OS-ol8-healthy
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "KVM"
+  hostname_token: "HOST_TOKEN_101"
+
+mock_evidence:
+  - collector_id: get_memory_summary
+    result: {physical_memory_bytes: 68719476736, available_memory_bytes: 12884901888}
+  - collector_id: get_hugepages_status
+    result: {hugepagesize_bytes: 2097152, hugepages_total: 12288, hugepages_free: 512, hugepages_rsvd: 0}
+  - collector_id: get_thp_status
+    result: {status: "madvise"}
+  - collector_id: get_process_limits
+    result: {nofile_soft: 65536, nproc_soft: 16384}
+  - collector_id: get_ephemeral_port_range
+    result: {range_min: 9000, range_max: 65500}
+
+expected_findings:
+  - category: platform-healthcheck
+    severity: LOW
+    confidence: FACT
+    reason: "todas las dimensiones dentro de rango saludable, sin shortfall de HugePages, THP en madvise (recomendado), limits con margen amplio"

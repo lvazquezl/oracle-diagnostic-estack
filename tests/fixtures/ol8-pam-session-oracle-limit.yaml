@@ -1,0 +1,31 @@
+# Fixture: Oracle process lanzado desde una sesión PAM (arranque manual del DBA vía login/su) —
+# sin systemd unit relevante; los límites de /etc/security/limits.conf sí aplican y coinciden con
+# el límite efectivo real.
+# Usada por: os/ulimits, os/process-limits.
+fixture_id: FX-OS-ol8-pam-session-oracle-limit
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_111"
+
+mock_evidence:
+  - collector_id: get_oracle_process_summary
+    result: {pid_token: "PID_TOKEN_502", process_family: "pmon", owner_token: "USER_TOKEN_ORACLE"}
+  - collector_id: get_service_limit_configuration
+    result: null   # sin unit systemd — arranque manual
+  - collector_id: get_pam_limit_configuration
+    result: {nofile_soft: 65536, nofile_hard: 65536, nproc_soft: 16384}
+  - collector_id: get_process_effective_limits
+    result: {pid_token: "PID_TOKEN_502", nofile_soft: 65536, nofile_hard: 65536, nproc_soft: 16384}
+
+expected_findings:
+  - category: ulimits
+    launch_context: PAM_LOGIN
+    pam_applicable: true
+    effective_matches_configured: true
+    reason: "sin unit systemd — la política de limits.conf correlaciona directamente con el launch context PAM del proceso"

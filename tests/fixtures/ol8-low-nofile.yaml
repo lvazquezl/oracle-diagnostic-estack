@@ -1,0 +1,22 @@
+# Fixture: Oracle Linux 8, límite nofile insuficiente para el usuario oracle.
+# Usada por: os/open-files, os/ulimits.
+fixture_id: FX-OS-ol8-low-nofile
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_104"
+
+mock_evidence:
+  - collector_id: get_open_files_limits
+    result: {file_max: 6815744, nofile_soft: 1024, nofile_hard: 1024, current_usage: 980}
+
+expected_findings:
+  - category: open-files
+    severity: HIGH
+    confidence: FACT
+    reason: "current_usage (980) > 95% de nofile_soft (1024) — riesgo inminente de agotamiento (# 24 del prompt)"

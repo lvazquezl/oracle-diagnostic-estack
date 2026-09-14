@@ -1,0 +1,23 @@
+# Fixture: Windows Server, host correctamente dimensionado.
+fixture_id: FX-OS-windows-server-healthy
+
+os_target:
+  family: windows
+  distribution: "Windows Server"
+  version: "2022"
+  kernel: "10.0.20348"
+  architecture: x86_64
+  virtualization: "Hyper-V"
+  hostname_token: "HOST_TOKEN_401"
+
+mock_evidence:
+  - collector_id: get_windows_memory_summary
+    result: {physical_memory_bytes: 68719476736, available_memory_bytes: 17179869184}
+  - collector_id: get_windows_pagefile_summary
+    result: {pagefile_configured_bytes: 8589934592, pagefile_used_bytes: 0}
+
+expected_findings:
+  - category: platform-healthcheck
+    severity: LOW
+    confidence: FACT
+    reason: "Windows Server certificado SUPPORTED, dimensionamiento saludable"

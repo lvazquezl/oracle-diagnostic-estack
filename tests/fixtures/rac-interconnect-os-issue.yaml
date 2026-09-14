@@ -1,0 +1,29 @@
+# Fixture: RAC — combinación de MTU mismatch + bond degradado en el interconnect, correlacionado
+# con Cache Fusion degradado reportado por oracle-rac-analyst.
+# Usada por: os/rac-interconnect-awareness.
+fixture_id: FX-OS-rac-interconnect-issue
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_501"
+
+mock_evidence:
+  - collector_id: get_mtu_summary
+    node1: {interface: "bond1", mtu: 9000}
+    node2: {interface: "bond1", mtu: 1500}
+  - collector_id: get_bonding_summary
+    result:
+      - bond: "bond1"
+        slaves: [{slave: "IFACE_TOKEN_1", state: "up", link_failures: 5}]
+  - external_correlation: "oracle-rac-analyst reporta Cache Fusion degradado en la misma ventana"
+
+expected_findings:
+  - category: rac-interconnect-awareness
+    severity: CRITICAL
+    confidence: PROBABLE_CAUSE
+    reason: "MTU mismatch + bond con link_failures, correlacionado temporalmente con degradación de Cache Fusion reportada (# 47 del prompt)"

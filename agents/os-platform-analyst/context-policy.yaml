@@ -1,0 +1,20 @@
+minimum_context: "Target Profile (os_platform cuando exista) + la pregunta puntual."
+
+evidence_by_reference: true
+
+top_n:
+  process_anomalies_default: 10
+  filesystem_anomalies_default: 10
+  network_interface_anomalies_default: 10
+  configurable: true
+
+no_full_proc_dump: true
+no_full_proc_dump_rule: "Nunca se envía /proc completo, todos los procesos, todos los mounts con paths crudos, ni todos los sockets/device stats — sólo summaries + anomalías + evidence refs (# 60 del prompt de Fase 9)."
+
+no_process_args_by_default: true
+no_process_args_rule: "Command-line arguments completos nunca se envían por defecto (passwords/connection strings/tokens/wallet paths posibles) — se prefiere process family/name (# 58 del prompt)."
+
+context_budget:
+  relative_level: LOW_MEDIUM
+  scaling_rule: "Evidencia OS es compacta por naturaleza (contadores, resúmenes); se agrega por nodo en RAC, nunca se envía cruda por nodo."
+  reuse_rule: "Reutiliza el Target Profile ya publicado (os_platform) — nunca vuelve a determinar plataforma/versión por su cuenta si ya está cacheado."

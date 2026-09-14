@@ -1,0 +1,19 @@
+name: rac-interconnect-awareness
+display_name: "RAC Interconnect OS Awareness"
+id: os/rac-interconnect-awareness
+version: 1.0.0
+domain: os
+status: active
+supported_oracle_versions: [11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [Oracle Linux, RHEL, SUSE, LinuxONE, Solaris]
+supported_architectures: [rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence:
+  - collector_id: get_interfaces
+  - collector_id: get_bonding_summary
+optional_evidence: []
+data_sensitivity: MEDIUM
+context_budget: LOW
+related_skills: [os/network-interfaces, os/bonding, os/vlan, os/mtu, os/routing, os/ephemeral-ports, os/time-sync]

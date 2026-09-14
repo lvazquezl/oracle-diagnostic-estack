@@ -1,0 +1,23 @@
+# Fixture: Oracle Linux 8, multipath con un path failed sobre un dispositivo ASM.
+# Usada por: os/multipath-awareness.
+fixture_id: FX-OS-ol8-multipath-degraded
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_110"
+
+mock_evidence:
+  - collector_id: get_multipath_summary
+    result:
+      - {device: "DEV_TOKEN_ASM01", path_count_configured: 4, path_count_active: 3, degraded: true}
+
+expected_findings:
+  - category: multipath-awareness
+    severity: HIGH
+    confidence: FACT
+    reason: "path_count_active (3) < path_count_configured (4) sin explicación de diseño ALUA — pérdida real de redundancia (# 33 del prompt)"

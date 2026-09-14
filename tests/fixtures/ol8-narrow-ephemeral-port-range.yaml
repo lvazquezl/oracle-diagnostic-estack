@@ -1,0 +1,25 @@
+# Fixture: Oracle Linux 8, rango de puertos efímeros estrecho + alto TIME_WAIT + ORA-27530.
+# Usada por: os/ephemeral-ports.
+fixture_id: FX-OS-ol8-narrow-ephemeral-ports
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_107"
+
+mock_evidence:
+  - collector_id: get_ephemeral_port_range
+    result: {range_min: 32768, range_max: 33768}
+  - collector_id: get_socket_summary
+    result: {time_wait_count: 850}
+  - known_errors_correlated: ["ORA-27530"]
+
+expected_findings:
+  - category: ephemeral-ports
+    severity: HIGH
+    confidence: PROBABLE_CAUSE
+    reason: "rango estrecho (1000 puertos) + TIME_WAIT alto + ORA-27530 correlacionado temporalmente (# 27 del prompt)"

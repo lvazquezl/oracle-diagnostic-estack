@@ -1,0 +1,22 @@
+# Fixture: Oracle Linux 8, THP en "always" — configuración de mayor riesgo documentado.
+# Usada por: os/transparent-hugepages.
+fixture_id: FX-OS-ol8-thp-always
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_103"
+
+mock_evidence:
+  - collector_id: get_thp_status
+    result: {status: "always"}
+
+expected_findings:
+  - category: transparent-hugepages
+    severity: HIGH
+    confidence: OBSERVATION
+    reason: "THP en 'always' — mismatch contra recomendación documentada (madvise/never) para cargas Oracle (# 19 del prompt)"

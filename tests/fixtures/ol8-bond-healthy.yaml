@@ -1,0 +1,26 @@
+# Fixture: Oracle Linux 8, bond del interconnect RAC con ambos slaves activos, sin fallas.
+# Usada por: os/bonding.
+fixture_id: FX-OS-ol8-bond-healthy
+
+os_target:
+  family: linux
+  distribution: "Oracle Linux"
+  version: "8.9"
+  kernel: "5.15.0-200.131.31.el8uek.x86_64"
+  architecture: x86_64
+  virtualization: "bare_metal"
+  hostname_token: "HOST_TOKEN_111"
+
+mock_evidence:
+  - collector_id: get_bonding_summary
+    result:
+      - bond: "bond1"
+        mode: "active-backup"
+        active_slave: "IFACE_TOKEN_1"
+        slaves: [{slave: "IFACE_TOKEN_1", state: "up", link_failures: 0}, {slave: "IFACE_TOKEN_2", state: "up", link_failures: 0}]
+
+expected_findings:
+  - category: bonding
+    severity: LOW
+    confidence: FACT
+    reason: "ambos slaves up, sin link_failures — interconnect bond saludable"
