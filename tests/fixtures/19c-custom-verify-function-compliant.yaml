@@ -1,0 +1,43 @@
+# Fixture: Oracle 19c, verify function custom analizable determinísticamente y compliant
+# Usada por: security/password-verify-function
+fixture_id: FX-19c-custom-verify-function-compliant
+
+target_profile:
+  schema_version: "2.5.0"
+  target_id: "fixture-19c-custom-verify-function-compliant"
+  database: {name: "ORCL19DB", unique_name: "orcl19db", dbid: "1955223308"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19db", number: 1, host: "HOST_TOKEN_47"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: non_cdb, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  security: {compliance_frameworks: null, account_inactivity_policy_days: null, password_policy: null, encryption_required: null, audit_requirements: null, tls_required: null, licensing_profile: null}
+  discovery: {timestamp: "2026-03-01T09:05:00Z", evidence_refs: [EVD-FX-8011], confidence: FACT}
+
+compatibility_schema:
+  available_views: [DBA_SOURCE]
+  available_columns: {}
+
+mock_evidence:
+  - query_id: Q-SEC-PASSWORD-VERIFY-SOURCE-001
+    result:
+      - {line: 1, text: "FUNCTION app_verify(username VARCHAR2, password VARCHAR2, old_password VARCHAR2) RETURN BOOLEAN IS BEGIN"}
+      - {line: 2, text: "  IF LENGTH(password) < 20 THEN RETURN FALSE; END IF;"}
+      - {line: 3, text: "  IF NOT REGEXP_LIKE(password, '[A-Z]') THEN RETURN FALSE; END IF;"}
+      - {line: 4, text: "  IF NOT REGEXP_LIKE(password, '[a-z]') THEN RETURN FALSE; END IF;"}
+      - {line: 5, text: "  IF NOT REGEXP_LIKE(password, '[0-9]') THEN RETURN FALSE; END IF;"}
+      - {line: 6, text: "  IF NOT REGEXP_LIKE(password, '[^A-Za-z0-9]') THEN RETURN FALSE; END IF;"}
+      - {line: 7, text: "  IF UPPER(password) = UPPER(username) THEN RETURN FALSE; END IF;"}
+      - {line: 8, text: "  RETURN TRUE; END;"}
+
+expected_findings:
+  - category: password-verify-function
+    severity: LOW
+    confidence: FACT
+    reason: "función custom con lógica determinista completa — analyzable: true, minimum_length: 20, username_similarity_check: true (# 18 del prompt de Fase 8)"

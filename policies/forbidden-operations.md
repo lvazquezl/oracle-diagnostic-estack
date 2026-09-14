@@ -11,6 +11,20 @@ Lista exhaustiva de lo que ningún agente, skill, query, collector o tool MCP de
 - `SQL Plan Baselines`/`SQL Profiles` de escritura, recompilación forzada de objetos.
 - Kill de sesión (`ALTER SYSTEM KILL SESSION`).
 
+## Security / Users / Roles / Auditing / Encryption (Fase 8)
+
+- `CREATE`/`ALTER`/`DROP USER|ROLE|PROFILE` (cualquier variante) — ya cubierto en general arriba bajo Oracle Database, listado explícitamente aquí por ser el foco directo del dominio Security.
+- `GRANT`/`REVOKE` (system privilege, object privilege, rol — cualquier variante).
+- `ALTER USER ... IDENTIFIED BY`/`PASSWORD EXPIRE`/`ACCOUNT LOCK|UNLOCK` (password reset o cambio de estado de cuenta).
+- Password testing (probar si una contraseña real es válida contra una cuenta), password cracking/guessing/brute-force de cualquier forma.
+- Recuperar, exponer, comparar o registrar en evidencia password hash, verifier, `SPARE4`, o columna equivalente.
+- `AUDIT`/`NOAUDIT` (habilitar, deshabilitar o modificar política de auditoría, unified o traditional); purgar/truncar audit trail (`DBMS_AUDIT_MGMT.CLEAN_AUDIT_TRAIL` o equivalente).
+- `ADMINISTER KEY MANAGEMENT` (`OPEN`/`CLOSE KEYSTORE`, `SET KEY`, `CREATE KEYSTORE`, `ROTATE KEY` — cualquier variante).
+- Modificar `SQLNET.ENCRYPTION_*`/`SQLNET.CRYPTO_CHECKSUM_*`/`listener.ora`/`sqlnet.ora`.
+- Habilitar/deshabilitar Oracle Database Vault, crear/modificar realms o command rules.
+- Crear/modificar Oracle Label Security policies/labels.
+- Crear/alterar/eliminar Data Redaction policies (`DBMS_REDACT`); ejecutar Data Masking/Subsetting jobs.
+
 ## RMAN / Backup-Recovery
 
 - `BACKUP`, `RESTORE`, `RECOVER`.

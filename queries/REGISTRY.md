@@ -20,6 +20,12 @@ Todo query/comando aquí es de sólo lectura por construcción (`execution_mode:
 
 > **Fase 7 (Backup & Recovery/RMAN)**: mismo gap pre-existente detectado — `Q-RMAN-BACKUP-JOB-001`/`Q-RMAN-BACKUPSET-001` (Foundation) figuraban "materializadas" sin archivo real. `Q-RMAN-BACKUP-JOB-001` se materializó de verdad (mismo ID, sin duplicar, `V$RMAN_BACKUP_JOB_DETAILS` verificado real vía WebFetch) bajo `queries/rman/`; `Q-RMAN-BACKUPSET-001` se reemplazó por `Q-RMAN-BACKUP-SET-001` (mismo propósito — `V$BACKUP_SET` —, nombre corregido a la convención hyphenated del resto del catálogo `Q-RMAN-*`). Se agregaron 12 queries nuevas — 14 queries certificadas en total bajo `queries/rman/`. Nombres de vista verificados vía WebFetch contra docs.oracle.com (`V$RMAN_CONFIGURATION` desde 9i, `V$RMAN_STATUS`/`V$RMAN_OUTPUT`/`V$RMAN_BACKUP_JOB_DETAILS` desde 10g — piso "10g" del prompt confirmado real, no asumido). `CON_ID` (multitenant) sólo 12.1+ en las vistas que lo exponen — `Q-RMAN-BACKUP-SET-001` split en variantes legacy (10g-11g, sin `CON_ID`)/modern (12.1+, con `CON_ID`), mismo patrón que `PDB_PLUG_IN_VIOLATIONS` en Fase 6. Ver `docs/PHASE_7_ORACLE_BACKUP_RECOVERY_RMAN.md`.
 
+> **Fase 8 (Security & Compliance)**: 30 queries certificadas nuevas bajo `queries/security/` (`Q-SEC-*`) — cuentas/roles/privilegios/PUBLIC/admin privileges, password/profile posture, password-strength policy, password verify function (source read-only, nunca ejecutado), Unified/Traditional Auditing, TDE/keystore/encryption awareness, network encryption params, security parameters, database links/directories, Database Vault/OLS/Data Redaction awareness (siempre `SEPARATELY_LICENSED` por defecto). `Q-SEC-COMMON-LOCAL-USERS-001` extiende deliberadamente `CDB_USERS` con columnas de posture adicionales que `Q-CDB-USERS-001` (Fase 6) declaró explícitamente fuera de su propio alcance — ambas coexisten, ninguna reemplaza a la otra. Todos los boundaries de versión (`AUTHENTICATION_TYPE` 11.2+, `COMMON`/`ORACLE_MAINTAINED` 12.1+, `PASSWORD_VERSIONS` 11g+, `PASSWORD_CHANGE_DATE` 19c+, `DBA_USERS_WITH_DEFPWD` 11g+, `UNIFIED_AUDIT_TRAIL`/`AUDIT_UNIFIED_ENABLED_POLICIES` 12.1+, `V$ENCRYPTION_WALLET`/`V$ENCRYPTED_TABLESPACES` 11.2+, `DBA_ENCRYPTED_COLUMNS` 10.2+, `SYSASM` 11g+, `SYSBACKUP`/`SYSDG`/`SYSKM` 12.1+, `REDACTION_POLICIES`/`REDACTION_COLUMNS` 12.1+, `INACTIVE_ACCOUNT_TIME` como valor de `resource_name` 12.2+ — resuelto tras fuentes secundarias inicialmente ambiguas entre 12.1/12.2, confirmado 12.2 vía múltiples fuentes independientes) verificados vía WebFetch/WebSearch antes de certificar, ninguno declarado por confianza en el prompt. `Q-SEC-TRADITIONAL-AUDIT-001` split en variantes legacy (`ROWNUM`)/modern (`FETCH FIRST`) desde su primera certificación — nunca se repitió el defecto cerrado en PHASE 7 — RMAN LEGACY SQL SYNTAX HARDENING. Ver `docs/PHASE_8_ORACLE_SECURITY_COMPLIANCE.md`.
+>
+> **PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING**: `DBA_USERS.LAST_LOGIN` corregido de `min_version: "12.1"` a `"12.1.0.2"`. `Q-SEC-NETWORK-ENCRYPTION-PARAMS-001` **retirada** (`NOT_CERTIFIED: INCORRECT_EVIDENCE_SOURCE` — `SQLNET.*` nunca es evidencia de `V$PARAMETER`) — catálogo Security pasa de 30 a **29 queries SQL certificadas**, reemplazada por el collector semántico `get_oracle_net_security_configuration` (`network/oracle-net-security`). Causa raíz sistémica: `tests/test_sql_static_validator.sh#extract_aliases()` sólo reconocía objetos con `$` — corregido dictionary-driven (cualquier objeto registrado en `compatibility/oracle-dictionary/views.yaml`, con o sin `$`). Ver `docs/PHASE_8_SECURITY_QUERY_ORACLE_NET_STATIC_VALIDATOR_HARDENING.md`.
+>
+> **PHASE 8 — FINAL DBA_USERS 12.1.0.2 SOURCE-OF-TRUTH CORRECTION**: `DBA_USERS.COMMON`/`DBA_USERS.ORACLE_MAINTAINED` corregidos de `min_version: "12.1"` (12.1.0.1) a `"12.1.0.2"` — footnote oficial verbatim en `docs.oracle.com/database/121/REFRN/.../DBA_USERS`, verificado en el HTML crudo sin resumen de modelo: "This column is available starting with Oracle Database 12c Release 1 (12.1.0.2)." adjunta a `COMMON`, `ORACLE_MAINTAINED`, `LAST_LOGIN` y `PROXY_ONLY_CONNECT` las cuatro. `Q-SEC-DEFAULT-ACCOUNTS-001` (ahora `legacy_pre12102` 11.0-12.1.0.1/`modern_12102plus` 12.1.0.2+) y `Q-SEC-ACCOUNT-INVENTORY-001` (`V2 multitenant_pre12102` 12.1-12.1.0.1 ya no selecciona `common`/`oracle_maintained`, sólo `authentication_type`) recertificados contra el boundary real. `AUTHENTICATION_TYPE` certificada independientemente en 11.2, no comparte el footnote. Ver `docs/PHASE_8_FINAL_DBA_USERS_12102_SOURCE_OF_TRUTH_CORRECTION.md`.
+
 > **Fase 3 (Oracle Performance)**: `Q-PERF-WAIT-AWR-001` y `Q-PERF-WAIT-ASH-001` se **relocalizaron** (mismos IDs, sin duplicar) de `queries/` plano a `queries/performance/waits/`. `Q-PERF-WAIT-STATSPACK-001` (antes sólo `registered`) se materializó en la misma carpeta — ver `docs/PHASE_3_ORACLE_PERFORMANCE.md`. Las filas de estas 3 queries en las tablas "Fase 1" abajo permanecen sin cambio (identidad de catálogo, no ubicación física). Se agregaron 18 queries nuevas bajo `queries/performance/<categoría>/` — ver sección "Performance queries (Fase 3)" abajo.
 
 ## Tools semánticas MCP (nivel Gateway)
@@ -104,6 +110,36 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-RMAN-BACKUP-DEVICE-001` | Canales actualmente asignados | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
 | `Q-RMAN-FRA-USAGE-001` | Uso/límite de la Fast Recovery Area | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
 | `Q-RMAN-CONTROLFILE-RECORD-SECTION-001` | Utilización de secciones de registro del controlfile | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+| `Q-SEC-ACCOUNT-INVENTORY-001` | Inventario de cuentas (status/auth type/profile/common/last_login) | 10g–23ai (common/oracle_maintained/last_login sólo 12.1+) | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-DEFAULT-ACCOUNTS-001` | Cuentas con contraseña por defecto | 11g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-COMMON-LOCAL-USERS-001` | Usuarios comunes/locales con posture completa (extiende Q-CDB-USERS-001) | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-SEC-ROLES-001` | Inventario de roles | 10g–23ai (common/oracle_maintained sólo 12.1+) | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-ROLE-GRANTS-001` | Roles otorgados a usuarios/roles | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-NESTED-ROLE-GRANTS-001` | Roles otorgados a roles (nested) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-SYSTEM-PRIVILEGES-001` | System privileges directos (excl. PUBLIC) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-ROLE-SYSTEM-PRIVILEGES-001` | System privileges vía rol | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-OBJECT-PRIVILEGES-001` | Object privileges directos (excl. PUBLIC) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-ROLE-OBJECT-PRIVILEGES-001` | Object privileges vía rol | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-PUBLIC-SYSTEM-GRANTS-001` | System privileges otorgados a PUBLIC | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-PUBLIC-OBJECT-GRANTS-001` | Object privileges otorgados a PUBLIC | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-ADMIN-PRIVILEGES-001` | Identidades SYSDBA/SYSOPER/SYSASM/SYSBACKUP/SYSDG/SYSKM | 10g–23ai (SYSASM 11g+, SYSBACKUP/SYSDG/SYSKM 12.1+) | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-PROXY-AUTHENTICATION-001` | Proxy authentication (CONNECT THROUGH) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-PASSWORD-PROFILES-001` | Parámetros de password/account policy por profile | 10g–23ai (INACTIVE_ACCOUNT_TIME sólo 12.2+) | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-PASSWORD-VERIFY-SOURCE-001` | Source read-only de password verify function | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-PASSWORD-VERSIONS-001` | Awareness de tipo de verifier (nunca contenido) | 11g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-UNIFIED-AUDIT-POLICIES-001` | Políticas Unified Auditing habilitadas | 12c–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-UNIFIED-AUDIT-TRAIL-001` | Evidencia de actividad privilegiada (Unified, filtrada) | 12c–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-TRADITIONAL-AUDIT-001` | AUDIT_TRAIL parameter + evidencia de sesión (legacy) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-TDE-WALLET-001` | Estado de wallet/keystore TDE | 11g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-ENCRYPTED-TABLESPACES-001` | Tablespaces con TDE tablespace encryption | 11g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-ENCRYPTED-COLUMNS-001` | Columnas con TDE column encryption | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-NETWORK-ENCRYPTION-PARAMS-001` | **RETIRADA** — SQLNET.* no es evidencia de V$PARAMETER (`INCORRECT_EVIDENCE_SOURCE`). Reemplazada por collector `network/oracle-net-security` | N/A | N/A | N/A | N/A | N/A |
+| `Q-SEC-SECURITY-PARAMETERS-001` | Parámetros de inicialización con impacto de seguridad | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-DB-LINKS-001` | Database links (metadata, nunca credenciales) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-DIRECTORIES-001` | Directory objects y grants | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-DATABASE-VAULT-STATUS-001` | Instalado/habilitado Database Vault | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-OLS-STATUS-001` | Instalado/habilitado Oracle Label Security | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-DATA-REDACTION-POLICIES-001` | Políticas de Data Redaction (DBMS_REDACT) | 12c–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-NET-TNS-CONFIG-001` | Lectura de config Oracle Net | 10g–23ai | todas (ruta por plataforma) | todas | NOT_APPLICABLE | NOT_APPLICABLE |
 | `Q-NET-LISTENER-LOG-001` | Extracto de listener.log | 10g–23ai | todas | todas | NOT_APPLICABLE | NOT_APPLICABLE |
 | `Q-OS-LINUX-MEM-001` | Memoria/swap (Linux) | N/A | Oracle Linux/RHEL/SUSE | todas | NOT_APPLICABLE | NOT_APPLICABLE |
@@ -169,6 +205,36 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-RMAN-BACKUP-DEVICE-001` | `V$BACKUP_DEVICE` | R0 | LOW | 10 | 100 | MEDIUM | none |
 | `Q-RMAN-FRA-USAGE-001` | `V$FLASH_RECOVERY_AREA_USAGE`, `V$RECOVERY_FILE_DEST` | R0 | LOW | 15 | 50 | LOW | none |
 | `Q-RMAN-CONTROLFILE-RECORD-SECTION-001` | `V$CONTROLFILE_RECORD_SECTION` | R0 | LOW | 10 | 50 | LOW | none |
+| `Q-SEC-ACCOUNT-INVENTORY-001` | `DBA_USERS` | R0 | LOW | 15 | 500 | HIGH | none |
+| `Q-SEC-DEFAULT-ACCOUNTS-001` | `DBA_USERS_WITH_DEFPWD`, `DBA_USERS` | R0 | LOW | 10 | 200 | HIGH | none |
+| `Q-SEC-COMMON-LOCAL-USERS-001` | `CDB_USERS` | R0 | MEDIUM | 20 | 500 | HIGH | none |
+| `Q-SEC-ROLES-001` | `DBA_ROLES` | R0 | LOW | 10 | 200 | MEDIUM | none |
+| `Q-SEC-ROLE-GRANTS-001` | `DBA_ROLE_PRIVS` | R0 | MEDIUM | 15 | 500 | MEDIUM | none |
+| `Q-SEC-NESTED-ROLE-GRANTS-001` | `ROLE_ROLE_PRIVS` | R0 | MEDIUM | 15 | 500 | MEDIUM | none |
+| `Q-SEC-SYSTEM-PRIVILEGES-001` | `DBA_SYS_PRIVS` | R0 | MEDIUM | 15 | 500 | HIGH | none |
+| `Q-SEC-ROLE-SYSTEM-PRIVILEGES-001` | `ROLE_SYS_PRIVS` | R0 | MEDIUM | 15 | 500 | HIGH | none |
+| `Q-SEC-OBJECT-PRIVILEGES-001` | `DBA_TAB_PRIVS` | R0 | HIGH | 20 | 500 | MEDIUM | none |
+| `Q-SEC-ROLE-OBJECT-PRIVILEGES-001` | `ROLE_TAB_PRIVS` | R0 | MEDIUM | 15 | 500 | MEDIUM | none |
+| `Q-SEC-PUBLIC-SYSTEM-GRANTS-001` | `DBA_SYS_PRIVS` | R0 | LOW | 10 | 200 | HIGH | none |
+| `Q-SEC-PUBLIC-OBJECT-GRANTS-001` | `DBA_TAB_PRIVS` | R0 | MEDIUM | 15 | 500 | MEDIUM | none |
+| `Q-SEC-ADMIN-PRIVILEGES-001` | `V$PWFILE_USERS` | R0 | LOW | 10 | 100 | HIGH | none |
+| `Q-SEC-PROXY-AUTHENTICATION-001` | `PROXY_USERS` | R0 | LOW | 10 | 200 | MEDIUM | none |
+| `Q-SEC-PASSWORD-PROFILES-001` | `DBA_PROFILES` | R0 | LOW | 10 | 200 | LOW | none |
+| `Q-SEC-PASSWORD-VERIFY-SOURCE-001` | `DBA_SOURCE`, `ALL_SOURCE` | R0 | MEDIUM | 15 | 500 | LOW | none |
+| `Q-SEC-PASSWORD-VERSIONS-001` | `DBA_USERS` | R0 | LOW | 10 | 500 | HIGH | none |
+| `Q-SEC-UNIFIED-AUDIT-POLICIES-001` | `AUDIT_UNIFIED_ENABLED_POLICIES` | R0 | LOW | 10 | 200 | LOW | none |
+| `Q-SEC-UNIFIED-AUDIT-TRAIL-001` | `UNIFIED_AUDIT_TRAIL` | R0 | HIGH | 20 | 200 | HIGH | none |
+| `Q-SEC-TRADITIONAL-AUDIT-001` | `V$PARAMETER`, `DBA_AUDIT_SESSION` | R0 | MEDIUM | 15 | 200 | MEDIUM | none |
+| `Q-SEC-TDE-WALLET-001` | `V$ENCRYPTION_WALLET` | R0 | LOW | 10 | 10 | MEDIUM | Advanced Security Option (donde aplique) |
+| `Q-SEC-ENCRYPTED-TABLESPACES-001` | `V$ENCRYPTED_TABLESPACES`, `DBA_TABLESPACES` | R0 | LOW | 10 | 200 | LOW | Advanced Security Option (donde aplique) |
+| `Q-SEC-ENCRYPTED-COLUMNS-001` | `DBA_ENCRYPTED_COLUMNS` | R0 | LOW | 10 | 500 | LOW | Advanced Security Option (donde aplique) |
+| `Q-SEC-NETWORK-ENCRYPTION-PARAMS-001` | **RETIRADA** — ver fila de Identity & Scope | R0 | LOW | 0 | 0 | LOW | none |
+| `Q-SEC-SECURITY-PARAMETERS-001` | `V$PARAMETER` | R0 | LOW | 10 | 20 | LOW | none |
+| `Q-SEC-DB-LINKS-001` | `DBA_DB_LINKS` | R0 | LOW | 10 | 200 | HIGH | none |
+| `Q-SEC-DIRECTORIES-001` | `DBA_DIRECTORIES`, `DBA_TAB_PRIVS` | R0 | LOW | 10 | 200 | MEDIUM | none |
+| `Q-SEC-DATABASE-VAULT-STATUS-001` | `V$OPTION`, `DBA_DV_STATUS` | R0 | LOW | 10 | 5 | LOW | Oracle Database Vault (SEPARATELY_LICENSED) |
+| `Q-SEC-OLS-STATUS-001` | `V$OPTION` | R0 | LOW | 10 | 5 | LOW | Oracle Label Security (SEPARATELY_LICENSED) |
+| `Q-SEC-DATA-REDACTION-POLICIES-001` | `REDACTION_POLICIES`, `REDACTION_COLUMNS` | R0 | LOW | 10 | 200 | MEDIUM | Oracle Data Redaction / Advanced Security Option (SEPARATELY_LICENSED) |
 | `Q-NET-TNS-CONFIG-001` | `tnsnames.ora`, `sqlnet.ora` (archivo, collector certificado) | R0 | LOW | 15 | N/A | HIGH (hostnames/IP; posibles secretos → sanitizer bloquea) | none |
 | `Q-NET-LISTENER-LOG-001` | `listener.log` (ventana acotada) | R0 | MEDIUM | 30 | 5000 líneas | MEDIUM | none |
 | `Q-OS-LINUX-MEM-001` | `/proc/meminfo` | R0 | LOW | 10 | N/A | LOW | none |

@@ -3,7 +3,7 @@
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
-ALLOWED='^(V\$|GV\$|DBA_|CDB_|PDB_|ALL_|STATS\$|/proc/|listener\.ora|sqlnet\.ora|tnsnames\.ora|listener\.log|alert\.log|vm\.nr_hugepages)'
+ALLOWED='^(V\$|GV\$|DBA_|CDB_|PDB_|ALL_|STATS\$|/proc/|listener\.ora|sqlnet\.ora|tnsnames\.ora|listener\.log|alert\.log|vm\.nr_hugepages|ROLE_ROLE_PRIVS|ROLE_SYS_PRIVS|ROLE_TAB_PRIVS|PROXY_USERS|UNIFIED_AUDIT_TRAIL|AUDIT_UNIFIED_ENABLED_POLICIES|AUDIT_UNIFIED_POLICIES|REDACTION_POLICIES|REDACTION_COLUMNS)'
 
 for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   [ -f "$f" ] || continue

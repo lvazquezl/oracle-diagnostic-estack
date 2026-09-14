@@ -162,6 +162,10 @@ views:
   DBA_TABLESPACES:
     min_version: all
 
+  V$TABLESPACE:
+    min_version: all
+    notes: "Fase 8. Usada en Q-SEC-ENCRYPTED-TABLESPACES-001 para resolver TS# desde tablespace_name — join auxiliar, sin columns_exhaustive."
+
   DBA_DATA_FILES:
     min_version: all
 
@@ -1037,3 +1041,317 @@ views:
   # ("thread#":) y el line-scanner de tests/test_sql_static_validator.sh#get_view_columns no
   # reconoce claves de columna citadas — corta la extracción de columnas del bloque completo en la
   # primera línea no reconocida (ver tests/test_no_variant_references_unknown_column.sh).
+
+  # --- PHASE 8 — ORACLE SECURITY & COMPLIANCE ---
+  #
+  # Cada min_version de columna abajo fue verificado vía WebFetch/WebSearch contra
+  # docs.oracle.com antes de certificar cualquier query (ver docs/PHASE_8_ORACLE_SECURITY_
+  # COMPLIANCE.md#version-verification). Casos donde fuentes secundarias eran ambiguas
+  # (INACTIVE_ACCOUNT_TIME) se resolvieron con múltiples fuentes independientes convergentes,
+  # nunca con una sola fuente no oficial.
+
+  DBA_USERS:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      username:              {min_version: all}
+      user_id:                 {min_version: all}
+      account_status:            {min_version: all}
+      lock_date:                   {min_version: all}
+      expiry_date:                   {min_version: all}
+      created:                        {min_version: all}
+      profile:                          {min_version: all}
+      authentication_type:               {min_version: "11.2"}   # verificado WebSearch: reemplaza PASSWORD (deprecated), no existe en 10g/11.1
+      password_versions:                  {min_version: "11.0"}  # verificado WebSearch — introducida 11g junto con case-sensitive passwords (11gR1)
+      common:                              {min_version: "12.1.0.2"}  # PHASE 8 FINAL SOURCE-OF-TRUTH CORRECTION: verificado en el HTML crudo (curl, sin resumen de modelo) de docs.oracle.com/database/121/REFRN/GUID-309FCCB2-...htm — footnote oficial explícito: "This column is available starting with Oracle Database 12c Release 1 (12.1.0.2)." Corrige el boundary "12.1" (12.1.0.1) certificado en el hardening anterior — esa conclusión se basó en evidencia indirecta (Security Guide sobre la arquitectura Multitenant en general) que no distinguía la FEATURE arquitectónica (12.1.0.1) de la COLUMNA de diccionario específica que la expone vía SQL (12.1.0.2).
+      oracle_maintained:                    {min_version: "12.1.0.2"}  # PHASE 8 FINAL SOURCE-OF-TRUTH CORRECTION: mismo footnote oficial verbatim que COMMON/LAST_LOGIN/PROXY_ONLY_CONNECT, verificado en el HTML crudo de la misma página. Corrige el boundary "12.1" (12.1.0.1) certificado en el hardening anterior, basado en evidencia cronológica indirecta (blog datado) que resultó insuficiente frente a la nota oficial explícita.
+      last_login:                            {min_version: "12.1.0.2"}  # Confirmado — mismo footnote oficial. Sin cambio respecto al hardening anterior.
+      password_change_date:                   {min_version: "19.0"}  # verificado WebSearch — no existe en 12.1/12.2/18c
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
+    notes: >
+      Fase 8. Nunca se selecciona PASSWORD (deprecated) ni SPARE4 — no existe capacidad de leer
+      password hash en este dominio por diseño (# 26 del prompt). CDB_USERS (registrada Fase 6,
+      con CON_ID) es la vista complementaria cross-container — Security usa DBA_USERS
+      per-container, CDB_USERS cuando se requiere visibilidad completa del CDB.
+
+  DBA_ROLES:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      role:            {min_version: all}
+      common:            {min_version: "12.1"}
+      oracle_maintained:   {min_version: "12.1"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "19", "23"]
+    notes: "Fase 8. CDB_ROLES (Fase 6) es la vista complementaria cross-container."
+
+  DBA_ROLE_PRIVS:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      grantee:          {min_version: all}
+      granted_role:       {min_version: all}
+      admin_option:         {min_version: all}
+      default_role:           {min_version: all}
+      common:                   {min_version: "12.1"}
+    notes: "Fase 8. Vista de grants de rol de todas las versiones soportadas — sin cambios estructurales conocidos 10g-23ai salvo COMMON (Multitenant)."
+
+  DBA_SYS_PRIVS:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      grantee:        {min_version: all}
+      privilege:         {min_version: all}
+      admin_option:        {min_version: all}
+      common:                {min_version: "12.1"}
+    notes: "Fase 8."
+
+  DBA_TAB_PRIVS:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      grantee:        {min_version: all}
+      owner:             {min_version: all}
+      table_name:          {min_version: all}
+      privilege:             {min_version: all}
+      grantable:                {min_version: all}
+      common:                     {min_version: "12.1"}
+    notes: "Fase 8. table_name incluye cualquier objeto con privilegios de objeto (tabla/vista/procedimiento/paquete), no sólo tablas."
+
+  ROLE_ROLE_PRIVS:
+    min_version: all
+    notes: "Fase 8. Nested roles — mismo patrón que DBA_ROLE_PRIVS, sin ROLE en sesión."
+
+  ROLE_SYS_PRIVS:
+    min_version: all
+    notes: "Fase 8. Privilegios de sistema otorgados a roles — usada para privilege inheritance awareness (# 10 del prompt)."
+
+  ROLE_TAB_PRIVS:
+    min_version: all
+    notes: "Fase 8. Privilegios de objeto otorgados a roles."
+
+  DBA_PROFILES:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      profile:          {min_version: all}
+      resource_name:       {min_version: all}
+      resource_type:          {min_version: all}
+      limit:                     {min_version: all}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "19", "23"]
+    notes: >
+      Fase 8. resource_name incluye (entre otros) FAILED_LOGIN_ATTEMPTS, PASSWORD_LIFE_TIME,
+      PASSWORD_REUSE_TIME, PASSWORD_REUSE_MAX, PASSWORD_LOCK_TIME, PASSWORD_GRACE_TIME,
+      PASSWORD_VERIFY_FUNCTION (todas disponibles desde versiones pre-10g, sin cambio de
+      estructura de vista) e INACTIVE_ACCOUNT_TIME (valor del RESOURCE_NAME disponible sólo
+      desde 12.2 — verificado vía múltiples fuentes independientes citando "12c Release 2"; la
+      columna resource_name existe en todas las versiones, sólo ese VALOR específico requiere
+      12.2+, modelado en compatibility/oracle-sql-syntax no aplica aquí — es un value-level gate,
+      no column/syntax-level, documentado en policy assessment, # 14 del prompt).
+
+  DBA_USERS_WITH_DEFPWD:
+    min_version: "11.0"    # verificado WebSearch — introducida 11g, no existe en 10g (degrada a NOT_AVAILABLE)
+    columns_exhaustive: true
+    columns:
+      username: {min_version: "11.0"}
+    notes: "Fase 8 (# 115 del prompt). En 10g, security/default-accounts publica has_default_password: NOT_AVAILABLE, nunca inventado."
+
+  DBA_AUDIT_TRAIL:
+    min_version: all
+    notes: "Fase 8. Traditional Auditing — disponible desde versiones muy tempranas (8i+), certificado desde 10g (mínimo soportado por el catálogo)."
+
+  DBA_AUDIT_SESSION:
+    min_version: all
+    notes: "Fase 8. Traditional Auditing — subconjunto de DBA_AUDIT_TRAIL para eventos de sesión."
+
+  UNIFIED_AUDIT_TRAIL:
+    min_version: "12.1"    # verificado WebSearch/WebFetch — Unified Auditing introducido 12.1
+    columns_exhaustive: true
+    columns:
+      event_timestamp:   {min_version: "12.1"}
+      dbusername:          {min_version: "12.1"}
+      action_name:           {min_version: "12.1"}
+      object_schema:           {min_version: "12.1"}
+      object_name:               {min_version: "12.1"}
+      return_code:                 {min_version: "12.1"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["12.1", "12.2", "18", "19", "21", "23"]
+    notes: "Fase 8. En 10g/11g, security/unified-auditing publica capability_status: UNSUPPORTED — nunca se consulta esta vista en esas versiones."
+
+  AUDIT_UNIFIED_ENABLED_POLICIES:
+    min_version: "12.1"
+    notes: "Fase 8. Verificado WebFetch/WebSearch — introducida junto con Unified Auditing en 12.1. Poblada sólo cuando Unified Auditing está habilitado."
+
+  AUDIT_UNIFIED_POLICIES:
+    min_version: "12.1"
+    notes: "Fase 8. Definiciones de política Unified Auditing, 12.1+."
+
+  V$OPTION:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      parameter: {min_version: all}
+      value:       {min_version: all}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "12.1", "19", "23"]
+    notes: >
+      Fase 8. PARAMETER = 'Oracle Database Vault' / 'Oracle Label Security' son los strings
+      exactos verificados (case-sensitive) para licensing-gated awareness (# 39, # 40 del
+      prompt) — sólo indica instalado/visible, nunca implica derecho de uso (license gate
+      separado en security/licensing-gates).
+
+  V$ENCRYPTION_WALLET:
+    min_version: "11.2"    # verificado WebSearch — TDE tablespace/wallet encryption, 11gR2
+    columns_exhaustive: true
+    columns:
+      wrl_parameter: {min_version: "11.2"}
+      status:           {min_version: "11.2"}
+      wallet_type:         {min_version: "11.2"}
+    notes: "Fase 8. En 10g/11.1, security/tde-awareness publica capability_status: UNSUPPORTED."
+
+  V$ENCRYPTED_TABLESPACES:
+    min_version: "11.2"
+    columns_exhaustive: true
+    columns:
+      ts#:              {min_version: "11.2"}
+      encryptionalg:       {min_version: "11.2"}
+      encryptedts:            {min_version: "11.2"}
+    notes: "Fase 8. Mismo boundary que V$ENCRYPTION_WALLET — TDE tablespace encryption."
+
+  DBA_ENCRYPTED_COLUMNS:
+    min_version: "10.2"    # verificado WebSearch — TDE column encryption, 10gR2
+    columns_exhaustive: true
+    columns:
+      owner:                {min_version: "10.2"}
+      table_name:              {min_version: "10.2"}
+      column_name:                {min_version: "10.2"}
+      encryption_alg:                {min_version: "10.2"}
+    notes: "Fase 8. Disponible desde 10g (10.2) — anterior a V$ENCRYPTION_WALLET (11.2), porque TDE column encryption precede a TDE tablespace encryption."
+
+  DBA_DB_LINKS:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      owner:      {min_version: all}
+      db_link:      {min_version: all}
+      username:       {min_version: all}
+      host:             {min_version: all}
+    notes: "Fase 8. Nunca se recupera password ni se establece conexión — sólo metadata (# 37 del prompt)."
+
+  DBA_DIRECTORIES:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      owner:            {min_version: all}
+      directory_name:      {min_version: all}
+      directory_path:         {min_version: all}
+    notes: "Fase 8. Nunca navega filesystem (# 38 del prompt) — sólo metadata del objeto directory."
+
+  DBA_NETWORK_ACLS:
+    min_version: "11.1"    # verificado WebSearch — Fine-Grained Access to Network Services, 11gR1
+    notes: >
+      Fase 8. La implementación subyacente cambia en 12c (creación implícita de ACL vía
+      DBMS_NETWORK_ACL_ADMIN, algunos procedimientos deprecados) — verificado WebSearch. Se
+      certifican variantes -V1 (legacy_11g, XML DB-based) / -V2 (modern_12plus) cuando el SQL
+      difiera, nunca un único SQL compartido asumido válido en ambas.
+
+  DBA_HOST_ACES:
+    min_version: "11.1"
+    notes: "Fase 8. Mismo boundary/nota de implementación que DBA_NETWORK_ACLS."
+
+  DBA_SOURCE:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      owner:      {min_version: all}
+      name:         {min_version: all}
+      type:           {min_version: all}
+      line:             {min_version: all}
+      text:               {min_version: all}
+    notes: >
+      Fase 8 (# 17, # 18, # 60 del prompt). Usada EXCLUSIVAMENTE para inspección read-only del
+      source de la password verify function referenciada por DBA_PROFILES.PASSWORD_VERIFY_
+      FUNCTION — nunca para ejecutar la función, nunca para recuperar schemas/paquetes
+      completos. Alternativa a DBMS_METADATA.GET_DDL (que es una llamada PL/SQL, no un SELECT
+      puro) — DBA_SOURCE es la vista read-only recomendada por la propia documentación Oracle
+      para este propósito (verificado WebSearch).
+
+  ALL_SOURCE:
+    min_version: all
+    notes: "Fase 8. Mismo propósito que DBA_SOURCE, acotado al usuario actual — usada cuando el agente opera sin privilegio DBA sobre el schema del verify function."
+
+  DBA_DV_STATUS:
+    min_version: "10.2"    # sólo existe si Database Vault está instalado — licensing-gated, nunca asumido disponible
+    notes: >
+      Fase 8 (# 39 del prompt). Sólo consultable si Oracle Database Vault está instalado —
+      security/database-vault-awareness primero confirma V$OPTION.PARAMETER = 'Oracle Database
+      Vault' = TRUE antes de intentar esta vista; sin esa confirmación, capability_status:
+      UNSUPPORTED, nunca se asume instalado.
+
+  V$PWFILE_USERS:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      username:   {min_version: all}
+      sysdba:       {min_version: all}
+      sysoper:        {min_version: all}
+      sysasm:           {min_version: "11.0"}    # verificado WebSearch — SYSASM introducido 11gR1 (separación de instance type ASM)
+      sysbackup:          {min_version: "12.1"}   # verificado WebSearch — SYSBACKUP/SYSDG/SYSKM, "Administrative Privileges and Job Role Separation ... 12c Release 1"
+      sysdg:                {min_version: "12.1"}
+      syskm:                  {min_version: "12.1"}
+      common:                   {min_version: "12.1"}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["10.2", "11.2", "12.1", "12.2", "19", "23"]
+    notes: >
+      Fase 8 (# 13 del prompt). SYSASM en 10g degrada a NOT_APPLICABLE (columna no existe).
+      SYSBACKUP/SYSDG/SYSKM en 10g/11g degradan a NOT_APPLICABLE. Nunca lee password file
+      content — sólo la vista dinámica que expone el flag booleano por usuario.
+
+  REDACTION_POLICIES:
+    min_version: "12.1"    # verificado WebSearch — Data Redaction (DBMS_REDACT) introducido 12.1
+    columns_exhaustive: true
+    columns:
+      object_owner:  {min_version: "12.1"}
+      object_name:     {min_version: "12.1"}
+      policy_name:       {min_version: "12.1"}
+      enable:              {min_version: "12.1"}
+    notes: "Fase 8 (# 41 del prompt). Requiere SELECT_CATALOG_ROLE. Sólo presencia/configuración — nunca crea/altera/elimina políticas."
+
+  REDACTION_COLUMNS:
+    min_version: "12.1"
+    columns_exhaustive: true
+    columns:
+      object_owner:     {min_version: "12.1"}
+      object_name:        {min_version: "12.1"}
+      column_name:          {min_version: "12.1"}
+      policy_name:            {min_version: "12.1"}
+      function_type:            {min_version: "12.1"}
+    notes: "Fase 8. Mismo boundary que REDACTION_POLICIES."
+
+  PROXY_USERS:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      proxy:                     {min_version: all}
+      client:                      {min_version: all}
+      authentication:                {min_version: all}
+      authorization_constraint:        {min_version: all}
+    validation:
+      source_type: ORACLE_DOCUMENTATION
+      status: DOCUMENTATION_VALIDATED
+      validated_for: ["11.2", "19", "21"]
+    notes: "Fase 8 (# 118 del prompt). CONNECT THROUGH awareness — nunca credenciales, sólo relación proxy/client."

@@ -1,0 +1,29 @@
+minimum_context: "Target Profile (oracle_version, architecture, multitenant, security.password_policy si existe) + la pregunta puntual — nunca la conversación completa."
+
+evidence_by_reference: true
+evidence_by_reference_rule: "Todo inventario de cuentas/roles/grants/audit records se referencia por EVD-*, nunca se reenvía el dump crudo de DBA_USERS/DBA_TAB_PRIVS/UNIFIED_AUDIT_TRAIL entre agentes."
+
+top_n:
+  account_inventory_default: 50
+  public_grants_default: 30
+  powerful_privileges_default: 20
+  audit_trail_default: 20
+  configurable: true
+
+no_full_history_by_default: true
+no_full_history_rule: "Nunca se consulta todo UNIFIED_AUDIT_TRAIL/DBA_AUDIT_TRAIL por defecto (# 61 del prompt) — toda query de audit trail declara time_window/action_filter/max_rows/timeout/max_output_bytes explícitos. Preferir: privileged actions recientes, policy violations, evidence refs."
+
+no_application_data: true
+no_application_data_rule: "Ningún skill expone contenido de datos de aplicación, business data, ni bind values de audit trail — sólo metadata de configuración/actividad (usuario tokenizado, acción, timestamp, objeto, resultado)."
+
+no_secret_exposure: true
+no_secret_exposure_rule: "Ningún skill solicita, recibe, procesa o reenvía password hashes, verifiers, wallet passwords, key material, ni contenido de audit de aplicación más allá de metadata de configuración (# 26, # 32, # 57 del prompt)."
+
+password_verify_function_budget:
+  source_scope: "sólo la función/paquete específico referenciado por PASSWORD_VERIFY_FUNCTION del profile, nunca el schema completo (# 60 del prompt)"
+  no_execution: true
+
+context_budget:
+  relative_level: MEDIUM
+  scaling_rule: "Escala con account_count/grant_count/audit_volume; el Task Package puede acotar constraints.container_scope/time_window para limitar el alcance."
+  reuse_rule: "Reutiliza el Target Profile ya publicado por oracle-discovery-analyst — nunca vuelve a determinar oracle_version/architecture/multitenant por su cuenta."

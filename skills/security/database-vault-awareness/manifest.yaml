@@ -1,0 +1,22 @@
+name: database-vault-awareness
+display_name: "Database Vault Awareness"
+id: security/database-vault-awareness
+version: 1.0.0
+domain: security
+status: active
+
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: ANY_CONTAINER
+database_role_scope: ANY
+
+license_requirements: "Oracle Database Vault — SEPARATELY_LICENSED por defecto"
+
+required_evidence:
+  - query_id: Q-SEC-DATABASE-VAULT-STATUS-001
+optional_evidence: []
+data_sensitivity: LOW
+context_budget: LOW
+
+related_skills: [security/ols-awareness, security/licensing-gates]

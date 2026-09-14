@@ -1,0 +1,39 @@
+# Fixture: Oracle 19c CDB con 2 PDBs, usuarios comunes y locales mezclados correctamente distinguidos
+# Usada por: security/common-local-users
+fixture_id: FX-19c-common-local-users
+
+target_profile:
+  schema_version: "2.5.0"
+  target_id: "fixture-19c-common-local-users"
+  database: {name: "ORCL19CDB", unique_name: "orcl19cdb", dbid: "1955223317"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19cdb", number: 1, host: "HOST_TOKEN_56"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: cdb_root, con_id: 1, con_name: "CDB$ROOT"}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: SUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  multitenant: {cdb: true, cdb_name: "CDB_NAME_TOKEN_012", root_container: "CDB$ROOT", pdb_count: 2, local_undo_enabled: true, application_containers: false}
+  security: {compliance_frameworks: null, account_inactivity_policy_days: null, password_policy: null, encryption_required: null, audit_requirements: null, tls_required: null, licensing_profile: null}
+  discovery: {timestamp: "2026-03-01T09:05:00Z", evidence_refs: [EVD-FX-8020], confidence: FACT}
+
+compatibility_schema:
+  available_views: [CDB_USERS]
+  available_columns: {}
+
+mock_evidence:
+  - query_id: Q-SEC-COMMON-LOCAL-USERS-001
+    result:
+      - {con_id: 1, username: "C##AUDIT_ADMIN", common: "YES", account_status: "OPEN", oracle_maintained: "N", authentication_type: "PASSWORD"}
+      - {con_id: 3, username: "PDB1_APP_USER", common: "NO", account_status: "OPEN", oracle_maintained: "N", authentication_type: "PASSWORD"}
+      - {con_id: 4, username: "PDB2_APP_USER", common: "NO", account_status: "OPEN", oracle_maintained: "N", authentication_type: "PASSWORD"}
+
+expected_findings:
+  - category: common-local-users
+    severity: LOW
+    confidence: FACT
+    reason: "C##AUDIT_ADMIN correctamente common, PDB1/PDB2_APP_USER correctamente local por su propio con_id — nunca mezclados (# 23 del prompt de Fase 8)"

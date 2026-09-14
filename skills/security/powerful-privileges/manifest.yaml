@@ -1,0 +1,23 @@
+name: powerful-privileges
+display_name: "Powerful Privilege Detection"
+id: security/powerful-privileges
+version: 1.0.0
+domain: security
+status: active
+
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: ANY_CONTAINER
+database_role_scope: ANY
+
+license_requirements: none
+
+required_evidence:
+  - query_id: Q-SEC-SYSTEM-PRIVILEGES-001
+  - query_id: Q-SEC-ROLE-SYSTEM-PRIVILEGES-001
+optional_evidence: []
+data_sensitivity: HIGH
+context_budget: MEDIUM
+
+related_skills: [security/system-privileges, security/admin-privileges, security/public-grants]

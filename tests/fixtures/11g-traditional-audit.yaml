@@ -1,0 +1,37 @@
+# Fixture: Oracle 11g standalone, Traditional Auditing habilitado (sin Unified Auditing — no existe en 11g)
+# Usada por: security/traditional-auditing, security/audit-configuration
+fixture_id: FX-11g-traditional-audit
+
+target_profile:
+  schema_version: "2.5.0"
+  target_id: "fixture-11g-traditional-audit"
+  database: {name: "ORCL11G", unique_name: "orcl11g", dbid: "1122334455"}
+  oracle_version: {major: 11, minor: 2, release: 0, ru: null, raw: "11.2.0.4.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl11g", number: 1, host: "HOST_TOKEN_30"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: non_cdb, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  security: {compliance_frameworks: null, account_inactivity_policy_days: null, password_policy: null, encryption_required: null, audit_requirements: null, tls_required: null, licensing_profile: null}
+  discovery: {timestamp: "2026-03-01T09:05:00Z", evidence_refs: [EVD-FX-8001], confidence: FACT}
+
+compatibility_schema:
+  available_views: [V$PARAMETER, DBA_AUDIT_SESSION]
+  available_columns: {}
+
+mock_evidence:
+  - query_id: Q-SEC-TRADITIONAL-AUDIT-001
+    result:
+      - {name: "audit_trail", value: "DB"}
+      - {username: "SYS", timestamp: "2026-02-28T02:00:00Z", action_name: "LOGON", returncode: 0}
+
+expected_findings:
+  - category: traditional-auditing
+    severity: LOW
+    confidence: FACT
+    reason: "AUDIT_TRAIL=DB con evidencia de sesión — mecanismo esperado y único disponible en 11g (# 28 del prompt de Fase 8)"

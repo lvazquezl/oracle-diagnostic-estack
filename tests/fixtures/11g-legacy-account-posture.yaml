@@ -1,0 +1,40 @@
+# Fixture: Oracle 11g standalone, account inventory sin COMMON/ORACLE_MAINTAINED/LAST_LOGIN (12.1+ únicamente)
+# Usada por: security/account-inventory, security/default-accounts
+fixture_id: FX-11g-legacy-account-posture
+
+target_profile:
+  schema_version: "2.5.0"
+  target_id: "fixture-11g-legacy-account-posture"
+  database: {name: "ORCL11G", unique_name: "orcl11g", dbid: "1122334456"}
+  oracle_version: {major: 11, minor: 2, release: 0, ru: null, raw: "11.2.0.4.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl11g", number: 1, host: "HOST_TOKEN_31"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: non_cdb, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  security: {compliance_frameworks: null, account_inactivity_policy_days: null, password_policy: null, encryption_required: null, audit_requirements: null, tls_required: null, licensing_profile: null}
+  discovery: {timestamp: "2026-03-01T09:05:00Z", evidence_refs: [EVD-FX-8002], confidence: FACT}
+
+compatibility_schema:
+  available_views: [DBA_USERS, DBA_USERS_WITH_DEFPWD]
+  available_columns:
+    "DBA_USERS.common": false
+    "DBA_USERS.oracle_maintained": false
+    "DBA_USERS.last_login": false
+    "DBA_USERS.authentication_type": true
+
+mock_evidence:
+  - query_id: Q-SEC-ACCOUNT-INVENTORY-001
+    result:
+      - {username: "APP_USER", user_id: 101, account_status: "OPEN", lock_date: null, expiry_date: null, created: "2020-01-01T00:00:00Z", profile: "DEFAULT", authentication_type: "PASSWORD"}
+
+expected_findings:
+  - category: account-inventory
+    severity: LOW
+    confidence: FACT
+    reason: "common/oracle_maintained/last_login correctamente null en 11g — nunca inventados (# 7 del prompt de Fase 8)"

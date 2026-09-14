@@ -12,7 +12,7 @@ Este registro identifica cada skill **exclusivamente** por su `skill_id` complet
 - `active` — materializado por completo (19 secciones del Skill Contract), archivo real en el dominio.
 - `registered` — nombre, dominio y propósito fijados en este registro; su materialización completa es Fase 2+ según `README.md#fases-de-construcción`. No es un placeholder vacío: es la entrada de catálogo que gobierna qué se puede construir y en qué orden vía `/change skill`.
 
-Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total); **Fase 5 (Data Guard) materializa las 21 skills del dominio `dataguard` completo** (141 activos en total); **Fase 6 (Multitenant/CDB/PDB) materializa las 26 skills del dominio `multitenant` completo** (166 activos en total). El resto queda `registered` para materialización gobernada en Fases 7–9, en el orden de `README.md`.
+Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total); **Fase 5 (Data Guard) materializa las 21 skills del dominio `dataguard` completo** (141 activos en total); **Fase 6 (Multitenant/CDB/PDB) materializa las 26 skills del dominio `multitenant` completo** (166 activos en total); **Fase 7 (Backup & Recovery/RMAN) materializa las 30 skills del dominio `rman` completo** (196 activos en total); **Fase 8 (Security & Compliance) materializa las 39 skills del dominio `security` completo, genuinamente nuevo** (235 activos en total); **PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING agrega `network/oracle-net-security`** (236 activos en total). El resto queda `registered` para materialización gobernada en Fase 9, en el orden de `README.md`.
 
 ## core (20)
 
@@ -253,7 +253,56 @@ Reemplaza el placeholder de 14 skills `registered` de Foundation (nombres provis
 | `rman/channel-contention` | **active** ([rman/channel-contention/SKILL.md](rman/channel-contention/SKILL.md)) |
 | `rman/manual-recovery-plan` | **active** ([rman/manual-recovery-plan/SKILL.md](rman/manual-recovery-plan/SKILL.md)) |
 
-## network (14 — Fase 4, todos `active`)
+## security (39 — Fase 8, todos `active`)
+
+Dominio `security` genuinamente nuevo — no existía ninguna entrada `registered` previa que
+reconciliar (a diferencia de RMAN/Multitenant). El agente `oracle-security-analyst` sí existía
+como manifest plano desde Foundation (deepened en esta fase, ver `agents/REGISTRY.md`), pero sus
+skills nunca se materializaron.
+
+| skill_id | status |
+|---|---|
+| `security/account-inventory` | **active** ([security/account-inventory/SKILL.md](security/account-inventory/SKILL.md)) |
+| `security/account-status` | **active** ([security/account-status/SKILL.md](security/account-status/SKILL.md)) |
+| `security/default-accounts` | **active** ([security/default-accounts/SKILL.md](security/default-accounts/SKILL.md)) |
+| `security/stale-accounts` | **active** ([security/stale-accounts/SKILL.md](security/stale-accounts/SKILL.md)) |
+| `security/common-local-users` | **active** ([security/common-local-users/SKILL.md](security/common-local-users/SKILL.md)) |
+| `security/roles` | **active** ([security/roles/SKILL.md](security/roles/SKILL.md)) |
+| `security/system-privileges` | **active** ([security/system-privileges/SKILL.md](security/system-privileges/SKILL.md)) |
+| `security/object-privileges` | **active** ([security/object-privileges/SKILL.md](security/object-privileges/SKILL.md)) |
+| `security/powerful-privileges` | **active** ([security/powerful-privileges/SKILL.md](security/powerful-privileges/SKILL.md)) |
+| `security/public-grants` | **active** ([security/public-grants/SKILL.md](security/public-grants/SKILL.md)) |
+| `security/admin-privileges` | **active** ([security/admin-privileges/SKILL.md](security/admin-privileges/SKILL.md)) |
+| `security/proxy-authentication` | **active** ([security/proxy-authentication/SKILL.md](security/proxy-authentication/SKILL.md)) |
+| `security/external-authentication` | **active** ([security/external-authentication/SKILL.md](security/external-authentication/SKILL.md)) |
+| `security/password-profiles` | **active** ([security/password-profiles/SKILL.md](security/password-profiles/SKILL.md)) |
+| `security/password-policy-strength` | **active** ([security/password-policy-strength/SKILL.md](security/password-policy-strength/SKILL.md)) |
+| `security/password-complexity` | **active** ([security/password-complexity/SKILL.md](security/password-complexity/SKILL.md)) |
+| `security/password-verify-function` | **active** ([security/password-verify-function/SKILL.md](security/password-verify-function/SKILL.md)) |
+| `security/password-verifiers` | **active** ([security/password-verifiers/SKILL.md](security/password-verifiers/SKILL.md)) |
+| `security/audit-configuration` | **active** ([security/audit-configuration/SKILL.md](security/audit-configuration/SKILL.md)) |
+| `security/unified-auditing` | **active** ([security/unified-auditing/SKILL.md](security/unified-auditing/SKILL.md)) |
+| `security/traditional-auditing` | **active** ([security/traditional-auditing/SKILL.md](security/traditional-auditing/SKILL.md)) |
+| `security/privileged-audit` | **active** ([security/privileged-audit/SKILL.md](security/privileged-audit/SKILL.md)) |
+| `security/tde-awareness` | **active** ([security/tde-awareness/SKILL.md](security/tde-awareness/SKILL.md)) |
+| `security/keystore-awareness` | **active** ([security/keystore-awareness/SKILL.md](security/keystore-awareness/SKILL.md)) |
+| `security/tablespace-encryption` | **active** ([security/tablespace-encryption/SKILL.md](security/tablespace-encryption/SKILL.md)) |
+| `security/network-encryption` | **active** ([security/network-encryption/SKILL.md](security/network-encryption/SKILL.md)) |
+| `security/tls-awareness` | **active** ([security/tls-awareness/SKILL.md](security/tls-awareness/SKILL.md)) |
+| `security/security-parameters` | **active** ([security/security-parameters/SKILL.md](security/security-parameters/SKILL.md)) |
+| `security/database-links` | **active** ([security/database-links/SKILL.md](security/database-links/SKILL.md)) |
+| `security/directories` | **active** ([security/directories/SKILL.md](security/directories/SKILL.md)) |
+| `security/database-vault-awareness` | **active** ([security/database-vault-awareness/SKILL.md](security/database-vault-awareness/SKILL.md)) |
+| `security/ols-awareness` | **active** ([security/ols-awareness/SKILL.md](security/ols-awareness/SKILL.md)) |
+| `security/data-redaction-awareness` | **active** ([security/data-redaction-awareness/SKILL.md](security/data-redaction-awareness/SKILL.md)) |
+| `security/data-masking-awareness` | **active** ([security/data-masking-awareness/SKILL.md](security/data-masking-awareness/SKILL.md)) |
+| `security/licensing-gates` | **active** ([security/licensing-gates/SKILL.md](security/licensing-gates/SKILL.md)) |
+| `security/compliance-mapping` | **active** ([security/compliance-mapping/SKILL.md](security/compliance-mapping/SKILL.md)) |
+| `security/security-healthcheck` | **active** ([security/security-healthcheck/SKILL.md](security/security-healthcheck/SKILL.md)) |
+| `security/security-assessment` | **active** ([security/security-assessment/SKILL.md](security/security-assessment/SKILL.md)) |
+| `security/manual-remediation-plan` | **active** ([security/manual-remediation-plan/SKILL.md](security/manual-remediation-plan/SKILL.md)) |
+
+## network (15 — Fase 4 (14) + Fase 8 hardening (1), todos `active`)
 
 Reconciliación de la lista Foundation (ninguna estaba `active`): `network/tns` (flat) → `network/oracle-net` + `network/tns-errors`; `listener`/`scan-listener` → `network/listeners`/`network/scan`; `dns`/`hosts` → `network/name-resolution`/`network/scan-resolution`; `tcp`/`ports`/`ephemeral-ports` → cubiertos narrativamente por `network/connection-path`/`network/timeouts` (sin `skill_id` propio — no hay query/collector certificado independiente de puertos efímeros todavía); `tns-125xx`/`ora-3136` → `network/tns-errors` (taxonomía en `knowledge/errors/tns/`/`knowledge/errors/ora/`, no un skill por código); `rac-interconnect`/`bonding`/`vlan` → `network/interconnect`; `latency` → cubierto narrativamente, sin collector de latencia certificado en esta fase.
 
@@ -273,6 +322,7 @@ Reconciliación de la lista Foundation (ninguna estaba `active`): `network/tns` 
 | `network/interconnect` | **active** ([network/interconnect/SKILL.md](network/interconnect/SKILL.md)) |
 | `network/healthcheck` | **active** ([network/healthcheck/SKILL.md](network/healthcheck/SKILL.md)) |
 | `network/troubleshooting` | **active** ([network/troubleshooting/SKILL.md](network/troubleshooting/SKILL.md)) |
+| `network/oracle-net-security` | **active** ([network/oracle-net-security/SKILL.md](network/oracle-net-security/SKILL.md)) — PHASE 8 SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING |
 
 ## os (18 × 5 plataformas: linux, solaris, aix, windows, hpux)
 

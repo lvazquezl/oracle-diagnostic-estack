@@ -1,0 +1,4 @@
+| Version | Date | Change |
+|---|---|---|
+| 1.0.0 | Foundation | Creación inicial como manifest plano (`agents/oracle-security-analyst.md`) — assessment de usuarios/roles/privilegios/profiles/auditoría/TLS/DB links/parámetros, licensing-awareness básica. |
+| 2.0.0 | Fase 8 | Deepening a contrato estructurado completo (AGENT.md/manifest.yaml/routing.yaml/context-policy.yaml/collaboration.yaml/output-schema.yaml/tests/CHANGELOG.md), mismo patrón que RAC/ASM/Network/Data Guard/Multitenant/RMAN. 39 skills `security/*` materializadas. Query catalog `queries/security/**`. Password Strength Policy Model + Password Verify Function Analysis (read-only source inspection, nunca ejecución). Licensing gates para Database Vault/OLS/Data Redaction/Data Masking. Compliance mapping model. El manifest plano v1.0.0 queda superado — responsabilidades/boundaries preservadas y ampliadas. |

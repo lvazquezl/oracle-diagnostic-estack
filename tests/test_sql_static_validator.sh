@@ -48,6 +48,35 @@ awk '
   }
 ' "$DICT" > "$EXHAUSTIVE_VIEWS_FILE"
 
+# PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING (# 13,
+# # 14 del prompt): causa raíz real de que Q-SEC-DEFAULT-ACCOUNTS-001 pudiera seleccionar
+# DBA_USERS.ORACLE_MAINTAINED (min_version real "12.1") desde un bloque implicit_full_range con
+# min declarado "11.0" sin que ningún chequeo lo detectara — extract_aliases() (abajo) sólo
+# reconocía como "objeto de vista" un token que contuviera literalmente "$", así que CUALQUIER
+# objeto del dictionary sin "$" (DBA_*, CDB_*, ALL_*, USER_*, ROLE_*, AUDIT_*, UNIFIED_*,
+# REDACTION_*, ...) nunca entraba en alias_map y por lo tanto nunca se validaba ni por existencia
+# de columna (Chequeo 2) ni por version-gating (Chequeo 3). Fix dictionary-driven (# 14): en vez
+# de hardcodear prefixes, se construye el conjunto COMPLETO de nombres de objeto de nivel superior
+# registrados en el dictionary (exhaustive o no — igual que el comportamiento ya existente para
+# objetos "$" no registrados, que se capturan pero no producen hallazgo si no están en el
+# dictionary) y extract_aliases() reconoce un token como candidato a vista si contiene "$" (compat
+# histórico, sin cambios) O si su forma en minúsculas coincide EXACTAMENTE con un objeto
+# registrado — nunca por substring, para no confundir DBA_USERS con DBA_USERS_WITH_DEFPWD.
+declare -A ALL_DICT_OBJECTS
+while IFS= read -r obj; do
+  [ -z "$obj" ] && continue
+  ALL_DICT_OBJECTS["$obj"]=1
+done < <(awk '
+  /^  [A-Za-z$#0-9_]+:[ \t]*$/ {
+    line=$0; sub(/^  /,"",line); sub(/:[ \t]*$/,"",line)
+    print tolower(line)
+    if (line ~ /^V\$/) {
+      base=line; sub(/^V\$/,"",base)
+      print tolower("GV$" base)
+    }
+  }
+' "$DICT")
+
 # --- Chequeo 1 (original): columnas version-gated conocidas usadas sin guardia ---
 
 RISKY_COLUMNS=(
@@ -147,7 +176,10 @@ extract_aliases() {
     local w="${words[$i]}"
     local wl
     wl=$(echo "$w" | tr 'A-Z' 'a-z' | tr -d ',')
-    if [[ "$wl" == *'$'* ]]; then
+    # Un token es candidato a objeto de vista/dictionary si contiene "$" (V$/GV$, comportamiento
+    # histórico) O si coincide exactamente con un objeto registrado en el dictionary (DBA_*, CDB_*,
+    # ALL_*, USER_*, ROLE_*, AUDIT_*, UNIFIED_*, REDACTION_*, ... — # 14 del prompt de hardening).
+    if [[ "$wl" == *'$'* ]] || [ -n "${ALL_DICT_OBJECTS[$wl]+x}" ]; then
       local alias=""
       local j=$((i+1))
       if [ $j -lt $n ]; then
@@ -157,7 +189,13 @@ extract_aliases() {
         case "$nxtl" in
           join|on|where|group|order|"") alias="" ;;
           *'$'*) alias="" ;;
-          *) alias="$nxtl" ;;
+          *)
+            if [ -n "${ALL_DICT_OBJECTS[$nxtl]+x}" ]; then
+              alias=""
+            else
+              alias="$nxtl"
+            fi
+            ;;
         esac
       fi
       if [ -n "$alias" ]; then
@@ -233,6 +271,7 @@ get_view_min_version() {
     inview && /^    min_version:/ {
       line=$0
       sub(/^    min_version:[ \t]*/,"",line)
+      sub(/[ \t]*#.*$/,"",line)
       gsub(/"/,"",line)
       sub(/[ \t]*$/,"",line)
       print line

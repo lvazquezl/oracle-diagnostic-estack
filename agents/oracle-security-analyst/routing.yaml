@@ -1,0 +1,39 @@
+activation_conditions:
+  - security_intent: "pregunta sobre cuentas, roles, privilegios, grants a PUBLIC, password/profile posture, password-strength policy, auditoría (Unified/Traditional), TDE/keystore, encriptación de red/TLS, parámetros de seguridad, database links/directories, Database Vault/OLS/Redaction/Masking, compliance mapping"
+  - security_symptom: "cuenta con privilegios excesivos sospechados, grant peligroso a PUBLIC, cuenta default sin bloquear, profile con password policy débil, Unified Auditing deshabilitado o sin cobertura de actividad privilegiada, TDE ausente en tablespace sensible, wallet cerrado, conexión sin TLS requerido, compliance gap"
+  - delegated_from_incident: "incident-root-cause-analyst requiere visibilidad de actividad privilegiada o postura de auditoría durante un incidente activo"
+  - delegated_from_evolution: "estack-evolution-architect requiere SECURITY VALIDATION de un /change security propuesto"
+  - delegated_from_multitenant: "oracle-multitenant-analyst requiere distinción common/local de usuarios/roles/password policy a nivel CDB/PDB"
+  - delegated_from_dataguard: "oracle-dataguard-analyst requiere awareness de wallet/keystore/network encryption implicados en Data Guard"
+  - delegated_from_backup_recovery: "oracle-backup-recovery-analyst requiere awareness de encrypted backups/wallet dependency/SBT credentials"
+
+deactivation_rule: "Nunca se activa para crear/alterar/eliminar usuarios/roles/profiles, GRANT/REVOKE, resetear/probar/crackear contraseñas, exponer hashes/verifiers, modificar auditoría/wallets/TDE/Database Vault/OLS/Redaction/Masking, ni SQL/shell arbitrario — ninguna de esas capacidades existe en el e-stack (manifest.yaml#forbidden_capabilities). No implementa pentesting activo, exploit generation, ni remediation execution automática."
+
+delegates_to:
+  - agent: oracle-network-analyst
+    when: "detalle profundo de configuración TLS/listener/SQLNET más allá de awareness (# 34 del prompt) — nunca se edita configuración"
+  - agent: oracle-multitenant-analyst
+    when: "topología CDB/PDB/common-local requiere contexto adicional más allá de lo ya publicado en Target Profile (# 53)"
+  - agent: oracle-dataguard-analyst
+    when: "drift de configuración de seguridad, implicaciones de wallet/keystore, o consideraciones de auditoría en contexto Data Guard requieren el detalle de rol/topología (# 54)"
+  - agent: oracle-backup-recovery-analyst
+    when: "encrypted backups, wallet/key dependency o SBT credentials awareness requieren el detalle de configuración RMAN (# 55) — nunca se exponen secrets"
+  - agent: os-platform-analyst
+    when: "OS groups, permisos de filesystem de wallet, ownership de listener/sqlnet, SSH/SSHD requieren visibilidad de OS (# 56) — deep OS hardening no se implementa todavía"
+  - agent: incident-root-cause-analyst
+    when: "actividad privilegiada sospechosa, audit trail con evidencia de compromiso, o compliance gap crítico en producción"
+  - agent: change-advisor
+    when: "un hallazgo de seguridad aprobado por el DBA requiere una propuesta de cambio formal — nunca ejecutado por este agente"
+
+receives_from:
+  - agent: oracle-discovery-analyst
+    what: "Target Profile con oracle_version, architecture, multitenant, y bloque security.password_policy (2.5.0+) ya publicados"
+  - agent: incident-root-cause-analyst
+    what: "Task Package acotado a actividad privilegiada/audit evidence durante un incidente activo, con evidence_refs"
+  - agent: estack-evolution-architect
+    what: "solicitud de SECURITY VALIDATION para un /change security propuesto"
+  - agent: oracle-multitenant-analyst
+    what: "contexto de topología CDB/PDB para distinguir common/local user y password policy scope"
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+loop_prevention_rule: "oracle-security-analyst nunca delega de vuelta a quien ya le entregó el Task Package original. No activa todos los agentes de dominio por defecto — sólo delega cuando la evidencia específica lo requiere (mismo principio que RMAN/Multitenant/Data Guard, # 30 del prompt de Fase 7)."

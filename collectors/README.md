@@ -1,6 +1,6 @@
 # Collectors — especificación
 
-Estado: **especificación certificada**, no runtime ejecutable (el Gateway MCP real es Fase 7). Fase 2 (Oracle Core) amplía el contrato de `oracle-sql-collector` para cubrir las ~20 queries `Q-ORA-*` nuevas, y agrega el contrato de `oracle-diag-collector` (ADR/alert log).
+Estado: **especificación certificada**, no runtime ejecutable (el Gateway MCP real es Fase 13 — roadmap vigente, corregido desde la referencia obsoleta "Fase 7", que ya se completó como Backup & Recovery/RMAN sin entregar el Gateway runtime). Fase 2 (Oracle Core) amplía el contrato de `oracle-sql-collector` para cubrir las ~20 queries `Q-ORA-*` nuevas, y agrega el contrato de `oracle-diag-collector` (ADR/alert log).
 
 Un collector ejecuta exactamente una query/comando certificado de `queries/REGISTRY.md` contra el ambiente real y devuelve el resultado crudo al Sanitizer — nunca directamente al modelo.
 
@@ -24,6 +24,7 @@ Un collector ejecuta exactamente una query/comando certificado de `queries/REGIS
 | `os-windows-collector` | PerfCounters/WMI de sólo lectura | Windows Server |
 | `os-hpux-collector` | comandos de estado HP-UX de sólo lectura | HP-UX (legacy) |
 | `net-config-collector` | lectura de archivos `tnsnames.ora`/`sqlnet.ora`/`listener.ora` y `listener.log` (ventana acotada) | todas |
+| `get_oracle_net_security_configuration` (Fase 8 — hardening) | semántico, sobre el mismo canal de `net-config-collector` pero acotado a `sqlnet.ora`: extrae ÚNICAMENTE los parámetros allowlisted `SQLNET.ENCRYPTION_*`/`SQLNET.CRYPTO_CHECKSUM_*` y metadata TCPS — nunca el archivo completo, nunca `V$PARAMETER`/`V$SPPARAMETER` (SQLNET.\* no es un parámetro de instancia). Sin certificación runtime, degrada a `PARTIALLY_SUPPORTED` con `evidence_source: MANUAL_SANITIZED_ORACLE_NET_CONFIGURATION` (contenido ya sanitizado provisto por el DBA, mismo patrón que los parsers RMAN de Fase 7). Ver `skills/network/oracle-net-security/SKILL.md`, propiedad de `oracle-network-analyst` | todas |
 | `oracle-diag-collector` (Fase 2) | lectura acotada de `alert.log`/ADR home (`Q-ORA-DIAGNOSTICS-ALERTLOG-001`) — ventana de líneas/tiempo, nunca el archivo completo; XML alert log (11g+) parseado estructuralmente, texto plano (10g) por patrón de fecha/`ORA-` | todas — ruta resuelta por convención de plataforma, nunca hardcodeada |
 | `gi-clusterware-collector` (Fase 4) | ejecución allowlisted de `crsctl`/`srvctl`/`olsnodes`/`ocrcheck` (sólo subcomandos de lectura/status — nunca `start`/`stop`/`modify`/`add`/`delete`/`relocate`), parseada por `parsers/rac/*.py` | Oracle Linux, RHEL, SUSE, Solaris, AIX, Windows Server — ver `docs/GI_READONLY_COLLECTORS.md` |
 | `asm-cli-collector` (Fase 4) | `asmcmd lsdg` — sólo respaldo/discovery de `asm/topology`; el monitoreo rutinario de capacidad usa `oracle-sql-collector` contra `V$ASM_DISKGROUP_STAT`, no este collector | ídem |

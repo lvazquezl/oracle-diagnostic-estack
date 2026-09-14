@@ -1,0 +1,315 @@
+security_result:
+  summary: string
+
+  accounts:
+    - user_token: string              # MASK por defecto salvo ORACLE_MAINTAINED = Y
+      account_status: string
+      authentication_type: PASSWORD|EXTERNAL|GLOBAL|NONE|other
+      common: bool|NOT_APPLICABLE      # NOT_APPLICABLE fuera de CDB
+      oracle_maintained: bool|null
+      classification: ORACLE_MAINTAINED|APPLICATION|ADMINISTRATIVE|DEFAULT_SAMPLE|UNKNOWN
+      profile: string|null
+      created: string|null
+      last_login: string|null          # null si no determinable (pre-12.1 no existe la columna)
+      expiry_date: string|null
+      lock_date: string|null
+      password_change_date: string|null
+      con_id: int|null
+      evidence_refs: [EVD-...]
+
+  account_status_summary:
+    open_count: int|null
+    expired_count: int|null
+    locked_count: int|null
+    expired_grace_count: int|null
+    evidence_refs: [EVD-...]
+
+  default_accounts:
+    - user_token: string
+      classification: ORACLE_MAINTAINED|APPLICATION|ADMINISTRATIVE|DEFAULT_SAMPLE|UNKNOWN
+      has_default_password: bool|null    # DBA_USERS_WITH_DEFPWD, NOT_AVAILABLE en 10g
+      account_status: string
+      evidence_refs: [EVD-...]
+
+  stale_accounts:
+    policy_status: INSUFFICIENT_POLICY|EVALUATED    # nunca se inventa un umbral (# 9 del prompt)
+    threshold_days: int|null
+    accounts: [{user_token: string, last_login: string|null, days_inactive: int|null}]
+    evidence_refs: [EVD-...]
+
+  common_local_users:
+    common: [{user_token: string, account_status: string, con_id: int}]
+    local: [{user_token: string, account_status: string, con_id: int}]
+    scope: CDB_ROOT_ONLY|NOT_APPLICABLE
+    evidence_refs: [EVD-...]
+
+  roles:
+    - role_token: string
+      common: bool|NOT_APPLICABLE
+      direct_grants_count: int|null
+      nested_roles: [string]
+      evidence_refs: [EVD-...]
+
+  system_privileges:
+    - grantee_token: string
+      privilege: string
+      admin_option: bool
+      grant_path: DIRECT|VIA_ROLE
+      role_chain: [string]|null
+      con_id: int|null
+      evidence_refs: [EVD-...]
+
+  object_privileges:
+    - grantee_token: string
+      privilege: string
+      owner_token: string
+      object_token: string
+      grant_option: bool
+      grant_path: DIRECT|VIA_ROLE
+      evidence_refs: [EVD-...]
+
+  powerful_privileges:
+    - grantee_token: string
+      privilege: string
+      category: ADMINISTRATIVE_LOGIN|OBJECT_CREATION|DICTIONARY_ACCESS|PRIVILEGE_ESCALATION|SYSTEM_CONTROL
+      severity: LOW|MEDIUM|HIGH|CRITICAL   # nunca uniforme — contexto/scope/necesidad operacional (# 11 del prompt)
+      grant_path: DIRECT|VIA_ROLE
+      evidence_refs: [EVD-...]
+
+  public_grants:
+    - privilege: string
+      object_token: string|null
+      classification: ORACLE_REQUIRED_DEFAULT|APPLICATION_REQUIRED|CUSTOM|UNKNOWN
+      revoke_recommended: bool          # nunca true sin dependency analysis — siempre false salvo evidencia explícita
+      evidence_refs: [EVD-...]
+
+  admin_privileges:
+    - user_token: string
+      privilege: SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM
+      source: PASSWORD_FILE|OS_GROUP_AWARENESS|UNKNOWN
+      common: bool|NOT_APPLICABLE
+      evidence_refs: [EVD-...]
+
+  password_profile_posture:
+    - profile_token: string
+      failed_login_attempts: string|null
+      password_life_time: string|null
+      password_reuse_time: string|null
+      password_reuse_max: string|null
+      password_lock_time: string|null
+      password_grace_time: string|null
+      password_verify_function: string|null
+      inactive_account_time: string|null    # NOT_AVAILABLE si version < 12.2
+      evidence_refs: [EVD-...]
+
+  password_strength_policy_assessment:
+    - profile_token: string
+      user_scope: [string]              # tokens de usuarios con este profile, o resumen
+      authentication_type_applicable: bool   # false para EXTERNAL/GLOBAL -> NOT_APPLICABLE
+      minimum_length: {status: COMPLIANT|NON_COMPLIANT|PARTIALLY_COMPLIANT|NOT_APPLICABLE|INSUFFICIENT_EVIDENCE|POLICY_NOT_DEFINED|VERIFY_FUNCTION_NOT_ANALYZABLE, observed: int|null, target: int|null}
+      uppercase_requirement: {status: string, target: int|null}
+      lowercase_requirement: {status: string, target: int|null}
+      digit_requirement: {status: string, target: int|null}
+      special_character_requirement: {status: string, target: int|null}
+      expiration_policy: {status: string, observed_days: int|null, target_days: int|null}
+      failed_login_policy: {status: string, observed: int|null, target: int|null}
+      lock_time_policy: {status: string, observed_minutes: int|null, target_minutes: int|null}
+      grace_time_policy: {status: string, observed_days: int|null, target_days: int|null}
+      reuse_time_policy: {status: string, observed_days: int|null, target_days: int|null}
+      reuse_max_policy: {status: string, observed: int|null, target: int|null}
+      policy_status: COMPLIANT|NON_COMPLIANT|PARTIALLY_COMPLIANT|NOT_APPLICABLE|INSUFFICIENT_EVIDENCE|POLICY_NOT_DEFINED
+      existing_password_compliance: NOT_DIRECTLY_VERIFIABLE   # siempre, aunque policy_status sea COMPLIANT (# 21 del prompt)
+      actual_password_content: NOT_INSPECTED                  # siempre
+      evidence_refs: [EVD-...]
+
+  password_verify_function_policy:
+    - function_token: string
+      configured: bool
+      analyzable: bool
+      minimum_length: int|null
+      uppercase_min: int|null
+      lowercase_min: int|null
+      digits_min: int|null
+      special_characters_min: int|null
+      username_similarity_check: bool|null
+      dictionary_word_check: bool|null
+      reuse_check_awareness: bool|null
+      confidence: FACT|OBSERVATION|UNDETERMINED
+      status: VERIFY_FUNCTION_NOT_ANALYZABLE|ANALYZED
+      evidence_refs: [EVD-...]
+
+  password_hash_verifier_protection:
+    rule: "The e-stack assesses password policy strength; it never attempts to determine, recover, crack, validate, expose, compare, or test actual user passwords or password verifiers."
+    password_versions_observed: [string]|null   # ej. legacy/modern verifier presence, nunca el valor
+    verifier_posture: LEGACY_PRESENT|MODERN_PRESENT|MIXED|UNKNOWN
+
+  unified_auditing:
+    available: bool
+    enabled_mode: NONE|PURE_UNIFIED|MIXED|UNKNOWN
+    enabled_policies: [string]
+    covers_privileged_activity: bool|null
+    evidence_refs: [EVD-...]
+
+  traditional_auditing:
+    audit_trail_setting: string|null
+    session_audit_evidence: bool|null
+    applicable: bool          # false en 12.1+ si Unified Auditing está en modo puro
+    evidence_refs: [EVD-...]
+
+  privileged_audit:
+    sys_operations_visible: bool|null
+    admin_privilege_use_visible: bool|null
+    logon_logoff_covered: bool|null
+    ddl_security_changes_covered: bool|null
+    audit_volume_risk: LOW|MEDIUM|HIGH|UNKNOWN
+    evidence_refs: [EVD-...]
+
+  tde:
+    available: bool
+    wallet_state: OPEN|CLOSED|OPEN_NO_MASTER_KEY|UNKNOWN|NOT_APPLICABLE
+    encrypted_tablespaces: [{tablespace_token: string, encryption_algorithm: string|null}]
+    encrypted_columns: [{table_token: string, column_token: string, encryption_algorithm: string|null}]
+    evidence_refs: [EVD-...]
+
+  keystore:
+    type: SOFTWARE|HSM|UNKNOWN|NOT_APPLICABLE
+    status: OPEN|CLOSED|UNKNOWN
+    auto_login: bool|null
+    secrets_exposed: false     # siempre false por diseño — nunca se recolecta wallet password/key material
+    evidence_refs: [EVD-...]
+
+  tablespace_encryption:
+    - tablespace_token: string
+      classification: ENCRYPTED|UNENCRYPTED|UNKNOWN|NOT_APPLICABLE
+      policy_target_encrypted: bool|null
+      evidence_refs: [EVD-...]
+
+  network_encryption:
+    client_encryption: string|null
+    server_encryption: string|null
+    crypto_checksum: string|null
+    evidence_refs: [EVD-...]
+
+  tls:
+    tls_listener_endpoints_detected: bool|null
+    tcps_configured: bool|null
+    certificate_expiry_days: int|null
+    weak_protocol_detected: bool|null
+    evidence_refs: [EVD-...]
+
+  security_parameters:
+    - parameter_token: string
+      value: string
+      applicable: bool
+      evidence_refs: [EVD-...]
+
+  database_links:
+    - db_link_token: string
+      owner_token: string
+      username_token: string|null
+      host_token: string|null
+      scope: PUBLIC|PRIVATE
+      evidence_refs: [EVD-...]
+
+  directories:
+    - directory_token: string
+      owner_token: string
+      grants: [{grantee_token: string, privilege: string}]
+      evidence_refs: [EVD-...]
+
+  database_vault:
+    installed: bool|null
+    enabled: bool|null
+    license: {feature: "Oracle Database Vault", required: true, edition: string|null, pack: null, status: INCLUDED|SEPARATELY_LICENSED|LICENSE_RESTRICTED|UNKNOWN|REQUIRES_REVIEW, source: string}
+    evidence_refs: [EVD-...]
+
+  ols:
+    installed: bool|null
+    enabled: bool|null
+    license: {feature: "Oracle Label Security", required: true, edition: string|null, pack: null, status: INCLUDED|SEPARATELY_LICENSED|LICENSE_RESTRICTED|UNKNOWN|REQUIRES_REVIEW, source: string}
+    evidence_refs: [EVD-...]
+
+  data_redaction:
+    policies_detected: int|null
+    license: {feature: "Oracle Data Redaction", required: true, edition: string|null, pack: "Advanced Security Option", status: INCLUDED|SEPARATELY_LICENSED|LICENSE_RESTRICTED|UNKNOWN|REQUIRES_REVIEW, source: string}
+    evidence_refs: [EVD-...]
+
+  data_masking:
+    product: DATA_MASKING_AND_SUBSETTING|DBMS_REDACT|UNKNOWN
+    note: "Data Masking and Subsetting (Enterprise Manager Pack) y Data Redaction (DBMS_REDACT, Advanced Security Option) son licenciamientos distintos — nunca se asume el mismo (# 42 del prompt)."
+    license: {feature: "Oracle Data Masking and Subsetting", required: true, edition: string|null, pack: "Data Masking and Subsetting Pack", status: INCLUDED|SEPARATELY_LICENSED|LICENSE_RESTRICTED|UNKNOWN|REQUIRES_REVIEW, source: string}
+    evidence_refs: [EVD-...]
+
+  compliance_mapping:
+    - control:
+        framework: string          # ej. INTERNAL, CIS, DISA_STIG, CUSTOM
+        control_id: string
+        requirement: string
+        status: PASS|FAIL|PARTIAL|NOT_APPLICABLE|NOT_ASSESSED|INSUFFICIENT_EVIDENCE|INSUFFICIENT_POLICY|LICENSE_RESTRICTED
+        evidence_ids: [EVD-...]
+        rationale: string
+        scope: string
+        version: string
+        confidence: FACT|OBSERVATION|HYPOTHESIS
+        remediation_ref: string|null
+
+  multitenant_integration:
+    common_local_scope_respected: true    # siempre true — nunca se mezclan grants/policies entre containers
+    evidence_refs: [EVD-...]
+
+  dataguard_integration:
+    security_settings_drift_detected: bool|null
+    wallet_keystore_implications: string|null
+    network_encryption_consistency: bool|null
+    audit_considerations: string|null
+    evidence_refs: [EVD-...]
+
+  backup_recovery_integration:
+    encrypted_backups_detected: bool|null
+    wallet_key_dependency: bool|null
+    sbt_credentials_awareness: string|null    # nunca credenciales reales
+    evidence_refs: [EVD-...]
+
+  health_model:
+    accounts: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    roles: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    privileges: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    public_exposure: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    password_profile: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    password_strength_policy: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    auditing: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    tde: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    keystore: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    network_encryption: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    security_parameters: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    database_links: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    directories: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    advanced_security_features: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    compliance: HEALTHY|WARNING|DEGRADED|CRITICAL|UNKNOWN|NOT_APPLICABLE|LICENSE_RESTRICTED
+    # nunca un score único opaco — cada dimensión se reporta por separado
+
+  findings: [{area: string, observation: string, severity: LOW|MEDIUM|HIGH|CRITICAL, confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE, evidence_refs: [EVD-...]}]
+  hypotheses: [{statement: string, confidence: HYPOTHESIS|PROBABLE_CAUSE, supporting_evidence: [EVD-...]}]
+  evidence_refs: [EVD-...]
+
+  recommendations:
+    - summary: string
+      manual_action:
+        action_id: string
+        purpose: string
+        owner_role: string
+        command: string
+        prechecks: [string]
+        expected_result: string
+        risk: string
+        rollback: string
+        postchecks: [string]
+        licensing_gate: string|null
+        execution_status: NOT_EXECUTED   # nunca EXECUTED
+
+  not_certified_queries: [string]
+  not_certified_collectors: [string]
+  limitations: [string]
+  confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|UNDETERMINED   # nunca CONFIRMED_ROOT_CAUSE
+  next_skill_or_agent: string|null
+  capability_status: SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED|NOT_APPLICABLE|INSUFFICIENT_PRIVILEGES|INSUFFICIENT_EVIDENCE|POLICY_BLOCKED|LICENSE_RESTRICTED|COMPATIBILITY_VALIDATION_REQUIRED

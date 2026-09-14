@@ -17,6 +17,14 @@ for f in $(grep -rl '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null)
     echo "[PASS] $f — solapamiento intencional (variantes por propósito/costo, no por versión — ver 'default:'/'on_demand_only:')"
     continue
   fi
+  # Variantes distinguidas por privilegio disponible en la cuenta que ejecuta (Fase 8, ej.
+  # Q-SEC-PASSWORD-VERIFY-SOURCE-001: DBA_SOURCE vs. ALL_SOURCE, mismo rango de version) se
+  # solapan intencionalmente -- el Resolver las distingue por el flag `privilege_fallback`, no
+  # por rango de version. Ver docs/QUERY_VARIANTS.md#privilege-scope-variants.
+  if grep -q 'privilege_fallback: true' "$f"; then
+    echo "[PASS] $f — solapamiento intencional (variantes por privilegio disponible, no por versión — ver 'default:'/'privilege_fallback:')"
+    continue
+  fi
   ranges=$(grep -oE 'oracle_versions: \{min: "[^"]+", max: [^}]+\}' "$f")
   mins=(); maxs=()
   while IFS= read -r r; do

@@ -10,7 +10,7 @@ Un Target Profile es la única fuente de verdad sobre "qué es este ambiente" de
 
 ```yaml
 target_profile:
-  schema_version: "2.4.0"
+  schema_version: "2.5.0"
   target_id: string                    # referencia local (alias), nunca connection string con credenciales
 
   database:
@@ -117,6 +117,30 @@ target_profile:
     rpo_minutes: int|null                # recovery_objectives opcional — INSUFFICIENT_REQUIREMENTS si null
     rto_minutes: int|null
 
+  # --- Fase 8 (Security & Compliance) — aditivo, schema_version 2.5.0, ningún campo previo removido/renombrado ---
+
+  security:
+    compliance_frameworks: [string]|null       # ej. ["INTERNAL"], ["CIS"] — nunca copia benchmarks propietarios completos
+    account_inactivity_policy_days: int|null   # sin definir -> security/stale-accounts publica INSUFFICIENT_POLICY, nunca inventa un umbral
+    password_policy:                            # ejemplo de policy TARGET configurable, nunca defaults universales — null -> POLICY_NOT_DEFINED
+      minimum_length: int|null
+      complexity:
+        uppercase_min: int|null
+        lowercase_min: int|null
+        digits_min: int|null
+        special_characters_min: int|null
+      password_life_time_days: int|null
+      failed_login_attempts: int|null
+      password_lock_time_minutes: int|null
+      password_grace_time_days: int|null
+      password_reuse:
+        minimum_days: int|null
+        minimum_changes: int|null
+    encryption_required: bool|null              # null -> security/tablespace-encryption/tde-awareness nunca declaran incumplimiento sin este target
+    audit_requirements: string|null
+    tls_required: bool|null
+    licensing_profile: [string]|null            # features explícitamente confirmadas licenciadas por el DBA — sin esto, security/licensing-gates nunca reporta INCLUDED
+
   discovery:
     timestamp: ISO-8601
     evidence_refs: [EVD-...]
@@ -135,6 +159,7 @@ target_profile:
 - **`dataguard.role` es un espejo directo de `database_role` (Fase 5), nunca una segunda fuente de verdad.** `dataguard.enabled` es `true` cuando `database_role != primary` o cuando el primary tiene al menos un standby conocido — un target `primary` sin standby conocido publica `dataguard.enabled: false` y `oracle-dataguard-analyst` no se activa (Capability Filter). `dataguard.primary`/`dataguard.standbys` nunca se infieren de `OPEN_MODE` (`# 9` del prompt de Fase 5) — provienen siempre de `DATABASE_ROLE`/Broker cuando esté disponible.
 - **`multitenant.cdb` es un espejo directo de `architecture.multitenant_mode == cdb` (Fase 6), nunca una segunda fuente de verdad.** Un target NON-CDB o 10g/11g publica `multitenant.cdb: false` con el resto del bloque en `null` — `oracle-multitenant-analyst` no se activa (Capability Filter); la respuesta `MULTITENANT_STATUS: NOT_APPLICABLE` la produce `oracle-discovery-analyst` directamente desde este campo, sin activar el agente (`# 6` del prompt de Fase 6). `multitenant.local_undo_enabled` nunca se determina por adivinanza en 12.1 (Local Undo no existe en ese release) — queda `null` ahí por diseño de versión, no por falta de evidencia.
 - **`backup_recovery.repository` nunca se asume `recovery_catalog` por defecto (Fase 7, `# 7` del prompt).** Sin confirmación de acceso de lectura al Recovery Catalog, `repository: controlfile_repository`, `recovery_catalog: false` — `oracle-backup-recovery-analyst` opera exclusivamente sobre metadata de controlfile. `backup_recovery.rpo_minutes`/`rto_minutes` quedan `null` sin declaración explícita del DBA — `rman/retention-policy`/`rman/recovery-readiness` publican `INSUFFICIENT_REQUIREMENTS` en ese caso, nunca un RPO/RTO inventado (`# 31` del prompt de Fase 7).
+- **`security.password_policy`/`security.account_inactivity_policy_days`/`security.encryption_required`/`security.tls_required`/`security.licensing_profile` nunca se inventan sin declaración explícita del DBA (Fase 8, `# 15`, `# 43` del prompt).** Sin `password_policy` definido, todo `security/password-policy-strength` publica `POLICY_NOT_DEFINED` por control, nunca un target inventado. Sin `licensing_profile` confirmando una feature específica, `security/licensing-gates` nunca reporta `status: INCLUDED` — la disponibilidad técnica (`V$OPTION`) nunca implica derecho de uso. `security.password_policy` en el ejemplo de `docs/PHASE_8_ORACLE_SECURITY_COMPLIANCE.md` es un baseline corporativo de EJEMPLO, no un default universal del e-stack.
 
 ## Versionado del schema
 
@@ -142,4 +167,4 @@ target_profile:
 
 ## Consumidores
 
-`oracle-dba-analyst` (Oracle Core), `oracle-performance-analyst` (Fase 3), `oracle-rac-analyst`/`oracle-asm-storage-analyst`/`oracle-network-analyst` (Fase 4 — consumen los bloques `rac`/`gi`/`asm`/`network` respectivamente, nunca vuelven a determinar `cluster_mode`/`storage_mode`/SCAN por su cuenta), `oracle-dataguard-analyst` (Fase 5 — consume el bloque `dataguard`, nunca vuelve a determinar `database_role`/`protection_mode` por su cuenta), `oracle-multitenant-analyst` (Fase 6 — consume el bloque `multitenant`, nunca vuelve a determinar `multitenant_mode`/`pdb_count` por su cuenta), `oracle-backup-recovery-analyst` (Fase 7 — consume el bloque `backup_recovery`, nunca vuelve a determinar `repository`/`default_device_type` por su cuenta; consume también `dataguard`/`multitenant` para `rman/dataguard-awareness`/`rman/multitenant-awareness`, nunca re-implementa esos dominios).
+`oracle-dba-analyst` (Oracle Core), `oracle-performance-analyst` (Fase 3), `oracle-rac-analyst`/`oracle-asm-storage-analyst`/`oracle-network-analyst` (Fase 4 — consumen los bloques `rac`/`gi`/`asm`/`network` respectivamente, nunca vuelven a determinar `cluster_mode`/`storage_mode`/SCAN por su cuenta), `oracle-dataguard-analyst` (Fase 5 — consume el bloque `dataguard`, nunca vuelve a determinar `database_role`/`protection_mode` por su cuenta), `oracle-multitenant-analyst` (Fase 6 — consume el bloque `multitenant`, nunca vuelve a determinar `multitenant_mode`/`pdb_count` por su cuenta), `oracle-backup-recovery-analyst` (Fase 7 — consume el bloque `backup_recovery`, nunca vuelve a determinar `repository`/`default_device_type` por su cuenta; consume también `dataguard`/`multitenant` para `rman/dataguard-awareness`/`rman/multitenant-awareness`, nunca re-implementa esos dominios); `oracle-security-analyst` (Fase 8 — consume el bloque `security`, nunca inventa `password_policy`/`account_inactivity_policy_days`/`licensing_profile` por su cuenta; consume también `multitenant`/`dataguard`/`backup_recovery` para `security/common-local-users`/integración con Data Guard y Backup/Recovery, nunca re-implementa esos dominios).

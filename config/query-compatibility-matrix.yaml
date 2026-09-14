@@ -429,6 +429,94 @@ queries:
   Q-RMAN-FRA-USAGE-001: {file: queries/rman/Q-RMAN-FRA-USAGE-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$FLASH_RECOVERY_AREA_USAGE, V$RECOVERY_FILE_DEST], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-RMAN-CONTROLFILE-RECORD-SECTION-001: {file: queries/rman/Q-RMAN-CONTROLFILE-RECORD-SECTION-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$CONTROLFILE_RECORD_SECTION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
 
+  # --- PHASE 8 — ORACLE SECURITY & COMPLIANCE ---
+  Q-SEC-ACCOUNT-INVENTORY-001:
+    file: queries/security/Q-SEC-ACCOUNT-INVENTORY-001.md
+    variants:
+      - {variant_id: Q-SEC-ACCOUNT-INVENTORY-001-V1, label: legacy_pre12c, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-ACCOUNT-INVENTORY-001-V2, label: multitenant_pre12102, min: "12.1", max: "12.1.0.1", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-ACCOUNT-INVENTORY-001-V3, label: modern_12102plus, min: "12.1.0.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_USERS]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+  Q-SEC-DEFAULT-ACCOUNTS-001:
+    file: queries/security/Q-SEC-DEFAULT-ACCOUNTS-001.md
+    variants:
+      - {variant_id: Q-SEC-DEFAULT-ACCOUNTS-001-V1, label: legacy_pre12102, min: "11.0", max: "12.1.0.1", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-DEFAULT-ACCOUNTS-001-V2, label: modern_12102plus, min: "12.1.0.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_USERS_WITH_DEFPWD, DBA_USERS]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+  Q-SEC-COMMON-LOCAL-USERS-001: {file: queries/security/Q-SEC-COMMON-LOCAL-USERS-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [CDB_USERS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-SEC-ROLES-001:
+    file: queries/security/Q-SEC-ROLES-001.md
+    variants:
+      - {variant_id: Q-SEC-ROLES-001-V1, label: legacy_pre12c, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-ROLES-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_ROLES]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+  Q-SEC-ROLE-GRANTS-001: {file: queries/security/Q-SEC-ROLE-GRANTS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_ROLE_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-SEC-NESTED-ROLE-GRANTS-001: {file: queries/security/Q-SEC-NESTED-ROLE-GRANTS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [ROLE_ROLE_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-SEC-SYSTEM-PRIVILEGES-001: {file: queries/security/Q-SEC-SYSTEM-PRIVILEGES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_SYS_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-SEC-ROLE-SYSTEM-PRIVILEGES-001: {file: queries/security/Q-SEC-ROLE-SYSTEM-PRIVILEGES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [ROLE_SYS_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-SEC-OBJECT-PRIVILEGES-001: {file: queries/security/Q-SEC-OBJECT-PRIVILEGES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_TAB_PRIVS], role_scope: ANY, cost_class: HIGH, validation_status: COMPATIBLE}
+  Q-SEC-ROLE-OBJECT-PRIVILEGES-001: {file: queries/security/Q-SEC-ROLE-OBJECT-PRIVILEGES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [ROLE_TAB_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-SEC-PUBLIC-SYSTEM-GRANTS-001: {file: queries/security/Q-SEC-PUBLIC-SYSTEM-GRANTS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_SYS_PRIVS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-PUBLIC-OBJECT-GRANTS-001: {file: queries/security/Q-SEC-PUBLIC-OBJECT-GRANTS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_TAB_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-SEC-ADMIN-PRIVILEGES-001:
+    file: queries/security/Q-SEC-ADMIN-PRIVILEGES-001.md
+    variants:
+      - {variant_id: Q-SEC-ADMIN-PRIVILEGES-001-V1, label: legacy_10g, min: "10.2", max: "10.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-ADMIN-PRIVILEGES-001-V2, label: modern_11plus, min: "11.0", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-ADMIN-PRIVILEGES-001-V3, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$PWFILE_USERS]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+  Q-SEC-PROXY-AUTHENTICATION-001: {file: queries/security/Q-SEC-PROXY-AUTHENTICATION-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [PROXY_USERS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-PASSWORD-PROFILES-001: {file: queries/security/Q-SEC-PASSWORD-PROFILES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_PROFILES], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-PASSWORD-VERIFY-SOURCE-001:
+    file: queries/security/Q-SEC-PASSWORD-VERIFY-SOURCE-001.md
+    variants:
+      - {variant_id: Q-SEC-PASSWORD-VERIFY-SOURCE-001-V1, label: dba_scope, min: "10.2", max: "23.0", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-PASSWORD-VERIFY-SOURCE-001-V2, label: current_user_scope, min: "10.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_SOURCE, ALL_SOURCE]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+  Q-SEC-PASSWORD-VERSIONS-001: {file: queries/security/Q-SEC-PASSWORD-VERSIONS-001.md, variants: implicit_full_range, min: "11.0", max: "23.0", required_views: [DBA_USERS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-UNIFIED-AUDIT-POLICIES-001: {file: queries/security/Q-SEC-UNIFIED-AUDIT-POLICIES-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [AUDIT_UNIFIED_ENABLED_POLICIES], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-UNIFIED-AUDIT-TRAIL-001: {file: queries/security/Q-SEC-UNIFIED-AUDIT-TRAIL-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [UNIFIED_AUDIT_TRAIL], role_scope: ANY, cost_class: HIGH, validation_status: COMPATIBLE}
+  Q-SEC-TRADITIONAL-AUDIT-001:
+    file: queries/security/Q-SEC-TRADITIONAL-AUDIT-001.md
+    variants:
+      - {variant_id: Q-SEC-TRADITIONAL-AUDIT-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-TRADITIONAL-AUDIT-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$PARAMETER, DBA_AUDIT_SESSION]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+  Q-SEC-TDE-WALLET-001: {file: queries/security/Q-SEC-TDE-WALLET-001.md, variants: implicit_full_range, min: "11.2", max: "23.0", required_views: [V$ENCRYPTION_WALLET], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-ENCRYPTED-TABLESPACES-001: {file: queries/security/Q-SEC-ENCRYPTED-TABLESPACES-001.md, variants: implicit_full_range, min: "11.2", max: "23.0", required_views: [V$ENCRYPTED_TABLESPACES, DBA_TABLESPACES, V$TABLESPACE], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-ENCRYPTED-COLUMNS-001: {file: queries/security/Q-SEC-ENCRYPTED-COLUMNS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_ENCRYPTED_COLUMNS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  # Q-SEC-NETWORK-ENCRYPTION-PARAMS-001: RETIRADA (PHASE 8 — SECURITY QUERY COMPATIBILITY,
+  # ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING) — SQLNET.* no es evidencia de V$PARAMETER.
+  # Removida de este matrix de logical queries certificadas (no es una query activa con variantes
+  # que certificar); el archivo queries/security/Q-SEC-NETWORK-ENCRYPTION-PARAMS-001.md se
+  # conserva como registro histórico del defecto (status: not_certified,
+  # not_certified_reason: INCORRECT_EVIDENCE_SOURCE). Reemplazada por el collector semántico
+  # get_oracle_net_security_configuration (network/oracle-net-security, oracle-network-analyst).
+  Q-SEC-SECURITY-PARAMETERS-001: {file: queries/security/Q-SEC-SECURITY-PARAMETERS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$PARAMETER], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-DB-LINKS-001: {file: queries/security/Q-SEC-DB-LINKS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_DB_LINKS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-DIRECTORIES-001: {file: queries/security/Q-SEC-DIRECTORIES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_DIRECTORIES, DBA_TAB_PRIVS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-DATABASE-VAULT-STATUS-001: {file: queries/security/Q-SEC-DATABASE-VAULT-STATUS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$OPTION, DBA_DV_STATUS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, license: SEPARATELY_LICENSED}
+  Q-SEC-OLS-STATUS-001: {file: queries/security/Q-SEC-OLS-STATUS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$OPTION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, license: SEPARATELY_LICENSED}
+  Q-SEC-DATA-REDACTION-POLICIES-001: {file: queries/security/Q-SEC-DATA-REDACTION-POLICIES-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [REDACTION_POLICIES, REDACTION_COLUMNS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, license: SEPARATELY_LICENSED}
+
 notes: >
   "implicit_full_range" significa: la query no requirió split porque su SQL, verificado contra
   compatibility/oracle-dictionary/views.yaml, no referencia ninguna columna/vista fuera de su

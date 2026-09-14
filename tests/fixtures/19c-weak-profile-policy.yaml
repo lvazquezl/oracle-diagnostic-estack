@@ -1,0 +1,45 @@
+# Fixture: Oracle 19c, profile con límites UNLIMITED en todo — NON_COMPLIANT contra policy target
+# Usada por: security/password-policy-strength
+fixture_id: FX-19c-weak-profile-policy
+
+target_profile:
+  schema_version: "2.5.0"
+  target_id: "fixture-19c-weak-profile-policy"
+  database: {name: "ORCL19DB", unique_name: "orcl19db", dbid: "1955223305"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19db", number: 1, host: "HOST_TOKEN_44"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: non_cdb, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  security:
+    compliance_frameworks: null
+    account_inactivity_policy_days: null
+    password_policy: {minimum_length: 16, complexity: {uppercase_min: 1, lowercase_min: 1, digits_min: 1, special_characters_min: 1}, password_life_time_days: 60, failed_login_attempts: 5, password_lock_time_minutes: 30, password_grace_time_days: 7, password_reuse: {minimum_days: 365, minimum_changes: 10}}
+    encryption_required: null
+    audit_requirements: null
+    tls_required: null
+    licensing_profile: null
+  discovery: {timestamp: "2026-03-01T09:05:00Z", evidence_refs: [EVD-FX-8008], confidence: FACT}
+
+compatibility_schema:
+  available_views: [DBA_PROFILES]
+  available_columns: {}
+
+mock_evidence:
+  - query_id: Q-SEC-PASSWORD-PROFILES-001
+    result:
+      - {profile: "WEAK_PROFILE", resource_name: "FAILED_LOGIN_ATTEMPTS", resource_type: "PASSWORD", limit: "UNLIMITED"}
+      - {profile: "WEAK_PROFILE", resource_name: "PASSWORD_LIFE_TIME", resource_type: "PASSWORD", limit: "UNLIMITED"}
+      - {profile: "WEAK_PROFILE", resource_name: "PASSWORD_VERIFY_FUNCTION", resource_type: "PASSWORD", limit: "NULL"}
+
+expected_findings:
+  - category: password-policy-strength
+    severity: HIGH
+    confidence: OBSERVATION
+    reason: "todos los controles NON_COMPLIANT contra policy target definido — sin verify function, complejidad NOT_APPLICABLE (# 16 del prompt de Fase 8)"

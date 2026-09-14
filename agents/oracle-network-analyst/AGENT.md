@@ -49,6 +49,17 @@ Modela `SCAN name`, `SCAN IPs`, `SCAN VIPs`, `SCAN listeners`, resolución DNS, 
 
 Collector local seguro (`network/scan-resolution` + `parsers/rac/` o resolución vía librería estándar/comandos allowlisted) para `SCAN hostname → IPs`. Detecta: sin resolución, un solo IP donde la arquitectura espera más, respuestas inconsistentes, `SERVFAIL`, timeout, y override de hosts file cuando sea detectable (`# 30`). Nunca modifica DNS.
 
+# Oracle Net security evidence (PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING)
+
+`network/oracle-net-security` (collector semántico `get_oracle_net_security_configuration`)
+extrae parámetros allowlisted de `sqlnet.ora` (`SQLNET.ENCRYPTION_*`/`SQLNET.CRYPTO_CHECKSUM_*`)
+y metadata TCPS — nunca desde `V$PARAMETER`/`V$SPPARAMETER` (`SQLNET.*` no es evidencia de
+parámetro de instancia). `oracle-security-analyst` consume esta evidencia para interpretar
+compliance/riesgo (`security/network-encryption`, `security/tls-awareness`) — este agente sólo
+obtiene/expone el evidence model read-only, nunca interpreta severidad de seguridad. Sin collector
+runtime certificado, publica `PARTIALLY_SUPPORTED`/`evidence_source:
+MANUAL_SANITIZED_ORACLE_NET_CONFIGURATION`, nunca `SUPPORTED` fingido.
+
 # TNS error knowledge
 
 `TNS-12541`, `TNS-12537`, `TNS-12170`, `TNS-01199`, `ORA-3136` — patrones certificados en `knowledge/errors/tns/`/`knowledge/errors/ora/` (ver `# 32`, `# 51`, `# 52`). No se crea un agente ni un comando slash por cada código de error (`# 31`, `# 43`).

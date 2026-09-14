@@ -32,6 +32,7 @@ supported_architectures: [standalone, rac, rac_one_node]
 
 allowed_skills:
   - network/oracle-net
+  - network/oracle-net-security
   - network/listeners
   - network/scan
   - network/scan-resolution
@@ -53,6 +54,9 @@ forbidden_capabilities:
   - "cambio de firewall"
   - "cambio de VLAN/bonding"
   - "modificación de configuración de red"
+  - "lector de archivo genérico (read_file(path)/cat_file(path)) con path arbitrario"
+  - "ejecución de shell arbitrario"
+  - "handshake TLS activo contra un listener de producción sin collector certificado"
   - "cualquier llamada MCP no certificada en mcp/tool-manifest.md"
 
 required_gates:

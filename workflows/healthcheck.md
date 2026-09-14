@@ -32,6 +32,7 @@ Target identificado (alias de conexión read-only ya configurado en `config/allo
 - Data Guard → activa `oracle-dataguard-analyst` sólo si discovery confirma standby asociado o `database_role != primary` sin standby (para reportar el gap).
 - CDB → activa `oracle-multitenant-analyst` sólo si `architecture.multitenant_mode = cdb`.
 - Backup/Recovery → activa `oracle-backup-recovery-analyst` sólo si el DBA lo pide explícitamente (`/healthcheck rman`, `/assessment backup-recovery`) o si otro agente (ej. `incident-root-cause-analyst`) requiere recovery readiness — no se activa por defecto en `/healthcheck` sin módulo (Fase 7, `# 30` del prompt: "sólo cuando haya evidencia").
+- Security/Compliance → activa `oracle-security-analyst` sólo si el DBA lo pide explícitamente (`/healthcheck security`, `/assessment security`) o si otro agente (ej. `incident-root-cause-analyst` investigando actividad privilegiada, `estack-evolution-architect` en SECURITY VALIDATION de `/change security`) lo requiere — no se activa por defecto en `/healthcheck` sin módulo (mismo criterio que Fase 7, Fase 8 `# 30` del prompt: "sólo cuando haya evidencia").
 - El resto de agentes opcionales sólo se activan si el DBA los pide explícitamente o si `oracle-dba-analyst` reporta un hallazgo que los amerita (ver `Escalation`).
 
 # Skills

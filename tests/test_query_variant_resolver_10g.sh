@@ -12,7 +12,14 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$ROOT/scripts/lib/version.sh"
 FAIL=0
 TARGET="10.2"
-EXPECTED_UNSUPPORTED="Q-DISC-RAC-001 Q-DISC-ASM-001 Q-RAC-TOPOLOGY-001 Q-RAC-SERVICES-001 Q-CDB-PDB-STATE-001 Q-CDB-PDB-SAVED-STATE-001 Q-CDB-PLUGIN-VIOLATIONS-001"
+EXPECTED_UNSUPPORTED="Q-DISC-RAC-001 Q-DISC-ASM-001 Q-RAC-TOPOLOGY-001 Q-RAC-SERVICES-001 Q-CDB-PDB-STATE-001 Q-CDB-PDB-SAVED-STATE-001 Q-CDB-PLUGIN-VIOLATIONS-001 Q-SEC-DEFAULT-ACCOUNTS-001"
+# Q-SEC-DEFAULT-ACCOUNTS-001 agregada por PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET
+# EVIDENCE & STATIC VALIDATOR HARDENING: pasó de implicit_full_range (fuera del alcance de este
+# test, que sólo itera queries con 'variants:' explícito) a variants explícitas (legacy_11g
+# 11.0-11.2 / modern_12plus 12.1-23.0) al dividirse por el boundary real de ORACLE_MAINTAINED.
+# DBA_USERS_WITH_DEFPWD no existe en 10g (verificado WebSearch) — 10g sigue legítimamente
+# UNSUPPORTED para esta query, documentado desde su creación ("not_certified_queries" en el
+# propio archivo).
 
 for f in $(grep -rl '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null); do
   qid=$(grep -m1 '^query_id:' "$f" | awk '{print $2}')

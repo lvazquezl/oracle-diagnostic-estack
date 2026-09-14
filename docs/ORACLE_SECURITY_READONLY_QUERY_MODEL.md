@@ -1,0 +1,25 @@
+# Oracle Security Read-Only Query Model — Fase 8
+
+## Principio
+
+Toda evidencia de seguridad se obtiene vía queries certificadas `queries/security/Q-SEC-*.md` (Query Contract v2 + Query Variant Contract) — nunca SQL arbitrario, nunca ejecución de comandos de mutación.
+
+## Catálogo
+
+29 queries SQL certificadas activas bajo `queries/security/` (30 creadas originalmente; `Q-SEC-NETWORK-ENCRYPTION-PARAMS-001` retirada — `NOT_CERTIFIED: INCORRECT_EVIDENCE_SOURCE`, `SQLNET.*` no es evidencia de `V$PARAMETER` — ver `docs/PHASE_8_SECURITY_QUERY_ORACLE_NET_STATIC_VALIDATOR_HARDENING.md`), cubriendo: account inventory (`Q-SEC-ACCOUNT-INVENTORY-001`, 3 variantes por patch-level de `DBA_USERS`), default accounts (`Q-SEC-DEFAULT-ACCOUNTS-001`), common/local users (`Q-SEC-COMMON-LOCAL-USERS-001`), roles y grants (`Q-SEC-ROLES-001`, `Q-SEC-ROLE-GRANTS-001`, `Q-SEC-NESTED-ROLE-GRANTS-001`), system/object privileges directos y vía rol (`Q-SEC-SYSTEM-PRIVILEGES-001`, `Q-SEC-ROLE-SYSTEM-PRIVILEGES-001`, `Q-SEC-OBJECT-PRIVILEGES-001`, `Q-SEC-ROLE-OBJECT-PRIVILEGES-001`), PUBLIC grants (`Q-SEC-PUBLIC-SYSTEM-GRANTS-001`, `Q-SEC-PUBLIC-OBJECT-GRANTS-001`), admin privileges (`Q-SEC-ADMIN-PRIVILEGES-001`), proxy authentication (`Q-SEC-PROXY-AUTHENTICATION-001`), password profiles/verify function/verifiers (`Q-SEC-PASSWORD-PROFILES-001`, `Q-SEC-PASSWORD-VERIFY-SOURCE-001`, `Q-SEC-PASSWORD-VERSIONS-001`), auditoría (`Q-SEC-UNIFIED-AUDIT-POLICIES-001`, `Q-SEC-UNIFIED-AUDIT-TRAIL-001`, `Q-SEC-TRADITIONAL-AUDIT-001`), TDE/encriptación (`Q-SEC-TDE-WALLET-001`, `Q-SEC-ENCRYPTED-TABLESPACES-001`, `Q-SEC-ENCRYPTED-COLUMNS-001`), red (evidencia obtenida vía collector semántico `network/oracle-net-security`, nunca vía SQL — ver nota arriba), parámetros (`Q-SEC-SECURITY-PARAMETERS-001`), db links/directories (`Q-SEC-DB-LINKS-001`, `Q-SEC-DIRECTORIES-001`), y advanced features licensing-gated (`Q-SEC-DATABASE-VAULT-STATUS-001`, `Q-SEC-OLS-STATUS-001`, `Q-SEC-DATA-REDACTION-POLICIES-001`).
+
+## Variantes por versión
+
+`Q-SEC-ROLES-001` se divide en `-V1 legacy_pre12c`/`-V2 modern_12plus` por la disponibilidad de `COMMON`/`ORACLE_MAINTAINED` sobre `DBA_ROLES` (12.1+ — nota: este boundary es específico de `DBA_ROLES`, distinto del de `DBA_USERS` descrito abajo). `Q-SEC-DEFAULT-ACCOUNTS-001` se divide en `-V1 legacy_pre12102`/`-V2 modern_12102plus` por la disponibilidad de `DBA_USERS.ORACLE_MAINTAINED`, que — PHASE 8 — FINAL DBA_USERS 12.1.0.2 SOURCE-OF-TRUTH CORRECTION: footnote oficial verbatim en `docs.oracle.com/database/121/REFRN/.../DBA_USERS`, verificado en el HTML crudo sin resumen de modelo — requiere específicamente `12.1.0.2`, no `12.1` genérico. `Q-SEC-ACCOUNT-INVENTORY-001` se divide en **tres** variantes (`legacy_pre12c`/`multitenant_pre12102` 12.1-12.1.0.1/`modern_12102plus` 12.1.0.2+): `DBA_USERS.COMMON`, `DBA_USERS.ORACLE_MAINTAINED` y `DBA_USERS.LAST_LOGIN` requieren las tres específicamente `12.1.0.2` (mismo footnote oficial), a diferencia de `AUTHENTICATION_TYPE`, certificada independientemente desde `11.2` y disponible ya en la variante `12.1-12.1.0.1` — certificar mecánicamente todas las columnas al mismo boundary habría sido incorrecto (`# 11`/`# 12` del prompt de corrección: certificación columna-por-columna, nunca por asociación). `Q-SEC-ADMIN-PRIVILEGES-001` se divide en tres variantes (`legacy_10g`/`modern_11plus`/`modern_12plus`) por la disponibilidad incremental de `SYSASM` (11g+) y `SYSBACKUP`/`SYSDG`/`SYSKM`/`COMMON` de `V$PWFILE_USERS` (12.1+ — vista distinta de `DBA_USERS`, boundary propio no afectado por la corrección de `DBA_USERS`). `Q-SEC-TRADITIONAL-AUDIT-001` se divide en `legacy_10g_11g` (ROWNUM)/`modern_12plus` (FETCH FIRST) por sintaxis de row-limiting — nunca se repitió el defecto cerrado en PHASE 7 — RMAN LEGACY SQL SYNTAX HARDENING. `Q-SEC-PASSWORD-VERIFY-SOURCE-001` tiene dos variantes por scope de privilegio (`dba_scope`/`current_user_scope`), no por versión (`privilege_fallback`, ver `docs/QUERY_VARIANTS.md#privilege-scope-variants`).
+
+## Cost/Risk
+
+Todas `risk_class: R0`. `cost_class` varía de `LOW` (queries de una fila, ej. `Q-SEC-TDE-WALLET-001`) a `HIGH` (`Q-SEC-OBJECT-PRIVILEGES-001`, `Q-SEC-UNIFIED-AUDIT-TRAIL-001` — acotadas agresivamente con `max_rows`/`time_window_days`/`timeout_seconds`/`max_output_bytes`, especialmente audit trails, `# 59, # 61` del prompt).
+
+## Licensing
+
+`Q-SEC-TDE-WALLET-001`/`Q-SEC-ENCRYPTED-TABLESPACES-001`/`Q-SEC-ENCRYPTED-COLUMNS-001` nota Advanced Security Option donde aplique. `Q-SEC-DATABASE-VAULT-STATUS-001`/`Q-SEC-OLS-STATUS-001`/`Q-SEC-DATA-REDACTION-POLICIES-001` declaran `license_requirements` explícito, `SEPARATELY_LICENSED` por defecto — ver `docs/ORACLE_SECURITY_LICENSING_GATES.md`.
+
+## No certificadas
+
+Ninguna query certificada de Fase 8 ejecuta `CREATE/ALTER/DROP USER|ROLE|PROFILE`, `GRANT/REVOKE`, `AUDIT/NOAUDIT`, `ADMINISTER KEY MANAGEMENT`, ni cambios de Database Vault/OLS/Redaction/Masking — ver `docs/ORACLE_SECURITY_PRIVILEGE_MODEL.md` para el modelo completo de prohibiciones.

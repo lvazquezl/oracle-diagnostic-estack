@@ -52,7 +52,7 @@ La certificación de una variante incluye **4 dimensiones**, no 3: **view compat
 
 ## Query Variant Resolver
 
-Componente lógico (documentado aquí; sin runtime ejecutable — el Gateway MCP real es Fase 7, igual que el resto de collectors). La comparación de versión que implementa este algoritmo la provee `scripts/lib/version.sh` (patch-level-aware) — no una reimplementación local por test.
+Componente lógico (documentado aquí; sin runtime ejecutable — el Gateway MCP real es Fase 13, roadmap vigente, igual que el resto de collectors — corregido desde la referencia obsoleta "Fase 7", que ya se completó sin entregar el Gateway runtime). La comparación de versión que implementa este algoritmo la provee `scripts/lib/version.sh` (patch-level-aware) — no una reimplementación local por test.
 
 ```text
 Target Profile
@@ -72,7 +72,7 @@ Primera variante compatible → Certified SQL (ese bloque exacto)
 Ninguna variante compatible → status: UNSUPPORTED (nunca "closest version", nunca fallback silencioso)
 ```
 
-**El modelo/Claude nunca elige manualmente el archivo/bloque SQL** — el agente/skill solicita la evidencia por `query_id` (logical), y es el Resolver (hoy: la lógica documentada aquí, ejecutada por el propio agente al preparar el Task Package de un collector — Fase 7 la automatiza en el Gateway) quien determina la variante. Ver `agents/oracle-discovery-analyst/AGENT.md#evidence-policy` y `agents/oracle-dba-analyst/AGENT.md#evidence-policy`, ambos actualizados para referenciar únicamente `query_id` lógicos.
+**El modelo/Claude nunca elige manualmente el archivo/bloque SQL** — el agente/skill solicita la evidencia por `query_id` (logical), y es el Resolver (hoy: la lógica documentada aquí, ejecutada por el propio agente al preparar el Task Package de un collector — Fase 13, roadmap vigente, la automatiza en el Gateway) quien determina la variante. Ver `agents/oracle-discovery-analyst/AGENT.md#evidence-policy` y `agents/oracle-dba-analyst/AGENT.md#evidence-policy`, ambos actualizados para referenciar únicamente `query_id` lógicos.
 
 ### Entrada/salida conceptual
 
@@ -119,6 +119,7 @@ Todo query del catálogo se clasifica, durante este hardening y en cada `/change
 | `INCORRECT_COST_CLASS` | El `cost_class` no refleja el impacto operacional real (ej. `Q-DISC-ASM-001`, corregido en este hardening). |
 | `INCORRECT_CONTAINER_SCOPE` | `container_scope` no coincide con el comportamiento real de la vista. |
 | `INCORRECT_ROLE_SCOPE` | `database_role_scope` no coincide con el comportamiento real en standby. |
+| `INCORRECT_EVIDENCE_SOURCE` | La query declara una vista/parámetro que estructuralmente NUNCA puede contener el dato reportado (ej. `SQLNET.*` vía `V$PARAMETER` — Oracle Net/`sqlnet.ora` no es un parámetro de instancia). Distinto de `INCORRECT_VERSION_RANGE`: aquí ninguna versión certificaría la query, porque la fuente misma es incorrecta, no el rango. Caso real: `Q-SEC-NETWORK-ENCRYPTION-PARAMS-001` (PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING) — retirada y reemplazada por un collector semántico. |
 
 Ver el inventario completo con la clasificación aplicada a las 26 queries en `docs/PHASE_2_COMPATIBILITY_HARDENING.md#queries-reviewed`.
 
@@ -157,6 +158,18 @@ Si alguna dimensión falla: `QUERY STATUS = NOT_CERTIFIED`. Una query `NOT_CERTI
 | `unknown_future` | Versión Oracle mayor a la más alta en `known_supported` (hoy: > 23.0) que el catálogo aún no ha validado. | **Nunca** se asume compatible por ser numéricamente mayor. `status: PARTIALLY_SUPPORTED` o `COMPATIBILITY_VALIDATION_REQUIRED` (nunca `SUPPORTED` ni ejecución automática de la variante `max: latest`) hasta que `/change compatibility` integre esa versión (dictionary delta + variants + matrix + fixtures + tests, ver `EVOLUTION.md#change-compatibility--checklist-obligatorio-oracle-core-compatibility-hardening`). |
 
 Esto evita el error de "una variante declara `max: latest`, por lo tanto sirve para cualquier versión futura sin validar" — la variante `max: latest` cubre `known_supported` hasta el techo actual, no `unknown_future`.
+
+## Privilege-scope variants (Fase 8)
+
+Además del solapamiento intencional por propósito/costo (`on_demand_only`, ver `Q-DISC-ASM-001`
+arriba), existe un segundo caso legítimo de mismo rango de versión cubierto por dos variantes: la
+disponibilidad de una vista depende del **privilegio con el que opera la cuenta del e-stack**, no
+de la versión de Oracle. Ejemplo: `Q-SEC-PASSWORD-VERIFY-SOURCE-001` — `V1` (`DBA_SOURCE`) es el
+`default: true`; `V2` (`ALL_SOURCE`, `privilege_fallback: true`) se certifica para el mismo rango
+de versión y se selecciona sólo cuando la cuenta operativa no tiene privilegio para consultar
+`DBA_SOURCE` sobre el schema de la función de verify. El Resolver distingue por el flag
+`privilege_fallback`, nunca por rango de versión — `tests/test_query_variant_ranges_do_not_overlap_invalidly.sh`
+reconoce este flag exactamente igual que reconoce `on_demand_only`.
 
 ## Referencia cruzada
 

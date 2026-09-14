@@ -1,0 +1,46 @@
+# Fixture: Oracle 19c, compliance mapping con mezcla de PASS/FAIL/INSUFFICIENT_POLICY
+# Usada por: security/compliance-mapping
+fixture_id: FX-19c-compliance-partial
+
+target_profile:
+  schema_version: "2.5.0"
+  target_id: "fixture-19c-compliance-partial"
+  database: {name: "ORCL19DB", unique_name: "orcl19db", dbid: "1955223319"}
+  oracle_version: {major: 19, minor: 0, release: 0, ru: "19.21", raw: "19.21.0.0.0"}
+  architecture: {cluster_mode: standalone, multitenant_mode: non_cdb, storage_mode: filesystem}
+  database_role: primary
+  open_mode: "READ WRITE"
+  log_mode: archivelog
+  force_logging: true
+  instance: {name: "orcl19db", number: 1, host: "HOST_TOKEN_58"}
+  cluster: {detected: false, instance_count: 1}
+  container: {type: non_cdb, con_id: null, con_name: null}
+  platform: {database_platform: "Linux x86 64-bit"}
+  capabilities: {rac: UNSUPPORTED, asm: UNSUPPORTED, multitenant: UNSUPPORTED, dataguard: UNSUPPORTED, awr: LICENSE_RESTRICTED, ash: LICENSE_RESTRICTED}
+  security:
+    compliance_frameworks: ["INTERNAL"]
+    account_inactivity_policy_days: null
+    password_policy: {minimum_length: 16, complexity: {uppercase_min: 1, lowercase_min: 1, digits_min: 1, special_characters_min: 1}, password_life_time_days: 60, failed_login_attempts: 5, password_lock_time_minutes: 30, password_grace_time_days: 7, password_reuse: {minimum_days: 365, minimum_changes: 10}}
+    encryption_required: null
+    audit_requirements: null
+    tls_required: null
+    licensing_profile: null
+  discovery: {timestamp: "2026-03-01T09:05:00Z", evidence_refs: [EVD-FX-8022], confidence: FACT}
+
+compatibility_schema:
+  available_views: [DBA_PROFILES, DBA_SYS_PRIVS]
+  available_columns: {}
+
+mock_evidence:
+  - query_id: Q-SEC-PASSWORD-PROFILES-001
+    result:
+      - {profile: "DEFAULT", resource_name: "PASSWORD_LIFE_TIME", resource_type: "PASSWORD", limit: "60"}
+  - query_id: Q-SEC-PUBLIC-SYSTEM-GRANTS-001
+    result:
+      - {privilege: "EXECUTE ANY PROCEDURE"}
+
+expected_findings:
+  - category: compliance-mapping
+    severity: MEDIUM
+    confidence: OBSERVATION
+    reason: "PWD-001 (password_life_time <= 60) PASS; PUB-001 (sin grants peligrosos a PUBLIC) FAIL; control de encriptación de red sin Target Profile.security.audit_requirements definido -> INSUFFICIENT_POLICY (# 45 del prompt de Fase 8, estados mixtos honestos)"

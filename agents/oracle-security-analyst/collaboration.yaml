@@ -1,0 +1,31 @@
+may_delegate_to: [oracle-network-analyst, oracle-multitenant-analyst, oracle-dataguard-analyst, oracle-backup-recovery-analyst, os-platform-analyst, incident-root-cause-analyst, change-advisor]
+
+may_receive_from: [oracle-discovery-analyst, incident-root-cause-analyst, estack-evolution-architect, oracle-multitenant-analyst]
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst]
+
+escalation_conditions:
+  - condition: "una cuenta con privilegio DBA/SYSDBA está en ACCOUNT_STATUS = OPEN sin actividad reciente conocida, o una cuenta default de Oracle está OPEN con profile sin password policy"
+    action: "escalar a incident-root-cause-analyst, severity HIGH"
+    rationale: "superficie de ataque concentrada sin evidencia de necesidad operacional (# 8, # 11 del prompt)"
+  - condition: "grant peligroso a PUBLIC detectado (ej. EXECUTE ANY PROCEDURE, SELECT ANY DICTIONARY) sin justificación conocida"
+    action: "reportar como finding HIGH, nunca recomendar REVOKE sin dependency analysis (# 12 del prompt)"
+    rationale: "REVOKE sin análisis de dependencia puede romper aplicaciones — remediación siempre manual vía change-advisor"
+  - condition: "password profile no cumple la política corporativa definida en Target Profile security.password_policy (COMPLIANT esperado, NON_COMPLIANT observado)"
+    action: "reportar NON_COMPLIANT por control específico, nunca agregar en un solo score"
+    rationale: "cada control (longitud, complejidad, expiración, reuse, verify function) se evalúa y reporta por separado (# 16 del prompt)"
+  - condition: "Unified Auditing disponible (12.1+) pero deshabilitado, o sin políticas habilitadas que cubran actividad privilegiada (SYS, admin option, DDL de seguridad)"
+    action: "reportar finding, escalar a incident-root-cause-analyst si el target es producción y no hay traditional auditing compensando"
+    rationale: "sin auditoría de actividad privilegiada, un incidente futuro carecería de evidencia forense"
+  - condition: "TDE ausente en un tablespace marcado sensible por el DBA, o wallet en estado CLOSED"
+    action: "reportar finding, nunca ejecutar ADMINISTER KEY MANAGEMENT — siempre manual_action"
+    rationale: "TDE es de configuración persistente, requiere ventana de mantenimiento y decisión del DBA"
+  - condition: "Database Vault/OLS/Data Redaction/Data Masking detectados como instalados/visibles pero license.status no es INCLUDED"
+    action: "reportar REQUIRES_REVIEW, nunca recomendar uso hasta confirmación de licencia"
+    rationale: "availability != entitlement (mismo principio que AWR/ASH en Fase 2)"
+  - condition: "hallazgo de seguridad aprobado por el DBA requiere ejecución (ej. ALTER PROFILE, ALTER USER, ajuste de auditoría)"
+    action: "generar manual_action y, si el DBA aprueba, delegar la propuesta formal a change-advisor — nunca ejecutar (# 74 del prompt)"
+
+no_delegation_loop_rule: "oracle-security-analyst nunca delega a oracle-dba-analyst ni oracle-discovery-analyst — ambos son fuente, nunca destino, de su Task Package."
+
+manual_command_rule: "Todo comando de cambio generado como recomendación (ALTER PROFILE, ALTER USER, GRANT/REVOKE, AUDIT, ADMINISTER KEY MANAGEMENT, cambios de Database Vault/OLS/Redaction/Masking) usa el Manual Action Contract con execution_status: NOT_EXECUTED — nunca se invoca (# 73, # 74 del prompt)."

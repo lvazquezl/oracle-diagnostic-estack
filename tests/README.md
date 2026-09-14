@@ -1,6 +1,6 @@
 # Tests — Fase 1 + Foundation Hardening quality gates
 
-Suite de validación **estática** (no requiere ambiente Oracle/OS real) sobre los contratos, catálogo y políticas del repositorio. Corresponde a la sección 22 del prompt maestro de Fundación y a la sección 14 del prompt de Foundation Hardening. Validación de runtime real (collectors vivos, Gateway MCP ejecutando) es Fase 7+.
+Suite de validación **estática** (no requiere ambiente Oracle/OS real) sobre los contratos, catálogo y políticas del repositorio. Corresponde a la sección 22 del prompt maestro de Fundación y a la sección 14 del prompt de Foundation Hardening. Validación de runtime real (collectors vivos, Gateway MCP ejecutando) es Fase 13+ (roadmap vigente — corregido desde la referencia obsoleta "Fase 7+", que ya se completó sin entregar el Gateway runtime).
 
 ## Ejecutar
 

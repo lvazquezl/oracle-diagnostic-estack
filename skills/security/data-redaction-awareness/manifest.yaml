@@ -1,0 +1,22 @@
+name: data-redaction-awareness
+display_name: "Data Redaction Awareness"
+id: security/data-redaction-awareness
+version: 1.0.0
+domain: security
+status: active
+
+supported_oracle_versions: [12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: ANY_CONTAINER
+database_role_scope: ANY
+
+license_requirements: "Oracle Data Redaction — Advanced Security Option"
+
+required_evidence:
+  - query_id: Q-SEC-DATA-REDACTION-POLICIES-001
+optional_evidence: []
+data_sensitivity: MEDIUM
+context_budget: LOW
+
+related_skills: [security/data-masking-awareness, security/tde-awareness, security/licensing-gates]

@@ -2,6 +2,84 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — 2026-09-13 — PHASE 8 — FINAL DBA_USERS 12.1.0.2 SOURCE-OF-TRUTH CORRECTION
+
+Corrección final sobre la Fase 8 base (misma rama `phase/8-security-compliance`), previo a aprobar `v0.8.0-security-compliance`. Ver `docs/PHASE_8_FINAL_DBA_USERS_12102_SOURCE_OF_TRUTH_CORRECTION.md` para el reporte de cierre completo.
+
+### Fixed
+
+- **`DBA_USERS.COMMON`/`DBA_USERS.ORACLE_MAINTAINED` — boundary de patch-level incorrecto**: corregidos de `min_version: "12.1"` (leído como 12.1.0.1, entrada de CHANGELOG del hardening anterior) a `"12.1.0.2"`. Verificado en el HTML crudo (curl, sin resumen de modelo intermedio) de la página oficial `docs.oracle.com/database/121/REFRN/.../DBA_USERS`: footnote oficial explícito "This column is available starting with Oracle Database 12c Release 1 (12.1.0.2)." adjunto a `COMMON`, `ORACLE_MAINTAINED`, `LAST_LOGIN` y `PROXY_ONLY_CONNECT` las cuatro. La conclusión "12.1.0.1" del hardening anterior se basó en evidencia indirecta (Security Guide sobre la arquitectura Multitenant, blog datado) que confundía la feature arquitectónica (GA 12.1.0.1) con la columna de diccionario específica que la expone vía SQL (12.1.0.2) — dos intentos previos de fetch de la misma página oficial no detectaron el footnote porque se pierde en la conversión HTML→texto de un resumen de modelo intermedio.
+- **`Q-SEC-DEFAULT-ACCOUNTS-001`**: `V1` (`legacy_pre12102`) extendida de `max: "11.2"` a `max: "12.1.0.1"` (cerraba un gap real: 12.1-12.1.0.1 no tenía variante que lo cubriera). `V2` (`modern_12102plus`) movida de `min: "12.1"` a `min: "12.1.0.2"`.
+- **`Q-SEC-ACCOUNT-INVENTORY-001`**: `V2` (`multitenant_pre12102`, 12.1-12.1.0.1) ya no selecciona `common`/`oracle_maintained` — sólo `authentication_type` (certificada independientemente, 11.2+). `V3` (12.1.0.2+) permanece con las tres columnas.
+
+### Removed
+
+- `tests/test_dba_users_common_12101_valid.sh`, `tests/test_dba_users_oracle_maintained_12101_valid.sh` — aserciones factualmente incorrectas, eliminadas (no renombradas con contenido preservado).
+
+### Added
+
+- `tests/test_dba_users_common_12101_invalid.sh`, `tests/test_dba_users_oracle_maintained_12101_invalid.sh` — reemplazan a los tests eliminados con la aserción correcta (`NOT_CERTIFIED` en 12.1.0.1).
+- `docs/PHASE_8_FINAL_DBA_USERS_12102_SOURCE_OF_TRUTH_CORRECTION.md`.
+
+## [Unreleased] — 2026-09-12 — PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING
+
+Hardening sobre la Fase 8 base (misma rama `phase/8-security-compliance`), previo a aprobar `v0.8.0-security-compliance`. Ver `docs/PHASE_8_SECURITY_QUERY_ORACLE_NET_STATIC_VALIDATOR_HARDENING.md` para el reporte de cierre completo.
+
+### Fixed
+
+- **Static Validator — gap sistémico para objetos sin `$`**: `tests/test_sql_static_validator.sh#extract_aliases()` sólo reconocía objetos `V$*`/`GV$*` — cualquier objeto `DBA_*`/`CDB_*`/`ALL_*`/`USER_*`/`ROLE_*`/`AUDIT_*`/`UNIFIED_*`/`REDACTION_*` nunca entraba en `alias_map`, así que su existencia de columna y version-gating nunca se validaban, en ninguna fase del catálogo (Oracle Core, Data Guard, Multitenant, RMAN, Security). Corregido dictionary-driven: un token es candidato a vista si contiene `$` o coincide exactamente con un objeto registrado en `compatibility/oracle-dictionary/views.yaml`.
+- **`DBA_USERS.LAST_LOGIN` — boundary de patch-level incorrecto**: corregido de `min_version: "12.1"` a `"12.1.0.2"` (verificado WebSearch/WebFetch, múltiples fuentes independientes citando "12.1.0.2" explícitamente) — la columna NO existe en 12.1.0.1. `COMMON`/`ORACLE_MAINTAINED` verificados correctos en `12.1` (`12.1.0.1`, GA de Multitenant) — una síntesis de WebFetch inicial que afirmaba `12.1.0.2` para las 3 columnas fue descartada por contradecir evidencia fechada independiente.
+- **`Q-SEC-DEFAULT-ACCOUNTS-001`**: declaraba `min: "11.0"` y seleccionaba incondicionalmente `DBA_USERS.ORACLE_MAINTAINED` (real min 12.1) — sólo certificó por el gap del Static Validator. Dividida en variantes `legacy_11g` (11.0-11.2, sin `oracle_maintained`) y `modern_12plus` (12.1-23.0, con `oracle_maintained`).
+- **`Q-SEC-ACCOUNT-INVENTORY-001`**: dividida de 2 a 3 variantes — la `V2` original (min "12.1", con `last_login`) habría certificado incorrectamente `LAST_LOGIN` para 12.1.0.1, donde no existe.
+- **`Q-SEC-NETWORK-ENCRYPTION-PARAMS-001` — fuente de evidencia estructuralmente incorrecta**: consultaba `SQLNET.*` desde `V$PARAMETER` — `SQLNET.*` es configuración de Oracle Net (`sqlnet.ora`), nunca un parámetro de inicialización de instancia. Retirada (`NOT_CERTIFIED: INCORRECT_EVIDENCE_SOURCE`, nuevo estado documentado en `docs/QUERY_VARIANTS.md`), reemplazada por el collector semántico `get_oracle_net_security_configuration`.
+
+### Added
+
+- `skills/network/oracle-net-security/` — nueva skill de `oracle-network-analyst` implementando el collector semántico `get_oracle_net_security_configuration` (allowlist de `SQLNET.ENCRYPTION_*`/`SQLNET.CRYPTO_CHECKSUM_*` + metadata TCPS, nunca lector de archivo genérico ni shell arbitrario). `skills/REGISTRY.md` pasa de 235 a 236 skills `active`.
+- 15 tests nuevos: `test_security_default_accounts.sh` (faltante desde la creación de la query — detectado por el nuevo `test_all_security_query_test_references_exist.sh`), 4 tests de boundary patch-level `DBA_USERS` (`test_dba_users_last_login_12101_invalid/12102_valid`, `test_dba_users_oracle_maintained_12101_valid`, `test_dba_users_common_12101_valid` — 2 de los 4 nombres se desviaron deliberadamente de los sugeridos originalmente por contradecir la verificación real), 4 tests de cobertura del Static Validator para objetos `DBA_*`, 5 tests de evidencia de Oracle Net, `test_all_security_query_test_references_exist.sh`.
+
+### Changed
+
+- `config/query-compatibility-matrix.yaml`, `queries/REGISTRY.md` — `Q-SEC-NETWORK-ENCRYPTION-PARAMS-001` removida/marcada retirada; catálogo Security pasa de 30 a 29 queries SQL certificadas activas.
+- `skills/security/network-encryption/`, `skills/security/tls-awareness/SKILL.md` — consumen ahora `network/oracle-net-security` en vez de la query retirada; fallback `PARTIALLY_SUPPORTED`/`evidence_source: MANUAL_SANITIZED_ORACLE_NET_CONFIGURATION` documentado explícitamente.
+- `agents/oracle-network-analyst/` — nueva skill en `allowed_skills`; `forbidden_capabilities` extendido con lector de archivo genérico/shell arbitrario/handshake TLS activo no certificado.
+- `collectors/README.md`, `docs/QUERY_VARIANTS.md` (nuevo estado `INCORRECT_EVIDENCE_SOURCE` y nueva sección "Privilege-scope variants" — ver nota abajo), `docs/CAPABILITY_MATRIX.md`, `docs/PHASE_8_ORACLE_SECURITY_COMPLIANCE.md`.
+
+### Known limitations
+
+- `network/oracle-net-security` permanece `CONTRACT_DEFINED / NOT_RUNTIME_CERTIFIED` — el Gateway MCP real es Fase 13 (roadmap vigente; corregido desde la referencia obsoleta "Fase 7" en el micro-hardening posterior).
+- La certificación patch-level de `DBA_USERS` se limita a las columnas efectivamente usadas por el catálogo Security (`ORACLE_MAINTAINED`, `COMMON`, `LAST_LOGIN`) — no exhaustiva de toda la vista.
+
+## [Unreleased] — 2026-09-11 — Fase 8: Oracle Security & Compliance
+
+Octava capa funcional del e-stack, sobre baseline `v0.7.0-backup-recovery-rman`. Ver `docs/PHASE_8_ORACLE_SECURITY_COMPLIANCE.md` para el reporte de cierre completo.
+
+### Added
+
+- `agents/oracle-security-analyst/` (`v2.0.0`) — deepening de manifest plano de Foundation (`agents/oracle-security-analyst.md`, real y materializado, a diferencia del caso RMAN) a contrato estructurado completo (`AGENT.md`/`manifest.yaml`/`routing.yaml`/`context-policy.yaml`/`collaboration.yaml`/`output-schema.yaml`/`tests/`/`CHANGELOG.md`) — responsabilidades/boundaries del v1.0.0 preservadas y ampliadas, nunca contradichas.
+- 39 skills `security/*` completamente materializadas — `skills/REGISTRY.md` pasa de 196 a 235 skills `active` (dominio genuinamente nuevo, sin placeholder previo que reconciliar).
+- `queries/security/` — 30 queries certificadas (`Q-SEC-ACCOUNT-INVENTORY-001`, `Q-SEC-DEFAULT-ACCOUNTS-001`, `Q-SEC-COMMON-LOCAL-USERS-001`, `Q-SEC-ROLES-001`, `Q-SEC-ROLE-GRANTS-001`, `Q-SEC-NESTED-ROLE-GRANTS-001`, `Q-SEC-SYSTEM-PRIVILEGES-001`, `Q-SEC-ROLE-SYSTEM-PRIVILEGES-001`, `Q-SEC-OBJECT-PRIVILEGES-001`, `Q-SEC-ROLE-OBJECT-PRIVILEGES-001`, `Q-SEC-PUBLIC-SYSTEM-GRANTS-001`, `Q-SEC-PUBLIC-OBJECT-GRANTS-001`, `Q-SEC-ADMIN-PRIVILEGES-001`, `Q-SEC-PROXY-AUTHENTICATION-001`, `Q-SEC-PASSWORD-PROFILES-001`, `Q-SEC-PASSWORD-VERIFY-SOURCE-001`, `Q-SEC-PASSWORD-VERSIONS-001`, `Q-SEC-UNIFIED-AUDIT-POLICIES-001`, `Q-SEC-UNIFIED-AUDIT-TRAIL-001`, `Q-SEC-TRADITIONAL-AUDIT-001`, `Q-SEC-TDE-WALLET-001`, `Q-SEC-ENCRYPTED-TABLESPACES-001`, `Q-SEC-ENCRYPTED-COLUMNS-001`, `Q-SEC-NETWORK-ENCRYPTION-PARAMS-001`, `Q-SEC-SECURITY-PARAMETERS-001`, `Q-SEC-DB-LINKS-001`, `Q-SEC-DIRECTORIES-001`, `Q-SEC-DATABASE-VAULT-STATUS-001`, `Q-SEC-OLS-STATUS-001`, `Q-SEC-DATA-REDACTION-POLICIES-001`).
+- `compatibility/oracle-dictionary/views.yaml` — 24 vistas nuevas de seguridad (`DBA_USERS`, `DBA_ROLES`, `DBA_ROLE_PRIVS`, `DBA_SYS_PRIVS`, `DBA_TAB_PRIVS`, `ROLE_*_PRIVS`, `DBA_PROFILES`, `DBA_USERS_WITH_DEFPWD`, `DBA_AUDIT_TRAIL`/`SESSION`, `UNIFIED_AUDIT_TRAIL`, `AUDIT_UNIFIED_ENABLED_POLICIES`, `AUDIT_UNIFIED_POLICIES`, `V$OPTION`, `V$ENCRYPTION_WALLET`, `V$ENCRYPTED_TABLESPACES`, `DBA_ENCRYPTED_COLUMNS`, `DBA_DB_LINKS`, `DBA_DIRECTORIES`, `DBA_NETWORK_ACLS`, `DBA_HOST_ACES`, `DBA_SOURCE`/`ALL_SOURCE`, `DBA_DV_STATUS`, `V$PWFILE_USERS`, `REDACTION_POLICIES`/`COLUMNS`, `PROXY_USERS`, `V$TABLESPACE`), cada boundary de versión verificado vía WebFetch/WebSearch antes de certificar (ver `docs/PHASE_8_ORACLE_SECURITY_COMPLIANCE.md#version-verification`).
+- Password Strength Policy Model (`docs/ORACLE_PASSWORD_POLICY_ASSESSMENT_MODEL.md`) y Password Verify Function Analysis (`docs/ORACLE_PASSWORD_VERIFY_FUNCTION_ANALYSIS.md`) — nuevos: evaluación por control (longitud/complejidad/expiración/reuse/lock/grace) contra `Target Profile.security.password_policy`, inspección read-only del source de `PASSWORD_VERIFY_FUNCTION` (nunca ejecutado, nunca con contraseñas reales), `existing_password_compliance: NOT_DIRECTLY_VERIFIABLE` obligatorio incluso cuando la política actual es `COMPLIANT`.
+- `docs/PHASE_8_ORACLE_SECURITY_COMPLIANCE.md`, `docs/ORACLE_SECURITY_DIAGNOSTIC_MODEL.md`, `docs/ORACLE_SECURITY_READONLY_QUERY_MODEL.md`, `docs/ORACLE_SECURITY_PRIVILEGE_MODEL.md`, `docs/ORACLE_PASSWORD_POLICY_ASSESSMENT_MODEL.md`, `docs/ORACLE_PASSWORD_VERIFY_FUNCTION_ANALYSIS.md`, `docs/ORACLE_AUDIT_DIAGNOSTIC_MODEL.md`, `docs/ORACLE_TDE_KEYSTORE_AWARENESS_MODEL.md`, `docs/ORACLE_SECURITY_LICENSING_GATES.md`, `docs/ORACLE_COMPLIANCE_MAPPING_MODEL.md`, `docs/ORACLE_SECURITY_READONLY_PRIVILEGES.md`.
+- 24 fixtures de escenario (11g traditional audit/legacy account posture/password profile baseline; 19c unified audit healthy, excessive privilege, dangerous PUBLIC grant, stale accounts, weak profile policy, password policy compliant/non-compliant, custom verify function compliant/partially analyzable, external/global user N/A, TDE enabled/absent, keystore closed, TCPS configured, network encryption missing, common/local users, Database Vault awareness, compliance partial; 23ai modern security metadata; future unknown major).
+- 75 tests nuevos: 9 accounts/privileges, 23 password policy (la mayor de las categorías — incluye 5 tests de bloqueo de exposición de hash/verifier/testing/cracking/reset), 6 profile/audit, 7 TDE/network, 6 advanced features/licensing, 6 compliance, 14 execution-block adicionales (`test_no_user_creation`, `test_no_grant_execution`, `test_no_audit_policy_change`, `test_no_keystore_change`, `test_no_database_vault_change`, `test_no_redaction_change`, `test_no_masking_execution` et al. — 3 nombres domain-prefixed porque `test_no_arbitrary_sql`/`test_no_arbitrary_shell`/`test_no_secrets` ya existían, propiedad de Data Guard, mismo patrón que Fase 7 con RMAN), 4 contrato de agente.
+
+### Changed
+
+- `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` — Security `PLANNED → SUPPORTED` (10g–23ai) para el dominio base; sub-capacidades con boundary propio (Unified Auditing 12.1+, TDE/keystore 11.2+, `INACTIVE_ACCOUNT_TIME` 12.2+) `PARTIALLY_SUPPORTED` sin afectar el dominio completo; Database Vault/OLS/Data Redaction/Data Masking siempre `LICENSE_DEPENDENT`; `future_status: COMPATIBILITY_VALIDATION_REQUIRED` (mismo criterio que Fase 5-7).
+- `docs/TARGET_PROFILE.md` — schema `2.4.0 → 2.5.0` (aditivo): bloque `security` (`compliance_frameworks`, `account_inactivity_policy_days`, `password_policy`, `encryption_required`, `audit_requirements`, `tls_required`, `licensing_profile`).
+- `agents/REGISTRY.md` — `oracle-security-analyst` pasa de manifest plano (`agents/oracle-security-analyst.md`, Foundation `v1.0.0`) a estructura de carpeta completa (`v2.0.0`) — a diferencia de RMAN (que nunca tuvo un flat file real), aquí el flat file sí existía y sus responsabilidades/boundaries se preservaron íntegramente.
+- `queries/REGISTRY.md`, `skills/REGISTRY.md` — 30 queries y 39 skills `security/*` registrados; `Q-SEC-COMMON-LOCAL-USERS-001` documentado como complemento (no reemplazo) de `Q-CDB-USERS-001` (Fase 6).
+- `ARCHITECTURE.md` — 1 principio nuevo (30: password strength es evaluación de política nunca de contenido real, y una política actual compliant nunca certifica contraseñas existentes).
+- `SECURITY.md` — caso concreto password verify function source inspection (vector de inyección en código PL/SQL real dentro de la base de datos, distinto de los casos previos de salida de comando externo).
+- `policies/forbidden-operations.md` — nueva sección "Security / Users / Roles / Auditing / Encryption" con la lista completa de operaciones prohibidas del dominio.
+- `workflows/healthcheck.md`, `workflows/assessment.md`, `workflows/diagnose.md` — extendidos con activación/enrutamiento de `oracle-security-analyst`/`security/*`.
+
+### Known limitations
+
+Ver `docs/PHASE_8_ORACLE_SECURITY_COMPLIANCE.md#known-limitations`. En resumen: `security/data-masking-awareness` no tiene visibilidad real de Enterprise Manager (Data Masking and Subsetting Pack es un producto EM, fuera de alcance de introspección SQL directa) — awareness conceptual/de licenciamiento únicamente; `security/password-verify-function` no es un parser PL/SQL completo, sólo detección de patrones deterministas (`REGEXP_LIKE`/`LENGTH`); `DBA_NETWORK_ACLS`/`DBA_HOST_ACES` certificadas en el dictionary pero sin query/skill dedicado en esta fase (no nombrados explícitamente en la lista de 39 skills del prompt).
+
 ## [Unreleased] — 2026-09-09 — Fase 7: Oracle Backup & Recovery / RMAN
 
 Séptima capa funcional del e-stack, sobre baseline `v0.6.0-multitenant`. Ver `docs/PHASE_7_ORACLE_BACKUP_RECOVERY_RMAN.md` para el reporte de cierre completo.

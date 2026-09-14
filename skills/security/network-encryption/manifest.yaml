@@ -1,0 +1,23 @@
+name: network-encryption
+display_name: "Network Encryption Parameters"
+id: security/network-encryption
+version: 2.0.0
+domain: security
+status: active
+
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: ANY_CONTAINER
+database_role_scope: ANY
+
+license_requirements: none
+
+required_evidence:
+  - collector_id: get_oracle_net_security_configuration
+    owner: oracle-network-analyst
+optional_evidence: []
+data_sensitivity: LOW
+context_budget: LOW
+
+related_skills: [security/tls-awareness]

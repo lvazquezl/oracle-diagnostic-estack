@@ -1,0 +1,21 @@
+name: manual-remediation-plan
+display_name: "Manual Remediation Plan"
+id: security/manual-remediation-plan
+version: 1.0.0
+domain: security
+status: active
+
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: ANY_CONTAINER
+database_role_scope: ANY
+
+license_requirements: none
+
+required_evidence: []
+optional_evidence: []
+data_sensitivity: LOW
+context_budget: LOW
+
+related_skills: [security/security-assessment, security/security-healthcheck]

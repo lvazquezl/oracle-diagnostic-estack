@@ -1,0 +1,22 @@
+name: common-local-users
+display_name: "Common vs Local Users"
+id: security/common-local-users
+version: 1.0.0
+domain: security
+status: active
+
+supported_oracle_versions: [12c, 18c, 19c, 21c, 23ai]
+supported_os: [todas]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: CDB_ROOT_ONLY
+database_role_scope: ANY
+
+license_requirements: none
+
+required_evidence:
+  - query_id: Q-SEC-COMMON-LOCAL-USERS-001
+optional_evidence: []
+data_sensitivity: HIGH
+context_budget: MEDIUM
+
+related_skills: [security/account-inventory, security/roles]

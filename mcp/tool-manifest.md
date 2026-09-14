@@ -82,7 +82,7 @@ Antes de exponer una tool contra un target concreto, el Gateway MCP consulta al 
 | `PARTIALLY_SUPPORTED` sin variant compatible para ese target concreto | No — no equivale a `CERTIFIED`; sólo aplica si existe al menos un variant que cubra ese target exacto. |
 | Query no revisada por Compatibility Hardening (`NOT_CERTIFIED`/estado desconocido) | No — nunca expuesta. Ninguna tool detrás de una query `NOT_CERTIFIED` o `UNKNOWN` es alcanzable vía MCP, independientemente de si su Query Contract declara metadata de soporte. |
 
-Esto es evaluado **por target**, no una vez globalmente: la misma tool puede estar `CERTIFIED` para un target 19c y no disponible para un target 10g si el Resolver no encuentra variant para ese caso — ver la tabla `10g COMPATIBILITY`…`23ai COMPATIBILITY` en `docs/PHASE_2_COMPATIBILITY_HARDENING.md`. El Gateway MCP en sí (ejecución real contra una instancia) es Fase 7; hasta entonces esta sección documenta la regla que ese Gateway debe implementar, no un comportamiento runtime activo hoy.
+Esto es evaluado **por target**, no una vez globalmente: la misma tool puede estar `CERTIFIED` para un target 19c y no disponible para un target 10g si el Resolver no encuentra variant para ese caso — ver la tabla `10g COMPATIBILITY`…`23ai COMPATIBILITY` en `docs/PHASE_2_COMPATIBILITY_HARDENING.md`. El Gateway MCP en sí (ejecución real contra una instancia) es Fase 13 (roadmap vigente — corregido desde la referencia obsoleta "Fase 7", que ya se completó sin entregar el Gateway runtime); hasta entonces esta sección documenta la regla que ese Gateway debe implementar, no un comportamiento runtime activo hoy.
 
 ## Reglas del manifest
 
