@@ -1,0 +1,27 @@
+# Fixture: tablespace con autoextend habilitado y maxsize muy por encima del allocated actual —
+# el techo real es maxsize, nunca el allocated actual.
+# Usada por: capacity/tablespace.
+# Sin datos productivos — serie sintética (# 70, # 523-536 del prompt de Fase 10).
+fixture_id: FX-CAP-tablespace-autoextend
+
+capacity_target:
+  resource_type: tablespace
+  technology: oracle
+  target_id: TARGET_TOKEN_712
+  tablespace: USERS_DATA
+
+mock_evidence:
+  - collector_ref: oracle/tablespaces (Fase 2)
+    evidence_id: EVD-ORA-TBS-712
+    allocated_mb: 10240
+    used_mb: 9216
+    autoextend: true
+    maxsize_mb: 102400
+
+expected:
+  naive_used_over_allocated_percent: 90.0
+  effective_ceiling_mb: 102400
+  correct_used_over_ceiling_percent: 9.0
+  naive_metric_used: false
+  effective_ceiling_source: maxsize
+  severity_if_naive: "reportaría CRITICAL (90% de allocated) cuando el margen real (contra maxsize) es amplio"

@@ -1,0 +1,31 @@
+# Fixture: datafile Oracle dentro de un diskgroup ASM dentro de un datastore VMware — valida que
+# las 3 capas nunca se suman como capacidad independiente (storage layer model).
+# Usada por: capacity/storage, capacity/oracle, capacity/asm.
+# Sin datos productivos — serie sintética (# 70, # 463-479 del prompt de Fase 10).
+fixture_id: FX-CAP-storage-layers-no-double-counting
+
+capacity_target:
+  resource_type: storage_layers
+  technology: oracle
+  target_id: TARGET_TOKEN_714
+
+mock_layers:
+  - layer: physical_datastore
+    total_gib: 2000
+    used_gib: 1200
+  - layer: volume_filesystem_asm
+    total_gib: 1000
+    used_gib: 700
+  - layer: database_logical
+    total_gib: 700
+    used_gib: 500
+  - layer: tablespace_datafile
+    total_gib: 500
+    used_gib: 400
+
+expected:
+  layers_reported_independently: true
+  naive_sum_of_all_layers_gib: 4200
+  correct_physical_capacity_gib: 2000
+  double_counting_detected_if_summed: true
+  double_counting_present_in_output: false

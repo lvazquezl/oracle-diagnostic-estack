@@ -1,0 +1,26 @@
+# Fixture: CPU con patrón semanal (batch nocturno entre semana, valle en fin de semana) —
+# dataset sintético de validación para capacity/seasonality-awareness (DETECTED).
+# Usada por: capacity/seasonality-awareness, capacity/forecasting (method selection).
+# Sin datos productivos — serie sintética (# 70 del prompt de Fase 10).
+fixture_id: FX-CAP-weekly-seasonality-cpu
+
+capacity_target:
+  resource_type: cpu
+  technology: linux
+  target_id: TARGET_TOKEN_704
+  unit: percentage
+
+mock_series:
+  aggregation: daily
+  samples: 84
+  weeks_covered: 12
+  weekday_used_percent_mean: 65
+  weekend_used_percent_mean: 20
+  description: "patrón semanal consistente durante 12 semanas — picos lunes-viernes, valle sábado-domingo."
+
+expected:
+  data_quality_status: GOOD
+  seasonality_weekly: DETECTED
+  seasonality_monthly: NOT_DETECTED
+  forecast_method_consideration: "seasonality DETECTED considerado en method selection, sin forecast estacional propio en MVP"
+  confidence: MEDIUM

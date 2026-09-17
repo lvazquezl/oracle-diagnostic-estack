@@ -21,4 +21,12 @@ for f in $(find "$ROOT/parsers" "$ROOT/mcp" "$ROOT/collectors" "$ROOT/docs/GI_RE
 done
 
 [ $FAIL -eq 0 ] && echo "[PASS] Ningún artefacto certificado expone shell arbitrario"
+
+# PHASE 10 — CAPACITY MANAGEMENT & FORECASTING, sección 81 (# 60 del prompt: NO ARBITRARY SHELL).
+M="$ROOT/agents/capacity-analyst/manifest.yaml"
+[ -f "$M" ] || { echo "[FAIL] falta $M"; FAIL=1; }
+if [ -f "$M" ]; then
+  grep -q 'shell arbitrario' "$M" && echo "[PASS] capacity-analyst declara la prohibición de shell arbitrario" || { echo "[FAIL] falta la prohibición de shell arbitrario en capacity-analyst"; FAIL=1; }
+fi
+
 exit $FAIL

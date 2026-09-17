@@ -1,0 +1,28 @@
+# Fixture: memoria con tendencia decreciente (post-tuning) — dataset sintético de validación para
+# capacity/forecasting (DECREASING) y capacity/trend-analysis.
+# Usada por: capacity/forecasting, capacity/trend-analysis.
+# Sin datos productivos — serie sintética (# 70 del prompt de Fase 10).
+fixture_id: FX-CAP-decreasing-trend-memory
+
+capacity_target:
+  resource_type: memory
+  technology: linux
+  target_id: TARGET_TOKEN_703
+  unit: GiB
+
+mock_series:
+  aggregation: daily
+  samples: 60
+  used_gib_start: 60
+  decline_per_day_gib: 0.2
+  description: "used memory (excluyendo page cache) decrece ~0.2 GiB/día durante 60 días tras ajuste de PGA_AGGREGATE_TARGET."
+
+expected:
+  data_quality_status: GOOD
+  trend_classification: DECREASING
+  forecast_method: linear_regression
+  horizon_1m_expected_gib: 54
+  horizon_3m_expected_gib: 42
+  horizon_6m_expected_gib: 24
+  threshold_crossing_status: NOT_EXPECTED_WITHIN_HORIZON
+  confidence: MEDIUM

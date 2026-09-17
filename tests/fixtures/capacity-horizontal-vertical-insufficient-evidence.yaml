@@ -1,0 +1,22 @@
+# Fixture: recurso con riesgo WARNING pero sin evidencia de topología HA/RAC declarada — la
+# decisión horizontal vs. vertical debe quedar INSUFFICIENT_EVIDENCE, nunca forzada.
+# Usada por: capacity/horizontal, capacity/vertical.
+# Sin datos productivos — serie sintética (# 70, # 644-667 del prompt de Fase 10).
+fixture_id: FX-CAP-horizontal-vertical-insufficient-evidence
+
+capacity_target:
+  resource_type: cpu
+  technology: linux
+  target_id: TARGET_TOKEN_716
+
+mock_state:
+  utilization_percent: 82
+  ha_topology_known: false
+  rac_architecture_known: false
+  licensing_impact_known: false
+
+expected:
+  horizontal_recommendation: INSUFFICIENT_EVIDENCE
+  vertical_recommendation: INSUFFICIENT_EVIDENCE
+  forced_recommendation_by_percent_alone: false
+  considered_factors_declared: true

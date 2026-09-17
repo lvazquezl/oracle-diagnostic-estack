@@ -1,0 +1,30 @@
+# Fixture: filesystem con crecimiento lineal sostenido — dataset sintético de validación para
+# capacity/forecasting (linear regression) y capacity/threshold-crossing (DATE_ESTIMATED).
+# Usada por: capacity/forecasting, capacity/threshold-crossing, capacity/trend-analysis.
+# Sin datos productivos — serie sintética (# 70, # 1556-1571 del prompt de Fase 10).
+fixture_id: FX-CAP-linear-growth-storage
+
+capacity_target:
+  resource_type: filesystem
+  technology: linux
+  target_id: TARGET_TOKEN_701
+  unit: GiB
+
+mock_series:
+  aggregation: daily
+  samples: 90
+  total_capacity_gib: 500
+  used_capacity_gib_start: 200
+  growth_per_day_gib: 1.5
+  description: "used_capacity crece linealmente ~1.5 GiB/día durante 90 días consecutivos, sin gaps."
+
+expected:
+  data_quality_status: GOOD
+  trend_classification: INCREASING
+  forecast_method: linear_regression
+  forecast_contract_version_present: true
+  horizon_1m_expected_gib: 245
+  horizon_3m_expected_gib: 335
+  horizon_6m_expected_gib: 470
+  threshold_crossing_status: DATE_ESTIMATED
+  confidence: HIGH

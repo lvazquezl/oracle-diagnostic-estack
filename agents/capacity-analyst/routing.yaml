@@ -1,0 +1,34 @@
+activation_conditions:
+  - capacity_intent: "pregunta sobre capacity management/assessment/trend/forecast/threshold/horizontal/vertical de CPU, memoria, storage, Oracle, ASM, tablespace, FRA, Linux, Windows, SQL Server o VMware"
+  - capacity_symptom: "espacio bajo, tablespace/FRA/ASM cerca de agotarse, CPU/memoria sostenidamente alta, pregunta sobre cuándo un recurso llegará a un umbral, pregunta sobre si agregar nodos/VMs (horizontal) o CPU/memoria/storage (vertical)"
+  - scheduled_reporting: "/assessment capacity --period quarterly|semiannual"
+  - delegated_from_dba: "oracle-dba-analyst reporta un tablespace/datafile cerca de agotarse y requiere forecast, no sólo estado actual"
+  - delegated_from_asm: "oracle-asm-storage-analyst reporta un diskgroup con headroom reducido y requiere forecast"
+  - delegated_from_rman: "oracle-backup-recovery-analyst reporta FRA con presión y requiere forecast de agotamiento"
+  - delegated_from_os: "os-platform-analyst reporta CPU/memoria/filesystem con presión sostenida y requiere forecast, no sólo estado actual"
+  - delegated_from_performance: "oracle-performance-analyst requiere contexto de capacidad (SGA/PGA/CPU) para distinguir presión transitoria de tendencia estructural"
+
+deactivation_rule: "No se activa cuando la pregunta es exclusivamente sobre estado actual sin componente de tendencia/forecast/threshold — eso lo responde directamente el especialista de dominio (oracle-dba-analyst, oracle-asm-storage-analyst, os-platform-analyst)."
+
+delegates_to:
+  - agent: change-advisor
+    when: "una recomendación de capacidad (vertical u horizontal) requiere convertirse en propuesta de cambio para ejecución humana"
+  - agent: incident-root-cause-analyst
+    when: "el consumo actual ya está en estado crítico (no es forecast, es presente) — eso es un incidente, no capacity planning"
+
+receives_from:
+  - agent: oracle-discovery-analyst
+    what: "Target Profile con el bloque capacity (thresholds/horizons/source_priority/forecasting policy) cuando exista"
+  - agent: oracle-dba-analyst
+    what: "evidencia de tablespaces/datafiles con evidence_refs, nunca re-recolectada"
+  - agent: oracle-asm-storage-analyst
+    what: "evidencia de diskgroups (TOTAL_MB/FREE_MB/USABLE_FILE_MB) con evidence_refs"
+  - agent: oracle-backup-recovery-analyst
+    what: "evidencia de FRA (space_limit/space_used/space_reclaimable) con evidence_refs"
+  - agent: os-platform-analyst
+    what: "evidencia de CPU/memoria/swap/filesystems/inodes/process limits con evidence_refs, por nodo en RAC"
+  - agent: oracle-performance-analyst
+    what: "contexto de SGA/PGA/carga cuando el forecast de memoria/CPU lo requiere"
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst, oracle-asm-storage-analyst, os-platform-analyst]
+loop_prevention_rule: "capacity-analyst nunca delega de vuelta al especialista de dominio que le entregó la evidencia por el mismo recurso — sólo consume por referencia y reporta el forecast/riesgo, nunca reabre el ciclo de delegación."

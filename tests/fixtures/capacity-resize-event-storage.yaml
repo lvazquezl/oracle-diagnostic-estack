@@ -1,0 +1,41 @@
+# Fixture: filesystem extendido a mitad de la ventana histórica (capacity_event) — dataset
+# sintético de validación para capacity/anomaly-awareness (capacity_resize) y forecast segmentado.
+# Usada por: capacity/anomaly-awareness, capacity/forecasting (segmented forecast),
+# capacity/trend-analysis.
+# Sin datos productivos — serie sintética (# 70, # 1126-1163 del prompt de Fase 10).
+fixture_id: FX-CAP-resize-event-storage
+
+capacity_target:
+  resource_type: filesystem
+  technology: linux
+  target_id: TARGET_TOKEN_707
+  unit: GiB
+
+mock_series:
+  aggregation: daily
+  samples: 90
+  pre_event:
+    total_capacity_gib: 200
+    used_capacity_gib_start: 150
+    growth_per_day_gib: 1.0
+    days: 30
+  capacity_event:
+    timestamp_day: 30
+    event_type: capacity_resize
+    old_total_gib: 200
+    new_total_gib: 500
+    source: os-platform-analyst
+  post_event:
+    used_capacity_gib_start: 185
+    growth_per_day_gib: 1.5
+    days: 60
+  description: "filesystem extendido de 200 GiB a 500 GiB en el día 30 — serie debe segmentarse, nunca tratada como una sola serie continua con total_capacity mezclado."
+
+expected:
+  capacity_event_detected: true
+  event_type: capacity_resize
+  segmentation_applied: true
+  forecast_uses_post_event_data: true
+  forecast_uses_pre_event_total: false
+  trend_classification: INCREASING
+  confidence: MEDIUM

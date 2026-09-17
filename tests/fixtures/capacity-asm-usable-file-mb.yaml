@@ -1,0 +1,27 @@
+# Fixture: diskgroup ASM con redundancia NORMAL donde FREE_MB/TOTAL_MB simple sobreestima la
+# capacidad real disponible — USABLE_FILE_MB es la métrica correcta.
+# Usada por: capacity/asm.
+# Sin datos productivos — serie sintética (# 70, # 501-519 del prompt de Fase 10).
+fixture_id: FX-CAP-asm-usable-file-mb
+
+capacity_target:
+  resource_type: asm_diskgroup
+  technology: oracle
+  target_id: TARGET_TOKEN_711
+  diskgroup: DATA
+
+mock_evidence:
+  - collector_ref: asm/capacity (Fase 4)
+    evidence_id: EVD-ASM-CAP-711
+    total_mb: 1024000
+    free_mb: 512000
+    usable_file_mb: 153600
+    redundancy: NORMAL
+    required_mirror_free_mb: 102400
+
+expected:
+  naive_free_over_total_percent: 50.0
+  correct_utilization_percent_using_usable_file_mb: 85.0
+  naive_metric_used: false
+  usable_file_mb_used: true
+  severity_if_naive: "subestimaría el riesgo real (50% libre aparente vs. 15% realmente utilizable)"

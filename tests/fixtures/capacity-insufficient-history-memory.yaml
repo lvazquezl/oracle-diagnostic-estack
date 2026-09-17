@@ -1,0 +1,24 @@
+# Fixture: memoria con sólo 5 días de historia disponible — por debajo de
+# capacity.forecasting.minimum_history_days (ejemplo recomendado 30 días) — dataset sintético de
+# validación para confidence: INSUFFICIENT (nunca LOW).
+# Usada por: capacity/forecasting, capacity/confidence, capacity/data-quality.
+# Sin datos productivos — serie sintética (# 70, # 671-692 del prompt de Fase 10).
+fixture_id: FX-CAP-insufficient-history-memory
+
+capacity_target:
+  resource_type: memory
+  technology: linux
+  target_id: TARGET_TOKEN_709
+  unit: GiB
+
+mock_series:
+  aggregation: daily
+  samples: 5
+  minimum_history_days_policy: 30
+  description: "target recién agregado al monitoreo — sólo 5 días de historia disponible, muy por debajo del minimum_history_days configurado."
+
+expected:
+  data_quality_status: INSUFFICIENT
+  forecast_produced: false
+  confidence: INSUFFICIENT
+  limitation_declared: "historia disponible (5 días) por debajo de minimum_history_days (30 días) — forecast no calculado"

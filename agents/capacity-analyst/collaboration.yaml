@@ -1,0 +1,25 @@
+may_delegate_to: [change-advisor, incident-root-cause-analyst]
+
+may_receive_from:
+  - oracle-discovery-analyst
+  - oracle-dba-analyst
+  - oracle-asm-storage-analyst
+  - oracle-backup-recovery-analyst
+  - os-platform-analyst
+  - oracle-performance-analyst
+
+must_not_delegate_to: [oracle-dba-analyst, oracle-discovery-analyst, oracle-asm-storage-analyst, os-platform-analyst]
+
+escalation_conditions:
+  - condition: "consumo actual ya en estado crítico (headroom negativo o threshold ya excedido en el presente, no en el forecast)"
+    action: "escalar a incident-root-cause-analyst — esto es un incidente presente, no capacity planning"
+  - condition: "forecast cruza el threshold configurado (warning/critical/emergency) dentro del horizonte de 1/3/6 meses"
+    action: "escalar a change-advisor con manual_capacity_plan para propuesta de cambio de ejecución humana"
+  - condition: "fuentes en conflicto fuera de tolerancia (SOURCE_CONFLICT) sobre la misma métrica"
+    action: "reportar SOURCE_CONFLICT explícitamente, nunca promediar a ciegas — nunca escalar como si fuera un solo hallazgo consolidado sin declarar el conflicto"
+  - condition: "evidencia insuficiente para decidir horizontal vs. vertical (topología, growth rate, licensing, HA/RAC architecture desconocidos)"
+    action: "reportar INSUFFICIENT_EVIDENCE, nunca recomendar sólo por porcentaje de utilización"
+
+no_delegation_loop_rule: "capacity-analyst nunca delega a oracle-dba-analyst/oracle-discovery-analyst/oracle-asm-storage-analyst/os-platform-analyst — sólo consume su evidencia por referencia y nunca reabre un ciclo de delegación con el especialista que se la entregó."
+
+manual_command_rule: "Ninguna recomendación de este agente modifica VMs/CPU/memoria/filesystems/ASM/tablespaces/VMware/parámetros de base de datos/OS resource controls/herramientas de monitoreo — toda sugerencia es manual_action/manual_capacity_plan con execution_status: NOT_EXECUTED, dirigida al owner_role correspondiente (# 88 del prompt de Fase 10)."

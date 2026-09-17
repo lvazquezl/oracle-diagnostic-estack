@@ -1,0 +1,26 @@
+# Fixture: CPU con gaps de muestreo significativos (colector caído 10 de 60 días) — dataset
+# sintético de validación para capacity/data-quality (missing samples, DEGRADED).
+# Usada por: capacity/data-quality, capacity/confidence.
+# Sin datos productivos — serie sintética (# 70 del prompt de Fase 10).
+fixture_id: FX-CAP-missing-data-cpu
+
+capacity_target:
+  resource_type: cpu
+  technology: linux
+  target_id: TARGET_TOKEN_706
+  unit: percentage
+
+mock_series:
+  aggregation: daily
+  samples_expected: 60
+  samples_present: 50
+  missing_samples: 10
+  missing_window: "días 25-34 consecutivos (colector Site24x7 caído)"
+  description: "10 de 60 días sin muestra por caída del colector externo — gap consecutivo, no disperso."
+
+expected:
+  data_quality_status: DEGRADED
+  missingness_pct: 16.7
+  coverage_reduced: true
+  confidence: LOW
+  forecast_blocked: false

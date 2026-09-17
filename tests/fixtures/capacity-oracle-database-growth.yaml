@@ -1,0 +1,32 @@
+# Fixture: crecimiento de tamaño de base de datos Oracle (tablespaces consolidados) — dataset
+# sintético para capacity/oracle (database size growth), evidencia por referencia de
+# oracle/tablespaces (Fase 2).
+# Usada por: capacity/oracle.
+# Sin datos productivos, sólo metadata de tamaño — serie sintética (# 70, # 481-498 del prompt).
+fixture_id: FX-CAP-oracle-database-growth
+
+capacity_target:
+  resource_type: database_size
+  technology: oracle
+  target_id: TARGET_TOKEN_710
+  unit: GiB
+
+mock_evidence:
+  - collector_ref: oracle/tablespaces (Fase 2)
+    evidence_id: EVD-ORA-TBS-710
+  - collector_ref: oracle/database-state (Fase 2)
+    evidence_id: EVD-ORA-DBSTATE-710
+
+mock_series:
+  aggregation: monthly
+  samples: 6
+  database_size_gib_start: 800
+  growth_per_month_gib: 25
+  description: "tamaño total de base de datos (suma de tablespaces) crece ~25 GiB/mes durante 6 meses."
+
+expected:
+  no_duplicate_collector: true
+  evidence_by_reference: true
+  business_data_inspected: false
+  trend_classification: INCREASING
+  confidence: MEDIUM

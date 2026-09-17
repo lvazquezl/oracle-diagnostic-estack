@@ -1,0 +1,17 @@
+name: os
+display_name: "OS Capacity"
+id: capacity/os
+version: 1.0.0
+domain: capacity
+status: active
+supported_oracle_versions: []
+supported_os: [Oracle Linux, RHEL, SUSE, Windows Server, Solaris]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence: []
+optional_evidence: []
+data_sensitivity: LOW
+context_budget: LOW
+related_skills: [capacity/cpu, capacity/memory, capacity/storage, capacity/windows, capacity/linux]

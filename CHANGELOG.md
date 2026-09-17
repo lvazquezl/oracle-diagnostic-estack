@@ -2,6 +2,127 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — 2026-09-17 — PHASE 10 — CLI END-TO-END & CROSS-PLATFORM PATH HARDENING
+
+Hardening acotado sobre el hardening anterior (misma rama `phase/10-capacity-forecasting`), previo
+a aprobar `v0.10.0-capacity-forecasting`. Corrige un defecto real de rutas en
+`tests/test_capacity_engine_end_to_end.sh` detectado por revisión externa. Ver
+`docs/PHASE_10_FORECASTING_EXECUTION_NUMERICAL_VALIDATION_HARDENING.md#addendum` para el reporte
+de cierre completo.
+
+### Fixed
+
+- **`tests/test_capacity_engine_end_to_end.sh` construía rutas inválidas en POSIX sin `cygpath`**:
+  concatenaba `"$WTMPDIR\\archivo.json"` incondicionalmente; en POSIX la barra invertida no es un
+  separador, así que Python recibía un nombre de archivo literal con un `\` incrustado y fallaba
+  con `FileNotFoundError`. Reproducido verbatim, corregido reescribiendo el test para pasar rutas
+  **relativas** al CLI tras un `cd` al directorio de trabajo (bash builtin, resuelto correctamente
+  por el SO sin importar el intérprete invocado después) — root cause eliminado por construcción,
+  ya no depende de la disponibilidad de `cygpath`.
+
+### Added
+
+- `tests/lib/capacity_engine_e2e_helpers.sh` — helpers compartidos: `capacity_engine_run`,
+  `capacity_engine_write_linear_fixture` (estrategia de rutas relativas), y
+  `capacity_engine_to_interp_path` (fallback para ruta absoluta genuina, pregunta a `python3` su
+  `sys.platform` real, nunca infiere desde `uname`/`$OSTYPE`, antes de decidir si usar
+  `cygpath -w`).
+- 5 tests nuevos: `tests/test_capacity_engine_end_to_end_linux_paths.sh` (reproduce el defecto de
+  raíz + confirma el fix), `tests/test_capacity_engine_end_to_end_paths_with_spaces.sh`,
+  `tests/test_capacity_engine_end_to_end_missing_fixture_fail_fast.sh`,
+  `tests/test_capacity_engine_end_to_end_cli_nonzero_exit.sh`,
+  `tests/test_capacity_engine_end_to_end_output_consistency.sh`.
+
+### Changed
+
+- `docs/PHASE_10_FORECASTING_EXECUTION_NUMERICAL_VALIDATION_HARDENING.md` — nuevo addendum
+  documentando el defecto, el fix, los tests nuevos y las plataformas realmente ejecutadas en esta
+  sesión (Windows 11 + Git Bash/Cygwin + Python 3.13.14 nativo `win32` — sin una corrida Linux/WSL
+  independiente).
+
+## [Unreleased] — 2026-09-16 — PHASE 10 — FORECASTING EXECUTION & NUMERICAL VALIDATION HARDENING
+
+Hardening sobre la Fase 10 base (misma rama `phase/10-capacity-forecasting`), previo a aprobar
+`v0.10.0-capacity-forecasting`. Cierra la brecha entre los contratos declarativos de
+`skills/capacity/*` y un motor local ejecutable. Ver
+`docs/PHASE_10_FORECASTING_EXECUTION_NUMERICAL_VALIDATION_HARDENING.md` para el reporte de cierre
+completo.
+
+### Added
+
+- `capacity_engine/` — motor de forecasting local, determinista, Python 3 stdlib puro (sin
+  numpy/scipy/pandas): `common.py` (ForecastResult y demás dataclasses/enums),
+  `normalization.py` (validación de esquema/unidades/tiempo), `quality.py` (coverage/freshness/
+  missingness/gaps/outliers), `segmentation.py` (detección de capacity_resize), `aggregation.py`
+  (agregación diaria determinista), `stats.py` (OLS puro, intervalos de predicción, aritmética de
+  meses calendario, outliers MAD), `trend.py` (clasificación de tendencia), `threshold.py`
+  (cruce de umbral), `reconciliation.py` (SOURCE_CONFLICT sin promedio ciego), `engine.py`
+  (`run_capacity_forecast`, orquestador), `report.py` (tabla de capacidad Markdown), `cli.py`
+  (adaptador local invocable, `python3 -m capacity_engine.cli`).
+- 18 tests numéricos ejecutables que corren el motor real y comparan salidas contra valores
+  calculados independientemente: `tests/test_capacity_engine_{flat,decreasing,
+  threshold_crossing,calendar,insufficient_history,missing_irregular_duplicates,outliers,
+  resize_segmentation,source_conflict,units,interval_semantics,storage_layers,cpu_semantics,
+  security,end_to_end,no_false_pass_mutation}.sh` — más `tests/test_forecast_linear_growth.sh` y
+  `tests/test_forecast_reproducible_same_input.sh` endurecidos (ejecución real añadida, checks
+  documentales originales conservados y etiquetados).
+- `docs/PHASE_10_FORECASTING_EXECUTION_NUMERICAL_VALIDATION_HARDENING.md`.
+
+### Changed
+
+- `docs/CAPACITY_FORECASTING_MODEL.md`, `docs/CAPACITY_DATA_QUALITY_MODEL.md`,
+  `docs/CAPACITY_THRESHOLD_MODEL.md`, `docs/CAPACITY_REPORTING_MODEL.md`,
+  `docs/CAPABILITY_MATRIX.md`, `config/capability-matrix.yaml` — documentan el motor ejecutable y
+  la distinción `CONTRACT_DEFINED`/`LOCAL_RUNTIME_TESTED`/`PRODUCTION_RUNTIME_CERTIFIED`;
+  `/healthcheck capacity`/`/assessment capacity` (agente vivo, MCP Gateway) permanecen
+  `CONTRACT_ONLY`/`NOT_RUNTIME_CERTIFIED`, nunca declarados como ejecutados.
+
+## [Unreleased] — 2026-09-14 — PHASE 10 — CAPACITY MANAGEMENT & FORECASTING
+
+Nueva fase sobre baseline `v0.9.0-os-platform`, rama `phase/10-capacity-forecasting`. Ver
+`docs/PHASE_10_CAPACITY_MANAGEMENT_FORECASTING.md` para el reporte de cierre completo.
+
+### Added
+
+- `agents/capacity-analyst/` v2.0.0 — deepening del manifest plano real de Foundation v1.0.0
+  (`supersedes`) a contrato estructurado completo (`AGENT.md`, `manifest.yaml`, `routing.yaml`,
+  `context-policy.yaml`, `collaboration.yaml`, `output-schema.yaml`, `tests/README.md`,
+  `CHANGELOG.md`) — único agente transversal del dominio `capacity`, nunca fragmentado por
+  recurso/tecnología.
+- 28 skills `capacity/<name>/{SKILL.md,manifest.yaml}` — `data-source-inventory`, `data-quality`,
+  `normalization`, `cpu`, `memory`, `storage`, `oracle`, `asm`, `tablespace`, `os`, `windows`,
+  `linux`, `sqlserver`, `vmware`, `horizontal`, `vertical`, `trend-analysis`, `forecasting`,
+  `threshold-crossing`, `anomaly-awareness`, `seasonality-awareness`, `growth-rate`, `confidence`,
+  `risk-classification`, `capacity-healthcheck`, `capacity-assessment`, `manual-capacity-plan`,
+  `executive-summary` — reemplaza el modelo de 16 skill_ids `registered`-only de Foundation.
+  `skills/capacity/forecast.md` (único activo previo, regresión lineal + umbrales de riesgo por
+  headroom) se funde íntegramente como base MVP de `capacity/forecasting` v2.0.0.
+- Common Metric Model (`capacity_metric`) transversal a Oracle/Linux/Windows/SQL Server/VMware;
+  Source Adapter Contract (`read_only: true` fijo) para Site24x7/Prophecy/Reporting
+  Services/evidencia Oracle/OS/telemetría VMware/SQL Server.
+- Forecasting reproducible y confidence-aware: horizontes 1/3/6 meses desde el último dato válido,
+  intervalos `lower/expected/upper`, `confidence: HIGH|MEDIUM|LOW|INSUFFICIENT` siempre con razón
+  explícita, `forecast_contract_version`/`algorithm_version`/`input_evidence_ids`/`time_window`/
+  `excluded_samples` para reproducibilidad completa.
+- Threshold crossing (`DATE_ESTIMATED|NOT_EXPECTED_WITHIN_HORIZON|ALREADY_EXCEEDED|
+  INSUFFICIENT_EVIDENCE|NON_MONOTONIC`), Capacity Risk Model (`HEALTHY|WATCH|WARNING|HIGH|
+  CRITICAL|UNKNOWN`, siempre con `confidence` explícito), Horizontal/Vertical Decision Model
+  (nunca decidido sólo por porcentaje de utilización).
+- `docs/TARGET_PROFILE.md` `schema_version` 2.6.0→2.7.0 — bloque `capacity:` (thresholds,
+  forecasting policy, source_priority).
+- `workflows/healthcheck.md` (`/healthcheck capacity`), `workflows/assessment.md` (`/assessment
+  capacity --period quarterly|semiannual`), `workflows/diagnose.md` (routing de 10 síntomas de
+  capacidad).
+- 13 documentos nuevos `docs/CAPACITY_*.md` + `docs/PHASE_10_CAPACITY_MANAGEMENT_FORECASTING.md`.
+- 16 fixtures sintéticas (`tests/fixtures/capacity-*.yaml`, sin datos productivos) y 70 tests
+  nuevos (normalization×5, data quality×6, CPU×5, memory×4, storage×5, Oracle/ASM/tablespace×5,
+  forecasting×9, threshold×5, source reconciliation×4, horizontal/vertical×4, safety×8,
+  cross-domain×5, reproducibility×5) — `tests/test_no_arbitrary_sql.sh`/
+  `tests/test_no_arbitrary_shell.sh` (pre-existentes de Fase 4/9) extendidos con verificación de
+  `capacity-analyst/manifest.yaml`, preservando su lógica original.
+- `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` — dominio `capacity` PARTIAL→
+  SUPPORTED (10g-23ai).
+
 ## [Unreleased] — 2026-09-14 — PHASE 9 — PAM LIMITS POLICY SOURCE & PID CONTROLLER IDENTITY MICRO-HARDENING
 
 Micro-hardening sobre la Fase 9 base + los dos hardenings previos (misma rama

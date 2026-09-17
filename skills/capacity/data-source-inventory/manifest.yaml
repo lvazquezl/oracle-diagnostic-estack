@@ -1,0 +1,17 @@
+name: data-source-inventory
+display_name: "Capacity Data Source Inventory"
+id: capacity/data-source-inventory
+version: 1.0.0
+domain: capacity
+status: active
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [Oracle Linux, RHEL, SUSE, Windows Server, Solaris]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence: []
+optional_evidence: []
+data_sensitivity: LOW
+context_budget: LOW
+related_skills: [capacity/data-quality, capacity/normalization, capacity/capacity-healthcheck]

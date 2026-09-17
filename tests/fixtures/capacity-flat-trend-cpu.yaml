@@ -1,0 +1,29 @@
+# Fixture: CPU con utilización estable (flat trend) — dataset sintético de validación para
+# capacity/forecasting (STABLE) y capacity/threshold-crossing (NOT_EXPECTED_WITHIN_HORIZON).
+# Usada por: capacity/forecasting, capacity/trend-analysis, capacity/threshold-crossing.
+# Sin datos productivos — serie sintética (# 70 del prompt de Fase 10).
+fixture_id: FX-CAP-flat-trend-cpu
+
+capacity_target:
+  resource_type: cpu
+  technology: linux
+  target_id: TARGET_TOKEN_702
+  unit: percentage
+
+mock_series:
+  aggregation: daily
+  samples: 90
+  used_percent_mean: 42
+  used_percent_stddev: 2.1
+  description: "utilización de CPU oscila 40-44% durante 90 días, sin tendencia significativa."
+
+expected:
+  data_quality_status: GOOD
+  trend_classification: STABLE
+  forecast_method: linear_regression
+  horizon_1m_expected_percent: 42
+  horizon_3m_expected_percent: 42
+  horizon_6m_expected_percent: 42
+  threshold_crossing_status: NOT_EXPECTED_WITHIN_HORIZON
+  saturation_date_applicable: false
+  confidence: HIGH

@@ -20,6 +20,6 @@ status: active
 
 # Notas
 
-Detectado típicamente por `oracle/tablespaces` (`skills/oracle/tablespaces.md`) antes de que ocurra el `ORA-01653`, cuando `used_pct >= 90%` sin autoextend — el objetivo del healthcheck/assessment es anticipar este error, no sólo diagnosticarlo post-mortem. Si el error ya ocurrió, `incident-root-cause-analyst` lo confirma correlacionando el timestamp del error (evidencia provista por el DBA, ej. alert log) con el `used_pct` histórico vía `capacity/trending`.
+Detectado típicamente por `oracle/tablespaces` (`skills/oracle/tablespaces.md`) antes de que ocurra el `ORA-01653`, cuando `used_pct >= 90%` sin autoextend — el objetivo del healthcheck/assessment es anticipar este error, no sólo diagnosticarlo post-mortem. Si el error ya ocurrió, `incident-root-cause-analyst` lo confirma correlacionando el timestamp del error (evidencia provista por el DBA, ej. alert log) con el `used_pct` histórico vía `capacity/tablespace`/`capacity/trend-analysis` (Fase 10 — Capacity Management & Forecasting).
 
 Este es un ejemplo semilla materializado en Fase 1 para validar el formato de `knowledge/errors/`; casos reales futuros se agregan vía `/change knowledge` con `source_analysis_ids` poblado.

@@ -1,0 +1,27 @@
+# Fixture: storage cuyo uso actual ya supera el critical_percent configurado — threshold_crossing
+# debe reportar ALREADY_EXCEEDED, no una fecha futura.
+# Usada por: capacity/threshold-crossing.
+# Sin datos productivos — serie sintética (# 70, # 1018-1035 del prompt de Fase 10).
+fixture_id: FX-CAP-threshold-already-exceeded
+
+capacity_target:
+  resource_type: filesystem
+  technology: linux
+  target_id: TARGET_TOKEN_715
+  unit: GiB
+
+mock_current_state:
+  total_capacity_gib: 500
+  used_capacity_gib: 480
+  utilization_percent: 96.0
+
+target_profile_thresholds:
+  warning_percent: 80
+  critical_percent: 90
+  emergency_percent: 95
+
+expected:
+  threshold_crossing_status: ALREADY_EXCEEDED
+  estimated_date: null
+  current_utilization_over_emergency: true
+  risk: CRITICAL

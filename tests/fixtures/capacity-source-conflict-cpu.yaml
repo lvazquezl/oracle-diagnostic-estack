@@ -1,0 +1,30 @@
+# Fixture: la misma métrica de CPU reportada por dos fuentes con valores fuera de tolerancia —
+# dataset sintético de validación para capacity/data-source-inventory / capacity/capacity-assessment
+# (SOURCE_CONFLICT, nunca promediado a ciegas).
+# Usada por: capacity/data-source-inventory, capacity/capacity-assessment.
+# Sin datos productivos — serie sintética (# 70, # 1167-1206 del prompt de Fase 10).
+fixture_id: FX-CAP-source-conflict-cpu
+
+capacity_target:
+  resource_type: cpu
+  technology: linux
+  target_id: TARGET_TOKEN_708
+  unit: percentage
+
+mock_sources:
+  - source_id: OSEvidence
+    type: OSEvidence
+    reported_used_percent: 45
+  - source_id: Site24x7
+    type: Site24x7
+    reported_used_percent: 78
+  tolerance_percent: 10
+  source_priority_declared: [OSEvidence, Site24x7]
+
+expected:
+  conflict_detected: true
+  status: SOURCE_CONFLICT
+  blind_average_used: false
+  preferred_source_used: OSEvidence
+  secondary_source: Site24x7
+  reconciliation_rule_declared: true

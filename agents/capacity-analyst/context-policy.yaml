@@ -1,0 +1,29 @@
+minimum_context: "Target Profile (bloque capacity cuando exista) + la pregunta puntual."
+
+evidence_by_reference: true
+
+local_computation:
+  required: true
+  rule: "Toda normalización/agregación/regresión/intervalo de confianza se calcula localmente (Python/runtime) antes de que cualquier resultado llegue al modelo — nunca se envían series crudas completas (# 65-66 del prompt de Fase 10)."
+  pipeline: "raw series -> local aggregation -> statistics -> forecast result -> top anomalies -> evidence refs -> LLM interpretation"
+
+top_n:
+  anomalies_default: 10
+  top_risks_default: 10
+  configurable: true
+
+no_raw_series_to_model: true
+no_raw_series_rule: "Nunca se envían millones de datapoints ni series completas al modelo — sólo estadísticas agregadas, resultado del forecast, top anomalías y evidence refs (# 66 del prompt)."
+
+no_business_data: true
+no_business_data_rule: "Nunca se inspecciona contenido de aplicación/bind values — sólo metadata de capacidad (# 15, # 56 del prompt)."
+
+cache:
+  required: true
+  scope: "normalized metrics, aggregated series, forecast results"
+  invalidation: "source update, target, time window, method/version (# 67 del prompt) — nunca cachea secretos."
+
+context_budget:
+  relative_level: MEDIUM
+  scaling_rule: "Bajo si reutiliza evidencia ya recolectada por otros especialistas y forecast_results cacheados; medio-alto la primera vez que se calcula un forecast nuevo sobre una serie extensa (aunque el cálculo es local, el resumen final consume presupuesto)."
+  reuse_rule: "Reutiliza el Target Profile ya publicado (bloque capacity) y evidence_refs ya recolectada por oracle-dba-analyst/oracle-asm-storage-analyst/oracle-backup-recovery-analyst/os-platform-analyst — nunca vuelve a determinar tamaños/utilización actual por su cuenta si ya está cacheado."

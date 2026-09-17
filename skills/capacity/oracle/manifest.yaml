@@ -1,0 +1,17 @@
+name: oracle
+display_name: "Oracle Database Capacity"
+id: capacity/oracle
+version: 1.0.0
+domain: capacity
+status: active
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: []
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: ANY_CONTAINER
+database_role_scope: primary
+license_requirements: "AWR/histórico requiere Diagnostics Pack (LICENSE_RESTRICTED sin confirmación)"
+required_evidence: []
+optional_evidence: []
+data_sensitivity: LOW
+context_budget: MEDIUM
+related_skills: [capacity/asm, capacity/tablespace, capacity/storage, capacity/forecasting]

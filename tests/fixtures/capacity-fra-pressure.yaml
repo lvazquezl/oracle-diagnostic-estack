@@ -1,0 +1,25 @@
+# Fixture: FRA con espacio reclamable significativo — space_used alto pero space_reclaimable
+# reduce la presión real; integrado con Fase 7 (rman/fra-pressure).
+# Usada por: capacity/oracle (bloque FRA).
+# Sin datos productivos — serie sintética (# 70, # 539-554 del prompt de Fase 10).
+fixture_id: FX-CAP-fra-pressure
+
+capacity_target:
+  resource_type: fra
+  technology: oracle
+  target_id: TARGET_TOKEN_713
+
+mock_evidence:
+  - collector_ref: rman/fra-pressure (Fase 7)
+    evidence_id: EVD-RMAN-FRA-713
+    space_limit_mb: 512000
+    space_used_mb: 460800
+    space_reclaimable_mb: 204800
+    archivelog_growth_rate_mb_per_day: 8192
+
+expected:
+  naive_used_over_limit_percent: 90.0
+  effective_used_after_reclaimable_percent: 50.0
+  reclaimable_considered: true
+  auto_reclaim_executed: false
+  no_duplicate_collector: true

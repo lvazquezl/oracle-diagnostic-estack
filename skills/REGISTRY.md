@@ -12,7 +12,7 @@ Este registro identifica cada skill **exclusivamente** por su `skill_id` complet
 - `active` — materializado por completo (19 secciones del Skill Contract), archivo real en el dominio.
 - `registered` — nombre, dominio y propósito fijados en este registro; su materialización completa es Fase 2+ según `README.md#fases-de-construcción`. No es un placeholder vacío: es la entrada de catálogo que gobierna qué se puede construir y en qué orden vía `/change skill`.
 
-Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total); **Fase 5 (Data Guard) materializa las 21 skills del dominio `dataguard` completo** (141 activos en total); **Fase 6 (Multitenant/CDB/PDB) materializa las 26 skills del dominio `multitenant` completo** (166 activos en total); **Fase 7 (Backup & Recovery/RMAN) materializa las 30 skills del dominio `rman` completo** (196 activos en total); **Fase 8 (Security & Compliance) materializa las 39 skills del dominio `security` completo, genuinamente nuevo** (235 activos en total); **PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING agrega `network/oracle-net-security`** (236 activos en total); **Fase 9 (OS Platform Diagnostics & Hardening) materializa las 45 skills del dominio `os` completo** (reemplaza el modelo `os/<plataforma>/<skill>` de Foundation — 1 activo previo, `os/linux/memory`, absorbido en `os/memory` — 280 activos en total). El resto (`capacity`, `documentation`, AIX/HP-UX de `os`) queda `registered` para materialización gobernada en una fase futura.
+Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total); **Fase 5 (Data Guard) materializa las 21 skills del dominio `dataguard` completo** (141 activos en total); **Fase 6 (Multitenant/CDB/PDB) materializa las 26 skills del dominio `multitenant` completo** (166 activos en total); **Fase 7 (Backup & Recovery/RMAN) materializa las 30 skills del dominio `rman` completo** (196 activos en total); **Fase 8 (Security & Compliance) materializa las 39 skills del dominio `security` completo, genuinamente nuevo** (235 activos en total); **PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING agrega `network/oracle-net-security`** (236 activos en total); **Fase 9 (OS Platform Diagnostics & Hardening) materializa las 45 skills del dominio `os` completo** (reemplaza el modelo `os/<plataforma>/<skill>` de Foundation — 1 activo previo, `os/linux/memory`, absorbido en `os/memory` — 280 activos en total); **Fase 10 (Capacity Management & Forecasting) materializa las 28 skills del dominio `capacity` completo** (reemplaza el modelo de 16 skill_ids de Foundation — 1 activo previo, `capacity/forecast`, absorbido en `capacity/forecasting` — **301 activos en total**, conteo verificado directamente sobre el árbol de trabajo; corrige el arrastre de "280" de la nota de Fase 9, que un recuento exacto contra el tag `v0.9.0-os-platform` muestra en 274 — 274 + 28 − 1 = 301, consistente). El resto (`documentation`, AIX/HP-UX de `os`) queda `registered` para materialización gobernada en una fase futura.
 
 ## core (20)
 
@@ -393,26 +393,49 @@ para una fase futura.
 | `os/aix/*` (18) | registered — fuera de alcance de Fase 9 |
 | `os/hpux/*` (18) | registered — fuera de alcance de Fase 9 |
 
-## capacity (16)
+## capacity (28)
+
+Fase 10 (Capacity Management & Forecasting) materializa las 28 skills del dominio `capacity`
+completo, reemplazando el modelo de 16 skill_ids de Foundation (`capacity/cpu`/`sga`/`pga`/
+`filesystem`/`tablespaces`/`temp`/`undo`/`fra`/`archive`/`growth`/`trending`/`headroom`/`risk` —
+sólo `capacity/forecast` materializado) por un modelo transversal a 5 tecnologías (Oracle/ASM/
+Tablespace/FRA, Linux, Windows Server, SQL Server, VMware) con Common Metric Model, Source
+Adapter Model y forecasting reproducible con confidence/intervalos — mismo patrón de
+reconciliación de nomenclatura ya aplicado a `os` en Fase 9. `capacity/forecast.md` (Foundation)
+fusionado como base de `capacity/forecasting` v2.0.0. `capacity/sga`/`pga`/`temp`/`undo`/
+`filesystem`/`archive`/`headroom` de Foundation se consolidan dentro de `capacity/oracle`/
+`capacity/storage`/`capacity/risk-classification` — nunca skills separados redundantes.
 
 | skill_id | status |
 |---|---|
-| `capacity/cpu` | registered |
-| `capacity/memory` | registered |
-| `capacity/sga` | registered |
-| `capacity/pga` | registered |
-| `capacity/filesystem` | registered |
-| `capacity/asm` | registered |
-| `capacity/tablespaces` | registered |
-| `capacity/temp` | registered |
-| `capacity/undo` | registered |
-| `capacity/fra` | registered |
-| `capacity/archive` | registered |
-| `capacity/growth` | registered |
-| `capacity/trending` | registered |
-| `capacity/forecast` | **active** ([capacity/forecast.md](capacity/forecast.md)) |
-| `capacity/headroom` | registered |
-| `capacity/risk` | registered |
+| `capacity/data-source-inventory` | **active** ([capacity/data-source-inventory/SKILL.md](capacity/data-source-inventory/SKILL.md)) |
+| `capacity/data-quality` | **active** ([capacity/data-quality/SKILL.md](capacity/data-quality/SKILL.md)) |
+| `capacity/normalization` | **active** ([capacity/normalization/SKILL.md](capacity/normalization/SKILL.md)) |
+| `capacity/cpu` | **active** ([capacity/cpu/SKILL.md](capacity/cpu/SKILL.md)) |
+| `capacity/memory` | **active** ([capacity/memory/SKILL.md](capacity/memory/SKILL.md)) |
+| `capacity/storage` | **active** ([capacity/storage/SKILL.md](capacity/storage/SKILL.md)) |
+| `capacity/oracle` | **active** ([capacity/oracle/SKILL.md](capacity/oracle/SKILL.md)) |
+| `capacity/asm` | **active** ([capacity/asm/SKILL.md](capacity/asm/SKILL.md)) |
+| `capacity/tablespace` | **active** ([capacity/tablespace/SKILL.md](capacity/tablespace/SKILL.md)) |
+| `capacity/os` | **active** ([capacity/os/SKILL.md](capacity/os/SKILL.md)) |
+| `capacity/windows` | **active** ([capacity/windows/SKILL.md](capacity/windows/SKILL.md)) |
+| `capacity/linux` | **active** ([capacity/linux/SKILL.md](capacity/linux/SKILL.md)) |
+| `capacity/sqlserver` | **active** ([capacity/sqlserver/SKILL.md](capacity/sqlserver/SKILL.md)) |
+| `capacity/vmware` | **active** ([capacity/vmware/SKILL.md](capacity/vmware/SKILL.md)) |
+| `capacity/horizontal` | **active** ([capacity/horizontal/SKILL.md](capacity/horizontal/SKILL.md)) |
+| `capacity/vertical` | **active** ([capacity/vertical/SKILL.md](capacity/vertical/SKILL.md)) |
+| `capacity/trend-analysis` | **active** ([capacity/trend-analysis/SKILL.md](capacity/trend-analysis/SKILL.md)) |
+| `capacity/forecasting` | **active** ([capacity/forecasting/SKILL.md](capacity/forecasting/SKILL.md)) |
+| `capacity/threshold-crossing` | **active** ([capacity/threshold-crossing/SKILL.md](capacity/threshold-crossing/SKILL.md)) |
+| `capacity/anomaly-awareness` | **active** ([capacity/anomaly-awareness/SKILL.md](capacity/anomaly-awareness/SKILL.md)) |
+| `capacity/seasonality-awareness` | **active** ([capacity/seasonality-awareness/SKILL.md](capacity/seasonality-awareness/SKILL.md)) |
+| `capacity/growth-rate` | **active** ([capacity/growth-rate/SKILL.md](capacity/growth-rate/SKILL.md)) |
+| `capacity/confidence` | **active** ([capacity/confidence/SKILL.md](capacity/confidence/SKILL.md)) |
+| `capacity/risk-classification` | **active** ([capacity/risk-classification/SKILL.md](capacity/risk-classification/SKILL.md)) |
+| `capacity/capacity-healthcheck` | **active** ([capacity/capacity-healthcheck/SKILL.md](capacity/capacity-healthcheck/SKILL.md)) |
+| `capacity/capacity-assessment` | **active** ([capacity/capacity-assessment/SKILL.md](capacity/capacity-assessment/SKILL.md)) |
+| `capacity/manual-capacity-plan` | **active** ([capacity/manual-capacity-plan/SKILL.md](capacity/manual-capacity-plan/SKILL.md)) |
+| `capacity/executive-summary` | **active** ([capacity/executive-summary/SKILL.md](capacity/executive-summary/SKILL.md)) |
 
 ## incident (8)
 

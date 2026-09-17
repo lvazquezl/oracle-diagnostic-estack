@@ -10,7 +10,7 @@ Un Target Profile es la única fuente de verdad sobre "qué es este ambiente" de
 
 ```yaml
 target_profile:
-  schema_version: "2.6.0"
+  schema_version: "2.7.0"
   target_id: string                    # referencia local (alias), nunca connection string con credenciales
 
   database:
@@ -158,6 +158,34 @@ target_profile:
     expected_time_sync: string|null              # ej. "chrony contra NTP corporativo" — null -> os/time-sync reporta sólo el estado, sin asumir la fuente esperada
     expected_network_model: string|null          # ej. "bonded active-backup + VLAN dedicada interconnect" — null -> os/bonding, os/vlan reportan sin comparar contra un diseño no declarado
 
+  # --- Fase 10 (Capacity Management & Forecasting) — aditivo, schema_version 2.7.0, ningún campo previo removido/renombrado ---
+
+  capacity:
+    assessment_frequency: quarterly|semiannual|null   # null -> capacity-analyst opera bajo demanda, sin cadencia impuesta
+    horizons: [1, 3, 6]                                # meses — fijo salvo ampliación futura vía /change
+    thresholds:                                        # policy TARGET configurable por recurso, nunca defaults universales — null -> capacity/threshold-crossing publica INSUFFICIENT_POLICY
+      cpu:
+        warning_percent: int|null
+        critical_percent: int|null
+        emergency_percent: int|null
+      memory:
+        warning_percent: int|null
+        critical_percent: int|null
+        emergency_percent: int|null
+      storage:
+        warning_percent: int|null
+        critical_percent: int|null
+        emergency_percent: int|null
+    forecasting:
+      minimum_samples: int|null
+      minimum_history_days: int|null       # ej. 30 — ejemplo recomendado, no universal (ver docs/CAPACITY_DATA_QUALITY_MODEL.md)
+      preferred_history_days: int|null     # ej. 90+
+      target_headroom_percent: int|null    # usado por capacity/manual-capacity-plan para dimensionar recomendaciones — null -> el cálculo se declara REQUIRES_REVIEW
+    source_priority:                       # reconciliación cuando la misma métrica existe en varias fuentes (ver docs/CAPACITY_DATA_SOURCE_MODEL.md) — nunca promediado automático
+      cpu: [string]|null                   # ej. ["OracleEvidence", "OSEvidence", "Site24x7"]
+      memory: [string]|null
+      storage: [string]|null
+
   discovery:
     timestamp: ISO-8601
     evidence_refs: [EVD-...]
@@ -178,6 +206,7 @@ target_profile:
 - **`backup_recovery.repository` nunca se asume `recovery_catalog` por defecto (Fase 7, `# 7` del prompt).** Sin confirmación de acceso de lectura al Recovery Catalog, `repository: controlfile_repository`, `recovery_catalog: false` — `oracle-backup-recovery-analyst` opera exclusivamente sobre metadata de controlfile. `backup_recovery.rpo_minutes`/`rto_minutes` quedan `null` sin declaración explícita del DBA — `rman/retention-policy`/`rman/recovery-readiness` publican `INSUFFICIENT_REQUIREMENTS` en ese caso, nunca un RPO/RTO inventado (`# 31` del prompt de Fase 7).
 - **`security.password_policy`/`security.account_inactivity_policy_days`/`security.encryption_required`/`security.tls_required`/`security.licensing_profile` nunca se inventan sin declaración explícita del DBA (Fase 8, `# 15`, `# 43` del prompt).** Sin `password_policy` definido, todo `security/password-policy-strength` publica `POLICY_NOT_DEFINED` por control, nunca un target inventado. Sin `licensing_profile` confirmando una feature específica, `security/licensing-gates` nunca reporta `status: INCLUDED` — la disponibilidad técnica (`V$OPTION`) nunca implica derecho de uso. `security.password_policy` en el ejemplo de `docs/PHASE_8_ORACLE_SECURITY_COMPLIANCE.md` es un baseline corporativo de EJEMPLO, no un default universal del e-stack.
 - **`os_platform.expected_hugepages_policy`/`expected_thp_policy`/`expected_time_sync`/`expected_network_model` nunca se inventan sin declaración explícita del DBA (Fase 9).** Sin esos campos, `os/hugepages`/`os/transparent-hugepages`/`os/time-sync`/`os/bonding`/`os/vlan` reportan el estado real leído directamente, nunca lo comparan contra un diseño esperado no declarado — evita falsos positivos por asumir un diseño estándar que el host real no sigue. `os_platform.family`/`distribution`/`version` nunca se determinan por adivinanza: si `os/discovery` no puede leerlos con evidencia, quedan `undetermined`/`null` y el consumidor (`os-platform-analyst`) reporta `COMPATIBILITY_VALIDATION_REQUIRED`, nunca asume Linux/Oracle Linux por defecto. `os_platform.oracle_home_owner`/`grid_home_owner`/`oracle_groups` nunca contienen membresía completa de usuarios — eso vive en la evidencia de `os/oracle-groups`, tokenizada por defecto.
+- **`capacity.thresholds`/`capacity.forecasting.target_headroom_percent`/`capacity.source_priority` nunca se inventan sin declaración explícita del DBA (Fase 10).** Sin `thresholds` definidos, `capacity/threshold-crossing` publica `INSUFFICIENT_POLICY` por recurso, nunca `80/90/95` como default universal (esos números sólo aparecen como ejemplo en `docs/CAPACITY_THRESHOLD_MODEL.md`). Sin `target_headroom_percent`, `capacity/manual-capacity-plan` marca el dimensionamiento recomendado como `REQUIRES_REVIEW`. Sin `source_priority` para un recurso con múltiples fuentes, `capacity/data-source-inventory` nunca promedia automáticamente — publica `SOURCE_CONFLICT` cuando los valores difieren fuera de tolerancia. `capacity.horizons` es fijo (`[1, 3, 6]` meses) salvo ampliación futura vía `/change`.
 
 ## Versionado del schema
 
@@ -185,4 +214,4 @@ target_profile:
 
 ## Consumidores
 
-`oracle-dba-analyst` (Oracle Core), `oracle-performance-analyst` (Fase 3), `oracle-rac-analyst`/`oracle-asm-storage-analyst`/`oracle-network-analyst` (Fase 4 — consumen los bloques `rac`/`gi`/`asm`/`network` respectivamente, nunca vuelven a determinar `cluster_mode`/`storage_mode`/SCAN por su cuenta), `oracle-dataguard-analyst` (Fase 5 — consume el bloque `dataguard`, nunca vuelve a determinar `database_role`/`protection_mode` por su cuenta), `oracle-multitenant-analyst` (Fase 6 — consume el bloque `multitenant`, nunca vuelve a determinar `multitenant_mode`/`pdb_count` por su cuenta), `oracle-backup-recovery-analyst` (Fase 7 — consume el bloque `backup_recovery`, nunca vuelve a determinar `repository`/`default_device_type` por su cuenta; consume también `dataguard`/`multitenant` para `rman/dataguard-awareness`/`rman/multitenant-awareness`, nunca re-implementa esos dominios); `oracle-security-analyst` (Fase 8 — consume el bloque `security`, nunca inventa `password_policy`/`account_inactivity_policy_days`/`licensing_profile` por su cuenta; consume también `multitenant`/`dataguard`/`backup_recovery` para `security/common-local-users`/integración con Data Guard y Backup/Recovery, nunca re-implementa esos dominios); `os-platform-analyst` (Fase 9 — consume el bloque `os_platform`, nunca vuelve a determinar `family`/`distribution`/`version` por adivinanza; consume también `rac`/`dataguard`/`backup_recovery`/`security` para `os/rac-interconnect-awareness`/`os/dataguard-network-awareness`/`os/rman-media-manager-awareness`/`os/security-filesystem-awareness`, nunca re-implementa esos dominios).
+`oracle-dba-analyst` (Oracle Core), `oracle-performance-analyst` (Fase 3), `oracle-rac-analyst`/`oracle-asm-storage-analyst`/`oracle-network-analyst` (Fase 4 — consumen los bloques `rac`/`gi`/`asm`/`network` respectivamente, nunca vuelven a determinar `cluster_mode`/`storage_mode`/SCAN por su cuenta), `oracle-dataguard-analyst` (Fase 5 — consume el bloque `dataguard`, nunca vuelve a determinar `database_role`/`protection_mode` por su cuenta), `oracle-multitenant-analyst` (Fase 6 — consume el bloque `multitenant`, nunca vuelve a determinar `multitenant_mode`/`pdb_count` por su cuenta), `oracle-backup-recovery-analyst` (Fase 7 — consume el bloque `backup_recovery`, nunca vuelve a determinar `repository`/`default_device_type` por su cuenta; consume también `dataguard`/`multitenant` para `rman/dataguard-awareness`/`rman/multitenant-awareness`, nunca re-implementa esos dominios); `oracle-security-analyst` (Fase 8 — consume el bloque `security`, nunca inventa `password_policy`/`account_inactivity_policy_days`/`licensing_profile` por su cuenta; consume también `multitenant`/`dataguard`/`backup_recovery` para `security/common-local-users`/integración con Data Guard y Backup/Recovery, nunca re-implementa esos dominios); `os-platform-analyst` (Fase 9 — consume el bloque `os_platform`, nunca vuelve a determinar `family`/`distribution`/`version` por adivinanza; consume también `rac`/`dataguard`/`backup_recovery`/`security` para `os/rac-interconnect-awareness`/`os/dataguard-network-awareness`/`os/rman-media-manager-awareness`/`os/security-filesystem-awareness`, nunca re-implementa esos dominios); `capacity-analyst` (Fase 10 — consume el bloque `capacity` para umbrales/horizontes/prioridad de fuentes, nunca inventa thresholds sin declaración; consume también `os_platform`/`rac`/`asm`/`multitenant`/`backup_recovery` para reutilizar evidencia de CPU/memoria/storage/ASM/tablespaces/FRA por referencia, nunca duplica collectors de Fase 2/4/7/9).

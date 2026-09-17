@@ -1,12 +1,15 @@
 ---
 name: capacity
-version: 1.0.0
+version: 2.0.0
 status: active
 ---
 
 # Trigger/intent
 
-Comando `/capacity`. Forecast de headroom/riesgo para uno o varios recursos a horizonte de 1/3/6 meses.
+Comando `/capacity`. Forecast de headroom/riesgo para uno o varios recursos a horizonte de 1/3/6
+meses — versión acotada/rápida del flujo completo de `capacity-analyst` (Fase 10), para cuando el
+DBA ya sabe qué recurso puntual quiere proyectar y no necesita el reporte transversal completo de
+`/healthcheck capacity`/`/assessment capacity` (ver `docs/PHASE_10_CAPACITY_MANAGEMENT_FORECASTING.md`).
 
 # Prerequisites
 
@@ -30,7 +33,16 @@ Target identificado; `constraints.horizon_months` explícito (default 3 si no se
 
 # Skills
 
-`capacity/trending`, `capacity/forecast`, `capacity/headroom`, `capacity/risk`, más el/los skill(s) de dominio (`oracle/tablespaces`, `asm/capacity`, `os/*/memory`, etc.) si se activan sus agentes.
+`capacity/data-source-inventory`, `capacity/data-quality`, `capacity/normalization`,
+`capacity/trend-analysis`, `capacity/growth-rate`, `capacity/forecasting`,
+`capacity/threshold-crossing`, `capacity/confidence`, `capacity/risk-classification`, más el skill
+de recurso correspondiente (`capacity/cpu`/`capacity/memory`/`capacity/storage`/`capacity/oracle`/
+`capacity/asm`/`capacity/tablespace`/`capacity/os`/`capacity/linux`/`capacity/windows`/
+`capacity/vmware`/`capacity/sqlserver`) — reemplaza el modelo Foundation (`capacity/trending`,
+`capacity/forecast`, `capacity/headroom`, `capacity/risk`, ninguno materializado salvo
+`capacity/forecast`, absorbido en `capacity/forecasting` v2.0.0). Los skills de recurso consumen
+`oracle/tablespaces`/`asm/capacity`/`os/*` por referencia (`evidence_refs`), nunca los
+re-recolectan.
 
 # Evidence required
 
@@ -42,7 +54,10 @@ Histórico insuficiente para el horizonte solicitado — se declara y se ofrece 
 
 # Confidence threshold
 
-El forecast nunca excede `PROBABLE_CAUSE`/`HYPOTHESIS` como estado de confianza (ver `skills/capacity/forecast.md#confidence-model`).
+El forecast declara siempre `confidence: HIGH|MEDIUM|LOW|INSUFFICIENT` con razón explícita (nunca
+un número aislado) — ver `skills/capacity/confidence/SKILL.md`. `RISK: HIGH` + `CONFIDENCE: LOW`
+es un resultado válido y esperado; nunca se produce un forecast desde historia insuficiente sin
+declarar `confidence: INSUFFICIENT` explícitamente.
 
 # Escalation
 
@@ -64,7 +79,7 @@ READ-ONLY ALWAYS.
 
 ```yaml
 gates:
-  version:      config/capability-matrix.yaml → Capacity es PARTIAL en todas las versiones soportadas; no depende de version para su propia lógica, sí la hereda del recurso subyacente evaluado
+  version:      config/capability-matrix.yaml → Capacity es SUPPORTED 10g-23ai (Fase 10); no depende de version para su propia lógica, sí la hereda del recurso subyacente evaluado
   architecture: el especialista de dominio subyacente (oracle-dba-analyst/oracle-asm-storage-analyst/os-platform-analyst) sólo se activa si la arquitectura del recurso solicitado aplica (ej. asm sólo si storage_mode=asm)
   environment:  target debe estar en config/allowed-targets.local.yaml
   license:      no aplica directamente — capacity-analyst no depende de features licenciadas

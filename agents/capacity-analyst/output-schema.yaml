@@ -1,0 +1,130 @@
+capacity_result:
+  summary: string
+
+  scope:
+    technologies: [string]           # Oracle|Linux|Windows|SQL Server|VMware según lo activado
+    resources: [string]              # CPU|Memory|Storage|ASM|Tablespace|FRA...
+
+  source_inventory:
+    - source_id: string
+      type: string                   # Site24x7|Prophecy|ReportingServices|LocalPolling|OracleEvidence|OSEvidence|VMwareTelemetry|SQLServerTelemetry
+      status: CONNECTED|AVAILABLE_OFFLINE|MANUAL_IMPORT|NOT_CONFIGURED|NOT_CERTIFIED
+      read_only: true
+
+  data_quality:
+    - metric: string
+      status: GOOD|ACCEPTABLE|DEGRADED|INSUFFICIENT|INVALID
+      coverage: number|null
+      freshness_hours: number|null
+      consistency: number|null
+      missingness_pct: number|null
+      outlier_ratio: number|null
+      source_reliability: string|null
+
+  capacity_metrics:
+    - target_id: string
+      technology: string
+      resource_type: string
+      metric_name: string
+      total_capacity: number|null
+      used_capacity: number|null
+      available_capacity: number|null
+      utilization_percent: number|null
+      unit: string
+      source_id: string
+      evidence_id: string
+      quality: GOOD|ACCEPTABLE|DEGRADED|INSUFFICIENT|INVALID
+
+  trends:
+    - resource: string
+      classification: INCREASING|DECREASING|STABLE|VOLATILE|UNKNOWN
+      slope: number|null
+      normalized_growth_rate: number|null
+      confidence: HIGH|MEDIUM|LOW|INSUFFICIENT
+      seasonality: NOT_DETECTED|POSSIBLE|DETECTED|INSUFFICIENT_HISTORY
+
+  forecasts:
+    - metric: string
+      method: string
+      forecast_contract_version: string
+      history_start: string|null
+      history_end: string|null
+      samples: int|null
+      horizon_1m: {expected: number|null, lower: number|null, upper: number|null}
+      horizon_3m: {expected: number|null, lower: number|null, upper: number|null}
+      horizon_6m: {expected: number|null, lower: number|null, upper: number|null}
+      fit_quality: number|null
+      confidence: HIGH|MEDIUM|LOW|INSUFFICIENT
+      limitations: [string]
+      algorithm_version: string
+      input_evidence_ids: [string]
+      excluded_samples: [string]
+      generated_at: string
+
+  threshold_crossings:
+    - resource: string
+      threshold_percent: number
+      status: DATE_ESTIMATED|NOT_EXPECTED_WITHIN_HORIZON|ALREADY_EXCEEDED|INSUFFICIENT_EVIDENCE|NON_MONOTONIC
+      estimated_date: string|null
+      confidence: HIGH|MEDIUM|LOW|INSUFFICIENT
+
+  capacity_events:
+    - timestamp: string
+      resource: string
+      event_type: string
+      old_total: number|null
+      new_total: number|null
+      source: string
+      evidence_id: string
+
+  source_conflicts:
+    - metric: string
+      source_a: string
+      value_a: number|null
+      source_b: string
+      value_b: number|null
+      tolerance_percent: number|null
+      status: SOURCE_CONFLICT|RECONCILED
+
+  horizontal_vertical_analysis:
+    - resource: string
+      recommendation: HORIZONTAL|VERTICAL|EITHER|INSUFFICIENT_EVIDENCE
+      rationale: string
+      considered_factors: [string]
+
+  risk:
+    - resource: string
+      risk: HEALTHY|WATCH|WARNING|HIGH|CRITICAL|UNKNOWN
+      confidence: HIGH|MEDIUM|LOW|INSUFFICIENT
+      basis: [string]
+
+  findings:
+    - area: string
+      technology: string
+      observation: string
+      severity: INFO|LOW|MEDIUM|HIGH|CRITICAL
+      confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE   # nunca CONFIRMED_ROOT_CAUSE para un forecast
+      evidence_refs: [string]
+
+  hypotheses: [string]
+  evidence_refs: [string]
+
+  recommendations:
+    - manual_action:
+        action_id: string
+        target: string
+        resource: string
+        reason: string
+        forecast_horizon: 1|3|6|null
+        trigger: string
+        recommended_capacity: string|null
+        owner_role: string
+        prechecks: [string]
+        risk: string
+        rollback_or_contingency: string
+        execution_status: NOT_EXECUTED
+
+  limitations: [string]
+  confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|UNDETERMINED
+  next_skill_or_agent: string|null
+  capability_status: SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED|LICENSE_RESTRICTED|INSUFFICIENT_PRIVILEGES|INSUFFICIENT_EVIDENCE|POLICY_BLOCKED|ENVIRONMENT_UNKNOWN|COMPATIBILITY_VALIDATION_REQUIRED|null

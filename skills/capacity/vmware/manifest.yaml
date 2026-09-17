@@ -1,0 +1,17 @@
+name: vmware
+display_name: "VMware Capacity"
+id: capacity/vmware
+version: 1.0.0
+domain: capacity
+status: active
+supported_oracle_versions: []
+supported_os: []
+supported_architectures: []
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence: []
+optional_evidence: []
+data_sensitivity: LOW
+context_budget: LOW
+related_skills: [capacity/cpu, capacity/memory, capacity/storage, capacity/horizontal, capacity/vertical]
