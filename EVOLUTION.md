@@ -113,3 +113,12 @@ Ningún tipo de reporte nuevo (ni una sección nueva sobre un parser existente) 
 6. **Skill**: el `manifest.yaml`/`SKILL.md` del skill correspondiente declara el parser en `optional_evidence` (`report_parser: parsers/performance/<tipo>_parser.py`) y, si el skill ya tenía un capability map por sección (ver `skills/performance/statspack-analysis/SKILL.md#statspack-capability-map`), se actualiza — nunca se finge cubierta una sección que el parser concreto no extrae.
 7. **Capability matrix**: `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` reflejan la cobertura real, por sección si corresponde — nunca `SUPPORTED` global cuando sólo algunas secciones lo están.
 8. **Docs**: `docs/PHASE_3_COMPLETION_HARDENING.md#report-ingest-architecture` (o el documento de hardening vigente que lo suceda) referencia el tipo/sección nueva.
+
+## 16. Fase 12 — dos planos de cambio y estados de revisión humana
+
+Distinción explícita (ver `workflows/change.md`, skill `change/stack-evolution-handoff`):
+
+- **Plano A (`OPERATIONAL_MANUAL`)**: asesoría de cambio operativo; sólo propuesta/documentación para ejecución humana externa.
+- **Plano B (`ESTACK_DEVELOPMENT`)**: evolución del código del repositorio de **desarrollo**; el agente puede editar archivos locales de la rama de trabajo, pero no autoaprueba, promueve, mergea, taggea, hace push ni publica.
+
+El motor informa estados `IN_PROGRESS`, `RETURNED_TO_PROPOSAL`, `PENDING_HUMAN_REVIEW` y `BLOCKED`; `PROMOTE` es siempre una acción humana explícita (`promote_status: HUMAN_ACTION_REQUIRED`). No hay autovalidación circular: quien propone un CHG o un artículo de conocimiento no puede figurar como su revisor humano. `/change compatibility` trata un check `UNKNOWN` como no soportado. Un candidato de conocimiento no es conocimiento: aprobar/publicar exige un registro de autorización humano externo que coincida con el digest y la versión vigentes.

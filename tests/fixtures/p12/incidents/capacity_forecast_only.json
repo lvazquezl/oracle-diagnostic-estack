@@ -1,0 +1,21 @@
+{
+  "incident": {
+    "id": "INC-20260320-006",
+    "target_id": "T-SYNTHETIC-DB",
+    "symptom_description": "synthetic forecast: tablespace projected to fill",
+    "declared_evidence_refs": [
+      "EVD-1"
+    ]
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1",
+      "domain": "capacity",
+      "source_id": "capacity-forecast",
+      "timestamp": "2026-03-20T10:00:00+00:00",
+      "event_type": "CAPACITY_EVENT",
+      "summary": "projected to reach the limit in the future",
+      "attributes": {}
+    }
+  ]
+}

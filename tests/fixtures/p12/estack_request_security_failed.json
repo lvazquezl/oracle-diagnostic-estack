@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "change_request_id": "CHG-ESTACK-001",
+  "title": "Extend the knowledge skill with a new retrieval filter",
+  "gap_description": "Retrieval lacks a filter for architecture flags",
+  "artifact_types": [
+    "skill",
+    "schema"
+  ],
+  "proposer_id": "REV-PROPOSER01",
+  "stages": {
+    "DETECT_GAP": {
+      "status": "PASS",
+      "evidence_note": "synthetic test evidence"
+    },
+    "CHANGE_REQUEST": {
+      "status": "PASS",
+      "evidence_note": "synthetic test evidence"
+    },
+    "GAP_ANALYSIS": {
+      "status": "PASS",
+      "evidence_note": "synthetic test evidence"
+    },
+    "IMPACT_ANALYSIS": {
+      "status": "PASS",
+      "evidence_note": "synthetic test evidence"
+    },
+    "PROPOSAL": {
+      "status": "PASS",
+      "evidence_note": "synthetic test evidence"
+    },
+    "IMPLEMENT": {
+      "status": "PASS",
+      "evidence_note": "synthetic test evidence"
+    },
+    "TEST": {
+      "status": "PASS",
+      "evidence_note": "synthetic test evidence"
+    },
+    "SECURITY_VALIDATION": {
+      "status": "FAIL",
+      "evidence_note": "synthetic finding"
+    }
+  },
+  "compatibility": {
+    "version_coverage": "PASS",
+    "query_contract": "UNKNOWN",
+    "dictionary_columns": "PASS",
+    "architecture": "PASS",
+    "cost_and_license": "PASS",
+    "test_coverage": "PASS"
+  }
+}

@@ -1,0 +1,265 @@
+{
+  "rules_version": "p12-synthetic-1.0.0",
+  "rules": [
+    {
+      "rule_id": "RULE-P12-DG-TRANSPORT-001",
+      "domain": "dataguard",
+      "statement": "Redo transport degradation to the standby caused a growing apply/transport lag",
+      "causal_chain": [
+        "redo transport to the standby slows or fails",
+        "standby falls behind the primary",
+        "lag exceeds the accepted threshold"
+      ],
+      "symptom_match": {
+        "signature_any": [
+          "ORA-16810"
+        ]
+      },
+      "supporting_conditions": [
+        {
+          "domain": "dataguard",
+          "attribute": "transport_lag_seconds",
+          "op": ">=",
+          "value": 900,
+          "description": "transport lag above the accepted threshold"
+        },
+        {
+          "domain": "network",
+          "attribute": "redo_transport_errors_observed",
+          "op": "==",
+          "value": true,
+          "description": "redo transport errors observed on the network path"
+        }
+      ],
+      "contradicting_conditions": [
+        {
+          "domain": "dataguard",
+          "attribute": "transport_lag_seconds",
+          "op": "<",
+          "value": 30,
+          "critical": true,
+          "description": "lag well below the threshold contradicts degradation"
+        }
+      ],
+      "temporal_proof_condition": null,
+      "min_independent_sources": 2,
+      "manual_actions": [
+        {
+          "action_summary": "Review the redo transport configuration with the network team and adjust it after approval",
+          "precheck": "Confirm current transport status and lag on each affected standby",
+          "risk": "A transport change can interrupt redo shipping for the affected standby",
+          "postcheck": "Confirm transport is healthy and lag returns below the accepted threshold",
+          "requires_change": true
+        }
+      ]
+    },
+    {
+      "rule_id": "RULE-P12-ASM-DISKGROUP-001",
+      "domain": "asm",
+      "statement": "Disk group free space exhaustion prevented file allocation",
+      "causal_chain": [
+        "disk group free space reaches the floor",
+        "allocation requests fail",
+        "dependent databases report space errors"
+      ],
+      "symptom_match": {
+        "signature_any": [
+          "ORA-15041"
+        ]
+      },
+      "supporting_conditions": [
+        {
+          "domain": "asm",
+          "attribute": "diskgroup_free_percent",
+          "op": "<=",
+          "value": 5,
+          "description": "disk group free space at or below the floor"
+        },
+        {
+          "domain": "os",
+          "attribute": "asm_path_errors_observed",
+          "op": "==",
+          "value": true,
+          "description": "path errors observed for the disk group members"
+        }
+      ],
+      "contradicting_conditions": [
+        {
+          "domain": "asm",
+          "attribute": "diskgroup_free_percent",
+          "op": ">",
+          "value": 30,
+          "critical": true,
+          "description": "ample free space contradicts exhaustion"
+        }
+      ],
+      "temporal_proof_condition": null,
+      "min_independent_sources": 2,
+      "manual_actions": [
+        {
+          "action_summary": "Add capacity to the affected disk group after storage team review",
+          "precheck": "Confirm free space, redundancy and rebalance state for the disk group",
+          "risk": "Capacity operations trigger rebalance activity that affects I/O",
+          "postcheck": "Confirm free space and that rebalance completed without errors",
+          "requires_change": true
+        }
+      ]
+    },
+    {
+      "rule_id": "RULE-P12-PDB-VIOLATION-001",
+      "domain": "multitenant",
+      "statement": "Open plug-in violations left the PDB in restricted mode",
+      "causal_chain": [
+        "plug-in violations remain unresolved",
+        "PDB opens in restricted mode",
+        "application sessions are refused"
+      ],
+      "symptom_match": {
+        "signature_any": [
+          "ORA-65040"
+        ]
+      },
+      "supporting_conditions": [
+        {
+          "domain": "multitenant",
+          "attribute": "pdb_open_mode_restricted",
+          "op": "==",
+          "value": true,
+          "description": "PDB opened in restricted mode"
+        },
+        {
+          "domain": "multitenant",
+          "attribute": "plugin_violations_open",
+          "op": "==",
+          "value": true,
+          "description": "open plug-in violations recorded"
+        }
+      ],
+      "contradicting_conditions": [
+        {
+          "domain": "multitenant",
+          "attribute": "pdb_open_mode_restricted",
+          "op": "==",
+          "value": false,
+          "critical": true,
+          "description": "PDB not restricted contradicts the cause"
+        }
+      ],
+      "temporal_proof_condition": null,
+      "min_independent_sources": 2,
+      "manual_actions": [
+        {
+          "action_summary": "Resolve the open plug-in violations for the affected PDB after review",
+          "precheck": "List the recorded violations and their impact for the PDB",
+          "risk": "Resolving a violation can change PDB configuration and require a reopen",
+          "postcheck": "Confirm the PDB opens read write without restricted mode",
+          "requires_change": true
+        }
+      ]
+    },
+    {
+      "rule_id": "RULE-P12-RMAN-FRA-001",
+      "domain": "rman",
+      "statement": "Fast recovery area exhaustion blocked archived log deletion and backups",
+      "causal_chain": [
+        "FRA usage reaches the limit",
+        "archived logs cannot be deleted",
+        "backups fail with space errors"
+      ],
+      "symptom_match": {
+        "signature_any": [
+          "RMAN-03009"
+        ]
+      },
+      "supporting_conditions": [
+        {
+          "domain": "rman",
+          "attribute": "fra_used_percent",
+          "op": ">=",
+          "value": 98,
+          "description": "FRA usage at or above the limit"
+        },
+        {
+          "domain": "rman",
+          "attribute": "archivelog_deletion_blocked",
+          "op": "==",
+          "value": true,
+          "description": "archived log deletion blocked by retention"
+        }
+      ],
+      "contradicting_conditions": [
+        {
+          "domain": "rman",
+          "attribute": "fra_used_percent",
+          "op": "<",
+          "value": 50,
+          "critical": true,
+          "description": "low FRA usage contradicts exhaustion"
+        }
+      ],
+      "temporal_proof_condition": null,
+      "min_independent_sources": 2,
+      "manual_actions": [
+        {
+          "action_summary": "Review the FRA size and retention policy with the backup owner and adjust it after approval",
+          "precheck": "Confirm FRA usage, retention policy and backup status",
+          "risk": "Retention changes affect recoverability and must be reviewed",
+          "postcheck": "Confirm FRA usage decreases and the next backup completes",
+          "requires_change": true
+        }
+      ]
+    },
+    {
+      "rule_id": "RULE-P12-SEC-LOCK-001",
+      "domain": "security",
+      "statement": "A locked service account caused authentication failures",
+      "causal_chain": [
+        "failed login attempts lock the service account",
+        "the application cannot authenticate",
+        "service disruption"
+      ],
+      "symptom_match": {
+        "signature_any": [
+          "ORA-28000"
+        ]
+      },
+      "supporting_conditions": [
+        {
+          "domain": "security",
+          "attribute": "service_account_locked",
+          "op": "==",
+          "value": true,
+          "description": "service account recorded as locked"
+        },
+        {
+          "domain": "security",
+          "attribute": "failed_login_burst_observed",
+          "op": "==",
+          "value": true,
+          "description": "burst of failed logins observed"
+        }
+      ],
+      "contradicting_conditions": [
+        {
+          "domain": "security",
+          "attribute": "service_account_locked",
+          "op": "==",
+          "value": false,
+          "critical": true,
+          "description": "account not locked contradicts the cause"
+        }
+      ],
+      "temporal_proof_condition": null,
+      "min_independent_sources": 2,
+      "manual_actions": [
+        {
+          "action_summary": "Unlock the affected service account after confirming the origin of the failed logins with the security team",
+          "precheck": "Confirm account status and the source of the failed login attempts",
+          "risk": "Unlocking without finding the source can repeat the lock or hide an attack",
+          "postcheck": "Confirm the application authenticates and no new lock occurs",
+          "requires_change": true
+        }
+      ]
+    }
+  ]
+}

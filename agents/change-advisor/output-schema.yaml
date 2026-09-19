@@ -1,0 +1,38 @@
+# Output schema — change-advisor v2.0.0 (PHASE 12)
+# Refleja fielmente los artefactos que produce change_documentation_knowledge (ver docs/PHASE_12_*.md).
+change_advisor_output:
+  change_advisory:
+    schema_version: string          # 1.0.0
+    advisory_id: string             # ADV-<incident_id>
+    artifact_type: change_advisory
+    generated_at_utc: string
+    generator_version: string
+    sanitization_status: SANITIZED
+    review_status: REVIEW_REQUIRED
+    source_refs: {incident_id: string, rca_id: string, recommendation_ids: [string], hypothesis_ids: [string], evidence_ids: [string], finding_ids: [string]}
+    rca_state: {completeness: CONFIRMED|PROBABLE|INCONCLUSIVE|INSUFFICIENT_EVIDENCE, authority: "rca_engine (Phase 11)"}
+    readiness: BLOCKED|INSUFFICIENT_EVIDENCE|REVIEW_REQUIRED|READY_FOR_HUMAN_REVIEW
+    warnings: [string]
+    limitations: [string]
+    execution_status: NOT_EXECUTED_BY_ESTACK   # inmutable
+    content_digest: string          # sha256 del contenido saneado
+    changes:
+      - change_id: string           # CHG-<incident_id>-NNN
+        change_type: OPERATIONAL_MANUAL|ESTACK_DEVELOPMENT
+        status: DRAFT|REVIEW_REQUIRED|APPROVED_BY_HUMAN|REJECTED|SUPERSEDED   # APPROVED_BY_HUMAN sólo por registro externo verificable
+        source_refs: {incident_id: string, rca_id: string, hypothesis_ids: [string], finding_ids: [string]}
+        evidence_refs: [string]
+        recommendation_refs: [string]
+        objective: string
+        proposed_manual_steps: [{step_id: string, order: int, phase: PRECHECK|MANUAL_ACTION|POSTCHECK, text: string, executor: TO_BE_DEFINED, execution_status: NOT_EXECUTED_BY_ESTACK}]
+        risk_factors: [{dimension: string, level: LOW|MEDIUM|HIGH|UNKNOWN, criterion: string, basis: string}]   # sin score numérico
+        rollback_plan: {status: DEFINED_GENERIC|MISSING, steps: [string]}
+        validation_plan: {status: DEFINED|MISSING, checks: [string]}
+        capability_gate: {status: PASS|FAIL|UNKNOWN|NOT_APPLICABLE|NOT_VERIFIED, basis: string}
+        license_gate: {status: PASS|FAIL|UNKNOWN|NOT_APPLICABLE|NOT_VERIFIED, basis: string}
+        privilege_gate: {status: PASS|FAIL|UNKNOWN|NOT_APPLICABLE|NOT_VERIFIED, basis: string}
+        change_window_gate: {status: PASS|FAIL|UNKNOWN|NOT_APPLICABLE|NOT_VERIFIED, basis: string}
+        oracle_version: string      # UNKNOWN si no se declara; nunca por defecto
+        execution_status: NOT_EXECUTED_BY_ESTACK
+        external_execution_report: null|{status: HUMAN_REPORTED_UNVERIFIED}
+    non_change_notes: [{rec_id: string, kind: string, text: string}]

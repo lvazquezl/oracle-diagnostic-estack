@@ -1,0 +1,8 @@
+id: change-advisor
+version: 2.0.0
+collaboration_graph: "incident-root-cause-analyst -> change-advisor -> technical-documentation-manager -> knowledge-curator -> estack-evolution-architect (acíclico; ningún agente vuelve hacia atrás)"
+upstream: incident-root-cause-analyst
+downstream: technical-documentation-manager
+context_sharing: "Task Package / Result Package por referencia (ids EVD/FND/HYP/RCA/REC/CHG/DOC/KB); nunca se duplica la conversación ni la evidencia."
+loop_prevention_rule: "change-advisor nunca devuelve una solicitud a incident-root-cause-analyst para 'reconfirmar' una causa: el estado RCA es autoritativo y se consume tal cual."
+human_gate: "Toda aprobación, publicación, promoción, merge y tag son acciones humanas externas al agente."

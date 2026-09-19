@@ -12,7 +12,7 @@ Este registro identifica cada skill **exclusivamente** por su `skill_id` complet
 - `active` — materializado por completo (19 secciones del Skill Contract), archivo real en el dominio.
 - `registered` — nombre, dominio y propósito fijados en este registro; su materialización completa es Fase 2+ según `README.md#fases-de-construcción`. No es un placeholder vacío: es la entrada de catálogo que gobierna qué se puede construir y en qué orden vía `/change skill`.
 
-Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total); **Fase 5 (Data Guard) materializa las 21 skills del dominio `dataguard` completo** (141 activos en total); **Fase 6 (Multitenant/CDB/PDB) materializa las 26 skills del dominio `multitenant` completo** (166 activos en total); **Fase 7 (Backup & Recovery/RMAN) materializa las 30 skills del dominio `rman` completo** (196 activos en total); **Fase 8 (Security & Compliance) materializa las 39 skills del dominio `security` completo, genuinamente nuevo** (235 activos en total); **PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING agrega `network/oracle-net-security`** (236 activos en total); **Fase 9 (OS Platform Diagnostics & Hardening) materializa las 45 skills del dominio `os` completo** (reemplaza el modelo `os/<plataforma>/<skill>` de Foundation — 1 activo previo, `os/linux/memory`, absorbido en `os/memory` — 280 activos en total); **Fase 10 (Capacity Management & Forecasting) materializa las 28 skills del dominio `capacity` completo** (reemplaza el modelo de 16 skill_ids de Foundation — 1 activo previo, `capacity/forecast`, absorbido en `capacity/forecasting` — **301 activos en total**, conteo verificado directamente sobre el árbol de trabajo; corrige el arrastre de "280" de la nota de Fase 9, que un recuento exacto contra el tag `v0.9.0-os-platform` muestra en 274 — 274 + 28 − 1 = 301, consistente); **PHASE 11 — INCIDENT ANALYSIS & ROOT CAUSE AUTOMATION materializa las 34 skills del dominio `incident` completo** (reemplaza el modelo de 8 skill_ids de Foundation — 1 activo previo, `incident/root-cause-analysis`, fusionado como base de `incident/root-cause` v2.0.0 — **334 activos en total**, 301 + 34 − 1 = 334, consistente). El resto (`documentation`, AIX/HP-UX de `os`) queda `registered` para materialización gobernada en una fase futura.
+Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total); **Fase 5 (Data Guard) materializa las 21 skills del dominio `dataguard` completo** (141 activos en total); **Fase 6 (Multitenant/CDB/PDB) materializa las 26 skills del dominio `multitenant` completo** (166 activos en total); **Fase 7 (Backup & Recovery/RMAN) materializa las 30 skills del dominio `rman` completo** (196 activos en total); **Fase 8 (Security & Compliance) materializa las 39 skills del dominio `security` completo, genuinamente nuevo** (235 activos en total); **PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING agrega `network/oracle-net-security`** (236 activos en total); **Fase 9 (OS Platform Diagnostics & Hardening) materializa las 45 skills del dominio `os` completo** (reemplaza el modelo `os/<plataforma>/<skill>` de Foundation — 1 activo previo, `os/linux/memory`, absorbido en `os/memory` — 280 activos en total); **Fase 10 (Capacity Management & Forecasting) materializa las 28 skills del dominio `capacity` completo** (reemplaza el modelo de 16 skill_ids de Foundation — 1 activo previo, `capacity/forecast`, absorbido en `capacity/forecasting` — **301 activos en total**, conteo verificado directamente sobre el árbol de trabajo; corrige el arrastre de "280" de la nota de Fase 9, que un recuento exacto contra el tag `v0.9.0-os-platform` muestra en 274 — 274 + 28 − 1 = 301, consistente); **PHASE 11 — INCIDENT ANALYSIS & ROOT CAUSE AUTOMATION materializa las 34 skills del dominio `incident` completo** (reemplaza el modelo de 8 skill_ids de Foundation — 1 activo previo, `incident/root-cause-analysis`, fusionado como base de `incident/root-cause` v2.0.0 — **334 activos en total**, 301 + 34 − 1 = 334, consistente); **PHASE 12 — CHANGE ADVISORY, DOCUMENTATION & KNOWLEDGE LIFECYCLE materializa 18 skills: 6 de `change` (`operational-advisory`, `impact-and-risk`, `compatibility-and-license-gates`, `manual-execution-plan`, `rollback-and-validation`, `stack-evolution-handoff`), 5 de `documentation` (`incident-rca-report`, `assessment-report`, `change-advisory-report`, `executive-summary`, `evidence-traceability`; `assessment-report` y `executive-summary` ya estaban `registered` y pasan a `active`) y el dominio nuevo `knowledge` completo (7) — **352 activos en total**, 334 + 18 = 352, verificado contra el árbol de trabajo**. El resto (`documentation` restante, AIX/HP-UX de `os`) queda `registered` para materialización gobernada en una fase futura.
 
 ## core (20)
 
@@ -491,16 +491,16 @@ Foundation.
 | `incident/incident-report` | **active** ([incident/incident-report/SKILL.md](incident/incident-report/SKILL.md)) |
 | `incident/rca-report` | **active** ([incident/rca-report/SKILL.md](incident/rca-report/SKILL.md)) |
 
-## documentation (24)
+## documentation (27 — 24 de Foundation + 3 nuevos de Fase 12)
 
 | skill_id | status |
 |---|---|
 | `documentation/analysis-record` | registered |
-| `documentation/assessment-report` | registered |
+| `documentation/assessment-report` | **active** ([documentation/assessment-report/SKILL.md](documentation/assessment-report/SKILL.md)) — Fase 12 |
 | `documentation/healthcheck-report` | **active** ([documentation/healthcheck-report.md](documentation/healthcheck-report.md)) |
 | `documentation/incident-report` | registered |
 | `documentation/rca-report` | registered |
-| `documentation/executive-summary` | registered |
+| `documentation/executive-summary` | **active** ([documentation/executive-summary/SKILL.md](documentation/executive-summary/SKILL.md)) — Fase 12 |
 | `documentation/technical-findings` | registered |
 | `documentation/evidence-register` | registered |
 | `documentation/recommendation-report` | registered |
@@ -521,8 +521,11 @@ Foundation.
 | `documentation/presentation-generator` | registered |
 | `documentation/template-manager` | registered |
 | `documentation/document-validator` | registered |
+| `documentation/incident-rca-report` | **active** ([documentation/incident-rca-report/SKILL.md](documentation/incident-rca-report/SKILL.md)) — Fase 12 (materializa el reporte técnico; `documentation/rca-report` / `documentation/incident-report` siguen `registered`, sin duplicar el skill de generación `incident/rca-report`) |
+| `documentation/change-advisory-report` | **active** ([documentation/change-advisory-report/SKILL.md](documentation/change-advisory-report/SKILL.md)) — Fase 12 |
+| `documentation/evidence-traceability` | **active** ([documentation/evidence-traceability/SKILL.md](documentation/evidence-traceability/SKILL.md)) — Fase 12 |
 
-## change (12)
+## change (18 — 12 de Foundation + 6 nuevos de Fase 12)
 
 | skill_id | status |
 |---|---|
@@ -538,6 +541,26 @@ Foundation.
 | `change/documentation-evolution` | registered |
 | `change/security-evolution` | registered |
 | `change/regression-validation` | registered |
+| `change/operational-advisory` | **active** ([change/operational-advisory/SKILL.md](change/operational-advisory/SKILL.md)) — Fase 12 |
+| `change/impact-and-risk` | **active** ([change/impact-and-risk/SKILL.md](change/impact-and-risk/SKILL.md)) — Fase 12 |
+| `change/compatibility-and-license-gates` | **active** ([change/compatibility-and-license-gates/SKILL.md](change/compatibility-and-license-gates/SKILL.md)) — Fase 12 |
+| `change/manual-execution-plan` | **active** ([change/manual-execution-plan/SKILL.md](change/manual-execution-plan/SKILL.md)) — Fase 12 |
+| `change/rollback-and-validation` | **active** ([change/rollback-and-validation/SKILL.md](change/rollback-and-validation/SKILL.md)) — Fase 12 |
+| `change/stack-evolution-handoff` | **active** ([change/stack-evolution-handoff/SKILL.md](change/stack-evolution-handoff/SKILL.md)) — Fase 12 |
+
+## knowledge (7 — Fase 12, todos `active`)
+
+Dominio nuevo de Fase 12: ciclo de vida del conocimiento (candidato -> revisión humana -> publicación -> deprecación/retiro) y su recuperación. Un candidato NO es conocimiento publicado; aprobar/publicar exige un registro de autorización humana externo. Un solo agente, `knowledge-curator` (v2.0.0).
+
+| skill_id | status |
+|---|---|
+| `knowledge/candidate-extraction` | **active** ([knowledge/candidate-extraction/SKILL.md](knowledge/candidate-extraction/SKILL.md)) |
+| `knowledge/quality-gate` | **active** ([knowledge/quality-gate/SKILL.md](knowledge/quality-gate/SKILL.md)) |
+| `knowledge/duplicate-and-conflict-review` | **active** ([knowledge/duplicate-and-conflict-review/SKILL.md](knowledge/duplicate-and-conflict-review/SKILL.md)) |
+| `knowledge/version-and-provenance` | **active** ([knowledge/version-and-provenance/SKILL.md](knowledge/version-and-provenance/SKILL.md)) |
+| `knowledge/review-and-approval` | **active** ([knowledge/review-and-approval/SKILL.md](knowledge/review-and-approval/SKILL.md)) |
+| `knowledge/deprecation-and-retirement` | **active** ([knowledge/deprecation-and-retirement/SKILL.md](knowledge/deprecation-and-retirement/SKILL.md)) |
+| `knowledge/retrieval` | **active** ([knowledge/retrieval/SKILL.md](knowledge/retrieval/SKILL.md)) |
 
 ## Error knowledge
 

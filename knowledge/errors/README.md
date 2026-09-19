@@ -29,8 +29,12 @@ applies_to:
 status: candidate|active|deprecated
 ```
 
-Ninguna entrada incluye hostnames/IPs/nombres internos reales ni datos sensibles — el patrón se generaliza (ver `agents/knowledge-curator.md`).
+Ninguna entrada incluye hostnames/IPs/nombres internos reales ni datos sensibles — el patrón se generaliza (ver `agents/knowledge-curator/AGENT.md`).
 
 ## Estado en Fase 1
 
 Se materializan 2 entradas representativas (una por dominio con mayor probabilidad de reutilización temprana): [`ora/ORA-01653-tablespace-full.md`](ora/ORA-01653-tablespace-full.md) y [`tns/TNS-12514-service-not-registered.md`](tns/TNS-12514-service-not-registered.md). El resto de la taxonomía se puebla orgánicamente vía `knowledge-curator` a medida que se cierran análisis reales en Fases 2+.
+
+## Fase 12 — ciclo de vida y catálogo local
+
+`knowledge-curator` (v2.0.0) prepara **candidatos** con el motor `change_documentation_knowledge/` (`kb-candidate`): sólo un RCA `CONFIRMED` produce un candidato revisable (los demás generan un candidato `REJECTED` con `RCA_NOT_CONFIRMED`), y un candidato NO es conocimiento publicado. El catálogo local del motor (artículos inmutables + manifest) vive en un directorio de trabajo de desarrollo indicado por `--kb-root`; **este repositorio no publica ningún artículo del motor** — las entradas de `knowledge/errors/` siguen promoviéndose sólo vía `/change knowledge` con HUMAN REVIEW. Aprobar/publicar/deprecar/retirar exige un registro de autorización humano externo; el motor no puede verificar la identidad de quien lo escribió.

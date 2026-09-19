@@ -73,3 +73,7 @@ gates:
   cost:         no aplica — no ejecuta queries
   evidence:     bloquea la generación si no existe analysis/ANA-*/INC-* de origen para el tipo de documento solicitado
 ```
+
+# Phase 12 — fábrica de documentos ejecutable
+
+Además de los entregables binarios bajo demanda, `technical-documentation-manager` genera **documentos Markdown + JSON estructurado** desde UN único análisis ya concluido con el motor local (`document --kind rca|executive|change|assessment|post-incident`; skills `documentation/incident-rca-report`, `documentation/executive-summary`, `documentation/change-advisory-report`, `documentation/assessment-report`, `documentation/evidence-traceability`). ANALYZE ONCE, DOCUMENT MANY: el reporte técnico y el resumen ejecutivo imprimen el mismo estado de causa (`root_cause.completeness`), sin reinterpretar ni inventar causas, métricas (MTTR/SLA) o resultados de ejecución. Si faltan datos esenciales el documento es `PARTIAL` con warnings estructurados, nunca texto supuesto. DOCX/XLSX/PDF/PPTX siguen sin infraestructura probada y no se generan en esta fase.

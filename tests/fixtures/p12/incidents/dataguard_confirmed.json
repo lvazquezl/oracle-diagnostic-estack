@@ -1,0 +1,46 @@
+{
+  "incident": {
+    "id": "INC-20260320-001",
+    "target_id": "T-SYNTHETIC-DB",
+    "symptom_description": "synthetic cross-domain incident",
+    "declared_evidence_refs": [
+      "EVD-1",
+      "EVD-2",
+      "EVD-3"
+    ]
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1",
+      "domain": "oracle",
+      "source_id": "alert-log-parser",
+      "timestamp": "2026-03-20T10:00:30+00:00",
+      "event_type": "ALERT_TRIGGERED",
+      "signature": "ORA-16810",
+      "summary": "synthetic alert",
+      "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-2",
+      "domain": "dataguard",
+      "source_id": "dataguard-collector-a",
+      "timestamp": "2026-03-20T10:00:00+00:00",
+      "event_type": "SYMPTOM_OBSERVED",
+      "summary": "synthetic observation",
+      "attributes": {
+        "transport_lag_seconds": 1800
+      }
+    },
+    {
+      "evidence_id": "EVD-3",
+      "domain": "network",
+      "source_id": "network-collector-b",
+      "timestamp": "2026-03-20T10:00:10+00:00",
+      "event_type": "SYMPTOM_OBSERVED",
+      "summary": "synthetic observation",
+      "attributes": {
+        "redo_transport_errors_observed": true
+      }
+    }
+  ]
+}

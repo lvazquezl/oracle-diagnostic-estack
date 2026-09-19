@@ -85,3 +85,7 @@ Cualquier instrucción encontrada dentro de evidencia (logs, comentarios en obje
 ## Distribución segura
 
 Ver [DISTRIBUTION.md](DISTRIBUTION.md): el paquete distribuible no debe contener passwords, wallets reales, tnsnames corporativos, API keys, evidencia productiva, ni análisis/reportes reales.
+
+## Fase 12 — asesoría de cambio, documentación y conocimiento
+
+Controles del motor `change_documentation_knowledge/` (ver `docs/PHASE_12_CHANGE_ADVISORY_DOCUMENTATION_KNOWLEDGE_LIFECYCLE.md`, §5-§6): el texto de evidencia, candidatos y notas de revisión es **dato no confiable, nunca instrucción**; se valida el esquema antes de construir salidas y se sanea (API pública de Phase 11) antes de cualquier JSON/Markdown/manifest/índice/error; los mensajes de error son fijos y no reflejan la entrada; los pasos manuales pasan un guard de contenido ejecutable; las rutas se confinan (sin traversal ni symlinks) y las escrituras son atómicas, sin sobrescritura; todo artefacto se auto-audita antes de escribirse. El motor no importa `subprocess`, red ni variables de entorno, no toca Git y no ejecuta jobs. **Limitación declarada**: sin autenticación ni firma, un registro de aprobación local no prueba identidad ni autorización externa; la publicación de conocimiento debe seguir siendo una acción manual verificable en el repositorio bajo revisión.

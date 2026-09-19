@@ -315,3 +315,13 @@ Flujo: `SYMPTOM → CONTEXT → EVIDENCE → HYPOTHESES → VALIDATION → RCA �
 ## Evidence Model
 
 Todo `evidence_id` (`EVD-*`) registra: `evidence_id, analysis_id, timestamp, target, collector, source, classification (raw|sanitized|derived), sensitivity, hash (si aplica), retention metadata`. `evidence/raw` nunca se modifica; los agentes trabajan preferentemente con `sanitized`/`derived`. Trazabilidad obligatoria: `EVIDENCE (EVD-) → FINDING (FND-) → RECOMMENDATION (REC-) → CHANGE PROPOSAL (CHG-)`, todo bajo un `ANA-*` (o `INC-*` si es un incidente).
+
+## Contratos de Fase 12 — CHG, Documento y KB (Change Advisory, Documentation & Knowledge Lifecycle)
+
+Definidos por el motor `change_documentation_knowledge/` (versión de esquema `1.0.0`; una versión distinta se rechaza con `E_UNSUPPORTED_SCHEMA_VERSION`, sin migración silenciosa). Detalle completo, adaptador Phase 11 → Phase 12 e incompatibilidades registradas en `docs/PHASE_12_CHANGE_ADVISORY_DOCUMENTATION_KNOWLEDGE_LIFECYCLE.md`.
+
+- **CHG** (`change_type` `OPERATIONAL_MANUAL|ESTACK_DEVELOPMENT`; `status` `DRAFT|REVIEW_REQUIRED|APPROVED_BY_HUMAN|REJECTED|SUPERSEDED`): pasos manuales como texto; `execution_status: NOT_EXECUTED_BY_ESTACK` inmutable (una ejecución declarada externamente es `HUMAN_REPORTED_UNVERIFIED`); gates `capability|license|privilege|change_window` (`PASS|FAIL|UNKNOWN|NOT_APPLICABLE|NOT_VERIFIED`, `UNKNOWN != NOT_APPLICABLE`); riesgo por factores explicables, sin score numérico; `APPROVED_BY_HUMAN` sólo desde un registro externo que coincida con id + digest + versión.
+- **Documento** (`document_id`, `document_type`, `audience`, `source_refs`, `content_status COMPLETE|PARTIAL`, `sections[]` con estado y etiqueta epistemológica): el estado de causa es siempre el de `rca_engine`.
+- **KB** (`CANDIDATE → DRAFT → PENDING_HUMAN_REVIEW → APPROVED_BY_HUMAN → PUBLISHED`, `REJECTED`, `REVIEW_DUE → DEPRECATED → RETIRED`, `SUPERSEDED`): candidato != publicado; transiciones humanas exigen un registro de autorización externo; artículos inmutables + manifest append-only.
+- **Etiquetas epistemológicas**: `observed`, `inferred`, `proposed`, `unknown`, `not_applicable`, `not_verified`, `human_reported`.
+- **Grafo de trazabilidad**: `INC → EVD → FND → HYP → RCA → REC → CHG` y `RCA → DOC → KB-CANDIDATE → KB-VERSION` (lógico; no todo incidente llega a RCA confirmado, CHG o KB).

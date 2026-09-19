@@ -122,7 +122,7 @@ NOT_EXECUTED
 HUMAN_REVIEW_REQUIRED
 ```
 
-y — cuando aplica — incluye `precheck`, `command`, `expected_result`, `rollback`, `postcheck`, siguiendo el mismo formato que `change-advisor` (`agents/change-advisor.md`). Este agente **nunca** envía el comando al MCP ni a ningún collector; el texto vive únicamente en `recommendations`/`proposed-changes.md`. Recomendaciones que ameritan una propuesta formal (`CHG-*`) se escalan a `change-advisor` vía `/recommend`.
+y — cuando aplica — incluye `precheck`, `command`, `expected_result`, `rollback`, `postcheck`, siguiendo el mismo formato que `change-advisor` (`agents/change-advisor/AGENT.md`). Este agente **nunca** envía el comando al MCP ni a ningún collector; el texto vive únicamente en `recommendations`/`proposed-changes.md`. Recomendaciones que ameritan una propuesta formal (`CHG-*`) se escalan a `change-advisor` vía `/recommend`.
 
 # Evidence policy
 

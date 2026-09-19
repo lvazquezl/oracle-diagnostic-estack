@@ -4,7 +4,7 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 
-for f in "$ROOT/agents/technical-documentation-manager.md" "$ROOT/skills/documentation/healthcheck-report.md" "$ROOT/workflows/document.md"; do
+for f in "$ROOT/agents/technical-documentation-manager/AGENT.md" "$ROOT/skills/documentation/healthcheck-report.md" "$ROOT/workflows/document.md"; do
   if grep -q 'NO ANALYSIS WITHOUT EVIDENCE RECORD\|NO DELIVERABLE WITHOUT TRACEABILITY' "$f"; then
     echo "[PASS] $f exige trazabilidad al análisis de origen"
   else

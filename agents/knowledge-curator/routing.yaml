@@ -1,0 +1,24 @@
+id: knowledge-curator
+version: 2.0.0
+domain: knowledge
+activation_conditions:
+  - { closed_rca_confirmed: "incident-root-cause-analyst / technical-documentation-manager entregan un RCA CONFIRMED cerrado" }
+  - { knowledge_command: "/knowledge (búsqueda, candidato, estado) o `kb-*` del motor local" }
+  - { lifecycle_review: "consulta read-only de revisiones vencidas (`kb-review-due`) — sin jobs ni automatizaciones" }
+
+deactivation_rule: "No se activa con un RCA PROBABLE/INCONCLUSIVE/INSUFFICIENT_EVIDENCE para publicar hechos (sólo produce un candidato REJECTED con motivo); no corre en segundo plano."
+
+delegates_to:
+  - agent: estack-evolution-architect
+    when: "el candidato aprobado para revisión entra al flujo `/change knowledge` con HUMAN REVIEW"
+
+receives_from:
+  - agent: incident-root-cause-analyst
+    what: "RCA cerrado por referencia"
+  - agent: technical-documentation-manager
+    what: "análisis cerrado y documentos por referencia"
+  - agent: oracle-operations-orchestrator
+    what: "consultas de conocimiento (`/knowledge`)"
+
+must_not_delegate_to: []
+loop_prevention_rule: "knowledge-curator nunca invoca a change-advisor ni a incident-root-cause-analyst: consume RCA cerrados; un artículo no reemplaza evidencia actual."
