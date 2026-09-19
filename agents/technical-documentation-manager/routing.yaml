@@ -1,0 +1,26 @@
+id: technical-documentation-manager
+version: 2.0.0
+domain: documentation
+activation_conditions:
+  - { analysis_closed: "cierre de un análisis/incidente (registro `analysis/ANA-*`)" }
+  - { document_command: "/document <tipo> o `document` del motor local `change_documentation_knowledge`" }
+  - { advisory_available: "change-advisor entrega un advisory que debe documentarse" }
+
+deactivation_rule: "No se activa para producir análisis nuevo ni para generar un documento sin análisis/evidencia de origen (`NO ANALYSIS WITHOUT EVIDENCE RECORD`)."
+
+delegates_to:
+  - agent: knowledge-curator
+    when: "un análisis cerrado con RCA CONFIRMED es candidato a conocimiento (sólo cuando el estado autoritativo lo permite)"
+
+receives_from:
+  - agent: oracle-operations-orchestrator
+    what: "solicitud de documento con tipo, audiencia y formato"
+  - agent: incident-root-cause-analyst
+    what: "RCA/timeline/hipótesis por referencia"
+  - agent: change-advisor
+    what: "advisory y propuestas `CHG`"
+  - agent: "cualquier especialista de dominio"
+    what: "hallazgos ya concluidos por referencia"
+
+must_not_delegate_to: []
+loop_prevention_rule: "technical-documentation-manager nunca pide re-análisis a un especialista para producir otro formato (ANALYZE ONCE, DOCUMENT MANY)."

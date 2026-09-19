@@ -2,6 +2,42 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — 2026-09-19 — PHASE 12 — CHANGE ADVISORY, DOCUMENTATION & KNOWLEDGE LIFECYCLE
+
+Rama `phase/12-change-documentation-knowledge` sobre la baseline `v0.11.0-incident-rca`. Implementa (no sólo declara) una capa
+local, determinista y de sólo lectura que transforma la salida real de `rca_engine` en asesoría de cambio para ejecución humana,
+documentos reproducibles y conocimiento con ciclo de vida. Ver `docs/PHASE_12_CHANGE_ADVISORY_DOCUMENTATION_KNOWLEDGE_LIFECYCLE.md`.
+
+### Added
+
+- `change_documentation_knowledge/` (Python stdlib, 12 módulos): adaptador de contrato Phase 11 → Phase 12, frontera de saneamiento,
+  advisory `CHG` (`NOT_EXECUTED_BY_ESTACK`), gobierno de evolución del e-stack, fábrica de documentos (RCA técnico, resumen ejecutivo,
+  advisory, assessment, post-incident review), candidatos/quality gate/duplicados y conflictos, KB local con versiones inmutables y
+  transiciones atadas a un registro de autorización humano **externo**, retrieval local con `NO_CERTIFIED_MATCH`, CLI
+  (`advise`, `document`, `kb-candidate`, `kb-add`, `kb-transition`, `kb-search`, `kb-status`, `kb-review-due`).
+- 18 skills: `change/{operational-advisory,impact-and-risk,compatibility-and-license-gates,manual-execution-plan,rollback-and-validation,stack-evolution-handoff}`,
+  `documentation/{incident-rca-report,assessment-report,change-advisory-report,executive-summary,evidence-traceability}`, dominio nuevo
+  `knowledge/{candidate-extraction,quality-gate,duplicate-and-conflict-review,version-and-provenance,review-and-approval,deprecation-and-retirement,retrieval}`
+  (334 → 352 skills activos).
+- `workflows/knowledge.md` y `.claude/commands/knowledge.md` (`/knowledge` no existía).
+- Fixtures sintéticos `tests/fixtures/p12/`, pruebas funcionales `tests/p12/*.py` (aserciones sobre el CLI/JSON/Markdown/KB reales, incluido un control de mutation testing) y 10 tests `tests/test_p12_*.sh`. Cierre de validación (SECURITY TEST COMPLETION): la suite de seguridad **no estaba bloqueada** (17 s, exit 0, 21 casos propios, 94 invocaciones del CLI); se corrigieron dos defectos del arnés medidos y reproducidos — (1) los wrappers acumulaban toda la salida en una variable de shell, de modo que una ejecución lenta parecía colgada: ahora transmiten en vivo con un temporal acotado, y `P12_TIMING=1` imprime nombre y duración por caso; (2) `check_security` importaba `check_knowledge` dentro de un test y ejecutaba 22 casos ajenos (43 reportados vs 21 definidos): `run_all` ejecuta ahora un snapshot de los casos propios y el helper `make_published` vive en el arnés (los 22 casos de conocimiento siguen ejecutándose en su propia suite). Test de regresión `tests/test_p12_harness_isolation.sh` (falló antes del cambio, pasa después).
+- `docs/PHASE_12_CHANGE_ADVISORY_DOCUMENTATION_KNOWLEDGE_LIFECYCLE.md`, `templates/reports/phase12-document-structure.md`.
+
+### Changed
+
+- `change-advisor`, `technical-documentation-manager`, `knowledge-curator` → v2.0.0 con estructura de carpeta completa (mismo patrón que Fases 8-11);
+  los manifests planos `agents/<id>.md` se eliminan; `agents/REGISTRY.md` y las referencias se actualizan. 18/18 agentes; orquestador intacto.
+- `workflows/{change,document,recommend}.md` y `.claude/commands/{change,document,recommend}.md`: sección Fase 12 (dos planos de cambio, fábrica de documentos, advisory local).
+- `skills/REGISTRY.md`, `agents/REGISTRY.md`, `config/capability-matrix.yaml` + `docs/CAPABILITY_MATRIX.md` (notas de `documentation` y `/change`, sin fila de dominio nueva),
+  `docs/CONTRACTS.md`, `EVOLUTION.md`, `SECURITY.md`, `ARCHITECTURE.md`, `knowledge/errors/README.md`.
+- `tests/test_document_traceability.sh`, `tests/test_no_promotion_without_human_review.sh`: apuntan a `agents/<id>/AGENT.md`.
+
+### Limitaciones declaradas
+
+- Sin autenticación/firma: una aprobación local es una declaración estructural (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`), no prueba de identidad; la publicación debe ser una acción manual verificable en el repositorio.
+- Guía de impacto/rollback genérica por dominio; `FND` derivado por el adaptador (no nativo de `rca_engine`); sin binarios DOCX/XLSX/PDF/PPTX; orquestación por agente vivo `CONTRACT_ONLY` hasta el MCP Gateway.
+- No se crea tag, merge, push ni se publica conocimiento; el tag propuesto `v0.12.0-change-documentation-knowledge` queda para decisión humana.
+
 ## [Unreleased] — 2026-09-19 — PHASE 11 — RCA SIGNATURE ALLOWLIST & OUTPUT LEAK PREVENTION MICRO-HARDENING
 
 Micro-hardening acotado sobre `PHASE_11_RCA_STRUCTURED_EVIDENCE_SANITIZATION_HARDENING` (misma

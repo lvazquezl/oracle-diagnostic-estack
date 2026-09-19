@@ -1,0 +1,46 @@
+{
+  "incident": {
+    "id": "INC-20260320-003",
+    "target_id": "T-SYNTHETIC-DB",
+    "symptom_description": "synthetic cross-domain incident",
+    "declared_evidence_refs": [
+      "EVD-1",
+      "EVD-2",
+      "EVD-3"
+    ]
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1",
+      "domain": "oracle",
+      "source_id": "alert-log-parser",
+      "timestamp": "2026-03-20T10:00:30+00:00",
+      "event_type": "ALERT_TRIGGERED",
+      "signature": "ORA-65040",
+      "summary": "synthetic alert",
+      "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-2",
+      "domain": "multitenant",
+      "source_id": "multitenant-collector-a",
+      "timestamp": "2026-03-20T10:00:00+00:00",
+      "event_type": "SYMPTOM_OBSERVED",
+      "summary": "synthetic observation",
+      "attributes": {
+        "pdb_open_mode_restricted": true
+      }
+    },
+    {
+      "evidence_id": "EVD-3",
+      "domain": "multitenant",
+      "source_id": "multitenant-collector-b",
+      "timestamp": "2026-03-20T10:00:10+00:00",
+      "event_type": "SYMPTOM_OBSERVED",
+      "summary": "synthetic observation",
+      "attributes": {
+        "plugin_violations_open": true
+      }
+    }
+  ]
+}

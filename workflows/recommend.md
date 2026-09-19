@@ -73,3 +73,7 @@ gates:
   cost:         no aplica — este workflow no recolecta evidencia nueva
   evidence:     reutiliza evidence_refs del REC-*/ANA-* de origen; no solicita evidencia nueva
 ```
+
+# Phase 12 — ejecución local del advisory
+
+Cuando el motor local está disponible, `change-advisor` produce el `CHG` con `advise` (`change_advisory.json` + `change_advisory.md`) a partir del RCA real: sin `requires_change` o con un RCA `INCONCLUSIVE`/`INSUFFICIENT_EVIDENCE` no se genera un `CHG` (sólo notas y advertencias). Los gates capability/license/privilege/change_window quedan `UNKNOWN` salvo que el contexto declarado los resuelva. El texto de los pasos es manual: el guard de contenido ejecutable rechaza sintaxis de comando. Si el motor no está disponible se degrada al contrato declarativo y se declara `CONTRACT_ONLY`.

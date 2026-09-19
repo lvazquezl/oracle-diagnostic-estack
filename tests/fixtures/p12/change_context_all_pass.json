@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0",
+  "target": {
+    "oracle_version": "19c",
+    "release_update": "RU 19.22",
+    "platform": "Oracle Linux 8",
+    "architecture": {
+      "cdb": true,
+      "rac": false,
+      "dataguard": false,
+      "asm": false
+    }
+  },
+  "gates": {
+    "capability": {
+      "status": "PASS",
+      "basis": "declared by the reviewer in the synthetic test context"
+    },
+    "license": {
+      "status": "PASS",
+      "basis": "declared by the reviewer in the synthetic test context"
+    },
+    "privilege": {
+      "status": "PASS",
+      "basis": "declared by the reviewer in the synthetic test context"
+    },
+    "change_window": {
+      "status": "PASS",
+      "basis": "declared by the reviewer in the synthetic test context"
+    }
+  }
+}

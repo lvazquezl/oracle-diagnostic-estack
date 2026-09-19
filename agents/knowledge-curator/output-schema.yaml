@@ -1,0 +1,29 @@
+# Output schema — knowledge-curator v2.0.0 (PHASE 12)
+# Refleja fielmente los artefactos que produce change_documentation_knowledge (ver docs/PHASE_12_*.md).
+knowledge_curator_output:
+  kb_candidate:
+    schema_version: string
+    artifact_type: kb_candidate
+    kb_candidate_id: string         # KBC-<incident_id>-001
+    kb_id: string                   # KB-<hash de la clave normalizada segura>
+    lifecycle_state: CANDIDATE|DRAFT|REJECTED
+    review_status: REVIEW_REQUIRED|REJECTED
+    quality_gate: {status: PASS|FAIL, blocking_reasons: [string]}   # RCA_NOT_CONFIRMED => REJECTED
+    proposer_ids: [string]
+    dedup_key: {family: string, rule_id: string, error_codes: [string], oracle_versions: [string], release_update: string, platform: string, architecture: {}, license_dependent: bool}
+    article:
+      article_type: KNOWN_ISSUE|RUNBOOK|LESSON|DIAGNOSTIC_PATTERN
+      title: string
+      scope: {domain: string, oracle_versions: [string], release_update: string, platform: string, architecture: {}, applies_only_within_scope: true}
+      error_codes: [string]         # sólo firmas certificadas (allowlist Phase 11)
+      minimal_reproducible_evidence: {evidence_refs: [string], required_conditions: [string], contradicting_conditions: [string]}
+      hypothesis: {hypothesis_id: string, status: string, publishable_as_fact: bool}
+      manual_recommendations: [{rec_id: string, action: string, execution_status: NOT_EXECUTED, universal_solution: false}]
+      provenance: {incident_id: string, rca_id: string, rule_id: string, hypothesis_ids: [string], evidence_ids: [string], finding_ids: [string], recommendation_ids: [string]}
+      validated_at_utc: string
+      review_due_utc: string        # metadato; no hay jobs
+      owner: string
+      supersedes: string|null
+    content_digest: string
+  kb_lifecycle_states: [CANDIDATE, DRAFT, PENDING_HUMAN_REVIEW, APPROVED_BY_HUMAN, PUBLISHED, REJECTED, REVIEW_DUE, DEPRECATED, RETIRED, SUPERSEDED]
+  kb_search_result: {status: MATCH|NO_CERTIFIED_MATCH, results: [{kb_id: string, version: string, status: string, current_guidance: bool, scope: {}, evidence_citation: {}}], notice: string}

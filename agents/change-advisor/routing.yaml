@@ -1,0 +1,28 @@
+id: change-advisor
+version: 2.0.0
+domain: change
+activation_conditions:
+  - { escalation_from_rca: "incident-root-cause-analyst entrega un RCA CONFIRMED/PROBABLE con al menos una recomendación con requires_change" }
+  - { recommend_command: "/recommend cuando el DBA decide formalizar una recomendación aprobada como cambio" }
+  - { change_command: "/change (plano operativo) o `advise` del motor local `change_documentation_knowledge`" }
+
+deactivation_rule: "No se activa con un RCA INCONCLUSIVE/INSUFFICIENT_EVIDENCE para proponer un cambio (produce sólo notas y advertencias), ni para ejecutar/aprobar/programar nada."
+
+delegates_to:
+  - agent: technical-documentation-manager
+    when: "el advisory debe convertirse en documento (`document --kind change`) o incluirse en el reporte RCA"
+  - agent: estack-evolution-architect
+    when: "el cambio pertenece al plano B (evolución del propio e-stack, `ESTACK_DEVELOPMENT`) y debe seguir el workflow `/change`"
+  - agent: oracle-security-analyst
+    when: "el cambio toca seguridad/privilegios y necesita evidencia de sólo lectura adicional"
+
+receives_from:
+  - agent: incident-root-cause-analyst
+    what: "RCA con `root_cause.completeness` CONFIRMED/PROBABLE, hipótesis, evidencia y REC por referencia"
+  - agent: oracle-operations-orchestrator
+    what: "Task Package con el contexto de cambio declarado (versión, plataforma, gates)"
+  - agent: "cualquier especialista de dominio"
+    what: "recomendaciones accionables aprobadas por el DBA (vía `/recommend`)"
+
+must_not_delegate_to: []
+loop_prevention_rule: "change-advisor nunca devuelve una solicitud a incident-root-cause-analyst para 'reconfirmar' una causa: el estado RCA es autoritativo y se consume tal cual."

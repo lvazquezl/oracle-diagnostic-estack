@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "assessment_id": "DOC-ASM-20260320",
+  "title": "Synthetic healthcheck assessment",
+  "target": {
+    "oracle_version": "12.2"
+  },
+  "findings": [
+    {
+      "finding_id": "FND-ASM-001",
+      "domain": "os",
+      "title": "Process limit close to the configured maximum",
+      "severity": "HIGH",
+      "evidence_ids": [
+        "EVD-1",
+        "EVD-2"
+      ]
+    },
+    {
+      "finding_id": "FND-ASM-002",
+      "domain": "rman",
+      "title": "Archived log backup lag observed",
+      "severity": "MEDIUM",
+      "evidence_ids": [
+        "EVD-3"
+      ],
+      "status": "NOT_VERIFIED"
+    }
+  ],
+  "coverage": [
+    {
+      "area": "OS limits",
+      "status": "SUPPORTED",
+      "note": "collector available"
+    },
+    {
+      "area": "Data Guard",
+      "status": "UNKNOWN",
+      "note": "no evidence supplied"
+    },
+    {
+      "area": "Multitenant",
+      "status": "UNSUPPORTED",
+      "note": "non-CDB target"
+    }
+  ],
+  "license_notes": [
+    {
+      "feature": "Diagnostics features",
+      "status": "UNKNOWN"
+    }
+  ],
+  "exceptions": [
+    "Standby not assessed"
+  ],
+  "pending": [
+    "Confirm entitlement"
+  ]
+}

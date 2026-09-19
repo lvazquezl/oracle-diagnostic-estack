@@ -1,0 +1,17 @@
+name: change-advisory-report
+display_name: "Change Advisory Report"
+id: documentation/change-advisory-report
+version: 1.0.0
+domain: documentation
+status: active
+supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
+supported_os: [Oracle Linux, RHEL, SUSE, Windows Server, Solaris]
+supported_architectures: [standalone, rac, rac_one_node]
+container_scope: NOT_APPLICABLE
+database_role_scope: ANY
+license_requirements: none
+required_evidence: []
+optional_evidence: []
+data_sensitivity: MEDIUM
+context_budget: LOW
+related_skills: [change/operational-advisory, documentation/change-proposal]

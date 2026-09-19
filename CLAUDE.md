@@ -7,7 +7,7 @@ Este e-stack asiste a DBAs Oracle y SysAdmins en **assessment, health checks, ob
 ## READ-ONLY ALWAYS. HUMAN EXECUTION ONLY.
 
 - Este stack **nunca** ejecuta DML/DDL, `srvctl`/`crsctl` de cambio, `systemctl start/stop/restart`, operaciones ASM, switchover/failover, restore/recover, ni shell arbitrario.
-- Toda remediación se entrega como **texto/procedimiento** para ejecución manual del DBA (ver [`change-advisor`](../agents/change-advisor.md)).
+- Toda remediación se entrega como **texto/procedimiento** para ejecución manual del DBA (ver [`change-advisor`](../agents/change-advisor/AGENT.md)).
 - No existen herramientas MCP de escritura. Ver [SECURITY.md](SECURITY.md) y [policies/forbidden-operations.md](policies/forbidden-operations.md).
 
 ## Routing

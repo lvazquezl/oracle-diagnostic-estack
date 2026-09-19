@@ -1,0 +1,46 @@
+{
+  "incident": {
+    "id": "INC-20260320-005",
+    "target_id": "T-SYNTHETIC-DB",
+    "symptom_description": "synthetic cross-domain incident",
+    "declared_evidence_refs": [
+      "EVD-1",
+      "EVD-2",
+      "EVD-3"
+    ]
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1",
+      "domain": "oracle",
+      "source_id": "alert-log-parser",
+      "timestamp": "2026-03-20T10:00:30+00:00",
+      "event_type": "ALERT_TRIGGERED",
+      "signature": "ORA-28000",
+      "summary": "synthetic alert",
+      "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-2",
+      "domain": "security",
+      "source_id": "security-collector-a",
+      "timestamp": "2026-03-20T10:00:00+00:00",
+      "event_type": "SYMPTOM_OBSERVED",
+      "summary": "synthetic observation",
+      "attributes": {
+        "service_account_locked": true
+      }
+    },
+    {
+      "evidence_id": "EVD-3",
+      "domain": "security",
+      "source_id": "security-collector-b",
+      "timestamp": "2026-03-20T10:00:10+00:00",
+      "event_type": "SYMPTOM_OBSERVED",
+      "summary": "synthetic observation",
+      "attributes": {
+        "failed_login_burst_observed": true
+      }
+    }
+  ]
+}

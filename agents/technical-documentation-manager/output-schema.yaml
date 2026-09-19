@@ -1,0 +1,23 @@
+# Output schema — technical-documentation-manager v2.0.0 (PHASE 12)
+# Refleja fielmente los artefactos que produce change_documentation_knowledge (ver docs/PHASE_12_*.md).
+technical_documentation_manager_output:
+  document:
+    schema_version: string
+    artifact_type: document
+    document_id: string             # DOC-<incident|assessment id>-<RCA|EXEC|CHANGE|ASSESS|PIR>
+    document_type: INCIDENT_RCA_TECHNICAL_REPORT|EXECUTIVE_SUMMARY|CHANGE_ADVISORY_REPORT|ASSESSMENT_REPORT|POST_INCIDENT_REVIEW
+    audience: string
+    incident_id: string             # o change_id / assessment_id según aplique
+    source_refs: {incident_id: string, rca_id: string, hypothesis_ids: [string], evidence_ids: [string], finding_ids: [string], recommendation_ids: [string], change_ids: [string]}
+    generated_at_utc: string
+    generator_version: string
+    content_status: COMPLETE|PARTIAL
+    review_status: REVIEW_REQUIRED
+    sanitization_status: SANITIZED
+    redaction_profile: string
+    root_cause_state: CONFIRMED|PROBABLE|INCONCLUSIVE|INSUFFICIENT_EVIDENCE   # idéntico en todos los documentos del mismo análisis
+    limitations: [string]
+    warnings: [string]              # p.ej. TIMELINE_CONFIDENCE_DEGRADED, EVIDENCE_REFERENCES_MISSING, REQUIRED_SECTIONS_MISSING
+    sections: [{section_id: string, title: string, status: PRESENT|NOT_PROVIDED_BY_SOURCE|MISSING, items: [{text: string, refs: [string], epistemic: observed|inferred|proposed|unknown|not_applicable|not_verified|human_reported}], columns: [string], rows: [[string]]}]
+    content_digest: string
+  documents_generated: [{path: string, format: md|json, source_analysis_id: string}]

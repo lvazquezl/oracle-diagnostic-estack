@@ -1,0 +1,46 @@
+{
+  "incident": {
+    "id": "INC-20260320-002",
+    "target_id": "T-SYNTHETIC-DB",
+    "symptom_description": "synthetic cross-domain incident",
+    "declared_evidence_refs": [
+      "EVD-1",
+      "EVD-2",
+      "EVD-3"
+    ]
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1",
+      "domain": "oracle",
+      "source_id": "alert-log-parser",
+      "timestamp": "2026-03-20T10:00:30+00:00",
+      "event_type": "ALERT_TRIGGERED",
+      "signature": "ORA-15041",
+      "summary": "synthetic alert",
+      "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-2",
+      "domain": "asm",
+      "source_id": "asm-collector-a",
+      "timestamp": "2026-03-20T10:00:00+00:00",
+      "event_type": "SYMPTOM_OBSERVED",
+      "summary": "synthetic observation",
+      "attributes": {
+        "diskgroup_free_percent": 3
+      }
+    },
+    {
+      "evidence_id": "EVD-3",
+      "domain": "os",
+      "source_id": "os-collector-b",
+      "timestamp": "2026-03-20T10:00:10+00:00",
+      "event_type": "SYMPTOM_OBSERVED",
+      "summary": "synthetic observation",
+      "attributes": {
+        "asm_path_errors_observed": true
+      }
+    }
+  ]
+}

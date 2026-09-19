@@ -1,0 +1,46 @@
+{
+  "incident": {
+    "id": "INC-20260320-004",
+    "target_id": "T-SYNTHETIC-DB",
+    "symptom_description": "synthetic cross-domain incident",
+    "declared_evidence_refs": [
+      "EVD-1",
+      "EVD-2",
+      "EVD-3"
+    ]
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1",
+      "domain": "oracle",
+      "source_id": "alert-log-parser",
+      "timestamp": "2026-03-20T10:00:30+00:00",
+      "event_type": "ALERT_TRIGGERED",
+      "signature": "RMAN-03009",
+      "summary": "synthetic alert",
+      "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-2",
+      "domain": "rman",
+      "source_id": "rman-collector-a",
+      "timestamp": "2026-03-20T10:00:00+00:00",
+      "event_type": "SYMPTOM_OBSERVED",
+      "summary": "synthetic observation",
+      "attributes": {
+        "fra_used_percent": 99
+      }
+    },
+    {
+      "evidence_id": "EVD-3",
+      "domain": "rman",
+      "source_id": "rman-collector-b",
+      "timestamp": "2026-03-20T10:00:10+00:00",
+      "event_type": "SYMPTOM_OBSERVED",
+      "summary": "synthetic observation",
+      "attributes": {
+        "archivelog_deletion_blocked": true
+      }
+    }
+  ]
+}

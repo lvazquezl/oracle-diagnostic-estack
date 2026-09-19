@@ -1,0 +1,21 @@
+minimum_context: "Vista RCA saneada o artefacto de origen (advisory/assessment/candidato) + la pregunta puntual + ids de evidencia por referencia."
+
+evidence_by_reference: true
+
+local_computation:
+  required: true
+  rule: "Validación de esquema, saneamiento, ordenamiento, digests, generación de JSON/Markdown y búsqueda se calculan localmente con `change_documentation_knowledge` (Python stdlib); el modelo nunca recibe evidencia cruda."
+  pipeline: "entrada sintética/saneada -> validación de esquema -> sanitización -> artefactos (JSON/Markdown/manifest) -> revisión humana"
+
+no_raw_logs_to_model: true
+no_business_data: true
+no_secrets: true
+no_secrets_rule: "Sanitización heredada de Phase 11 (rca_engine.sanitize / tokenization / allowlist de firmas); el resultado se auto-audita antes de escribirse y falla cerrado."
+
+cache:
+  required: false
+  scope: "ninguno: los artefactos son deterministas y se regeneran a partir de la fuente; no se cachean secretos"
+
+context_budget:
+  relative_level: LOW
+  scaling_rule: "Proporcional al número de hipótesis/hallazgos referenciados; salida acotada (máx. 512 KB por artefacto, 2000 ítems por documento, top-K <= 20)."

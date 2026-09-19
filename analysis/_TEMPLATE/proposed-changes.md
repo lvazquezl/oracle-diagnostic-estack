@@ -1,6 +1,6 @@
 # Proposed Changes — ANA-YYYYMMDD-NNN
 
-Propuestas de `change-advisor` (formato completo, ver `agents/change-advisor.md#output-contract-result-package`).
+Propuestas de `change-advisor` (formato completo, ver `agents/change-advisor/AGENT.md#output-contract-result-package`).
 
 ## CHG-0001
 

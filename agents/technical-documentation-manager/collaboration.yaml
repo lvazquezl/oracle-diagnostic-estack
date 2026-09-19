@@ -1,0 +1,8 @@
+id: technical-documentation-manager
+version: 2.0.0
+collaboration_graph: "incident-root-cause-analyst -> change-advisor -> technical-documentation-manager -> knowledge-curator -> estack-evolution-architect (acíclico; ningún agente vuelve hacia atrás)"
+upstream: change-advisor
+downstream: knowledge-curator
+context_sharing: "Task Package / Result Package por referencia (ids EVD/FND/HYP/RCA/REC/CHG/DOC/KB); nunca se duplica la conversación ni la evidencia."
+loop_prevention_rule: "technical-documentation-manager nunca pide re-análisis a un especialista para producir otro formato (ANALYZE ONCE, DOCUMENT MANY)."
+human_gate: "Toda aprobación, publicación, promoción, merge y tag son acciones humanas externas al agente."

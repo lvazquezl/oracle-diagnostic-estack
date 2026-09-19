@@ -1,0 +1,46 @@
+{
+  "incident": {
+    "id": "INC-20260320-007",
+    "target_id": "T-SYNTHETIC-DB",
+    "symptom_description": "synthetic listener hang",
+    "declared_evidence_refs": [
+      "EVD-1",
+      "EVD-2",
+      "EVD-3"
+    ]
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1",
+      "domain": "oracle",
+      "source_id": "client-error-parser",
+      "timestamp": "2026-03-20T10:00:30+00:00",
+      "event_type": "ALERT_TRIGGERED",
+      "signature": "ORA-12537",
+      "summary": "synthetic connect failure",
+      "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-2",
+      "domain": "network",
+      "source_id": "listener-probe",
+      "timestamp": "2026-03-20T10:00:00+00:00",
+      "event_type": "SYMPTOM_OBSERVED",
+      "summary": "synthetic probe",
+      "attributes": {
+        "listener_process_responsive": false
+      }
+    },
+    {
+      "evidence_id": "EVD-3",
+      "domain": "os",
+      "source_id": "os-thread-audit",
+      "timestamp": "2026-03-20T10:00:10+00:00",
+      "event_type": "SYMPTOM_OBSERVED",
+      "summary": "synthetic thread audit",
+      "attributes": {
+        "listener_thread_count_anomalous": true
+      }
+    }
+  ]
+}

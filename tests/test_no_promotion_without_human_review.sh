@@ -4,7 +4,7 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 
-for f in "$ROOT/agents/estack-evolution-architect.md" "$ROOT/agents/knowledge-curator.md" "$ROOT/EVOLUTION.md"; do
+for f in "$ROOT/agents/estack-evolution-architect.md" "$ROOT/agents/knowledge-curator/AGENT.md" "$ROOT/EVOLUTION.md"; do
   if grep -qi 'HUMAN REVIEW' "$f"; then
     echo "[PASS] $f referencia HUMAN REVIEW"
   else
