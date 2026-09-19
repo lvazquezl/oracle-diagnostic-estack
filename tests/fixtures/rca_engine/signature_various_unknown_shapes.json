@@ -1,0 +1,33 @@
+{
+  "incident": {
+    "id": "INC-20260319-002",
+    "target_id": "T-PRODDB",
+    "symptom_description": "Multiple unknown-but-well-formed signature shapes, none certified"
+  },
+  "evidence": [
+    {"evidence_id": "EVD-1", "domain": "oracle", "source_id": "src-1",
+     "timestamp": "2026-03-11T15:02:00+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "signature": "UPPER_CASE_123_SYNTHETIC_SECRET_DO_NOT_USE"},
+    {"evidence_id": "EVD-2", "domain": "oracle", "source_id": "src-2",
+     "timestamp": "2026-03-11T15:02:01+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "signature": "MixedCase_SYNTHETIC_SECRET_DO_NOT_USE_123"},
+    {"evidence_id": "EVD-3", "domain": "oracle", "source_id": "src-3",
+     "timestamp": "2026-03-11T15:02:02+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "signature": "SEÑAL_SYNTHETIC_SECRET_DO_NOT_USE_ÚNICODE"},
+    {"evidence_id": "EVD-4", "domain": "oracle", "source_id": "src-4",
+     "timestamp": "2026-03-11T15:02:03+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "signature": "WITH SPACE SYNTHETIC_SECRET_DO_NOT_USE 123"},
+    {"evidence_id": "EVD-5", "domain": "oracle", "source_id": "src-5",
+     "timestamp": "2026-03-11T15:02:04+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "signature": "WITH_NEWLINE_SYNTHETIC_SECRET_DO_NOT_USE\nSECOND_LINE"},
+    {"evidence_id": "EVD-6", "domain": "oracle", "source_id": "src-6",
+     "timestamp": "2026-03-11T15:02:05+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "signature": "WITH_QUOTE_SYNTHETIC_SECRET_DO_NOT_USE_\"quoted\""},
+    {"evidence_id": "EVD-7", "domain": "oracle", "source_id": "src-7",
+     "timestamp": "2026-03-11T15:02:06+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "signature": "WITH_BACKSLASH_SYNTHETIC_SECRET_DO_NOT_USE_\\path\\to\\thing"},
+    {"evidence_id": "EVD-8", "domain": "oracle", "source_id": "src-8",
+     "timestamp": "2026-03-11T15:02:07+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "signature": "VERY_LONG_SYNTHETIC_SECRET_DO_NOT_USE_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+  ]
+}

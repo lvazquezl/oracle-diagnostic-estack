@@ -1,0 +1,23 @@
+{
+  "incident": {
+    "id": "INC-20260318-008",
+    "target_id": "T-PRODDB",
+    "symptom_description": "Same safe signature reported twice by different sources, plus one unsafe-shaped signature"
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "oracle", "source_id": "alert-log-parser",
+      "timestamp": "2026-03-11T15:02:31+00:00", "event_type": "ALERT_TRIGGERED", "signature": "ORA-27300"
+    },
+    {
+      "evidence_id": "EVD-2", "domain": "oracle", "source_id": "listener-log-parser",
+      "timestamp": "2026-03-11T15:05:00+00:00", "event_type": "SYMPTOM_OBSERVED", "signature": "ORA-27300"
+    },
+    {
+      "evidence_id": "EVD-3", "domain": "os", "source_id": "os-process-limits-collector",
+      "timestamp": "2026-03-11T15:02:00+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "signature": "SYNTHETIC_SECRET_DO_NOT_USE_unsafe_sig_shape!!",
+      "attributes": {"nproc_utilization_percent": 99.5}
+    }
+  ]
+}

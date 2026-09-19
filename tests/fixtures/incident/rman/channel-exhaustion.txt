@@ -1,0 +1,15 @@
+# Fixture: RMAN channel exhaustion during backup
+# Source: RMAN log excerpt (sanitized)
+
+RMAN-03009: failure of backup command on ORA_DISK_1 channel at 03/11/2026 14:50:12
+ORA-19502: write error on file "/backup/PRODDB_TOKEN/full_01.bkp", block number 128512 (block size=8192)
+ORA-27072: File I/O error
+Linux-x86_64 Error: 28: No space left on device
+
+channel_allocation (evidence_id EVD-RMAN-CHAN-1):
+  configured_channels: 4
+  allocated_channels: 1
+  device_type: DISK
+
+# expected_classification: SYMPTOM (channel allocation failed due to downstream I/O error)
+# used_by: incident/rman-correlation

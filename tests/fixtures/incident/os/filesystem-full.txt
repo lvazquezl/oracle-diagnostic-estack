@@ -1,0 +1,15 @@
+# Fixture: filesystem full on Oracle mount point
+# Source: os/filesystems evidence excerpt (sanitized)
+
+os_evidence (get_filesystem_usage, HOST_TOKEN_01, evidence_id EVD-OS-FS-1):
+  mount_point: /u02/oradata
+  used_percent: 100.0
+  available_bytes: 0
+
+alert.log (PRODDB_TOKEN):
+2026-03-11T14:58:44.331007+00:00
+ORA-27072: File I/O error
+Linux-x86_64 Error: 28: No space left on device
+
+# expected_classification: CONDITION (host filesystem exhaustion)
+# used_by: incident/os-correlation, incident/capacity-correlation

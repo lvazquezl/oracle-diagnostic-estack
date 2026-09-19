@@ -1,0 +1,13 @@
+# Fixture: Data Guard transport lag spike
+# Source: dataguard/transport evidence excerpt (sanitized)
+
+V$DATAGUARD_STATS (STANDBY_TOKEN_01, evidence_id EVD-DG-TRANSPORT-1):
+  transport_lag: +00 02:14:07
+  time_computed: 2026-03-11T14:44:00Z
+
+alert.log (PRIMARY_TOKEN):
+2026-03-11T14:43:10.221007+00:00
+LGWR: Error 3113 sending redo to standby STANDBY_TOKEN_01 network connection lost contact
+
+# expected_classification: SYMPTOM/CONDITION (transport lag growing, not confirmed data_loss)
+# used_by: incident/dataguard-correlation, incident/impact-analysis

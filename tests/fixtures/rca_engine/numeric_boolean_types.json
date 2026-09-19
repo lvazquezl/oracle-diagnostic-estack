@@ -1,0 +1,28 @@
+{
+  "incident": {
+    "id": "INC-20260318-007",
+    "target_id": "T-PRODDB",
+    "symptom_description": "Numeric and boolean causal fields must remain typed, including int and false"
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "oracle", "source_id": "alert-log-parser",
+      "timestamp": "2026-03-11T15:02:31+00:00", "event_type": "ALERT_TRIGGERED", "signature": "ORA-01652"
+    },
+    {
+      "evidence_id": "EVD-2", "domain": "capacity", "source_id": "capacity-collector",
+      "timestamp": "2026-03-11T15:02:00+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "attributes": {"tablespace_used_percent": 96}
+    },
+    {
+      "evidence_id": "EVD-3", "domain": "oracle", "source_id": "oracle-collector",
+      "timestamp": "2026-03-11T15:02:05+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "attributes": {"temp_autoextend_exhausted": true}
+    },
+    {
+      "evidence_id": "EVD-4", "domain": "capacity", "source_id": "capacity-collector-2",
+      "timestamp": "2026-03-11T15:02:08+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "attributes": {"storage_latency_normal": false}
+    }
+  ]
+}

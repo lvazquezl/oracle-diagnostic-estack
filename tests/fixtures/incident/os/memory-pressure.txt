@@ -1,0 +1,15 @@
+# Fixture: OS memory pressure preceding instance symptoms
+# Source: os/memory-pressure evidence excerpt (sanitized) + kernel log
+
+os_evidence (get_memory_pressure, HOST_TOKEN_01, evidence_id EVD-OS-MEM-1):
+  mem_available_percent: 2.1
+  swap_used_percent: 84.3
+  oom_killer_invocations_last_hour: 2
+
+kernel log (dmesg, sanitized):
+[998231.221007] oracle invoked oom-killer: gfp_mask=0x100cca(GFP_HIGHUSER_MOVABLE), order=0
+[998231.221990] Out of memory: Killed process 88213 (ora_dbw0_PRODDB) total-vm:5211392kB
+
+# expected_classification: CONDITION (host memory exhaustion) — strong contributing factor
+#   candidate for instance-level symptoms observed at the same host
+# used_by: incident/os-correlation

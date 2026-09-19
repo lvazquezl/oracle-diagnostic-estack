@@ -1,0 +1,13 @@
+# Fixture: time-sync degradation — timeline confidence degradation candidate
+# Source: os/time-sync evidence excerpt (sanitized)
+
+os_evidence (get_time_sync_status, HOST_TOKEN_02, evidence_id EVD-OS-TIME-1):
+  service: chronyd
+  synchronized: false
+  offset_seconds: 47.221
+  last_sync: 2026-03-11T11:12:00Z
+
+# expected_classification: CONDITION (clock drift on HOST_TOKEN_02) — any evidence timestamped
+#   from this host during the drift window must be flagged TIMELINE_CONFIDENCE_DEGRADED,
+#   never silently "corrected"
+# used_by: incident/os-correlation, incident/timeline

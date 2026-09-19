@@ -1,0 +1,13 @@
+# Fixture: RAC node eviction — causal_chain candidate, never network-cause-by-default
+# Source: CRS alert log excerpt, sanitized
+
+[cssd(19822)]CRS-1607: Node RACNODE_TOKEN_02 is being evicted in cluster incarnation 123456789; details at (:CSSNM00007:) in /u01/app/grid/diag/crs/racnode_token_02/crs/trace/ocssd.trc.
+[cssd(19822)]CRS-1632: Node RACNODE_TOKEN_02 is being removed from the cluster in cluster incarnation 123456789.
+[ohasd(15221)]CRS-8011: reboot advisory message from host: racnode_token_01, component: cssagent, with time stamp: L-2026-03-11-14:40:02.331
+[ohasd(15221)]CRS-8013: reboot advisory message text: Rebooting for reboot advisory being logged for Eviction
+
+# candidate_causes: network path instability, voting disk I/O latency, CPU starvation/OS scheduling
+# expected_causal_chain_example (per prompt): network path instability -> RAC interconnect packet
+#   loss -> cluster communication degradation -> node eviction -> service disruption
+#   (each link requires its own evidence — never assumed)
+# used_by: incident/rac-correlation, incident/playbooks (RAC eviction playbook)

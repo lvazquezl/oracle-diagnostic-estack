@@ -1,0 +1,16 @@
+# Fixture: FRA pressure causing backup/archiver failure — causal chain candidate
+# Source: alert.log + RMAN log excerpt (sanitized)
+
+alert.log (PRODDB_TOKEN):
+2026-03-11T14:54:03.221009+00:00
+ORA-19809: limit exceeded for recovery files
+ORA-19804: cannot reclaim 838860800 bytes disk space from 107374182400 limit
+ARCH: Error 19809 Creating archive log file to '/u02/fra/PRODDB_TOKEN/archivelog/...'
+
+fra_usage (evidence_id EVD-RMAN-FRA-1):
+  used_percent: 99.2
+  reclaimable_percent: 1.1
+
+# expected_causal_chain_candidate: FRA pressure -> archivelog destination blocked ->
+#   database hang risk (each link requires its own evidence — never asserted without it)
+# used_by: incident/rman-correlation, incident/asm-storage-correlation, incident/capacity-correlation

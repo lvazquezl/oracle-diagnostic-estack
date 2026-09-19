@@ -18,4 +18,14 @@ grep -qi 'nunca cambian bonding, vlan, route, mtu, firewall ni sysctl' "$ROOT/do
   || { echo "[FAIL] falta prohibición explícita"; FAIL=1; }
 
 [ $FAIL -eq 0 ] && echo "[PASS] Ningún artefacto modifica configuración de red"
+
+# PHASE 11 — INCIDENT ANALYSIS & ROOT CAUSE AUTOMATION (NO NETWORK CHANGE).
+MI="$ROOT/agents/incident-root-cause-analyst/manifest.yaml"
+[ -f "$MI" ] || { echo "[FAIL] falta $MI"; FAIL=1; }
+if [ -f "$MI" ]; then
+  grep -qi 'modificar OS/red/storage/seguridad' "$MI" \
+    && echo "[PASS] incident-root-cause-analyst declara la prohibición de cambio de red" \
+    || { echo "[FAIL] falta la prohibición de cambio de red en incident-root-cause-analyst"; FAIL=1; }
+fi
+
 exit $FAIL

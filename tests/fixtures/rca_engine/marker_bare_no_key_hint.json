@@ -1,0 +1,15 @@
+{
+  "incident": {
+    "id": "INC-20260318-002",
+    "target_id": "T-PRODDB",
+    "symptom_description": "App team pasted a raw debug dump with no obvious label: 4f6a9c1b8e3d2f507a1c9b3e6d8f2a41bearer-looking-blob and a bare wallet-shaped token SYNTHETIC_SECRET_DO_NOT_USE_bareblob123456"
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "network", "source_id": "listener-log-parser",
+      "timestamp": "2026-03-11T14:22:07+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "signature": "ORA-12537",
+      "summary": "connection failed; unrelated pasted blob without a key= prefix: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+# Fixture: SCAN listener degradation — one of three SCAN listeners unreachable
+# Source: srvctl/crsctl status excerpt (sanitized), listener log excerpt
+
+$ srvctl status scan_listener
+SCAN Listener LISTENER_SCAN1 is enabled
+SCAN listener LISTENER_SCAN1 is running on node racnode_token_01
+SCAN Listener LISTENER_SCAN2 is enabled
+SCAN listener LISTENER_SCAN2 is NOT running
+SCAN Listener LISTENER_SCAN3 is enabled
+SCAN listener LISTENER_SCAN3 is running on node racnode_token_03
+
+listener_scan2.log:
+11-MAR-2026 14:41:10 * ping * 0
+TNS-12541: TNS:no listener
+
+# expected_classification: SYMPTOM (partial SCAN degradation, client connection storms possible
+#   on remaining listeners)
+# used_by: incident/rac-correlation, incident/network-correlation

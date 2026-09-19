@@ -1,0 +1,25 @@
+{
+  "incident": {
+    "id": "INC-20260311-009",
+    "target_id": "T-PRODDB",
+    "symptom_description": "Same TNS error reported 3 times by two different collectors within one second"
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "network", "source_id": "listener-log-parser",
+      "timestamp": "2026-03-11T14:22:07.100000+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "signature": "ORA-12537", "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-2", "domain": "network", "source_id": "listener-log-parser",
+      "timestamp": "2026-03-11T14:22:07.400000+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "signature": "ORA-12537", "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-3", "domain": "network", "source_id": "sqlnet-log-parser",
+      "timestamp": "2026-03-11T14:25:41+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "signature": "ORA-12537", "summary": "later, distinct occurrence — outside the 1-second dedup window",
+      "attributes": {}
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+# Fixture: ephemeral port exhaustion on a RAC node — contributing factor candidate
+# Source: os/ephemeral-ports evidence excerpt (sanitized)
+
+os_evidence (get_ephemeral_port_usage, RACNODE_TOKEN_01):
+  range: 32768-60999 (28232 ports)
+  in_use: 27890
+  utilization_percent: 98.8
+  time_wait_count: 24110
+
+listener.log:
+11-MAR-2026 14:42:33 * (CONNECT_DATA=(SERVICE_NAME=PRODDB_TOKEN)) * (ADDRESS=(PROTOCOL=tcp)(HOST=RACNODE_TOKEN_01)) * establish * PRODDB_TOKEN * 12520
+
+# expected_classification: CONDITION (ephemeral port pressure on the local listener host)
+# candidate_contributing_factor: high TIME_WAIT from short-lived connection churn, no tcp_tw_reuse
+# used_by: incident/os-correlation, incident/rac-correlation

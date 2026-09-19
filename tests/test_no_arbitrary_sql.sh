@@ -26,4 +26,11 @@ if [ -f "$M" ]; then
   grep -q 'SQL arbitrario' "$M" && echo "[PASS] capacity-analyst declara la prohibición de SQL arbitrario" || { echo "[FAIL] falta la prohibición de SQL arbitrario en capacity-analyst"; FAIL=1; }
 fi
 
+# PHASE 11 — INCIDENT ANALYSIS & ROOT CAUSE AUTOMATION (NO ARBITRARY SQL).
+MI="$ROOT/agents/incident-root-cause-analyst/manifest.yaml"
+[ -f "$MI" ] || { echo "[FAIL] falta $MI"; FAIL=1; }
+if [ -f "$MI" ]; then
+  grep -q 'SQL arbitrario' "$MI" && echo "[PASS] incident-root-cause-analyst declara la prohibición de SQL arbitrario" || { echo "[FAIL] falta la prohibición de SQL arbitrario en incident-root-cause-analyst"; FAIL=1; }
+fi
+
 exit $FAIL

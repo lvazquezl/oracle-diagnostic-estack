@@ -1,0 +1,23 @@
+# Fixture: ORA-12170 (TNS:Connect timeout occurred) — symptom
+# Source: application error log + sqlnet.log excerpt, sanitized
+
+sqlnet.log:
+Fatal NI connect error 12170.
+
+  VERSION INFORMATION:
+        TNS for Linux: Version 19.0.0.0.0 - Production
+        Oracle Bequeath NT Protocol Adapter for Linux: Version 19.0.0.0.0 - Production
+  Time: 11-MAR-2026 14:23:02
+  Tracing not turned on.
+  Tns error struct:
+    ns main err code: 12535
+    TNS-12535: TNS:operation timed out
+    ns secondary err code: 12606
+    nt main err code: 505
+    nt secondary err code: 110
+    nt OS err code: 0
+
+# expected_classification: SYMPTOM (connect-side timeout, not confirmed cause)
+# candidate_conditions: SQLNET.INBOUND_CONNECT_TIMEOUT too aggressive, network path congestion,
+#   listener queue saturation
+# used_by: incident/network-correlation

@@ -1,0 +1,13 @@
+# Fixture: ORA-04068 (existing state of packages has been discarded) — symptom, change-correlated
+# Source: application error log excerpt, sanitized
+
+2026-03-11 14:25:44 ERROR: ORA-04068: existing state of packages "APPUSER_TOKEN.PKG_ORDER_PROC" has been discarded
+2026-03-11 14:25:44 ORA-04061: existing state of package body "APPUSER_TOKEN.PKG_ORDER_PROC" has been invalidated
+2026-03-11 14:25:44 ORA-04065: not executed, altered or dropped package body "APPUSER_TOKEN.PKG_ORDER_PROC"
+2026-03-11 14:25:44 ORA-06508: PL/SQL: could not find program unit being called: "APPUSER_TOKEN.PKG_ORDER_PROC"
+
+# known_change: deployment of DDL patch on APPUSER_TOKEN schema at 2026-03-11T14:20:00Z
+# expected_classification: SYMPTOM (session-cached state discarded by recompilation)
+# expected_change_correlation: CHANGE_CORRELATED (deployment 5 min before) — CHANGE_CAUSED only
+#   after confirming the deployment recompiled the package body
+# used_by: incident/change-correlation

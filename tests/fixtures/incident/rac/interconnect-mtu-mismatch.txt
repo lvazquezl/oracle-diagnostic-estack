@@ -1,0 +1,15 @@
+# Fixture: RAC interconnect MTU mismatch — contributing factor candidate
+# Source: os/network-interfaces + os/mtu evidence excerpt (sanitized), CRS alert log
+
+os_evidence (get_interfaces / get_mtu, RACNODE_TOKEN_01):
+  interface: ic0 (interconnect), mtu: 9000
+os_evidence (get_interfaces / get_mtu, RACNODE_TOKEN_02):
+  interface: ic0 (interconnect), mtu: 1500
+
+CRS alert log:
+[cssd(19822)]CRS-1615: No I/O has completed after 50% of the maximum interconnect timeout of 30000 milliseconds. Voting file I/O may be experiencing delays.
+
+# expected_classification: CONFIGURATION_DRIFT (mtu mismatch between nodes) — contributing factor
+#   candidate for interconnect packet fragmentation/degradation, never asserted as confirmed
+#   cause without interconnect packet-loss evidence
+# used_by: incident/rac-correlation, incident/os-correlation, incident/contributing-factors

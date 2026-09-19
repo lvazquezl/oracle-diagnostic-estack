@@ -1,0 +1,30 @@
+{
+  "incident": {
+    "id": "INC-20260318-001",
+    "target_id": "SYNTHETIC_SECRET_DO_NOT_USE_8f2c",
+    "symptom_description": "Investigating an incident on SYNTHETIC_SECRET_DO_NOT_USE_8f2c, notes: password=SYNTHETIC_SECRET_DO_NOT_USE_pw1",
+    "declared_evidence_refs": ["EVD-1", "EVD-2"]
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "oracle", "source_id": "SYNTHETIC_SECRET_DO_NOT_USE_src1",
+      "timestamp": "2026-03-11T15:02:31+00:00", "event_type": "ALERT_TRIGGERED",
+      "signature": "SYNTHETIC_SECRET_DO_NOT_USE_8f2c",
+      "summary": "debug note pasted by mistake: token=SYNTHETIC_SECRET_DO_NOT_USE_tok2 on host SYNTHETIC_SECRET_DO_NOT_USE_8f2c",
+      "attributes": {
+        "SYNTHETIC_SECRET_DO_NOT_USE_unknown_key": "SYNTHETIC_SECRET_DO_NOT_USE_val1",
+        "nproc_utilization_percent": 99.5,
+        "nested_marker_holder": {
+          "deep_key_SYNTHETIC_SECRET_DO_NOT_USE": "SYNTHETIC_SECRET_DO_NOT_USE_deepval",
+          "deep_list": ["SYNTHETIC_SECRET_DO_NOT_USE_listval1", "SYNTHETIC_SECRET_DO_NOT_USE_listval2"]
+        },
+        "unicode_marker_éñ": "SYNTHETIC_SECRET_DO_NOT_USE_unicode_üñí"
+      }
+    },
+    {
+      "evidence_id": "EVD-2", "domain": "os", "source_id": "os-process-limits-collector",
+      "timestamp": "2026-03-11T15:02:00+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "attributes": {"fork_failures_observed": true}
+    }
+  ]
+}

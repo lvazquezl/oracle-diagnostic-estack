@@ -1,0 +1,26 @@
+{
+  "incident": {
+    "id": "INC-20260311-006",
+    "target_id": "T-PRODDB",
+    "symptom_description": "New connections failing, two plausible OS-level causes, neither differentiated"
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "oracle", "source_id": "alert-log-parser",
+      "timestamp": "2026-03-11T15:02:31+00:00", "event_type": "ALERT_TRIGGERED",
+      "signature": "ORA-27300", "summary": "fork failed with status 11", "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-2", "domain": "os", "source_id": "os-process-limits-collector",
+      "timestamp": "2026-03-11T15:02:00+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "summary": "RLIMIT_NPROC near its configured limit",
+      "attributes": {"nproc_utilization_percent": 99.5}
+    },
+    {
+      "evidence_id": "EVD-3", "domain": "os", "source_id": "os-cgroups-collector",
+      "timestamp": "2026-03-11T15:02:02+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "summary": "cgroup pids.max near its configured limit",
+      "attributes": {"cgroup_pids_utilization_percent": 99.1}
+    }
+  ]
+}

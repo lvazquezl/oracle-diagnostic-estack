@@ -1,0 +1,21 @@
+{
+  "incident": {
+    "id": "INC-20260311-002",
+    "target_id": "T-PRODDB",
+    "symptom_description": "Clients report ORA-12537 shortly after a deployment"
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "network", "source_id": "listener-log-parser",
+      "timestamp": "2026-03-11T14:22:07+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "signature": "ORA-12537", "summary": "TNS connection closed",
+      "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-2", "domain": "oracle", "source_id": "change-log",
+      "timestamp": "2026-03-11T14:20:00+00:00", "event_type": "CONFIG_CHANGE",
+      "summary": "deployment of DDL patch (temporally close, but no causal mechanism evidence)",
+      "attributes": {}
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "incident": {
+    "id": "INC-20260311-010",
+    "target_id": "T-PRODDB",
+    "symptom_description": "New connections failing — same causal pattern as the positive case, but one declared evidence reference is missing",
+    "declared_evidence_refs": ["EVD-1", "EVD-2", "EVD-3", "EVD-MISSING-99"]
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "oracle", "source_id": "alert-log-parser",
+      "timestamp": "2026-03-11T15:02:31+00:00", "event_type": "ALERT_TRIGGERED",
+      "signature": "ORA-27300", "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-2", "domain": "os", "source_id": "os-process-limits-collector",
+      "timestamp": "2026-03-11T15:02:00+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "attributes": {"nproc_utilization_percent": 99.5}
+    },
+    {
+      "evidence_id": "EVD-3", "domain": "os", "source_id": "os-fork-audit-collector",
+      "timestamp": "2026-03-11T15:02:10+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "attributes": {"fork_failures_observed": true}
+    }
+  ]
+}

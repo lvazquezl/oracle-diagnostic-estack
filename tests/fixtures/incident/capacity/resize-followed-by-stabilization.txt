@@ -1,0 +1,16 @@
+# Fixture: capacity resize event followed by stabilization — change correlation, not necessarily causal
+# Source: capacity-analyst capacity_events evidence excerpt (sanitized)
+
+capacity_events (DISKGROUP_TOKEN, evidence_id EVD-CAP-EVT-1):
+  event_type: RESIZE
+  timestamp: 2026-03-11T13:50:00Z
+  delta_gb: +500
+
+threshold_crossings (DISKGROUP_TOKEN):
+  status: NOT_EXPECTED_WITHIN_HORIZON
+  observed_at: 2026-03-11T14:30:00Z
+
+# expected_classification: CHANGE_CORRELATED (resize occurred ~40 min before symptoms resolved) —
+#   never asserted CHANGE_CAUSED without direct evidence the resize itself relieved the specific
+#   constraint observed in the incident
+# used_by: incident/capacity-correlation, incident/change-correlation, incident/recovery-status

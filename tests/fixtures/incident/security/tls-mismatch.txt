@@ -1,0 +1,15 @@
+# Fixture: TLS mismatch preventing secure connections
+# Source: security/tls-awareness evidence excerpt (sanitized), sqlnet.log
+
+sqlnet.log:
+Fatal NI connect error 12660, connecting to:
+ (DESCRIPTION=(ADDRESS=(PROTOCOL=tcps)(HOST=HOST_TOKEN)(PORT=2484))(CONNECT_DATA=(SERVICE_NAME=PRODDB_TOKEN)))
+  TNS-12660: Encryption or crypto-checksumming parameters incompatible
+
+tls_configuration (evidence_id EVD-SEC-TLS-1):
+  sqlnet_ora_ssl_version: "1.2"
+  client_reported_version: "1.0"
+
+# expected_classification: SYMPTOM (protocol version mismatch after a server-side TLS hardening
+#   change) — candidate change correlation with a recent sqlnet.ora update
+# used_by: incident/security-correlation, incident/change-correlation

@@ -1,0 +1,43 @@
+may_delegate_to:
+  - change-advisor
+  - oracle-dba-analyst
+  - oracle-performance-analyst
+  - oracle-rac-analyst
+  - oracle-asm-storage-analyst
+  - oracle-dataguard-analyst
+  - oracle-multitenant-analyst
+  - oracle-backup-recovery-analyst
+  - oracle-network-analyst
+  - oracle-security-analyst
+  - os-platform-analyst
+  - capacity-analyst
+
+may_receive_from:
+  - oracle-operations-orchestrator
+  - oracle-dba-analyst
+  - oracle-performance-analyst
+  - oracle-rac-analyst
+  - oracle-asm-storage-analyst
+  - oracle-dataguard-analyst
+  - oracle-multitenant-analyst
+  - oracle-backup-recovery-analyst
+  - oracle-network-analyst
+  - oracle-security-analyst
+  - os-platform-analyst
+  - capacity-analyst
+
+must_not_delegate_to: []
+
+escalation_conditions:
+  - condition: "root cause alcanza CONFIRMED o PROBABLE con una recomendación accionable"
+    action: "escalar a change-advisor con manual_action/manual remediation plan para propuesta de cambio de ejecución humana (# 52 del prompt: prepara REC->CHG para Fase 12, no implementa el workflow completo de Change)"
+  - condition: "validar una hipótesis requiere evidencia de un dominio no cubierto por los especialistas ya activados"
+    action: "solicitar al orquestador activar el especialista mínimo necesario para esa hipótesis específica — nunca activar todos los dominios por defecto (# 105 del prompt)"
+  - condition: "ninguna hipótesis alcanza PROBABLE_CAUSE/CONFIRMED tras agotar la evidencia razonablemente disponible"
+    action: "cerrar como INCONCLUSIVE o INSUFFICIENT_EVIDENCE explícitamente — nunca forzar una conclusión (# 46, # 62 del prompt)"
+  - condition: "se detecta una brecha de observabilidad (métrica/log/timestamp/correlation ID faltante, retención insuficiente, clock skew)"
+    action: "reportar como hallazgo de observability gap separado (# 60 del prompt), nunca oculto dentro del RCA principal"
+
+no_delegation_loop_rule: "incident-root-cause-analyst nunca vuelve a pedir evidencia ya recolectada en la misma sesión por el mismo especialista para el mismo recurso — reutiliza evidence_refs/timeline/correlations cacheados antes de solicitar una nueva recolección puntual."
+
+manual_command_rule: "Ninguna recomendación de este agente reinicia servicios/bases, mata sesiones/procesos, ejecuta failover/switchover, cambia parámetros/storage/red/seguridad, ni ejecuta RMAN — toda sugerencia, incluso las urgentes (restart listener, relocate service, kill session, failover, extend filesystem), aparece únicamente como MANUAL AUTHORIZED ACTION con execution_status: NOT_EXECUTED, dirigida al owner_role correspondiente (# 50-51 del prompt de Fase 11)."

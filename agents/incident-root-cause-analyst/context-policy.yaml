@@ -1,0 +1,32 @@
+minimum_context: "Incident intake normalizado (bloque `incident:`) + la pregunta/síntoma puntual + evidence_refs ya cacheados relevantes."
+
+evidence_by_reference: true
+
+local_computation:
+  required: true
+  rule: "Toda normalización de timestamp/timezone, ordenamiento de timeline, deduplicación de eventos, clustering de síntomas, cálculo de ventanas de correlación y scoring de hipótesis se calcula localmente antes de que cualquier resultado llegue al modelo — nunca se envían logs crudos completos (# 64, # 107 del prompt de Fase 11)."
+  pipeline: "raw evidence -> local parser -> event extraction -> dedup -> timeline summary -> top hypotheses -> LLM reasoning"
+
+top_n:
+  hypotheses_default: 5
+  configurable: true
+  rule: "No generar decenas de hipótesis irrelevantes (# 21 del prompt) — Top-N por evidence strength/temporal consistency/mechanistic plausibility/cross-domain consistency."
+
+no_raw_logs_to_model: true
+no_raw_logs_rule: "Nunca se envía un archivo de log completo (alert.log/listener.log/CRS/RMAN output/Data Guard output/OS logs) al modelo — sólo eventos extraídos, timeline resumido, top hipótesis y evidence refs (# 65-67 del prompt)."
+
+no_business_data: true
+no_business_data_rule: "Nunca se inspecciona contenido de aplicación/bind values/datos de negocio en ningún reporte de incidente (# 63 del prompt)."
+
+no_secrets: true
+no_secrets_rule: "Nunca se incluyen passwords/hashes/wallet secrets/private keys/SQL sensible completo/identificadores crudos de cliente (# 63 del prompt) — sanitización heredada de sanitizers/data-classification-policy.md."
+
+cache:
+  required: true
+  scope: "existing evidence, parsed events, timeline, correlations"
+  invalidation: "nueva evidencia recolectada para el mismo target, ventana de tiempo ampliada, cambio de versión de parser (# 106 del prompt) — nunca cachea secretos."
+
+context_budget:
+  relative_level: MEDIUM_HIGH
+  scaling_rule: "Bajo si reutiliza evidence_refs/timeline/correlaciones ya cacheadas de la misma sesión; alto la primera vez que se orquesta evidencia cross-domain nueva para un incidente (cada especialista activado suma su propio presupuesto sólo si se activa, # 105 del prompt: routing mínimo — incident-root-cause-analyst + sólo los agentes de dominio requeridos)."
+  reuse_rule: "Reutiliza evidence_refs/timeline/correlations ya cacheados en la sesión antes de solicitar nueva recolección — nunca repite parsing innecesario (# 106 del prompt)."

@@ -1,0 +1,17 @@
+# Fixture: wallet unavailable — TDE/TLS startup dependency symptom
+# Source: security/keystore-awareness evidence excerpt (sanitized)
+
+alert.log (PRODDB_TOKEN):
+2026-03-11T14:17:41.331007+00:00
+ORA-28365: wallet is not open
+ORA-28374: typed master key not found in wallet
+
+keystore_status (evidence_id EVD-SEC-WALLET-1):
+  status: CLOSED
+  wallet_type: AUTOLOGIN
+  wallet_path_token: TOKENIZED_PATH
+
+# expected_classification: SYMPTOM (wallet closed at instance/PDB open time) — candidate
+#   conditions: autologin wallet file permissions changed, filesystem holding the wallet
+#   unavailable at boot
+# used_by: incident/security-correlation, incident/os-correlation

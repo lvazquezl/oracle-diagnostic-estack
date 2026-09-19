@@ -1,0 +1,217 @@
+{
+  "rules_version": "1.0.0",
+  "rules": [
+    {
+      "rule_id": "RULE-OS-PROCESS-LIMIT-001",
+      "domain": "os",
+      "statement": "OS process limit (RLIMIT_NPROC/cgroup pids.max) exhaustion on the target host prevented new Oracle server process creation",
+      "causal_chain": [
+        "OS process count for the oracle user approaches/reaches the configured limit",
+        "fork() fails for new Oracle server processes (ORA-27300/ORA-27301/ORA-27302)",
+        "new connections/sessions cannot be established",
+        "service disruption observed by clients"
+      ],
+      "symptom_match": {
+        "signature_any": ["ORA-27300", "ORA-27301", "ORA-27302"]
+      },
+      "supporting_conditions": [
+        {"domain": "os", "attribute": "nproc_utilization_percent", "op": ">=", "value": 99.0,
+         "description": "OS process count at/near the configured RLIMIT_NPROC/cgroup pids.max limit"},
+        {"domain": "os", "attribute": "fork_failures_observed", "op": "==", "value": true,
+         "description": "fork() failures measured on the target host for the oracle user"}
+      ],
+      "contradicting_conditions": [
+        {"domain": "os", "attribute": "nproc_utilization_percent", "op": "<", "value": 80.0,
+         "critical": true, "description": "process count well below the configured limit contradicts exhaustion"}
+      ],
+      "temporal_proof_condition": {
+        "domain": "os", "attribute": "fork_failures_stopped_after_limit_increase", "op": "==", "value": true,
+        "description": "fork() failures stopped exactly when the process limit was raised — unambiguous temporal proof"
+      },
+      "min_independent_sources": 2,
+      "manual_actions": [
+        {
+          "action_summary": "Increase RLIMIT_NPROC / cgroup pids.max for the oracle OS user after capacity review",
+          "precheck": "Confirm current process count, headroom and binding constraint via os/process-limits and os/cgroups",
+          "risk": "OS-level configuration change, requires coordination with platform/infra team and service review",
+          "postcheck": "Re-measure nproc_utilization_percent and fork_failures_observed after the change",
+          "requires_change": true
+        }
+      ]
+    },
+    {
+      "rule_id": "RULE-NET-LISTENER-HANG-001",
+      "domain": "network",
+      "statement": "A hung/unresponsive listener process caused inbound connection failures",
+      "causal_chain": [
+        "listener process stops responding to new connection requests",
+        "clients receive ORA-12537/ORA-12170 on connect attempts",
+        "application-visible outage"
+      ],
+      "symptom_match": {
+        "signature_any": ["ORA-12537", "ORA-12170"]
+      },
+      "supporting_conditions": [
+        {"domain": "network", "attribute": "listener_process_responsive", "op": "==", "value": false,
+         "description": "listener process confirmed unresponsive to a local ping check"},
+        {"domain": "os", "attribute": "listener_thread_count_anomalous", "op": "==", "value": true,
+         "description": "listener process thread count anomalous on the host"}
+      ],
+      "contradicting_conditions": [
+        {"domain": "network", "attribute": "listener_process_responsive", "op": "==", "value": true,
+         "critical": true, "description": "listener process confirmed responsive contradicts a hang"}
+      ],
+      "temporal_proof_condition": null,
+      "min_independent_sources": 2,
+      "manual_actions": [
+        {
+          "action_summary": "Restart the affected listener during an approved maintenance window",
+          "precheck": "Confirm no active sessions will be dropped unexpectedly; notify affected application owners",
+          "risk": "Brief connection interruption for new connections during restart",
+          "postcheck": "Confirm listener responds to a local ping and accepts new connections",
+          "requires_change": true
+        }
+      ]
+    },
+    {
+      "rule_id": "RULE-STORAGE-LATENCY-CONTRADICTION-001",
+      "domain": "performance",
+      "statement": "Storage-layer latency caused elevated db file sequential read wait times",
+      "causal_chain": [
+        "underlying storage latency increases",
+        "single-block read I/O takes longer to complete",
+        "db file sequential read wait time increases",
+        "query/transaction response time degrades"
+      ],
+      "symptom_match": {
+        "signature_any": ["HIGH_DB_FILE_SEQUENTIAL_READ"]
+      },
+      "supporting_conditions": [
+        {"domain": "performance", "attribute": "db_file_sequential_read_avg_ms", "op": ">=", "value": 20.0,
+         "description": "db file sequential read average wait time elevated"},
+        {"domain": "capacity", "attribute": "io_queue_depth_elevated", "op": "==", "value": true,
+         "description": "I/O queue depth elevated on the underlying storage"}
+      ],
+      "contradicting_conditions": [
+        {"domain": "os", "attribute": "iostat_avg_wait_ms", "op": "<", "value": 5.0,
+         "critical": true, "description": "OS-level iostat shows normal I/O wait, contradicting a storage-latency cause"},
+        {"domain": "capacity", "attribute": "storage_latency_normal", "op": "==", "value": true,
+         "critical": true, "description": "storage layer reports normal latency, contradicting a storage-latency cause"}
+      ],
+      "temporal_proof_condition": null,
+      "min_independent_sources": 2,
+      "manual_actions": [
+        {
+          "action_summary": "Engage storage/infrastructure team to review underlying array/path health",
+          "precheck": "Confirm affected LUNs/datastores and current queue depth",
+          "risk": "None from this analysis step; any storage remediation is the infrastructure team's own change",
+          "postcheck": "Re-measure db file sequential read average after storage-side remediation",
+          "requires_change": true
+        }
+      ]
+    },
+    {
+      "rule_id": "RULE-CAPACITY-TEMP-EXHAUSTION-001",
+      "domain": "capacity",
+      "statement": "TEMP tablespace saturation prevented temp segment extension",
+      "causal_chain": [
+        "TEMP tablespace utilization reaches the configured critical threshold",
+        "a session requires additional temp segment space",
+        "ORA-01652 is raised, the operation fails"
+      ],
+      "symptom_match": {
+        "signature_any": ["ORA-01652"]
+      },
+      "supporting_conditions": [
+        {"domain": "capacity", "attribute": "tablespace_used_percent", "op": ">=", "value": 95.0,
+         "description": "TEMP tablespace utilization at/above 95% at the time of the symptom"},
+        {"domain": "oracle", "attribute": "temp_autoextend_exhausted", "op": "==", "value": true,
+         "description": "TEMP tablespace autoextend has reached its maximum size"}
+      ],
+      "contradicting_conditions": [
+        {"domain": "capacity", "attribute": "tablespace_used_percent", "op": "<", "value": 50.0,
+         "critical": true, "description": "TEMP tablespace utilization well below saturation contradicts exhaustion"}
+      ],
+      "temporal_proof_condition": null,
+      "min_independent_sources": 2,
+      "manual_actions": [
+        {
+          "action_summary": "Manually add/resize a TEMP tablespace datafile after capacity review",
+          "precheck": "Confirm available disk headroom on the underlying filesystem/ASM diskgroup",
+          "risk": "None from this analysis step; the resize itself is a manual DBA-executed change",
+          "postcheck": "Re-measure tablespace_used_percent after the manual resize",
+          "requires_change": true
+        }
+      ]
+    },
+    {
+      "rule_id": "RULE-RAC-INTERCONNECT-001",
+      "domain": "rac",
+      "statement": "RAC interconnect degradation (packet loss under an MTU mismatch) led to a node eviction",
+      "causal_chain": [
+        "interconnect MTU mismatch between cluster nodes",
+        "interconnect packet loss/fragmentation increases",
+        "cluster communication (CSS heartbeat) degrades",
+        "node eviction is triggered",
+        "service disruption on the evicted node"
+      ],
+      "symptom_match": {
+        "signature_any": ["CRS-1607", "CRS-1632"]
+      },
+      "supporting_conditions": [
+        {"domain": "os", "attribute": "interconnect_mtu_mismatch", "op": "==", "value": true,
+         "description": "interconnect MTU mismatch detected between cluster nodes"},
+        {"domain": "network", "attribute": "interconnect_packet_loss_percent", "op": ">=", "value": 1.0,
+         "description": "interconnect packet loss measured above 1%"}
+      ],
+      "contradicting_conditions": [
+        {"domain": "network", "attribute": "interconnect_packet_loss_percent", "op": "<", "value": 0.01,
+         "critical": true, "description": "interconnect packet loss negligible, contradicting a network-degradation cause"}
+      ],
+      "temporal_proof_condition": null,
+      "min_independent_sources": 2,
+      "manual_actions": [
+        {
+          "action_summary": "Correct the interconnect MTU mismatch across all cluster nodes after a coordinated maintenance window",
+          "precheck": "Confirm current MTU configuration on every interconnect interface across all nodes",
+          "risk": "Requires a coordinated network configuration change across the cluster",
+          "postcheck": "Re-measure interconnect_packet_loss_percent after the MTU correction",
+          "requires_change": true
+        }
+      ]
+    },
+    {
+      "rule_id": "RULE-OS-PROCESS-LIMIT-CGROUP-001",
+      "domain": "os",
+      "statement": "cgroup pids.max constraint (distinct from RLIMIT_NPROC) prevented new Oracle server process creation",
+      "causal_chain": [
+        "cgroup pids.max for the oracle.slice unit approaches/reaches its configured limit",
+        "fork() fails for new Oracle server processes (ORA-27300/ORA-27301/ORA-27302)",
+        "new connections/sessions cannot be established",
+        "service disruption observed by clients"
+      ],
+      "symptom_match": {
+        "signature_any": ["ORA-27300", "ORA-27301", "ORA-27302"]
+      },
+      "supporting_conditions": [
+        {"domain": "os", "attribute": "cgroup_pids_utilization_percent", "op": ">=", "value": 99.0,
+         "description": "cgroup pids.max utilization at/near its configured limit"}
+      ],
+      "contradicting_conditions": [
+        {"domain": "os", "attribute": "cgroup_pids_utilization_percent", "op": "<", "value": 80.0,
+         "critical": true, "description": "cgroup pids.max utilization well below its limit contradicts this cause"}
+      ],
+      "temporal_proof_condition": null,
+      "min_independent_sources": 2,
+      "manual_actions": [
+        {
+          "action_summary": "Increase the cgroup pids.max limit for the oracle.slice unit after capacity review",
+          "precheck": "Confirm current cgroup pids.max utilization and binding constraint via os/cgroups",
+          "risk": "OS-level configuration change, requires coordination with platform/infra team",
+          "postcheck": "Re-measure cgroup_pids_utilization_percent after the change",
+          "requires_change": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+# Fixture: account lockout coincident with application outage
+# Source: security/account-status evidence excerpt (sanitized)
+
+account_status (APPUSER_TOKEN, evidence_id EVD-SEC-LOCK-1):
+  account_status: LOCKED(TIMED)
+  lock_date: 2026-03-11T14:15:02Z
+  failed_login_attempts: 12
+
+alert.log (PRODDB_TOKEN):
+2026-03-11T14:15:03.220117+00:00
+ORA-28000: the account is locked
+
+# expected_classification: SYMPTOM/CONDITION (account lockout) — candidate contributing factor:
+#   application credential not rotated after a password policy change; never assumed malicious
+#   without additional evidence, intentionality determination out of e-stack scope
+# used_by: incident/security-correlation

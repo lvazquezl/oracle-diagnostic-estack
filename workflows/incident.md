@@ -1,6 +1,6 @@
 ---
 name: incident
-version: 1.0.0
+version: 2.0.0
 status: active
 ---
 
@@ -30,7 +30,19 @@ Cualquiera del registro, activado en paralelo por `incident-root-cause-analyst` 
 
 # Skills
 
-`incident/root-cause-analysis`, `incident/timeline-analysis`, `incident/blast-radius`, más los skills de dominio de cada especialista activado.
+Secuencia mínima del `incident-root-cause-analyst` (v2.0.0, `agents/incident-root-cause-analyst/AGENT.md`):
+`incident/intake` → `incident/classification` → `incident/severity-awareness` →
+`incident/scope-identification` → `incident/timeline` → `incident/evidence-plan` →
+`incident/evidence-correlation` → `incident/symptom-clustering` →
+`incident/hypothesis-generation` → los skills de correlación cross-domain relevantes al scope
+(`incident/performance-correlation`, `incident/rac-correlation`, `incident/dataguard-correlation`,
+`incident/asm-storage-correlation`, `incident/network-correlation`, `incident/os-correlation`,
+`incident/security-correlation`, `incident/rman-correlation`, `incident/multitenant-correlation`,
+`incident/change-correlation`, `incident/capacity-correlation`, `incident/known-error-correlation`) →
+`incident/hypothesis-testing` → `incident/contradiction-analysis` → `incident/root-cause` →
+`incident/contributing-factors` → `incident/impact-analysis` → `incident/blast-radius` →
+`incident/recovery-status` → `incident/manual-remediation-plan` → `incident/incident-report`,
+más los skills de dominio de cada especialista activado en paralelo.
 
 # Evidence required
 
@@ -50,7 +62,11 @@ Blast radius amplio o `CONFIRMED_ROOT_CAUSE` con recomendación urgente → `cha
 
 # Documentation output
 
-`incident/INC-YYYYMMDD-NNN/` con `timeline.md`, `root-cause.md`, `lessons-learned.md` además de los archivos estándar.
+`incident/INC-YYYYMMDD-NNN/` con `incident-timeline.md`, `incident-findings.md`,
+`incident-impact.md`, `incident-manual-actions.md`, `incident-report.md`, `incident-rca.md`
+(vía `incident/incident-report`, `incident/rca-report`), además de los archivos estándar. Si el
+incidente se cierra dentro de la misma sesión, se agrega `incident-postmortem.md` y
+`incident-lessons-learned.md` (vía `incident/post-incident-review`, `incident/lessons-learned`).
 
 # Token/context budget
 
@@ -58,7 +74,12 @@ Alto — activación en paralelo es intencionalmente más costosa a cambio de me
 
 # Security constraints
 
-READ-ONLY ALWAYS. Ningún agente ejecuta contención automática — toda acción de contención/corrección es una propuesta de `change-advisor` para ejecución humana inmediata.
+READ-ONLY ALWAYS. HUMAN-EXECUTED REMEDIATION ONLY — ningún agente ejecuta contención automática,
+ni siquiera en escenarios etiquetados "emergencia" (restart, relocate, kill session, failover,
+extender filesystem). Toda acción de contención/corrección es una `manual_remediation_plan`
+(`incident/manual-remediation-plan`, `execution_status: NOT_EXECUTED`) para ejecución humana
+inmediata, y opcionalmente una propuesta formal de `change-advisor` si el DBA decide
+formalizarla como cambio.
 
 # Gates
 

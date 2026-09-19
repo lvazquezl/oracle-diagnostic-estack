@@ -1,0 +1,216 @@
+incident_result:
+  summary: string
+
+  incident:
+    incident_id: string                # INC-YYYYMMDD-NNN
+    title: string
+    opened_at: string
+    detected_at: string|null
+    resolved_at: string|null
+    status: OPEN|INVESTIGATING|MITIGATED|RESOLVED|MONITORING|CLOSED|UNKNOWN
+    severity: SEV1|SEV2|SEV3|SEV4|UNKNOWN
+    source: string
+    affected_services: [string]
+    affected_targets: [string]
+    symptoms: [string]
+    business_impact: string|null
+    technical_impact: string|null
+    known_changes: [string]
+    initial_evidence_ids: [string]
+
+  evidence_plan:
+    required_domains: [string]
+    required_evidence: [string]
+    optional_evidence: [string]
+    missing_evidence: [string]
+    collection_order: [string]
+    expected_cost: string|null
+    sensitivity: string|null
+
+  evidence_completeness: COMPLETE|SUFFICIENT|PARTIAL|INSUFFICIENT|INVALID
+
+  timeline:
+    - event_id: string
+      timestamp: string                # normalizado a UTC
+      source_timestamp: string         # preservado para auditoría
+      source: string
+      domain: string
+      target: string
+      event_type: ALERT|ERROR|WARNING|STATE_CHANGE|CONFIG_CHANGE|RESOURCE_PRESSURE|FAILURE|RECOVERY|RESTART|FAILOVER|BACKUP_EVENT|NETWORK_EVENT|SECURITY_EVENT|CAPACITY_EVENT
+      summary: string
+      evidence_ids: [string]
+      confidence: FACT|OBSERVATION|HYPOTHESIS|UNDETERMINED
+      count: int                       # dedup — ocurrencias agregadas
+      first_seen: string|null
+      last_seen: string|null
+
+  timeline_confidence: NORMAL|TIMELINE_CONFIDENCE_DEGRADED
+  clock_skew_detected: bool
+
+  error_signatures:
+    - code: string
+      domain: string
+      first_seen: string
+      last_seen: string
+      count: int
+      evidence_ids: [string]
+      recurrence: FIRST_OCCURRENCE|RECURRENT|PATTERNED|UNKNOWN
+
+  symptom_clusters:
+    - cluster_id: string
+      symptoms: [string]
+      domain: string
+      evidence_ids: [string]
+
+  hypotheses:
+    - hypothesis_id: string            # HYP-...
+      statement: string
+      domain: string
+      supporting_evidence: [string]
+      contradicting_evidence: [string]
+      missing_evidence: [string]
+      confidence: HIGH|MEDIUM|LOW|INSUFFICIENT
+      confidence_score: number|null    # 0.0-1.0, opcional, siempre con explicación
+      status: OPEN|SUPPORTED|WEAKENED|REJECTED|CONFIRMED|INSUFFICIENT_EVIDENCE
+
+  contradictions:
+    - hypothesis_id: string
+      supporting: [string]
+      contradicting: [string]
+      resolution: string|null
+
+  change_correlation:
+    - change_summary: string
+      change_timestamp: string
+      window_minutes_before: int
+      window_minutes_after: int
+      status: CHANGE_CORRELATED|CHANGE_CAUSED|NO_CORRELATION
+      evidence_ids: [string]
+
+  root_cause:
+    rca_id: string|null                # RCA-...
+    incident_id: string
+    statement: string|null
+    causal_chain: [string]
+    evidence_ids: [string]
+    confidence: HIGH|MEDIUM|LOW|INSUFFICIENT
+    completeness: CONFIRMED|PROBABLE|INCONCLUSIVE|INSUFFICIENT_EVIDENCE
+    alternatives_rejected: [string]
+    limitations: [string]
+
+  secondary_root_causes:
+    - rca_id: string
+      statement: string
+      role: SECONDARY_ROOT_CAUSE
+      evidence_ids: [string]
+      confidence: HIGH|MEDIUM|LOW|INSUFFICIENT
+
+  contributing_factors:
+    - factor_id: string                # FND- o CF-
+      statement: string
+      evidence_ids: [string]
+      role: AMPLIFIER|PRECONDITION|LATENT_RISK|RECOVERY_DELAY|OBSERVABILITY_GAP
+      confidence: HIGH|MEDIUM|LOW|INSUFFICIENT
+
+  impact:
+    technical: string|null
+    services: [string]
+    databases: [string]
+    nodes: [string]
+    users_affected: string|null        # nunca inventado — null si no hay evidencia
+    duration_minutes: number|null
+    data_loss: bool|null
+    performance_degradation: string|null
+    availability: string|null
+
+  blast_radius: INSTANCE|DATABASE|PDB|RAC_NODE|RAC_CLUSTER|HOST|SERVICE|DATAGUARD_CONFIG|STORAGE|NETWORK_SEGMENT|MULTIPLE_SYSTEMS|UNKNOWN
+
+  recovery_status: RECOVERED|PARTIALLY_RECOVERED|STABLE_WITH_RISK|NOT_RECOVERED|UNKNOWN
+
+  mitigation_fix_model:
+    - action_summary: string
+      kind: MITIGATION|TEMPORARY_FIX|PERMANENT_FIX|WORKAROUND
+      evidence_ids: [string]
+
+  known_error_matches:
+    - code: string
+      domain: string
+      knowledge_ref: string|null
+      match_confidence: HIGH|MEDIUM|LOW
+      confirmed_as_cause: bool         # false salvo evidencia adicional — un match nunca es causa confirmada por sí solo
+
+  observability_gaps:
+    - gap_type: MISSING_METRIC|MISSING_TIMESTAMP|MISSING_LOG|INSUFFICIENT_RETENTION|CLOCK_SKEW|MISSING_CORRELATION_ID
+      description: string
+      domain: string|null
+
+  playbook_matches:
+    - playbook_id: string
+      trigger: string
+      confidence: HIGH|MEDIUM|LOW
+
+  recommendations:
+    - manual_action:
+        action_id: string
+        incident_id: string
+        purpose: string
+        owner_role: string
+        domain: string
+        command: string|null
+        procedure: string
+        prechecks: [string]
+        expected_result: string
+        risk: string
+        rollback: string|null
+        postchecks: [string]
+        change_required: bool
+        execution_status: NOT_EXECUTED
+
+  post_incident_review:
+    what_happened: string|null
+    why: string|null
+    impact: string|null
+    detection: string|null
+    response: string|null
+    recovery: string|null
+    what_worked: [string]
+    what_did_not: [string]
+    preventive_actions: [string]
+    observability_gaps: [string]
+
+  lessons_learned:
+    - category: TECHNICAL|PROCESS|OBSERVABILITY|CAPACITY|DOCUMENTATION|SECURITY|CHANGE_MANAGEMENT
+      statement: string
+      evidence_ids: [string]
+
+  knowledge_handoff:
+    confirmed_rca: bool
+    reusable_pattern: string|null
+    lessons_learned_refs: [string]
+    recommended_knowledge_article: string|null
+    change_recommendations: [string]
+    promoted_to_knowledge_base: false   # siempre false en Fase 11 — nunca promueve automáticamente
+
+  findings:
+    - area: string
+      domain: string
+      observation: string
+      severity: INFO|LOW|MEDIUM|HIGH|CRITICAL
+      confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|CONFIRMED_ROOT_CAUSE|UNDETERMINED
+      evidence_refs: [string]
+
+  reproducibility:
+    incident_contract_version: string
+    parser_versions: {string: string}
+    input_evidence_ids: [string]
+    time_window: {before_minutes: int, after_minutes: int}
+    correlation_settings: {}
+    hypotheses_evaluated: int
+    generated_at: string
+
+  hypotheses_evaluated_count: int
+  evidence_refs: [string]
+  limitations: [string]
+  confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|CONFIRMED_ROOT_CAUSE|UNDETERMINED
+  next_skill_or_agent: string|null
+  capability_status: SUPPORTED|PARTIALLY_SUPPORTED|UNSUPPORTED|LICENSE_RESTRICTED|INSUFFICIENT_PRIVILEGES|INSUFFICIENT_EVIDENCE|POLICY_BLOCKED|ENVIRONMENT_UNKNOWN|COMPATIBILITY_VALIDATION_REQUIRED|null
