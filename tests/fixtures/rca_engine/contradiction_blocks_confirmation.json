@@ -1,0 +1,26 @@
+{
+  "incident": {
+    "id": "INC-20260311-003",
+    "target_id": "T-PRODDB",
+    "symptom_description": "Elevated read latency reported by application team"
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "performance", "source_id": "ash-collector",
+      "timestamp": "2026-03-11T14:22:00+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "signature": "HIGH_DB_FILE_SEQUENTIAL_READ", "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-2", "domain": "performance", "source_id": "ash-collector",
+      "timestamp": "2026-03-11T14:22:05+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "summary": "db file sequential read average elevated",
+      "attributes": {"db_file_sequential_read_avg_ms": 35.0}
+    },
+    {
+      "evidence_id": "EVD-3", "domain": "os", "source_id": "iostat-collector",
+      "timestamp": "2026-03-11T14:22:10+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "summary": "iostat shows normal I/O wait — contradicts storage-latency hypothesis",
+      "attributes": {"iostat_avg_wait_ms": 1.2}
+    }
+  ]
+}

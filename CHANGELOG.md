@@ -2,6 +2,184 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — 2026-09-19 — PHASE 11 — RCA SIGNATURE ALLOWLIST & OUTPUT LEAK PREVENTION MICRO-HARDENING
+
+Micro-hardening acotado sobre `PHASE_11_RCA_STRUCTURED_EVIDENCE_SANITIZATION_HARDENING` (misma
+rama `phase/11-incident-rca`). Cierra una fuga real y reproducida: `normalize_signature()`
+aceptaba verbatim cualquier cadena de forma `UPPER_SNAKE_CASE` (3-64 caracteres) — un marcador
+sintético como `SYNTHETIC_SECRET_DO_NOT_USE` coincidía con esa forma genérica y se filtraba
+literal a JSON/Markdown. Ver
+`docs/PHASE_11_RCA_SIGNATURE_ALLOWLIST_LEAK_PREVENTION_MICRO_HARDENING.md` para el reporte de
+cierre completo.
+
+### Added
+
+- `rca_engine/sanitize.classify_signature()` — certificación por dos vías acotadas (código
+  numérico tipado bajo prefijo fijo, o membresía exacta en el catálogo de reglas versionado) —
+  nunca por forma genérica.
+- `rca_engine/tokenization.derive_signature_token()` — token opaco para firmas no reconocidas.
+- `rca_engine/rules.collect_certified_signatures()`.
+- `common.SignatureStatus` (`CERTIFIED|UNRECOGNIZED_SIGNATURE|INSUFFICIENT_EVIDENCE`).
+- 6 fixtures + 9 tests nuevos bajo `tests/test_rca_signature_*.sh`/`test_rca_unknown_signature_*.sh`/
+  `test_rca_certified_signature_regression.sh`.
+- `docs/PHASE_11_RCA_SIGNATURE_ALLOWLIST_LEAK_PREVENTION_MICRO_HARDENING.md`.
+
+### Fixed
+
+- `rca_engine/sanitize.py`: `normalize_signature()` (aceptación genérica por regex de forma) —
+  reemplazado; una firma nunca certifica sólo por coincidir con una expresión regular de forma.
+  Reproducido antes del fix (marcador sintético filtrado en JSON/Markdown con exit 0), corregido,
+  re-verificado.
+
+### Changed
+
+- `NormalizedEvidence`/`TimelineEvent` (`rca_engine/common.py`): el campo único `signature` se
+  reemplaza por `signature_status`/`canonical_signature`/`signature_token` — cambio de schema
+  deliberado y documentado; `tests/test_rca_signature_safe_clustering.sh` extendido al nuevo
+  schema (no reescrito desde cero).
+- `rca_engine/rules.py`: `_symptom_matches()` ahora exige `signature_status == CERTIFIED` antes de
+  comparar `canonical_signature` contra `signature_any` de una regla.
+- `rca_engine/timeline.py`: agrupación/dedup usan `canonical_signature`/`signature_token` — nunca
+  el texto crudo como clave serializable.
+- `docs/INCIDENT_READONLY_SECURITY_MODEL.md` — sección de `signature` reescrita.
+
+## [Unreleased] — 2026-09-18 — PHASE 11 — RCA STRUCTURED EVIDENCE SANITIZATION & OUTPUT LEAK PREVENTION HARDENING
+
+Hardening de seguridad acotado sobre `PHASE_11_RCA_EXECUTION_EVIDENCE_VALIDATION_HARDENING`
+(misma rama `phase/11-incident-rca`). Cierra una fuga real y reproducida: `target_id`,
+`signature`, `source_id` y las claves/valores de `attributes` nunca se sanitizaban (el
+sanitizador previo sólo cubría `summary`/`symptom_description`), y los mensajes de error de
+intake ecoaban el valor crudo ofensivo. Ver
+`docs/PHASE_11_RCA_STRUCTURED_EVIDENCE_SANITIZATION_HARDENING.md` para el reporte de cierre
+completo.
+
+### Added
+
+- `rca_engine/tokenization.py` — tokens opacos deterministas para `target_id`/`source_id`,
+  namespaced por `incident_id`.
+- 13 fixtures nuevos bajo `tests/fixtures/rca_engine/` con el marcador sintético
+  `SYNTHETIC_SECRET_DO_NOT_USE_8f2c` en cada campo de riesgo, separado y combinado.
+- 12 tests ejecutables nuevos bajo `tests/test_rca_*.sh` (nombrados exactamente por el prompt de
+  este hardening), incluyendo un caso de regresión propia detectado y corregido durante el
+  desarrollo (heurística de token desnudo aplicada incorrectamente a nombres de clave legítimos).
+- `docs/PHASE_11_RCA_STRUCTURED_EVIDENCE_SANITIZATION_HARDENING.md`.
+- `rca_engine.cli --token-map` — mapa de tokens en archivo separado, nunca fusionado con
+  `--out`/`--markdown`/`--manifest`.
+
+### Fixed
+
+- `rca_engine/sanitize.py`/`intake.py`: `target_id`, `signature`, `source_id`, `attributes`
+  (claves y valores, incluidos anidados) nunca se sanitizaban — reescritos con
+  `deep_sanitize()` recursivo, `sanitize_attributes()` (allowlist), `normalize_signature()` y
+  tokenización.
+- Mensajes de `IntakeError` (event_type inválido, evidence_id duplicado) ecoaban el valor crudo
+  ofensivo hacia stderr — corregido para nunca ecoar.
+- 2 falsos positivos de `tests/test_secret_detection.sh` contra prosa de este mismo hardening
+  (menciona un patrón `password` seguido de `=` a modo de placeholder) — reformulados sin relajar el escáner.
+
+### Changed
+
+- `rca_engine/engine.py` — reordena: catálogo de reglas se carga antes que intake (el allowlist
+  de atributos depende de él); `run_rca()` retorna ahora `(result, token_map)`.
+- `docs/INCIDENT_READONLY_SECURITY_MODEL.md` — sección nueva de sanitización estructurada.
+
+## [Unreleased] — 2026-09-17 — PHASE 11 — RCA EXECUTION & EVIDENCE VALIDATION HARDENING
+
+Hardening acotado sobre el hardening anterior (misma rama `phase/11-incident-rca`), previo a
+aprobar `v0.11.0-incident-rca`. Cierra la brecha entre los 34 skills `incident/*` declarativos y
+un motor RCA local, ejecutable y verificable — mismo patrón que
+`PHASE_10_FORECASTING_EXECUTION_NUMERICAL_VALIDATION_HARDENING` aplicó a `capacity_engine/`. Ver
+`docs/PHASE_11_RCA_EXECUTION_EVIDENCE_VALIDATION_HARDENING.md` para el reporte de cierre completo.
+
+### Added
+
+- `rca_engine/` (13 módulos Python 3, sólo stdlib): `common.py`, `sanitize.py`, `intake.py`,
+  `timeline.py`, `rules.py`, `hypothesis.py`, `causality.py`, `report.py`, `engine.py`, `cli.py`,
+  `rules/default_rules.json` (catálogo versionado de 6 reglas allowlisted).
+- `tests/lib/rca_engine_e2e_helpers.sh` — helper de invocación portable (mismo patrón de rutas
+  relativas que `tests/lib/capacity_engine_e2e_helpers.sh`).
+- 12 fixtures funcionales bajo `tests/fixtures/rca_engine/`.
+- 20 tests ejecutables nuevos bajo `tests/test_rca_*.sh` (19 nombrados exactamente por el prompt
+  de hardening + 1 control de mutation testing), todos invocando `rca_engine.cli` real.
+- `docs/PHASE_11_RCA_EXECUTION_EVIDENCE_VALIDATION_HARDENING.md`.
+
+### Fixed
+
+- `tests/test_capability_matrix_schema.sh`: conteo de dominios hardcodeado en 18, no actualizado
+  tras agregar la fila `incident` en la Fase 11 declarativa — corregido a 19 (detectado y
+  corregido durante el gate final de la Fase 11 declarativa, re-verificado aquí).
+
+### Changed
+
+- `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md` — fila `incident` extendida: 5
+  capacidades pasan de `CONTRACT_DEFINED`/`DOCUMENTED_ONLY` a `LOCAL_RUNTIME_TESTED`/
+  `IMPLEMENTED_AND_TESTED` (`incident/root-cause`, `incident/timeline`,
+  `incident/hypothesis-generation`, `incident/hypothesis-testing`,
+  `incident/contradiction-analysis`).
+
+## [Unreleased] — 2026-09-17 — PHASE 11 — INCIDENT ANALYSIS & ROOT CAUSE AUTOMATION
+
+Nuevo dominio transversal `incident` sobre baseline `v0.10.0-capacity-forecasting`: agente único
+`incident-root-cause-analyst` (v2.0.0, deepening del manifest plano real de Foundation, mismo
+patrón que Security/OS Platform/Capacity) y 34 skills `incident/*` completamente materializados
+(Intake/Triage, Timeline/Evidence, Hypothesis/Causality/Root-Cause, Impact/Recovery/Correlación
+general, 9 skills de correlación cross-domain con los especialistas de Fase 2-10, Output/Process).
+Ver `docs/PHASE_11_INCIDENT_ANALYSIS_ROOT_CAUSE_AUTOMATION.md` para el reporte de cierre completo.
+
+### Added
+
+- `agents/incident-root-cause-analyst/` (manifest.yaml, routing.yaml, context-policy.yaml,
+  collaboration.yaml, output-schema.yaml, AGENT.md, CHANGELOG.md, tests/README.md) — v2.0.0,
+  `supersedes: agents/incident-root-cause-analyst.md` (Foundation v1.0.0).
+- 34 skills `incident/*` (SKILL.md + manifest.yaml cada uno) — `intake`, `classification`,
+  `severity-awareness`, `scope-identification`, `timeline`, `evidence-plan`,
+  `evidence-correlation` (v2.0.0), `symptom-clustering`, `hypothesis-generation`,
+  `hypothesis-testing`, `contradiction-analysis`, `root-cause` (v2.0.0, absorbe
+  `skills/incident/root-cause-analysis.md` de Foundation), `contributing-factors`,
+  `impact-analysis`, `blast-radius` (v2.0.0), `recovery-status`, `recurrence-awareness`,
+  `known-error-correlation`, `change-correlation`, `capacity-correlation`,
+  `performance-correlation`, `rac-correlation`, `dataguard-correlation`,
+  `asm-storage-correlation`, `network-correlation`, `os-correlation`, `security-correlation`,
+  `rman-correlation`, `multitenant-correlation`, `manual-remediation-plan`,
+  `post-incident-review`, `lessons-learned` (v2.0.0), `incident-report`, `rca-report`.
+- 12 documentos de modelo: `docs/INCIDENT_INTAKE_MODEL.md`, `docs/INCIDENT_EVIDENCE_MODEL.md`,
+  `docs/INCIDENT_TIMELINE_MODEL.md`, `docs/INCIDENT_HYPOTHESIS_MODEL.md`,
+  `docs/INCIDENT_CAUSALITY_MODEL.md`, `docs/INCIDENT_ROOT_CAUSE_MODEL.md`,
+  `docs/INCIDENT_IMPACT_MODEL.md`, `docs/INCIDENT_PLAYBOOK_MODEL.md`,
+  `docs/INCIDENT_MANUAL_REMEDIATION_MODEL.md`, `docs/INCIDENT_POSTMORTEM_MODEL.md`,
+  `docs/INCIDENT_READONLY_SECURITY_MODEL.md`,
+  `docs/PHASE_11_INCIDENT_ANALYSIS_ROOT_CAUSE_AUTOMATION.md`.
+- ~32 fixtures bajo `tests/fixtures/incident/{oracle,rac,dataguard,rman,os,capacity,security}/`.
+- 63 tests exactamente nombrados (Intake/Timeline/Hypotheses/Root Cause/Causality/Impact/
+  Cross-domain/Playbooks/Safety/Traceability/Documentation) — 57 nuevos, 6 extendidos
+  (`tests/test_no_arbitrary_sql.sh`, `tests/test_no_arbitrary_shell.sh`,
+  `tests/test_no_parameter_change.sh`, `tests/test_no_network_change.sh`,
+  `tests/test_no_failover_execution.sh`, `tests/test_no_switchover_execution.sh`).
+- `incident:` block en `docs/TARGET_PROFILE.md` (`schema_version` 2.7.0 → 2.8.0).
+- Fila `incident` en `config/capability-matrix.yaml`/`docs/CAPABILITY_MATRIX.md`.
+
+### Changed
+
+- `skills/REGISTRY.md` — sección `## incident` de 8 skill_ids (1 activo) a 34 (todos activos);
+  total de skills activos 301 → 334.
+- `agents/REGISTRY.md` — fila `incident-root-cause-analyst` apunta a
+  `agents/incident-root-cause-analyst/AGENT.md`.
+- `workflows/incident.md` (v1.0.0 → v2.0.0), `workflows/rca.md` (v1.0.0 → v2.0.0) — secuencia de
+  skills actualizada a la nueva estructura de 34 skills.
+- `workflows/healthcheck.md` (v2.0.0 → v2.1.0) — agrega `/healthcheck incident`.
+- `workflows/diagnose.md` (v1.1.0 → v1.2.0) — agrega routing `/diagnose incident`.
+- `ARCHITECTURE.md` — principio # 33 (correlación temporal nunca es causación).
+- `SECURITY.md` — caso concreto de evidencia por referencia y remediación manual en incidentes.
+- `README.md` — sección Estado actualizada a Fase 11.
+
+### Non-negotiables verificados
+
+READ-ONLY ALWAYS, HUMAN-EXECUTED REMEDIATION ONLY incluso en escenarios de emergencia, CORRELATION
+IS NOT CAUSATION, CAUSE/CONTRIBUTING-FACTOR/SYMPTOM distintos, UNCERTAINTY explícita (UNDETERMINED
+como estado legítimo), TIMELINE trazable (clock skew nunca corregido silenciosamente), RCA
+reproducible (hipótesis rechazadas siempre listadas), NO RMAN EXECUTION ni siquiera durante
+investigación de incidente.
+
 ## [Unreleased] — 2026-09-17 — PHASE 10 — CLI END-TO-END & CROSS-PLATFORM PATH HARDENING
 
 Hardening acotado sobre el hardening anterior (misma rama `phase/10-capacity-forecasting`), previo

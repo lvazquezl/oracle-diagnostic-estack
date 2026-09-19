@@ -1,0 +1,7 @@
+{
+  "incident": {
+    "id": "INC-20260311-013",
+    "symptom_description": "Missing required target_id field on purpose — must be rejected"
+  },
+  "evidence": []
+}

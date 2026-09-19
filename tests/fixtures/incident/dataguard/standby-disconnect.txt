@@ -1,0 +1,15 @@
+# Fixture: standby disconnect (RFS lost connection)
+# Source: alert.log excerpt (primary + standby), sanitized
+
+alert.log (PRIMARY_TOKEN):
+2026-03-11T14:48:20.114552+00:00
+Error 3113 received logging on to the standby
+PING[ARC3]: Heartbeat failed to connect to standby 'STANDBY_TOKEN_01'. Error is 16058.
+
+alert.log (STANDBY_TOKEN_01):
+2026-03-11T14:48:19.887221+00:00
+RFS[17]: Possible network disconnect with primary database
+
+# expected_classification: SYMPTOM (transport connectivity lost) — candidate causes: network path
+#   instability, standby listener down, firewall session timeout; each requires its own evidence
+# used_by: incident/dataguard-correlation, incident/network-correlation

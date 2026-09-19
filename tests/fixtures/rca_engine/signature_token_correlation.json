@@ -1,0 +1,18 @@
+{
+  "incident": {
+    "id": "INC-20260319-005",
+    "target_id": "T-PRODDB",
+    "symptom_description": "Two events share the same unrecognized signature from different sources; a third event has a genuinely different unrecognized signature"
+  },
+  "evidence": [
+    {"evidence_id": "EVD-1", "domain": "oracle", "source_id": "src-a",
+     "timestamp": "2026-03-11T15:02:00+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "signature": "SYNTHETIC_SECRET_DO_NOT_USE_SAME_SIG"},
+    {"evidence_id": "EVD-2", "domain": "oracle", "source_id": "src-b",
+     "timestamp": "2026-03-11T15:05:00+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "signature": "SYNTHETIC_SECRET_DO_NOT_USE_SAME_SIG"},
+    {"evidence_id": "EVD-3", "domain": "oracle", "source_id": "src-c",
+     "timestamp": "2026-03-11T15:08:00+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "signature": "SYNTHETIC_SECRET_DO_NOT_USE_DIFFERENT_SIG"}
+  ]
+}

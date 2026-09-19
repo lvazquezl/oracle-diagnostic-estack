@@ -1,0 +1,19 @@
+{
+  "incident": {
+    "id": "INC-20260319-003",
+    "target_id": "T-PRODDB",
+    "symptom_description": "Marker placed in signature AND simultaneously in attributes/summary/nested structures to confirm fixing signature did not reopen or leave open an alternate route"
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "oracle", "source_id": "alert-log-parser",
+      "timestamp": "2026-03-11T15:02:31+00:00", "event_type": "ALERT_TRIGGERED",
+      "signature": "SYNTHETIC_SECRET_DO_NOT_USE_SIGFIELD",
+      "summary": "note mentioning SYNTHETIC_SECRET_DO_NOT_USE_SIGFIELD again in free text",
+      "attributes": {
+        "SYNTHETIC_SECRET_DO_NOT_USE_SIGFIELD_KEY": "SYNTHETIC_SECRET_DO_NOT_USE_SIGFIELD_VAL",
+        "nested": {"deep": "SYNTHETIC_SECRET_DO_NOT_USE_SIGFIELD_DEEP"}
+      }
+    }
+  ]
+}

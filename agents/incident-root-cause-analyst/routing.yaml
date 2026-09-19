@@ -1,0 +1,43 @@
+activation_conditions:
+  - incident_reported: "el DBA reporta un incidente explícito (síntoma, ticket, alerta) que requiere correlación multidominio, no sólo el estado actual de un recurso"
+  - escalation_from_specialist: "un especialista de dominio (oracle-dba-analyst, oracle-rac-analyst, os-platform-analyst, capacity-analyst, etc.) reporta un hallazgo HIGH/CRITICAL que sugiere una causa fuera de su propio dominio"
+  - escalation_from_capacity: "capacity-analyst reporta risk HIGH/CRITICAL con threshold ya cruzado (ALREADY_EXCEEDED), sugiriendo que un incidente ya en curso podría tener causa de saturación"
+  - rca_command: "/rca <incident-id> o /diagnose incident"
+  - healthcheck_incident: "/healthcheck incident"
+
+deactivation_rule: "No se activa para una pregunta de estado actual de un único dominio sin componente de correlación multidominio/temporal — eso lo responde directamente el especialista de dominio correspondiente (oracle-dba-analyst, os-platform-analyst, etc.)."
+
+delegates_to:
+  - agent: change-advisor
+    when: "un RCA con root cause CONFIRMED/PROBABLE y una recomendación accionable requiere convertirse en propuesta de cambio para ejecución humana (# 52, # 83 del prompt de Fase 11 — preparación para Fase 12, sin implementar el workflow completo de Change)"
+  - agent: oracle-dba-analyst
+    when: "se requiere evidencia adicional puntual de Oracle Core para validar/descartar una hipótesis específica"
+  - agent: oracle-performance-analyst
+    when: "se requiere AWR/execution plans/wait events/carga para validar una hipótesis de performance"
+  - agent: oracle-rac-analyst
+    when: "se requiere evidencia de node status/interconnect/evictions/GI resources"
+  - agent: oracle-asm-storage-analyst
+    when: "se requiere evidencia de diskgroup pressure/path degradation/I-O latency"
+  - agent: oracle-dataguard-analyst
+    when: "se requiere evidencia de transport/apply lag/gaps/role changes/broker"
+  - agent: oracle-multitenant-analyst
+    when: "se requiere evidencia de CDB/PDB state/saved state/resource plan/violations"
+  - agent: oracle-backup-recovery-analyst
+    when: "se requiere evidencia de backup windows/channel contention/FRA/archivelog pressure"
+  - agent: oracle-network-analyst
+    when: "se requiere evidencia de DNS/SCAN/listener/timeouts/MTU/bonding/VLAN/routing"
+  - agent: oracle-security-analyst
+    when: "se requiere evidencia de account lock/audit/wallet/TLS/cambio de privilegio — nunca expone secretos"
+  - agent: os-platform-analyst
+    when: "se requiere evidencia de CPU/memoria/swap/limits/filesystem/inodes/cgroups/time sync"
+  - agent: capacity-analyst
+    when: "se requiere evidencia de saturación actual/forecast/evento de capacidad reciente/threshold crossing"
+
+receives_from:
+  - agent: oracle-operations-orchestrator
+    what: "Task Package inicial con el síntoma/incidente reportado por el DBA"
+  - agent: "cualquier especialista de dominio"
+    what: "evidence_refs ya recolectados y certificados, consumidos por referencia — nunca re-recolectados"
+
+must_not_delegate_to: []
+loop_prevention_rule: "incident-root-cause-analyst nunca vuelve a pedir evidencia ya recolectada en la misma sesión por el mismo especialista para el mismo recurso — reutiliza evidence_refs cacheados (# 106 del prompt: evidence cache) antes de solicitar una nueva recolección puntual, y cada solicitud adicional debe estar atada a una hipótesis abierta específica, nunca 'por si acaso'."

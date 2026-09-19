@@ -1,0 +1,16 @@
+# Fixture: cgroup PID pressure constraining Oracle processes (systemd/cgroup scope)
+# Source: os/cgroups evidence excerpt (sanitized)
+
+os_evidence (get_cgroup_pid_pressure, HOST_TOKEN_01, unit=oracle.slice, evidence_id EVD-OS-CGROUP-1):
+  pids_max: 4096
+  pids_current: 4090
+  cgroup_path_token: /sys/fs/cgroup/pids/system.slice/oracle.slice
+
+alert.log (PRODDB_TOKEN):
+2026-03-11T15:04:09.556210+00:00
+ORA-27300: OS system dependent operation:fork failed with status: 11
+ORA-27301: OS failure message: Resource temporarily unavailable
+
+# expected_classification: CONDITION (cgroup pids.max constraint, distinct from RLIMIT_NPROC —
+#   never combined via a universal minimum, per os/cgroups binding-constraint analysis)
+# used_by: incident/os-correlation

@@ -1,0 +1,26 @@
+{
+  "incident": {
+    "id": "INC-20260311-012",
+    "target_id": "T-PRODDB",
+    "symptom_description": "RAC node eviction with cross-domain evidence from RAC, OS and Network collectors"
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "rac", "source_id": "crs-alert-log-parser",
+      "timestamp": "2026-03-11T14:40:02+00:00", "event_type": "ALERT_TRIGGERED",
+      "signature": "CRS-1607", "summary": "node being evicted", "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-2", "domain": "os", "source_id": "os-network-interfaces-collector",
+      "timestamp": "2026-03-11T14:39:50+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "summary": "interconnect MTU mismatch detected between cluster nodes",
+      "attributes": {"interconnect_mtu_mismatch": true}
+    },
+    {
+      "evidence_id": "EVD-3", "domain": "network", "source_id": "network-interconnect-collector",
+      "timestamp": "2026-03-11T14:39:55+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "summary": "interconnect packet loss measured above 1%",
+      "attributes": {"interconnect_packet_loss_percent": 2.4}
+    }
+  ]
+}

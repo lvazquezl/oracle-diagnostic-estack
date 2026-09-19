@@ -1,0 +1,7 @@
+{
+  "incident": {"id": "INC-20260318-009", "target_id": "T-SHARED-TARGET", "symptom_description": "first event"},
+  "evidence": [
+    {"evidence_id": "EVD-1", "domain": "oracle", "source_id": "alert-log-parser",
+     "timestamp": "2026-03-11T15:02:31+00:00", "event_type": "ALERT_TRIGGERED", "signature": "ORA-27300"}
+  ]
+}

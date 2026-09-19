@@ -1,0 +1,15 @@
+# Fixture: RAC service session imbalance across instances
+# Source: rac/session-distribution evidence excerpt (sanitized)
+
+session_distribution (SERVICE_TOKEN, evidence_id EVD-RAC-SESS-1):
+  PRODDB1: 812 sessions
+  PRODDB2: 58 sessions
+  PRODDB3: 61 sessions
+
+service_placement (SERVICE_TOKEN):
+  preferred_instances: [PRODDB1, PRODDB2, PRODDB3]
+  available_instances: [PRODDB1, PRODDB2, PRODDB3]
+
+# expected_classification: CONDITION (severe imbalance, not itself a root cause) —
+#   candidate contributing factor for PRODDB1 resource contention/incident symptoms
+# used_by: incident/rac-correlation, incident/contributing-factors

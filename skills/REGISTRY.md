@@ -12,7 +12,7 @@ Este registro identifica cada skill **exclusivamente** por su `skill_id` complet
 - `active` — materializado por completo (19 secciones del Skill Contract), archivo real en el dominio.
 - `registered` — nombre, dominio y propósito fijados en este registro; su materialización completa es Fase 2+ según `README.md#fases-de-construcción`. No es un placeholder vacío: es la entrada de catálogo que gobierna qué se puede construir y en qué orden vía `/change skill`.
 
-Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total); **Fase 5 (Data Guard) materializa las 21 skills del dominio `dataguard` completo** (141 activos en total); **Fase 6 (Multitenant/CDB/PDB) materializa las 26 skills del dominio `multitenant` completo** (166 activos en total); **Fase 7 (Backup & Recovery/RMAN) materializa las 30 skills del dominio `rman` completo** (196 activos en total); **Fase 8 (Security & Compliance) materializa las 39 skills del dominio `security` completo, genuinamente nuevo** (235 activos en total); **PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING agrega `network/oracle-net-security`** (236 activos en total); **Fase 9 (OS Platform Diagnostics & Hardening) materializa las 45 skills del dominio `os` completo** (reemplaza el modelo `os/<plataforma>/<skill>` de Foundation — 1 activo previo, `os/linux/memory`, absorbido en `os/memory` — 280 activos en total); **Fase 10 (Capacity Management & Forecasting) materializa las 28 skills del dominio `capacity` completo** (reemplaza el modelo de 16 skill_ids de Foundation — 1 activo previo, `capacity/forecast`, absorbido en `capacity/forecasting` — **301 activos en total**, conteo verificado directamente sobre el árbol de trabajo; corrige el arrastre de "280" de la nota de Fase 9, que un recuento exacto contra el tag `v0.9.0-os-platform` muestra en 274 — 274 + 28 − 1 = 301, consistente). El resto (`documentation`, AIX/HP-UX de `os`) queda `registered` para materialización gobernada en una fase futura.
+Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Foundation Hardening agregó `core/version-awareness` (15); **Fase 2 (Oracle Core) materializa las 18 skills del dominio `oracle` completo** (32 activos en total); **Fase 3 (Oracle Performance) materializa las 31 skills del dominio `performance` completo** (63 activos en total); **Fase 4 (RAC/GI/ASM/Network) materializa 57 skills — dominio `rac` completo (31: 19 RAC + 12 GI), `asm` completo (12), `network` completo (14)** (120 activos en total); **Fase 5 (Data Guard) materializa las 21 skills del dominio `dataguard` completo** (141 activos en total); **Fase 6 (Multitenant/CDB/PDB) materializa las 26 skills del dominio `multitenant` completo** (166 activos en total); **Fase 7 (Backup & Recovery/RMAN) materializa las 30 skills del dominio `rman` completo** (196 activos en total); **Fase 8 (Security & Compliance) materializa las 39 skills del dominio `security` completo, genuinamente nuevo** (235 activos en total); **PHASE 8 — SECURITY QUERY COMPATIBILITY, ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING agrega `network/oracle-net-security`** (236 activos en total); **Fase 9 (OS Platform Diagnostics & Hardening) materializa las 45 skills del dominio `os` completo** (reemplaza el modelo `os/<plataforma>/<skill>` de Foundation — 1 activo previo, `os/linux/memory`, absorbido en `os/memory` — 280 activos en total); **Fase 10 (Capacity Management & Forecasting) materializa las 28 skills del dominio `capacity` completo** (reemplaza el modelo de 16 skill_ids de Foundation — 1 activo previo, `capacity/forecast`, absorbido en `capacity/forecasting` — **301 activos en total**, conteo verificado directamente sobre el árbol de trabajo; corrige el arrastre de "280" de la nota de Fase 9, que un recuento exacto contra el tag `v0.9.0-os-platform` muestra en 274 — 274 + 28 − 1 = 301, consistente); **PHASE 11 — INCIDENT ANALYSIS & ROOT CAUSE AUTOMATION materializa las 34 skills del dominio `incident` completo** (reemplaza el modelo de 8 skill_ids de Foundation — 1 activo previo, `incident/root-cause-analysis`, fusionado como base de `incident/root-cause` v2.0.0 — **334 activos en total**, 301 + 34 − 1 = 334, consistente). El resto (`documentation`, AIX/HP-UX de `os`) queda `registered` para materialización gobernada en una fase futura.
 
 ## core (20)
 
@@ -437,18 +437,59 @@ fusionado como base de `capacity/forecasting` v2.0.0. `capacity/sga`/`pga`/`temp
 | `capacity/manual-capacity-plan` | **active** ([capacity/manual-capacity-plan/SKILL.md](capacity/manual-capacity-plan/SKILL.md)) |
 | `capacity/executive-summary` | **active** ([capacity/executive-summary/SKILL.md](capacity/executive-summary/SKILL.md)) |
 
-## incident (8)
+## incident (34 — Fase 11, todos `active`)
+
+**PHASE 11 — INCIDENT ANALYSIS & ROOT CAUSE AUTOMATION**: reemplaza el placeholder de 8 skill_ids
+de Foundation (sólo `incident/root-cause-analysis` `active`, el resto `registered`) por las 34
+skills reales del dominio `incident` completo, agrupadas en Intake/Triage (4), Timeline/Evidence
+(4), Hypothesis/Causality/Root-Cause (5), Impact/Recovery/Correlación general (7), Correlación
+cross-domain con los 9 especialistas previos (9), Output/Process (5). `incident/root-cause-analysis`
+(Foundation v1.0.0, único skill real del dominio) se fusiona como base de `incident/root-cause`
+v2.0.0 — mismo patrón de reconciliación de nomenclatura ya aplicado a `os` (Fase 9) y `capacity`
+(Fase 10). Reconciliación de nombres: `evidence-correlation` (Foundation, registered) se
+materializa como `incident/evidence-correlation` v2.0.0; `hypothesis-management` se divide en
+`incident/hypothesis-generation` + `incident/hypothesis-testing`; `timeline-analysis` →
+`incident/timeline`; `cause-validation` → absorbido en `incident/hypothesis-testing` +
+`incident/contradiction-analysis`; `blast-radius`/`impact-analysis`/`lessons-learned` se
+materializan con su mismo nombre, `lessons-learned` como v2.0.0 fusionando el rol implícito de
+Foundation.
 
 | skill_id | status |
 |---|---|
-| `incident/root-cause-analysis` | **active** ([incident/root-cause-analysis.md](incident/root-cause-analysis.md)) |
-| `incident/evidence-correlation` | registered |
-| `incident/hypothesis-management` | registered |
-| `incident/timeline-analysis` | registered |
-| `incident/cause-validation` | registered |
-| `incident/blast-radius` | registered |
-| `incident/impact-analysis` | registered |
-| `incident/lessons-learned` | registered |
+| `incident/intake` | **active** ([incident/intake/SKILL.md](incident/intake/SKILL.md)) |
+| `incident/classification` | **active** ([incident/classification/SKILL.md](incident/classification/SKILL.md)) |
+| `incident/severity-awareness` | **active** ([incident/severity-awareness/SKILL.md](incident/severity-awareness/SKILL.md)) |
+| `incident/scope-identification` | **active** ([incident/scope-identification/SKILL.md](incident/scope-identification/SKILL.md)) |
+| `incident/timeline` | **active** ([incident/timeline/SKILL.md](incident/timeline/SKILL.md)) |
+| `incident/evidence-plan` | **active** ([incident/evidence-plan/SKILL.md](incident/evidence-plan/SKILL.md)) |
+| `incident/evidence-correlation` | **active** ([incident/evidence-correlation/SKILL.md](incident/evidence-correlation/SKILL.md)) — v2.0.0, materializa el `registered` de Foundation |
+| `incident/symptom-clustering` | **active** ([incident/symptom-clustering/SKILL.md](incident/symptom-clustering/SKILL.md)) |
+| `incident/hypothesis-generation` | **active** ([incident/hypothesis-generation/SKILL.md](incident/hypothesis-generation/SKILL.md)) |
+| `incident/hypothesis-testing` | **active** ([incident/hypothesis-testing/SKILL.md](incident/hypothesis-testing/SKILL.md)) |
+| `incident/contradiction-analysis` | **active** ([incident/contradiction-analysis/SKILL.md](incident/contradiction-analysis/SKILL.md)) |
+| `incident/root-cause` | **active** ([incident/root-cause/SKILL.md](incident/root-cause/SKILL.md)) — v2.0.0, absorbe `incident/root-cause-analysis.md` (Foundation) |
+| `incident/contributing-factors` | **active** ([incident/contributing-factors/SKILL.md](incident/contributing-factors/SKILL.md)) |
+| `incident/impact-analysis` | **active** ([incident/impact-analysis/SKILL.md](incident/impact-analysis/SKILL.md)) |
+| `incident/blast-radius` | **active** ([incident/blast-radius/SKILL.md](incident/blast-radius/SKILL.md)) — v2.0.0, materializa el `registered` de Foundation |
+| `incident/recovery-status` | **active** ([incident/recovery-status/SKILL.md](incident/recovery-status/SKILL.md)) |
+| `incident/recurrence-awareness` | **active** ([incident/recurrence-awareness/SKILL.md](incident/recurrence-awareness/SKILL.md)) |
+| `incident/known-error-correlation` | **active** ([incident/known-error-correlation/SKILL.md](incident/known-error-correlation/SKILL.md)) |
+| `incident/change-correlation` | **active** ([incident/change-correlation/SKILL.md](incident/change-correlation/SKILL.md)) |
+| `incident/capacity-correlation` | **active** ([incident/capacity-correlation/SKILL.md](incident/capacity-correlation/SKILL.md)) |
+| `incident/performance-correlation` | **active** ([incident/performance-correlation/SKILL.md](incident/performance-correlation/SKILL.md)) |
+| `incident/rac-correlation` | **active** ([incident/rac-correlation/SKILL.md](incident/rac-correlation/SKILL.md)) |
+| `incident/dataguard-correlation` | **active** ([incident/dataguard-correlation/SKILL.md](incident/dataguard-correlation/SKILL.md)) |
+| `incident/asm-storage-correlation` | **active** ([incident/asm-storage-correlation/SKILL.md](incident/asm-storage-correlation/SKILL.md)) |
+| `incident/network-correlation` | **active** ([incident/network-correlation/SKILL.md](incident/network-correlation/SKILL.md)) |
+| `incident/os-correlation` | **active** ([incident/os-correlation/SKILL.md](incident/os-correlation/SKILL.md)) |
+| `incident/security-correlation` | **active** ([incident/security-correlation/SKILL.md](incident/security-correlation/SKILL.md)) |
+| `incident/rman-correlation` | **active** ([incident/rman-correlation/SKILL.md](incident/rman-correlation/SKILL.md)) |
+| `incident/multitenant-correlation` | **active** ([incident/multitenant-correlation/SKILL.md](incident/multitenant-correlation/SKILL.md)) |
+| `incident/manual-remediation-plan` | **active** ([incident/manual-remediation-plan/SKILL.md](incident/manual-remediation-plan/SKILL.md)) |
+| `incident/post-incident-review` | **active** ([incident/post-incident-review/SKILL.md](incident/post-incident-review/SKILL.md)) |
+| `incident/lessons-learned` | **active** ([incident/lessons-learned/SKILL.md](incident/lessons-learned/SKILL.md)) — v2.0.0, materializa el `registered` de Foundation |
+| `incident/incident-report` | **active** ([incident/incident-report/SKILL.md](incident/incident-report/SKILL.md)) |
+| `incident/rca-report` | **active** ([incident/rca-report/SKILL.md](incident/rca-report/SKILL.md)) |
 
 ## documentation (24)
 

@@ -1,0 +1,15 @@
+# Fixture: ORA-01652 (unable to extend temp segment) — symptom, capacity-correlated
+# Source: alert.log excerpt, sanitized
+
+2026-03-11T14:30:15.442110+00:00
+ORA-01652: unable to extend temp segment by 128 in tablespace TEMP_TOKEN
+2026-03-11T14:30:15.442980+00:00
+Errors in file /diag/rdbms/proddb_token/PRODDB1/trace/PRODDB1_ora_88213.trc:
+ORA-01652: unable to extend temp segment by 128 in tablespace TEMP_TOKEN
+
+# capacity_evidence: TEMP_TOKEN tablespace usage at 97% at 2026-03-11T14:28:00Z
+#   (capacity-analyst threshold_crossings: status ALREADY_EXCEEDED)
+# expected_classification: SYMPTOM
+# expected_correlation: capacity saturation is a valid contributing factor candidate
+#   (historical/current evidence, never the capacity forecast for future months)
+# used_by: incident/capacity-correlation

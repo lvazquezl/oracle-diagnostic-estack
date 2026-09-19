@@ -1,0 +1,22 @@
+# Fixture: Data Guard Broker configuration warning
+# Source: dataguard/broker evidence excerpt (sanitized, DGMGRL show configuration)
+
+DGMGRL> show configuration;
+
+Configuration - PRODDB_DGCONFIG_TOKEN
+
+  Protection Mode: MaxAvailability
+  Members:
+  PRIMARY_TOKEN   - Primary database
+    STANDBY_TOKEN_01 - Physical standby database
+      Warning: ORA-16825: multiple errors or warnings, including fast-start failover-related
+               errors or warnings, detected for the database
+
+Fast-Start Failover: DISABLED
+
+Configuration Status:
+WARNING
+
+# expected_classification: CONDITION (broker reports WARNING status, root cause requires
+#   drilling into the specific member warning, never assumed from the aggregate status alone)
+# used_by: incident/dataguard-correlation

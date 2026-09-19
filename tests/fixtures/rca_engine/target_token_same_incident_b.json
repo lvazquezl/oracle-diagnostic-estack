@@ -1,0 +1,8 @@
+{
+  "incident": {"id": "INC-20260318-009", "target_id": "T-SHARED-TARGET", "symptom_description": "second event, same incident and target"},
+  "evidence": [
+    {"evidence_id": "EVD-1", "domain": "os", "source_id": "os-process-limits-collector",
+     "timestamp": "2026-03-11T15:03:00+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "attributes": {"nproc_utilization_percent": 50.0}}
+  ]
+}

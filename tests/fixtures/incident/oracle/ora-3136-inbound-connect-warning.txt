@@ -1,0 +1,15 @@
+# Fixture: ORA-3136 (inbound connection timed out) — symptom, recurring pattern candidate
+# Source: alert.log excerpt, sanitized
+
+2026-03-11T14:31:02.119004+00:00
+WARNING: inbound connection timed out (ORA-3136)
+2026-03-11T14:33:41.887332+00:00
+WARNING: inbound connection timed out (ORA-3136)
+2026-03-11T14:36:55.220117+00:00
+WARNING: inbound connection timed out (ORA-3136)
+
+# recurrence_note: 3 occurrences within 15 minutes — candidate for incident/recurrence-awareness
+#   "patterned" classification if similar events found in prior incident history
+# expected_classification: SYMPTOM (client failed to complete authentication within
+#   SQLNET.INBOUND_CONNECT_TIMEOUT)
+# used_by: incident/network-correlation, incident/recurrence-awareness

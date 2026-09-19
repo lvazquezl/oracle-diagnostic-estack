@@ -1,0 +1,13 @@
+# Fixture: capacity threshold already exceeded at incident time (historical, not forecast)
+# Source: capacity-analyst threshold_crossings evidence excerpt (sanitized)
+
+threshold_crossings (TABLESPACE_TOKEN, evidence_id EVD-CAP-THR-1):
+  resource_type: tablespace
+  status: ALREADY_EXCEEDED
+  threshold_percent: 90.0
+  observed_percent: 97.4
+  observed_at: 2026-03-11T14:28:00Z
+
+# expected_classification: FACT (historical/current threshold crossing, valid capacity-correlation
+#   input) — never substituted with a 1/3/6-month forecast as "proof" of this incident's cause
+# used_by: incident/capacity-correlation

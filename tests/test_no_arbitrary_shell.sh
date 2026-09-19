@@ -29,4 +29,11 @@ if [ -f "$M" ]; then
   grep -q 'shell arbitrario' "$M" && echo "[PASS] capacity-analyst declara la prohibición de shell arbitrario" || { echo "[FAIL] falta la prohibición de shell arbitrario en capacity-analyst"; FAIL=1; }
 fi
 
+# PHASE 11 — INCIDENT ANALYSIS & ROOT CAUSE AUTOMATION (NO ARBITRARY SHELL).
+MI="$ROOT/agents/incident-root-cause-analyst/manifest.yaml"
+[ -f "$MI" ] || { echo "[FAIL] falta $MI"; FAIL=1; }
+if [ -f "$MI" ]; then
+  grep -q 'shell arbitrario' "$MI" && echo "[PASS] incident-root-cause-analyst declara la prohibición de shell arbitrario" || { echo "[FAIL] falta la prohibición de shell arbitrario en incident-root-cause-analyst"; FAIL=1; }
+fi
+
 exit $FAIL

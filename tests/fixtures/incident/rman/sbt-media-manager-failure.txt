@@ -1,0 +1,10 @@
+# Fixture: RMAN SBT media manager failure
+# Source: RMAN log excerpt (sanitized, media manager vendor tokenized)
+
+RMAN-03009: failure of backup command on ORA_SBT_TAPE_1 channel at 03/11/2026 14:52:40
+ORA-19511: Error received from media manager layer, error text:
+   MEDIA_MANAGER_TOKEN: sbtinit: unable to connect to media management server, host unreachable
+
+# expected_classification: SYMPTOM (SBT connectivity failure external to Oracle)
+# candidate_conditions: media manager server down, network path to media manager server broken
+# used_by: incident/rman-correlation, incident/network-correlation

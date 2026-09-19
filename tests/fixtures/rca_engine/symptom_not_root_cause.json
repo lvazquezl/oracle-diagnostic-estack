@@ -1,0 +1,14 @@
+{
+  "incident": {
+    "id": "INC-20260311-005",
+    "target_id": "T-PRODDB",
+    "symptom_description": "A single ORA-12537 observed, no other evidence collected yet"
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "network", "source_id": "listener-log-parser",
+      "timestamp": "2026-03-11T14:22:07+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "signature": "ORA-12537", "summary": "TNS connection closed", "attributes": {}
+    }
+  ]
+}

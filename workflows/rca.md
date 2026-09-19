@@ -1,6 +1,6 @@
 ---
 name: rca
-version: 1.0.0
+version: 2.0.0
 status: active
 ---
 
@@ -26,11 +26,18 @@ Los especialistas de dominio necesarios para validar cada hipótesis (activados 
 
 # Activation conditions
 
-Igual que `agents/incident-root-cause-analyst.md` — sólo se activa un especialista adicional cuando hay una hipótesis concreta que requiere su evidencia.
+Igual que `agents/incident-root-cause-analyst/AGENT.md` (v2.0.0) — sólo se activa un especialista adicional (vía el skill de correlación cross-domain correspondiente) cuando hay una hipótesis concreta que requiere su evidencia.
 
 # Skills
 
-`incident/root-cause-analysis`, `incident/hypothesis-management`, `incident/cause-validation`, `incident/timeline-analysis`.
+`incident/timeline`, `incident/hypothesis-generation`, `incident/hypothesis-testing`,
+`incident/contradiction-analysis`, `incident/root-cause`, `incident/contributing-factors`,
+`incident/recovery-status`, `incident/rca-report`, más el skill de correlación cross-domain de
+cada especialista adicional activado por hipótesis (`incident/performance-correlation`,
+`incident/rac-correlation`, `incident/dataguard-correlation`, `incident/asm-storage-correlation`,
+`incident/network-correlation`, `incident/os-correlation`, `incident/security-correlation`,
+`incident/rman-correlation`, `incident/multitenant-correlation`, `incident/change-correlation`,
+`incident/capacity-correlation`).
 
 # Evidence required
 
@@ -50,7 +57,9 @@ Causa confirmada y accionable → `change-advisor`. Caso cerrado con causa confi
 
 # Documentation output
 
-`root-cause.md`, `timeline.md`, `lessons-learned.md` bajo el `ANA-*`/`INC-*` correspondiente.
+`incident-rca.md` (vía `incident/rca-report`, incluyendo hipótesis rechazadas y `causal_chain`
+completa), `incident-timeline.md`, y `incident-lessons-learned.md` si el caso se cierra en la
+misma sesión, bajo el `ANA-*`/`INC-*` correspondiente.
 
 # Token/context budget
 

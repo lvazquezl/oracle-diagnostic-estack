@@ -1,0 +1,13 @@
+{
+  "incident": {
+    "id": "INC-20260319-006",
+    "target_id": "T-PRODDB",
+    "symptom_description": "A malformed evidence item (missing timestamp) also carries a signature marker; the resulting error must never echo it"
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "oracle", "source_id": "alert-log-parser",
+      "event_type": "ALERT_TRIGGERED", "signature": "SYNTHETIC_SECRET_DO_NOT_USE_ERRORPATH"
+    }
+  ]
+}

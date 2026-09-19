@@ -1,0 +1,13 @@
+# Fixture: RMAN snapshot controlfile failure awareness
+# Source: RMAN log excerpt (sanitized)
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of backup plus archivelog command at 03/11/2026 14:56:18
+RMAN-03015: error occurred in stored script Memory Script
+ORA-00245: control file backup operation without recovery catalog is not permitted unless the snapshot control file location is on a shared file system
+
+# expected_classification: SYMPTOM (RMAN snapshot controlfile location misconfigured for a RAC
+#   deployment — no recovery catalog and non-shared SNAPSHOT CONTROLFILE NAME)
+# used_by: incident/rman-correlation, incident/rac-correlation

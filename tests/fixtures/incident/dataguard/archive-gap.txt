@@ -1,0 +1,17 @@
+# Fixture: Data Guard archive gap detected
+# Source: dataguard/archive-gaps evidence excerpt (sanitized)
+
+V$ARCHIVE_GAP (STANDBY_TOKEN_01, evidence_id EVD-DG-GAP-1):
+  thread#: 1
+  low_sequence#: 44210
+  high_sequence#: 44216
+
+alert.log (STANDBY_TOKEN_01):
+2026-03-11T14:46:55.331007+00:00
+FAL[client]: Failed to request gap sequence
+GAP - thread 1 sequence 44210-44216
+DBID 1234567890 branch 987654321
+
+# expected_classification: CONDITION (archive gap, potential data_loss depends on whether the
+#   primary still has the archivelogs available — never asserted true/false without evidence)
+# used_by: incident/dataguard-correlation, incident/impact-analysis

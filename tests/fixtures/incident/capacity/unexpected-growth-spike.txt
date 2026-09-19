@@ -1,0 +1,11 @@
+# Fixture: unexpected growth spike shortly before incident
+# Source: capacity-analyst trend-analysis evidence excerpt (sanitized)
+
+trend_analysis (TABLESPACE_TOKEN, evidence_id EVD-CAP-TREND-1):
+  baseline_daily_growth_mb: 120
+  observed_daily_growth_mb_last_24h: 4800
+  classification: ANOMALOUS_SPIKE
+
+# expected_classification: CONDITION (anomalous growth, candidate contributing factor) —
+#   requires correlation with a known change (batch job, data load) before treated as cause
+# used_by: incident/capacity-correlation, incident/change-correlation

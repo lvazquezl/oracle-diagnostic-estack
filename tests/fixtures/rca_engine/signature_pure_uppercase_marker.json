@@ -1,0 +1,14 @@
+{
+  "incident": {
+    "id": "INC-20260319-001",
+    "target_id": "T-PRODDB",
+    "symptom_description": "Regression fixture for the signature-allowlist leak: a pure UPPER_SNAKE_CASE marker matches the old generic shape regex and must never be classified CERTIFIED"
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "oracle", "source_id": "alert-log-parser",
+      "timestamp": "2026-03-11T15:02:31+00:00", "event_type": "ALERT_TRIGGERED",
+      "signature": "SYNTHETIC_SECRET_DO_NOT_USE"
+    }
+  ]
+}

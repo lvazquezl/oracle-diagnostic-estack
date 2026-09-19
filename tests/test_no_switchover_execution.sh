@@ -27,4 +27,14 @@ grep -q 'ALTER DATABASE SWITCHOVER/FAILOVER' "$ROOT/agents/oracle-dataguard-anal
   || { echo "[FAIL] falta prohibición explícita"; FAIL=1; }
 
 [ $FAIL -eq 0 ] && echo "[PASS] Ningún artefacto ejecuta switchover"
+
+# PHASE 11 — INCIDENT ANALYSIS & ROOT CAUSE AUTOMATION (NO FAILOVER/SWITCHOVER EXECUTION).
+MI="$ROOT/agents/incident-root-cause-analyst/manifest.yaml"
+[ -f "$MI" ] || { echo "[FAIL] falta $MI"; FAIL=1; }
+if [ -f "$MI" ]; then
+  grep -qi 'ejecutar failover o switchover de Data Guard' "$MI" \
+    && echo "[PASS] incident-root-cause-analyst declara la prohibición de ejecutar switchover" \
+    || { echo "[FAIL] falta la prohibición de switchover en incident-root-cause-analyst"; FAIL=1; }
+fi
+
 exit $FAIL

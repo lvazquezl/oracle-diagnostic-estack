@@ -1,0 +1,13 @@
+# Fixture: audit trail gap during the incident window — evidence limitation, not a finding of intent
+# Source: security/audit-configuration evidence excerpt (sanitized)
+
+audit_trail_coverage (evidence_id EVD-SEC-AUDIT-1):
+  window_start: 2026-03-11T14:00:00Z
+  window_end: 2026-03-11T15:00:00Z
+  audit_trail_status: PURGED
+  last_retained_record: 2026-03-11T13:42:00Z
+
+# expected_classification: EVIDENCE_LIMITATION (audit gap for the incident window) — reported
+#   explicitly as a limitation affecting incident/security-correlation confidence, never silently
+#   omitted from the incident report
+# used_by: incident/security-correlation, incident/incident-report

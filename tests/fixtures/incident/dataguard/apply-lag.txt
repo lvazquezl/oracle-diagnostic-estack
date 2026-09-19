@@ -1,0 +1,13 @@
+# Fixture: Data Guard apply lag growth (MRP falling behind)
+# Source: dataguard/apply evidence excerpt (sanitized)
+
+V$DATAGUARD_STATS (STANDBY_TOKEN_01, evidence_id EVD-DG-APPLY-1):
+  apply_lag: +00 01:05:33
+  apply_finish_time: +00 00:42:11
+
+MRP0 trace (STANDBY_TOKEN_01):
+Media Recovery Waiting for thread 1 sequence 44218 (in transit)
+Recovery of Online Redo Log: Thread 1 Group 12 Seq 44217 Reading mem 0
+
+# expected_classification: CONDITION (apply falling behind, standby recoverability at risk)
+# used_by: incident/dataguard-correlation

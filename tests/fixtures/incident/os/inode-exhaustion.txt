@@ -1,0 +1,16 @@
+# Fixture: inode exhaustion on trace/diag filesystem
+# Source: os/inodes evidence excerpt (sanitized)
+
+os_evidence (get_inode_usage, HOST_TOKEN_01, evidence_id EVD-OS-INODE-1):
+  mount_point: /u01/app/oracle/diag
+  inodes_used_percent: 99.6
+  inodes_free: 812
+
+alert.log (PRODDB_TOKEN):
+2026-03-11T15:00:12.887221+00:00
+ORA-27041: unable to open file
+Linux-x86_64 Error: 28: No space left on device
+
+# expected_classification: CONDITION (inode exhaustion, distinct from block-space exhaustion —
+#   df may report free bytes while inodes are fully consumed)
+# used_by: incident/os-correlation

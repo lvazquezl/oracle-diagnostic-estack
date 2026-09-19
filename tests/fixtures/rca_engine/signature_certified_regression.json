@@ -1,0 +1,26 @@
+{
+  "incident": {
+    "id": "INC-20260319-004",
+    "target_id": "T-PRODDB",
+    "symptom_description": "Legitimate certified signatures across a numeric code category and a template-name category must preserve classification/grouping/dedup/causality/timeline/evidence-by-reference"
+  },
+  "evidence": [
+    {"evidence_id": "EVD-1", "domain": "oracle", "source_id": "alert-log-parser",
+     "timestamp": "2026-03-11T15:02:31+00:00", "event_type": "ALERT_TRIGGERED", "signature": "ORA-27300"},
+    {"evidence_id": "EVD-2", "domain": "os", "source_id": "os-process-limits-collector",
+     "timestamp": "2026-03-11T15:02:00+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "attributes": {"nproc_utilization_percent": 99.5}},
+    {"evidence_id": "EVD-3", "domain": "os", "source_id": "os-fork-audit-collector",
+     "timestamp": "2026-03-11T15:02:10+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "attributes": {"fork_failures_observed": true}},
+    {"evidence_id": "EVD-4", "domain": "performance", "source_id": "ash-collector",
+     "timestamp": "2026-03-11T15:05:00+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "signature": "HIGH_DB_FILE_SEQUENTIAL_READ"},
+    {"evidence_id": "EVD-5", "domain": "performance", "source_id": "ash-collector",
+     "timestamp": "2026-03-11T15:05:05+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "attributes": {"db_file_sequential_read_avg_ms": 35.0}},
+    {"evidence_id": "EVD-6", "domain": "capacity", "source_id": "capacity-collector",
+     "timestamp": "2026-03-11T15:05:10+00:00", "event_type": "SYMPTOM_OBSERVED",
+     "attributes": {"io_queue_depth_elevated": true}}
+  ]
+}

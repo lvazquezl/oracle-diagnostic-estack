@@ -1,0 +1,16 @@
+# Fixture: process/ulimit exhaustion preventing new Oracle server processes
+# Source: os/process-limits evidence excerpt (sanitized)
+
+os_evidence (get_process_effective_limits, HOST_TOKEN_01, pid=oracle_pmon, evidence_id EVD-OS-ULIM-1):
+  nproc_soft: 16384
+  nproc_hard: 16384
+  nproc_current: 16380
+
+alert.log (PRODDB_TOKEN):
+2026-03-11T15:02:31.221118+00:00
+ORA-27300: OS system dependent operation:fork failed with status: 11
+ORA-27301: OS failure message: Resource temporarily unavailable
+ORA-27302: failure occurred at: skgpspawn3
+
+# expected_classification: CONDITION (OS process limit nearly saturated for the oracle user)
+# used_by: incident/os-correlation

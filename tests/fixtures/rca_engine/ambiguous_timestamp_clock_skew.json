@@ -1,0 +1,27 @@
+{
+  "incident": {
+    "id": "INC-20260311-008",
+    "target_id": "T-PRODDB",
+    "symptom_description": "One evidence source has no explicit UTC offset, another has confirmed clock drift"
+  },
+  "evidence": [
+    {
+      "evidence_id": "EVD-1", "domain": "oracle", "source_id": "alert-log-parser",
+      "timestamp": "2026-03-11T15:02:31+00:00", "event_type": "ALERT_TRIGGERED",
+      "signature": "ORA-27300", "attributes": {}
+    },
+    {
+      "evidence_id": "EVD-2", "domain": "os", "source_id": "os-process-limits-collector",
+      "timestamp": "2026-03-11T15:02:00",
+      "event_type": "SYMPTOM_OBSERVED",
+      "summary": "naive timestamp, no explicit UTC offset provided by the source",
+      "attributes": {"nproc_utilization_percent": 99.5}
+    },
+    {
+      "evidence_id": "EVD-3", "domain": "os", "source_id": "os-fork-audit-collector",
+      "timestamp": "2026-03-11T15:02:10+00:00", "event_type": "SYMPTOM_OBSERVED",
+      "summary": "source with confirmed clock drift beyond threshold",
+      "attributes": {"fork_failures_observed": true, "source_clock_offset_seconds": 47.2}
+    }
+  ]
+}

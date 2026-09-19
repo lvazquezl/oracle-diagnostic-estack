@@ -1,0 +1,16 @@
+# Fixture: ORA-12537 (TNS:connection closed) — symptom, never automatic root cause
+# Source: alert.log + listener.log excerpt, sanitized (host/IP tokenized)
+
+alert.log:
+2026-03-11T14:22:07.331201+00:00
+ORA-12537: TNS:connection closed
+ORA-609: could not attach to incoming connection
+
+listener.log:
+11-MAR-2026 14:22:07 * (CONNECT_DATA=(SERVICE_NAME=PRODDB_TOKEN)(CID=...)) * (ADDRESS=(PROTOCOL=tcp)(HOST=HOST_TOKEN_01)(PORT=51422)) * establish * PRODDB_TOKEN * 12537
+11-MAR-2026 14:22:11 * (CONNECT_DATA=(SERVICE_NAME=PRODDB_TOKEN)(CID=...)) * (ADDRESS=(PROTOCOL=tcp)(HOST=HOST_TOKEN_02)(PORT=51431)) * establish * PRODDB_TOKEN * 12537
+11-MAR-2026 14:22:19 * (CONNECT_DATA=(SERVICE_NAME=PRODDB_TOKEN)(CID=...)) * (ADDRESS=(PROTOCOL=tcp)(HOST=HOST_TOKEN_03)(PORT=51455)) * establish * PRODDB_TOKEN * 12537
+
+# expected_classification: SYMPTOM (never root cause without mechanism evidence)
+# candidate_conditions: firewall idle-timeout, listener process hang, network path instability
+# used_by: incident/network-correlation, incident/root-cause (symptom-vs-cause example)
