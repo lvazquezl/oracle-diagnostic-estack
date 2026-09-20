@@ -1,0 +1,10 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "observed_at_utc": "2026-03-11T15:02:00+00:00",
+      "nproc_utilization_percent": 99.5,
+      "limit_source": "rlimit_nproc"
+    }
+  ]
+}

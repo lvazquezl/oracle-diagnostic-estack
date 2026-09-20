@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "instance_name": "SYNTHOLD",
+      "version": "11.2.0.4.0",
+      "db_name": "SYNTHOLD",
+      "database_role": "PRIMARY",
+      "open_mode": "READ WRITE"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "name": "transport lag",
+      "value": "+00 00:00:04",
+      "unit": "day(2) to second(0) interval"
+    },
+    {
+      "name": "apply lag",
+      "value": "+00 00:00:09",
+      "unit": "day(2) to second(0) interval"
+    }
+  ]
+}

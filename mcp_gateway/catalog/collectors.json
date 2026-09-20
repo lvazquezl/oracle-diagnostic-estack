@@ -1,0 +1,114 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Phase 13 gateway collector catalog. A collector is exposed ONLY if it is listed here AND (for kind sql_query) its query file in queries/ is certified (status active, R0, READ_ONLY). Every output field has an explicit sanitization policy: fields not listed are DROPPED (default deny). Fixture mode is the only enabled adapter; real adapters are DISABLED/CONTRACT_ONLY.",
+  "collectors": [
+    {
+      "collector_id": "Q-DISC-IDENTITY-001",
+      "kind": "sql_query",
+      "domain": "oracle",
+      "title": "Database identity (instance, version, role, open mode)",
+      "row_limit": 5,
+      "params": {},
+      "output_fields": {
+        "instance_name": {"type": "identifier", "policy": "MASK", "alias_prefix": "inst"},
+        "version": {"type": "version_string", "policy": "KEEP"},
+        "db_name": {"type": "identifier", "policy": "MASK", "alias_prefix": "db"},
+        "database_role": {"type": "enum", "values": ["PRIMARY", "PHYSICAL STANDBY", "LOGICAL STANDBY", "SNAPSHOT STANDBY", "FAR SYNC"], "policy": "KEEP"},
+        "cdb": {"type": "enum", "values": ["YES", "NO"], "policy": "KEEP"},
+        "open_mode": {"type": "enum", "values": ["READ WRITE", "READ ONLY", "READ ONLY WITH APPLY", "MOUNTED"], "policy": "KEEP"}
+      },
+      "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_sql": "DISABLED"}
+    },
+    {
+      "collector_id": "Q-ORA-RESOURCE-LIMITS-001",
+      "kind": "sql_query",
+      "domain": "oracle",
+      "title": "Instance resource limits (peak vs limit)",
+      "row_limit": 50,
+      "params": {},
+      "output_fields": {
+        "resource_name": {"type": "enum", "values": ["processes", "sessions", "open_cursors", "enqueue_locks", "dml_locks"], "policy": "KEEP"},
+        "current_utilization": {"type": "integer", "min": 0, "max": 1000000000, "policy": "KEEP"},
+        "max_utilization": {"type": "integer", "min": 0, "max": 1000000000, "policy": "KEEP"},
+        "limit_value": {"type": "integer_or_unlimited", "min": 0, "max": 1000000000, "policy": "KEEP"}
+      },
+      "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_sql": "DISABLED"}
+    },
+    {
+      "collector_id": "Q-ORA-PROCESSES-SUMMARY-001",
+      "kind": "sql_query",
+      "domain": "oracle",
+      "title": "Process count vs configured limit",
+      "row_limit": 5,
+      "params": {},
+      "output_fields": {
+        "process_count": {"type": "integer", "min": 0, "max": 1000000000, "policy": "KEEP"},
+        "processes_limit": {"type": "integer", "min": 0, "max": 1000000000, "policy": "KEEP"}
+      },
+      "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_sql": "DISABLED"}
+    },
+    {
+      "collector_id": "Q-ORA-DIAGNOSTICS-ALERTLOG-001",
+      "kind": "alert_log_excerpt",
+      "domain": "oracle",
+      "title": "Bounded alert log excerpt (signatures and timestamps only)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "event_time": {"type": "timestamp_utc", "policy": "KEEP"},
+        "signature": {"type": "signature", "policy": "SIGNATURE"},
+        "message": {"type": "text", "policy": "DROP"}
+      },
+      "rca": {"domain": "oracle", "event_type": "ALERT_TRIGGERED", "source_id": "alert-log-parser", "timestamp_field": "event_time", "signature_field": "signature", "attributes": {}},
+      "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_diag_file": "CONTRACT_ONLY"}
+    },
+    {
+      "collector_id": "Q-DG-STATS-001",
+      "kind": "sql_query",
+      "domain": "dataguard",
+      "title": "Data Guard transport/apply lag (standby only)",
+      "row_limit": 20,
+      "params": {},
+      "output_fields": {
+        "name": {"type": "enum", "values": ["transport lag", "apply lag"], "policy": "KEEP"},
+        "value": {"type": "interval_string", "policy": "KEEP"},
+        "unit": {"type": "enum", "values": ["day(2) to second(0) interval"], "policy": "KEEP"}
+      },
+      "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_sql": "DISABLED"}
+    },
+    {
+      "collector_id": "os.get_process_limits",
+      "kind": "semantic_os",
+      "domain": "os",
+      "title": "OS process limit utilization (semantic, read-only)",
+      "reference": "docs/OS_READONLY_COLLECTOR_MODEL.md#get_process_limits",
+      "row_limit": 5,
+      "params": {},
+      "output_fields": {
+        "observed_at_utc": {"type": "timestamp_utc", "policy": "KEEP"},
+        "nproc_utilization_percent": {"type": "number", "min": 0, "max": 1000, "policy": "KEEP"},
+        "limit_source": {"type": "enum", "values": ["rlimit_nproc", "cgroup_pids_max", "unknown"], "policy": "KEEP"}
+      },
+      "rca": {"domain": "os", "event_type": "SYMPTOM_OBSERVED", "source_id": "os-process-limits-collector", "timestamp_field": "observed_at_utc", "signature_field": null,
+              "attributes": {"nproc_utilization_percent": "nproc_utilization_percent"}},
+      "adapters": {"fixture": "VERIFIED_FIXTURE", "os_readonly": "CONTRACT_ONLY"}
+    },
+    {
+      "collector_id": "os.get_oracle_process_summary",
+      "kind": "semantic_os",
+      "domain": "os",
+      "title": "Oracle process creation failures (semantic, read-only)",
+      "reference": "docs/OS_READONLY_COLLECTOR_MODEL.md#get_oracle_process_summary",
+      "row_limit": 5,
+      "params": {},
+      "output_fields": {
+        "observed_at_utc": {"type": "timestamp_utc", "policy": "KEEP"},
+        "fork_failures_observed": {"type": "boolean", "policy": "KEEP"},
+        "oracle_process_count": {"type": "integer", "min": 0, "max": 1000000, "policy": "KEEP"}
+      },
+      "rca": {"domain": "os", "event_type": "SYMPTOM_OBSERVED", "source_id": "os-fork-audit-collector", "timestamp_field": "observed_at_utc", "signature_field": null,
+              "attributes": {"fork_failures_observed": "fork_failures_observed"}},
+      "adapters": {"fixture": "VERIFIED_FIXTURE", "os_readonly": "CONTRACT_ONLY"}
+    }
+  ]
+}

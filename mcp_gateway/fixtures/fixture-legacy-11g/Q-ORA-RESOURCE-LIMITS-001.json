@@ -1,0 +1,11 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "resource_name": "processes",
+      "current_utilization": 50,
+      "max_utilization": 60,
+      "limit_value": 150
+    }
+  ]
+}

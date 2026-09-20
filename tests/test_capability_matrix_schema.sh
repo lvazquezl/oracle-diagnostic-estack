@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Valida el schema minimo de config/capability-matrix.yaml: 19 dominios (PHASE 11 -- INCIDENT
+# Valida el schema minimo de config/capability-matrix.yaml: 20 dominios (PHASE 13 -- MCP DIAGNOSTIC GATEWAY agrega la fila 'mcp-gateway', 19 -> 20; PHASE 11 -- INCIDENT
 # ANALYSIS & ROOT CAUSE AUTOMATION agrega la fila 'incident', 18 -> 19), cada uno con las 8
 # columnas de version y un status dentro del enum permitido.
 set -uo pipefail
@@ -8,10 +8,10 @@ F="$ROOT/config/capability-matrix.yaml"
 FAIL=0
 
 domain_count=$(grep -c '^  - id:' "$F")
-if [ "$domain_count" -eq 19 ]; then
-  echo "[PASS] config/capability-matrix.yaml declara 19 dominios"
+if [ "$domain_count" -eq 20 ]; then
+  echo "[PASS] config/capability-matrix.yaml declara 20 dominios"
 else
-  echo "[FAIL] config/capability-matrix.yaml declara $domain_count dominios, se esperaban 19"
+  echo "[FAIL] config/capability-matrix.yaml declara $domain_count dominios, se esperaban 20"
   FAIL=1
 fi
 

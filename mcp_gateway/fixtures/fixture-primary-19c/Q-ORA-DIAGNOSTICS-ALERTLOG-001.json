@@ -1,0 +1,15 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "event_time": "2026-03-11T15:02:31+00:00",
+      "signature": "ORA-27300",
+      "message": "OS system dependent operation:fork failed with status: 11"
+    },
+    {
+      "event_time": "2026-03-11T15:02:35+00:00",
+      "signature": "ORA-27301",
+      "message": "OS failure message: Resource temporarily unavailable"
+    }
+  ]
+}
