@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "oracle-diagnostic-estack": {
+      "command": "python",
+      "args": [
+        "-m",
+        "mcp_gateway"
+      ],
+      "cwd": "<ABSOLUTE_PATH_TO_YOUR_CHECKOUT_OF_THE_REPOSITORY>",
+      "env": {
+        "PYTHONUTF8": "1",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    }
+  },
+  "_note": "Example only, fixture mode. Nothing sensitive belongs in this file. Copy it into your own Claude Code MCP settings yourself."
+}

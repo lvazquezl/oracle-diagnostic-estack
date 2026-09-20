@@ -1,0 +1,9 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "process_count": 188,
+      "processes_limit": 200
+    }
+  ]
+}

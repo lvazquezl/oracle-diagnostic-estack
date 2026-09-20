@@ -1,6 +1,6 @@
 # Collectors — especificación
 
-Estado: **especificación certificada**, no runtime ejecutable (el Gateway MCP real es Fase 13 — roadmap vigente, corregido desde la referencia obsoleta "Fase 7", que ya se completó como Backup & Recovery/RMAN sin entregar el Gateway runtime). Fase 2 (Oracle Core) amplía el contrato de `oracle-sql-collector` para cubrir las ~20 queries `Q-ORA-*` nuevas, y agrega el contrato de `oracle-diag-collector` (ADR/alert log).
+Estado: **especificación certificada**, no runtime ejecutable (el Gateway MCP local de la Fase 13 existe en `mcp_gateway/` con adaptador de fixture; los adaptadores reales siguen `DISABLED`/`CONTRACT_ONLY` y `NOT_INTEGRATION_TESTED`). Fase 2 (Oracle Core) amplía el contrato de `oracle-sql-collector` para cubrir las ~20 queries `Q-ORA-*` nuevas, y agrega el contrato de `oracle-diag-collector` (ADR/alert log).
 
 Un collector ejecuta exactamente una query/comando certificado de `queries/REGISTRY.md` contra el ambiente real y devuelve el resultado crudo al Sanitizer — nunca directamente al modelo.
 

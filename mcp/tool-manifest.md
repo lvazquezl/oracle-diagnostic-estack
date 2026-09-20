@@ -90,3 +90,17 @@ Esto es evaluado **por target**, no una vez globalmente: la misma tool puede est
 - Toda tool pasa por el Sanitizer antes de devolver resultado (ver `sanitizers/data-classification-policy.md`).
 - Una tool marcada con queries `registered` (no `active`) no está disponible aún en el Gateway real — su presencia aquí es de catálogo/roadmap, materializada en la fase indicada.
 - Ninguna tool acepta un parámetro `sql`, `command`, o `raw_query` de texto libre.
+
+## Fase 13 — Gateway MCP local (implementado sobre fixtures)
+
+El manifest anterior sigue siendo el catálogo objetivo por query certificada. La Fase 13 expone además, en `mcp_gateway/`, cinco tools estáticas de nivel semántico:
+
+| Tool | Entrada (esquema cerrado) | Salida |
+|---|---|---|
+| `diagnostics.list_capabilities` | ninguna | adaptadores con estado, destinos por alias, colectores y capacidad por destino |
+| `diagnostics.describe_collector` | `collector_id` | metadatos certificados y hash de la query; nunca el texto SQL |
+| `diagnostics.collect` | `collector_id`, `target_alias`, `max_rows` opcional | evidencia saneada, minimizada, con referencia opaca `EVR-*` |
+| `diagnostics.get_evidence` | `evidence_ref`, `target_alias` | la misma evidencia saneada, sólo dentro de la sesión y el destino |
+| `diagnostics.analyze_incident` | `target_alias`, `evidence_refs` | RCA de `rca_engine`, propuesta `NOT_EXECUTED_BY_ESTACK` y estado de candidato KB sin publicar |
+
+Ninguna tool acepta `sql`, `command`, `raw_query`, rutas, URL ni parámetros de conexión. Estado de los adaptadores: `fixture` `VERIFIED_FIXTURE`; `oracle_sql` `DISABLED`; `oracle_diag_file` y `os_readonly` `CONTRACT_ONLY`; ningún entorno real `NOT_INTEGRATION_TESTED`. Ver `docs/PHASE_13_MCP_DIAGNOSTIC_GATEWAY.md`.

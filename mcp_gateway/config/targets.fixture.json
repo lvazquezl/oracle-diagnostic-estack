@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0.0",
+  "description": "SYNTHETIC targets for local fixture mode. Aliases are non-sensitive labels, NOT authorization by themselves. This file must never contain hosts, DSNs, wallets, users or passwords; real adapters are disabled by default.",
+  "targets": [
+    {
+      "alias": "fixture-primary-19c",
+      "adapter": "fixture",
+      "enabled": true,
+      "oracle_version": "19c",
+      "role": "PRIMARY",
+      "container": "NON_CDB",
+      "architecture": {"rac": false, "dataguard": false, "asm": false},
+      "license_status": {"diagnostics_pack": "UNKNOWN", "active_data_guard": "UNKNOWN"},
+      "allowed_collectors": ["Q-DISC-IDENTITY-001", "Q-ORA-RESOURCE-LIMITS-001", "Q-ORA-PROCESSES-SUMMARY-001", "Q-ORA-DIAGNOSTICS-ALERTLOG-001", "os.get_process_limits", "os.get_oracle_process_summary"],
+      "budget": {"max_calls": 100, "max_rows": 2000}
+    },
+    {
+      "alias": "fixture-standby-19c",
+      "adapter": "fixture",
+      "enabled": true,
+      "oracle_version": "19c",
+      "role": "STANDBY",
+      "container": "NON_CDB",
+      "architecture": {"rac": false, "dataguard": true, "asm": false},
+      "license_status": {"diagnostics_pack": "UNKNOWN", "active_data_guard": "UNKNOWN"},
+      "allowed_collectors": ["Q-DISC-IDENTITY-001", "Q-DG-STATS-001"],
+      "budget": {"max_calls": 100, "max_rows": 2000}
+    },
+    {
+      "alias": "fixture-legacy-11g",
+      "adapter": "fixture",
+      "enabled": true,
+      "oracle_version": "11g",
+      "role": "PRIMARY",
+      "container": "NON_CDB",
+      "architecture": {"rac": false, "dataguard": false, "asm": false},
+      "license_status": {"diagnostics_pack": "UNKNOWN"},
+      "allowed_collectors": ["Q-DISC-IDENTITY-001", "Q-ORA-RESOURCE-LIMITS-001"],
+      "budget": {"max_calls": 50, "max_rows": 500}
+    },
+    {
+      "alias": "fixture-unknown-version",
+      "adapter": "fixture",
+      "enabled": true,
+      "oracle_version": null,
+      "role": "UNKNOWN",
+      "container": "UNKNOWN",
+      "architecture": {},
+      "license_status": {},
+      "allowed_collectors": ["Q-DISC-IDENTITY-001", "Q-ORA-RESOURCE-LIMITS-001"],
+      "budget": {"max_calls": 20, "max_rows": 200}
+    },
+    {
+      "alias": "fixture-tight-budget",
+      "adapter": "fixture",
+      "enabled": true,
+      "oracle_version": "19c",
+      "role": "PRIMARY",
+      "container": "NON_CDB",
+      "architecture": {},
+      "license_status": {},
+      "allowed_collectors": ["Q-DISC-IDENTITY-001", "Q-ORA-RESOURCE-LIMITS-001"],
+      "budget": {"max_calls": 2, "max_rows": 6}
+    },
+    {
+      "alias": "lab-oracle-disabled",
+      "adapter": "oracle_sql",
+      "enabled": false,
+      "oracle_version": "19c",
+      "role": "PRIMARY",
+      "container": "NON_CDB",
+      "architecture": {},
+      "license_status": {},
+      "allowed_collectors": ["Q-DISC-IDENTITY-001"],
+      "budget": {"max_calls": 10, "max_rows": 100}
+    }
+  ]
+}

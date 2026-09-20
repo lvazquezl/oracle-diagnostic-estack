@@ -2,6 +2,34 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — 2026-09-19 — PHASE 13 — MCP DIAGNOSTIC GATEWAY & LOCAL INTEGRATION
+
+Rama `phase/13-mcp-diagnostic-gateway` sobre la baseline `v0.12.0-change-documentation-knowledge`. Entrega un servidor MCP local real
+por stdio (`python -m mcp_gateway`, JSON-RPC 2.0, Python stdlib) con cinco tools semánticas estáticas y datos **sintéticos de fixture**.
+Ver `docs/PHASE_13_MCP_DIAGNOSTIC_GATEWAY.md`.
+
+### Added
+
+- `mcp_gateway/`: servidor (handshake, ciclo de vida, límites de tamaño/profundidad/volumen), registro estático de tools con esquemas
+  cerrados, catálogo de 7 colectores y destinos sintéticos, autorización por llamada (destino, colector, adaptador, versión, rol, licencia,
+  presupuesto), pipeline de evidencia (validación → política KEEP/MASK/HASH/TOKENIZE/DROP con denegación por defecto → digest → referencia
+  opaca → auditoría final), puente a `rca_engine` (Fase 11) y a `change_documentation_knowledge` (Fase 12), auditoría local sin argumentos.
+- Adaptadores: `fixture` `VERIFIED_FIXTURE`; `oracle_sql` `DISABLED`; `oracle_diag_file` y `os_readonly` `CONTRACT_ONLY`.
+  Integración con entornos reales: `NOT_INTEGRATION_TESTED`.
+- 7 suites `tests/test_p13_*.sh` (unit, protocolo por subproceso real, tools E2E, sanitización, seguridad/adversarial, integración Fase 11/12,
+  mutation controls) y el dominio `mcp-gateway` en la matriz de capacidades.
+- `docs/PHASE_13_MCP_DIAGNOSTIC_GATEWAY.md`, `mcp/claude-code.mcp.example.json` (sin credenciales).
+
+### Changed
+
+- `mcp/README.md`, `mcp/tool-manifest.md`, `collectors/README.md`, `SECURITY.md`, `ARCHITECTURE.md`, `config/capability-matrix.yaml`,
+  `docs/CAPABILITY_MATRIX.md` y `tests/test_capability_matrix_schema.sh` (20 dominios).
+
+### Limitaciones declaradas
+
+- stdio local no autentica a la persona; MCP local no implica modelo local; los adaptadores reales no existen; verificado sólo en
+  Windows (Git Bash, Python 3.13); la resolución por variantes de query permanece `CONTRACT_ONLY`.
+
 ## [Unreleased] — 2026-09-19 — PHASE 12 — CHANGE ADVISORY, DOCUMENTATION & KNOWLEDGE LIFECYCLE
 
 Rama `phase/12-change-documentation-knowledge` sobre la baseline `v0.11.0-incident-rca`. Implementa (no sólo declara) una capa

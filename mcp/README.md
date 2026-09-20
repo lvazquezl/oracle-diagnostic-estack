@@ -1,6 +1,6 @@
 # MCP Diagnostic Gateway (local) — diseño
 
-Estado en Fase 1: **diseño y tool manifest**. La implementación ejecutable (servidor MCP real conectando a Oracle/OS) es Fase 7.
+Estado: el diseño de la Fase 1 sigue vigente. La **Fase 13** entrega un servidor MCP local real por stdio (`python -m mcp_gateway`, ver [`docs/PHASE_13_MCP_DIAGNOSTIC_GATEWAY.md`](../docs/PHASE_13_MCP_DIAGNOSTIC_GATEWAY.md)) con datos **sintéticos de fixture**; los adaptadores contra Oracle/OS reales están `DISABLED` o `CONTRACT_ONLY` y `NOT_INTEGRATION_TESTED` hasta que un humano apruebe un laboratorio.
 
 ## Principio
 
@@ -40,3 +40,12 @@ Toda tool nueva nace en `queries/REGISTRY.md` como propuesta vía `/change query
 ## Configuración local
 
 `config/estack.config.example.yaml` define el endpoint local del Gateway (siempre `localhost`, nunca expuesto a red), timeouts globales por defecto, y el directorio de auditoría local.
+
+## Implementación local (Fase 13)
+
+- Código: `mcp_gateway/` (Python stdlib, sin dependencias de red). Transporte: JSON-RPC 2.0 por stdio; `stdout` sólo protocolo, `stderr` auditoría sanitizada.
+- Cinco tools semánticas y estáticas: `diagnostics.list_capabilities`, `diagnostics.describe_collector`, `diagnostics.collect`, `diagnostics.get_evidence`, `diagnostics.analyze_incident`. Esquemas cerrados; ningún parámetro admite SQL, comandos, rutas, URL ni datos de conexión.
+- Adaptadores: `fixture` (`VERIFIED_FIXTURE`, único habilitado), `oracle_sql` (`DISABLED`), `oracle_diag_file` y `os_readonly` (`CONTRACT_ONLY`).
+- Configuración de ejemplo para Claude Code, sin credenciales: [`claude-code.mcp.example.json`](claude-code.mcp.example.json) (cópiela usted mismo; el repositorio no modifica su configuración).
+- «MCP local» no equivale a «modelo local»: la evidencia saneada que recibe el cliente puede salir del equipo según el producto que la consuma.
+- Pruebas: `tests/test_p13_*.sh`.
