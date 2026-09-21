@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0.0",
+  "risks": [
+    {
+      "risk_id": "RSK-001",
+      "title": "No certified real-environment adapters",
+      "description": "The Oracle SQL, diagnostic-file and OS adapters are DISABLED or CONTRACT_ONLY; only synthetic fixtures run. Someone could mistake the framework release for production readiness.",
+      "likelihood": "HIGH",
+      "impact": "HIGH",
+      "status": "OPEN",
+      "owner_role": "estack-maintainer",
+      "mitigation": "The registry, the release gate and the docs keep READY_FOR_REAL_ENVIRONMENT_PILOT at NO until a pilot record exists.",
+      "closure_condition": "An approved subproject implements a real adapter, it passes an integration pilot in an approved non-production environment and the administrator accepts it."
+    },
+    {
+      "risk_id": "RSK-002",
+      "title": "Local stdio does not authenticate the person",
+      "description": "The MCP transport is a local stdio pipe: protection is the operating-system account and file permissions of the host, not an identity check on the caller.",
+      "likelihood": "MEDIUM",
+      "impact": "HIGH",
+      "status": "OPEN",
+      "owner_role": "security-reviewer",
+      "mitigation": "Run the gateway under a dedicated least-privilege account, restrict repository and evidence directory permissions, keep it off shared hosts.",
+      "closure_condition": "The security reviewer attests the host access controls for the pilot host, or an authenticated transport is designed and approved."
+    },
+    {
+      "risk_id": "RSK-003",
+      "title": "Approvals are structural declarations",
+      "description": "Approval records are checked for structure, digest and separation of proposer and reviewer, but this repository has no authentication or signature mechanism.",
+      "likelihood": "HIGH",
+      "impact": "MEDIUM",
+      "status": "OPEN",
+      "owner_role": "release-manager",
+      "mitigation": "Approvals happen in Git review by named humans; releases are tagged only by a human after review.",
+      "closure_condition": "A mechanism that verifies approver identity outside the repository (for example signed commits or an external change system) is adopted."
+    },
+    {
+      "risk_id": "RSK-004",
+      "title": "Sanitization is heuristic",
+      "description": "Secret detection and signature handling in the sanitizer are heuristics biased to over-redact; unknown formats could still slip through or hide useful data.",
+      "likelihood": "MEDIUM",
+      "impact": "HIGH",
+      "status": "OPEN",
+      "owner_role": "security-reviewer",
+      "mitigation": "Default-deny per-field policy, free text is DROP-only, unknown signatures are tokenized, mutation tests guard the defenses.",
+      "closure_condition": "A review of sanitizer behavior on anonymized real samples is completed during an approved pilot."
+    },
+    {
+      "risk_id": "RSK-005",
+      "title": "Local MCP is not a local model",
+      "description": "Sanitized evidence returned to the MCP client may be processed outside the workstation depending on the client product configuration.",
+      "likelihood": "MEDIUM",
+      "impact": "HIGH",
+      "status": "OPEN",
+      "owner_role": "security-reviewer",
+      "mitigation": "Evidence is minimized before it leaves the gateway and nothing raw is ever returned.",
+      "closure_condition": "A data-flow assessment of the chosen client and its retention terms is approved."
+    },
+    {
+      "risk_id": "RSK-006",
+      "title": "Evidence packages prove integrity, not authenticity",
+      "description": "Hashes and fingerprints detect alteration but do not identify who produced a package; someone able to regenerate all files consistently is not stopped.",
+      "likelihood": "MEDIUM",
+      "impact": "MEDIUM",
+      "status": "OPEN",
+      "owner_role": "release-manager",
+      "mitigation": "Independent human review of the log and manifest; packages are kept outside the repository with the raw log retained separately.",
+      "closure_condition": "Evidence is produced by a controlled pipeline with provenance or is signed."
+    },
+    {
+      "risk_id": "RSK-007",
+      "title": "Only Windows with Git Bash has been validated",
+      "description": "The full regression and the gate were executed on Windows with Git Bash and Python 3.13; Linux and macOS were not tested.",
+      "likelihood": "MEDIUM",
+      "impact": "MEDIUM",
+      "status": "OPEN",
+      "owner_role": "estack-maintainer",
+      "mitigation": "The limitation is stated in the readiness documents; the gate must be run on each target platform before a pilot there.",
+      "closure_condition": "The release gate passes on each platform the administrator intends to use."
+    },
+    {
+      "risk_id": "RSK-008",
+      "title": "Certified SQL was never executed against a real database",
+      "description": "Queries are statically certified (read-only guard, contract fields) and exercised only through fixtures; real execution may reveal dictionary or version differences.",
+      "likelihood": "MEDIUM",
+      "impact": "HIGH",
+      "status": "OPEN",
+      "owner_role": "dba-lead",
+      "mitigation": "Per-collector version and license gates, R0 read-only rule, capability degradation when facts are unknown.",
+      "closure_condition": "Each collector is executed read-only in an approved non-production environment and the result is recorded in a pilot record."
+    },
+    {
+      "risk_id": "RSK-009",
+      "title": "Fixtures may drift from real outputs",
+      "description": "Synthetic fixtures encode the shapes the parsers and collectors expect; real outputs can differ in ways the tests cannot reveal.",
+      "likelihood": "MEDIUM",
+      "impact": "MEDIUM",
+      "status": "OPEN",
+      "owner_role": "estack-maintainer",
+      "mitigation": "Schema validation at the adapter boundary treats every adapter output as untrusted and fails closed on unexpected shapes.",
+      "closure_condition": "Fixtures are compared with anonymized real outputs during a pilot."
+    }
+  ]
+}

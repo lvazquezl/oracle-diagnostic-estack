@@ -34,6 +34,23 @@ DEFAULT_OPERATION_TIMEOUT_SECONDS = 15.0
 MAX_FIXTURE_BYTES = 1_000_000
 
 
+# Operators may only LOWER these limits (flags in cli.py), never raise them: ceiling = the values above.
+LIMIT_BOUNDS = {
+    "operation_timeout": (0.1, DEFAULT_OPERATION_TIMEOUT_SECONDS),
+    "max_session_calls": (1, MAX_SESSION_CALLS),
+    "max_rows": (1, MAX_ROWS_HARD),
+    "max_message_bytes": (1_024, MAX_MESSAGE_BYTES),
+}
+
+
+def bounded_limit(name: str, value):
+    """Return `value` if it lies inside LIMIT_BOUNDS[name] (numeric, finite, not bool), else raise ValueError."""
+    lo, hi = LIMIT_BOUNDS[name]
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or value != value or not (lo <= value <= hi):
+        raise ValueError("limit out of bounds")
+    return value
+
+
 # JSON-RPC error codes
 PARSE_ERROR = -32700
 INVALID_REQUEST = -32600

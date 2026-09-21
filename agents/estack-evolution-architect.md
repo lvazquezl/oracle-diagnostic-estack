@@ -109,3 +109,9 @@ next_skill_or_agent: string|null
 # Evolution policy
 
 - Este agente es el mecanismo de evolución del resto del stack; su propia evolución (`/change agent` sobre sí mismo) requiere el mismo flujo completo, sin atajos.
+
+# Fase 14 — ciclo de vida verificable y gate de release
+
+- Cada cambio del stack sigue, además del flujo `/change`, el ciclo `PROPOSED → REVIEWED → APPROVED → RELEASED → DEPRECATED/RETIRED` descrito en [docs/GOVERNANCE_AND_EVOLUTION.md](../docs/GOVERNANCE_AND_EVOLUTION.md). Los registros (`config/governance/`) los valida `python -m release_readiness governance-check`; el registro de capacidades lo valida `python -m release_readiness registry-check`.
+- Este agente **propone y analiza**; nunca crea una aprobación, nunca ejecuta el gate como sustituto de la revisión humana y nunca promueve. Una aprobación local es una declaración estructural (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`), no una autenticación.
+- Un cambio en la superficie MCP, en privilegios o en el estado de madurez de un componente exige su entrada en el registro de capacidades con la evidencia que su estado requiere.

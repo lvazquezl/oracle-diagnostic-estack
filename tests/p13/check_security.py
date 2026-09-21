@@ -145,7 +145,7 @@ def target_catalog_rejects_connection_material_unknown_collectors_and_bad_aliase
     base = default_targets()["targets"][0]
     for bad in (dict(base, password="x"), dict(base, dsn="h/s"), dict(base, host="db01"), dict(base, wallet="/w"), dict(base, connection_string="u/p@h"),
                 dict(base, allowed_collectors=["Q-SOMETHING-ELSE-001"]), dict(base, alias="Bad Alias"), dict(base, alias="../x"),
-                dict(base, oracle_version="19.3.0"), dict(base, role="ADMIN")):
+                dict(base, oracle_version="latest"), dict(base, role="ADMIN")):   # Phase 14: "19.3.0" now resolves to 19c; "latest" never does
         with tmpdir() as d:
             p = make_targets_file(d, [bad])
             try:

@@ -1,0 +1,1212 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Single source of truth for component maturity. Verified against the code by `python -m release_readiness registry-check`. Maturity states are defined in release_readiness/common.py (MATURITY_DEFINITIONS); PILOT_VALIDATED and CERTIFIED require a valid pilot record and none exists.",
+  "security_scripts": [
+    "tests/test_p13_security.sh",
+    "tests/test_p14_security_threat_model.sh",
+    "tests/test_p12_security_threat_model.sh",
+    "tests/test_no_arbitrary_sql.sh",
+    "tests/test_no_arbitrary_shell.sh",
+    "tests/test_no_write_operations.sh",
+    "tests/test_no_secrets.sh",
+    "tests/test_rca_cli_e2e_no_secret_leak.sh"
+  ],
+  "components": [
+    {
+      "id": "adapter:fixture",
+      "kind": "adapter",
+      "domain": "mcp-gateway",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Reads synthetic JSON fixtures from a confined directory; no SQL is executed and nothing real is observed.",
+      "test_refs": [
+        "tests/test_p13_tools_e2e.sh",
+        "tests/test_p13_security.sh"
+      ],
+      "adapter_name": "fixture"
+    },
+    {
+      "id": "adapter:oracle_diag_file",
+      "kind": "adapter",
+      "domain": "mcp-gateway",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Declared contract for reading diagnostic files through a certified collector; not implemented.",
+      "test_refs": [
+        "tests/test_p13_security.sh"
+      ],
+      "adapter_name": "oracle_diag_file"
+    },
+    {
+      "id": "adapter:oracle_sql",
+      "kind": "adapter",
+      "domain": "mcp-gateway",
+      "maturity": "DISABLED",
+      "notes": "Contract stub: no driver is imported and there is no connection path.",
+      "test_refs": [
+        "tests/test_p13_security.sh"
+      ],
+      "adapter_name": "oracle_sql",
+      "reason": "No implementation exists. Enabling requires a reviewed code change, an approved non-production lab and explicit human authorization per target."
+    },
+    {
+      "id": "adapter:os_readonly",
+      "kind": "adapter",
+      "domain": "mcp-gateway",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Declared contract for the semantic OS collectors (docs/OS_READONLY_COLLECTOR_MODEL.md); not implemented.",
+      "test_refs": [
+        "tests/test_p13_security.sh"
+      ],
+      "adapter_name": "os_readonly"
+    },
+    {
+      "id": "mcp_tool:diagnostics.analyze_incident",
+      "kind": "mcp_tool",
+      "domain": "mcp-gateway",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Runs the Phase 11 RCA over sanitized evidence and builds the Phase 12 advisory and KB candidate state.",
+      "test_refs": [
+        "tests/test_p13_mcp_protocol.sh",
+        "tests/test_p13_tools_e2e.sh"
+      ],
+      "tool_name": "diagnostics.analyze_incident"
+    },
+    {
+      "id": "mcp_tool:diagnostics.collect",
+      "kind": "mcp_tool",
+      "domain": "mcp-gateway",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Runs one certified collector for one registered target through the fixture adapter and returns sanitized evidence.",
+      "test_refs": [
+        "tests/test_p13_mcp_protocol.sh",
+        "tests/test_p13_tools_e2e.sh"
+      ],
+      "tool_name": "diagnostics.collect"
+    },
+    {
+      "id": "mcp_tool:diagnostics.describe_collector",
+      "kind": "mcp_tool",
+      "domain": "mcp-gateway",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Certified metadata and query hash of one collector; never the SQL text.",
+      "test_refs": [
+        "tests/test_p13_mcp_protocol.sh",
+        "tests/test_p13_tools_e2e.sh"
+      ],
+      "tool_name": "diagnostics.describe_collector"
+    },
+    {
+      "id": "mcp_tool:diagnostics.get_evidence",
+      "kind": "mcp_tool",
+      "domain": "mcp-gateway",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Returns already-sanitized evidence bound to the session and target.",
+      "test_refs": [
+        "tests/test_p13_mcp_protocol.sh",
+        "tests/test_p13_tools_e2e.sh"
+      ],
+      "tool_name": "diagnostics.get_evidence"
+    },
+    {
+      "id": "mcp_tool:diagnostics.list_capabilities",
+      "kind": "mcp_tool",
+      "domain": "mcp-gateway",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Lists adapters, registered targets and per-collector capability.",
+      "test_refs": [
+        "tests/test_p13_mcp_protocol.sh",
+        "tests/test_p13_tools_e2e.sh"
+      ],
+      "tool_name": "diagnostics.list_capabilities"
+    },
+    {
+      "id": "collector:Q-DISC-IDENTITY-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Database identity (instance, version, role, open mode). Executed only through the fixture adapter; the real adapter for it is not available.",
+      "test_refs": [
+        "tests/test_p13_tools_e2e.sh",
+        "tests/test_p13_sanitization.sh"
+      ],
+      "collector_id": "Q-DISC-IDENTITY-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on V$INSTANCE",
+        "SELECT on V$DATABASE"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 5,
+        "timeout_seconds": 10
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-ORA-RESOURCE-LIMITS-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Instance resource limits (peak vs limit). Executed only through the fixture adapter; the real adapter for it is not available.",
+      "test_refs": [
+        "tests/test_p13_tools_e2e.sh",
+        "tests/test_p13_sanitization.sh"
+      ],
+      "collector_id": "Q-ORA-RESOURCE-LIMITS-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on V$RESOURCE_LIMIT"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 50,
+        "timeout_seconds": 10
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-ORA-PROCESSES-SUMMARY-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Process count vs configured limit. Executed only through the fixture adapter; the real adapter for it is not available.",
+      "test_refs": [
+        "tests/test_p13_tools_e2e.sh",
+        "tests/test_p13_sanitization.sh"
+      ],
+      "collector_id": "Q-ORA-PROCESSES-SUMMARY-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on V$PROCESS",
+        "SELECT on V$PARAMETER"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 5,
+        "timeout_seconds": 10
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-ORA-DIAGNOSTICS-ALERTLOG-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Bounded alert log excerpt (signatures and timestamps only). Executed only through the fixture adapter; the real adapter for it is not available.",
+      "test_refs": [
+        "tests/test_p13_tools_e2e.sh",
+        "tests/test_p13_sanitization.sh"
+      ],
+      "collector_id": "Q-ORA-DIAGNOSTICS-ALERTLOG-001",
+      "oracle_versions": [
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "lectura de archivo via collector certificado"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 200,
+        "timeout_seconds": 30
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_diag_file"
+      ]
+    },
+    {
+      "id": "collector:Q-DG-STATS-001",
+      "kind": "collector",
+      "domain": "dataguard",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Data Guard transport/apply lag (standby only). Executed only through the fixture adapter; the real adapter for it is not available.",
+      "test_refs": [
+        "tests/test_p13_tools_e2e.sh",
+        "tests/test_p13_sanitization.sh"
+      ],
+      "collector_id": "Q-DG-STATS-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "DataGuard"
+      ],
+      "min_privileges": [
+        "SELECT on V$DATAGUARD_STATS"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 20,
+        "timeout_seconds": 15
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:os.get_process_limits",
+      "kind": "collector",
+      "domain": "os",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "OS process limit utilization (semantic, read-only). Executed only through the fixture adapter; the real adapter for it is not available.",
+      "test_refs": [
+        "tests/test_p13_tools_e2e.sh",
+        "tests/test_p13_sanitization.sh"
+      ],
+      "collector_id": "os.get_process_limits",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "Linux"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [],
+      "license": "none",
+      "limits": {
+        "rows": 5,
+        "timeout_seconds": 15
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "os_readonly"
+      ]
+    },
+    {
+      "id": "collector:os.get_oracle_process_summary",
+      "kind": "collector",
+      "domain": "os",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Oracle process creation failures (semantic, read-only). Executed only through the fixture adapter; the real adapter for it is not available.",
+      "test_refs": [
+        "tests/test_p13_tools_e2e.sh",
+        "tests/test_p13_sanitization.sh"
+      ],
+      "collector_id": "os.get_oracle_process_summary",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "Linux"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [],
+      "license": "none",
+      "limits": {
+        "rows": 5,
+        "timeout_seconds": 15
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "os_readonly"
+      ]
+    },
+    {
+      "id": "engine:rca_engine",
+      "kind": "engine",
+      "domain": "estack",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Deterministic RCA engine (Phase 11).",
+      "test_refs": [
+        "tests/test_rca_e2e_confirmed_with_causal_evidence.sh"
+      ],
+      "package": "rca_engine"
+    },
+    {
+      "id": "engine:change_documentation_knowledge",
+      "kind": "engine",
+      "domain": "estack",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Change advisory, documentation and knowledge lifecycle engine (Phase 12).",
+      "test_refs": [
+        "tests/test_p12_change_advisory.sh"
+      ],
+      "package": "change_documentation_knowledge"
+    },
+    {
+      "id": "engine:mcp_gateway",
+      "kind": "engine",
+      "domain": "estack",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Local MCP diagnostic gateway over stdio (Phase 13).",
+      "test_refs": [
+        "tests/test_p13_mcp_protocol.sh"
+      ],
+      "package": "mcp_gateway"
+    },
+    {
+      "id": "engine:capacity_engine",
+      "kind": "engine",
+      "domain": "estack",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Capacity and forecasting engine (Phase 10).",
+      "test_refs": [
+        "tests/test_capacity_engine_end_to_end.sh"
+      ],
+      "package": "capacity_engine"
+    },
+    {
+      "id": "engine:release_readiness",
+      "kind": "engine",
+      "domain": "estack",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Release readiness gate, evidence packager and registry verifier (Phase 14).",
+      "test_refs": [
+        "tests/test_p14_release_gate.sh"
+      ],
+      "package": "release_readiness"
+    },
+    {
+      "id": "agent:capacity-analyst",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Backed by the executable capacity engine.",
+      "test_refs": [
+        "tests/test_capacity_engine_end_to_end.sh"
+      ],
+      "agent_id": "capacity-analyst",
+      "backed_by": "capacity_engine"
+    },
+    {
+      "id": "agent:change-advisor",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Backed by the executable change advisory engine.",
+      "test_refs": [
+        "tests/test_p12_change_advisory.sh"
+      ],
+      "agent_id": "change-advisor",
+      "backed_by": "change_documentation_knowledge"
+    },
+    {
+      "id": "agent:estack-evolution-architect",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Governance plane B of the change engine plus the Phase 14 lifecycle validators.",
+      "test_refs": [
+        "tests/test_p12_change_advisory.sh"
+      ],
+      "agent_id": "estack-evolution-architect",
+      "backed_by": "change_documentation_knowledge"
+    },
+    {
+      "id": "agent:incident-root-cause-analyst",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Backed by the executable RCA engine.",
+      "test_refs": [
+        "tests/test_rca_e2e_confirmed_with_causal_evidence.sh"
+      ],
+      "agent_id": "incident-root-cause-analyst",
+      "backed_by": "rca_engine"
+    },
+    {
+      "id": "agent:knowledge-curator",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Backed by the executable knowledge lifecycle.",
+      "test_refs": [
+        "tests/test_p12_knowledge_lifecycle.sh"
+      ],
+      "agent_id": "knowledge-curator",
+      "backed_by": "change_documentation_knowledge"
+    },
+    {
+      "id": "agent:oracle-asm-storage-analyst",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Local ASM parser tested with synthetic fixtures.",
+      "test_refs": [
+        "tests/test_asmcmd_lsdg_parser.sh"
+      ],
+      "agent_id": "oracle-asm-storage-analyst"
+    },
+    {
+      "id": "agent:oracle-backup-recovery-analyst",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Local RMAN parsers tested with synthetic fixtures.",
+      "test_refs": [
+        "tests/test_list_backup_parser.sh"
+      ],
+      "agent_id": "oracle-backup-recovery-analyst"
+    },
+    {
+      "id": "agent:oracle-dataguard-analyst",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Local Broker parsers tested with synthetic fixtures.",
+      "test_refs": [
+        "tests/test_broker_configuration_parser.sh"
+      ],
+      "agent_id": "oracle-dataguard-analyst"
+    },
+    {
+      "id": "agent:oracle-dba-analyst",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Instruction contract plus statically certified queries; never executed against a real database.",
+      "test_refs": [],
+      "agent_id": "oracle-dba-analyst"
+    },
+    {
+      "id": "agent:oracle-discovery-analyst",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Instruction contract plus statically certified queries; never executed against a real database.",
+      "test_refs": [],
+      "agent_id": "oracle-discovery-analyst"
+    },
+    {
+      "id": "agent:oracle-multitenant-analyst",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Instruction contract plus statically certified queries; never executed against a real database.",
+      "test_refs": [],
+      "agent_id": "oracle-multitenant-analyst"
+    },
+    {
+      "id": "agent:oracle-network-analyst",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Local listener parser tested with synthetic fixtures.",
+      "test_refs": [
+        "tests/test_lsnrctl_status_parser.sh"
+      ],
+      "agent_id": "oracle-network-analyst"
+    },
+    {
+      "id": "agent:oracle-operations-orchestrator",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Instruction contract plus statically certified queries; never executed against a real database.",
+      "test_refs": [],
+      "agent_id": "oracle-operations-orchestrator"
+    },
+    {
+      "id": "agent:oracle-performance-analyst",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Local parsers tested with synthetic report fixtures.",
+      "test_refs": [
+        "tests/test_addm_parser.sh",
+        "tests/test_statspack_parser_11g.sh"
+      ],
+      "agent_id": "oracle-performance-analyst"
+    },
+    {
+      "id": "agent:oracle-rac-analyst",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Local Grid Infrastructure parsers tested with synthetic fixtures.",
+      "test_refs": [
+        "tests/test_crsctl_resource_parser.sh"
+      ],
+      "agent_id": "oracle-rac-analyst"
+    },
+    {
+      "id": "agent:oracle-security-analyst",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Instruction contract plus statically certified queries; never executed against a real database.",
+      "test_refs": [],
+      "agent_id": "oracle-security-analyst"
+    },
+    {
+      "id": "agent:os-platform-analyst",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Instruction contract plus statically certified queries; never executed against a real database.",
+      "test_refs": [],
+      "agent_id": "os-platform-analyst"
+    },
+    {
+      "id": "agent:technical-documentation-manager",
+      "kind": "agent",
+      "domain": "agents",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Backed by the executable documentation factory.",
+      "test_refs": [
+        "tests/test_p12_documentation_factory.sh"
+      ],
+      "agent_id": "technical-documentation-manager",
+      "backed_by": "change_documentation_knowledge"
+    },
+    {
+      "id": "domain:oracle-core",
+      "kind": "domain",
+      "domain": "oracle-core",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Contracts, skills and statically certified queries; no executable component has been run against a real target.",
+      "test_refs": [],
+      "capability_matrix_id": "oracle-core",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:performance",
+      "kind": "domain",
+      "domain": "performance",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_addm_parser.sh"
+      ],
+      "capability_matrix_id": "performance",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:awr",
+      "kind": "domain",
+      "domain": "awr",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_report_type_detection_awr_text.sh"
+      ],
+      "capability_matrix_id": "awr",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": true
+    },
+    {
+      "id": "domain:ash",
+      "kind": "domain",
+      "domain": "ash",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Contracts, skills and statically certified queries; no executable component has been run against a real target.",
+      "test_refs": [],
+      "capability_matrix_id": "ash",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": true
+    },
+    {
+      "id": "domain:addm",
+      "kind": "domain",
+      "domain": "addm",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_addm_parser.sh"
+      ],
+      "capability_matrix_id": "addm",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": true
+    },
+    {
+      "id": "domain:statspack",
+      "kind": "domain",
+      "domain": "statspack",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_statspack_parser_11g.sh"
+      ],
+      "capability_matrix_id": "statspack",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:rac",
+      "kind": "domain",
+      "domain": "rac",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_crsctl_resource_parser.sh"
+      ],
+      "capability_matrix_id": "rac",
+      "oracle_versions": [
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:gi",
+      "kind": "domain",
+      "domain": "gi",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_crsctl_resource_parser.sh"
+      ],
+      "capability_matrix_id": "gi",
+      "oracle_versions": [
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:asm",
+      "kind": "domain",
+      "domain": "asm",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_asmcmd_lsdg_parser.sh"
+      ],
+      "capability_matrix_id": "asm",
+      "oracle_versions": [
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:multitenant",
+      "kind": "domain",
+      "domain": "multitenant",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Contracts, skills and statically certified queries; no executable component has been run against a real target.",
+      "test_refs": [],
+      "capability_matrix_id": "multitenant",
+      "oracle_versions": [
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": true
+    },
+    {
+      "id": "domain:dataguard",
+      "kind": "domain",
+      "domain": "dataguard",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_broker_configuration_parser.sh"
+      ],
+      "capability_matrix_id": "dataguard",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:rman",
+      "kind": "domain",
+      "domain": "rman",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_list_backup_parser.sh"
+      ],
+      "capability_matrix_id": "rman",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:security",
+      "kind": "domain",
+      "domain": "security",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Contracts, skills and statically certified queries; no executable component has been run against a real target.",
+      "test_refs": [],
+      "capability_matrix_id": "security",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": true
+    },
+    {
+      "id": "domain:network",
+      "kind": "domain",
+      "domain": "network",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_lsnrctl_status_parser.sh"
+      ],
+      "capability_matrix_id": "network",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:os",
+      "kind": "domain",
+      "domain": "os",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Contracts, skills and statically certified queries; no executable component has been run against a real target.",
+      "test_refs": [],
+      "capability_matrix_id": "os",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:capacity",
+      "kind": "domain",
+      "domain": "capacity",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_capacity_engine_end_to_end.sh"
+      ],
+      "capability_matrix_id": "capacity",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:incident",
+      "kind": "domain",
+      "domain": "incident",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_rca_e2e_confirmed_with_causal_evidence.sh"
+      ],
+      "capability_matrix_id": "incident",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:documentation",
+      "kind": "domain",
+      "domain": "documentation",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_p12_documentation_factory.sh"
+      ],
+      "capability_matrix_id": "documentation",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:change",
+      "kind": "domain",
+      "domain": "change",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_p12_change_advisory.sh"
+      ],
+      "capability_matrix_id": "change",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "domain:mcp-gateway",
+      "kind": "domain",
+      "domain": "mcp-gateway",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Executable parsers/engines tested with synthetic fixtures; certified queries are static and were never run against a real database.",
+      "test_refs": [
+        "tests/test_p13_tools_e2e.sh"
+      ],
+      "capability_matrix_id": "mcp-gateway",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "license_dependent": false
+    },
+    {
+      "id": "skill_domain:asm",
+      "kind": "skill_domain",
+      "domain": "asm",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "asm",
+      "skill_count": 12
+    },
+    {
+      "id": "skill_domain:capacity",
+      "kind": "skill_domain",
+      "domain": "capacity",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "capacity",
+      "skill_count": 28
+    },
+    {
+      "id": "skill_domain:change",
+      "kind": "skill_domain",
+      "domain": "change",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "change",
+      "skill_count": 18
+    },
+    {
+      "id": "skill_domain:core",
+      "kind": "skill_domain",
+      "domain": "core",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "core",
+      "skill_count": 20
+    },
+    {
+      "id": "skill_domain:dataguard",
+      "kind": "skill_domain",
+      "domain": "dataguard",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "dataguard",
+      "skill_count": 21
+    },
+    {
+      "id": "skill_domain:documentation",
+      "kind": "skill_domain",
+      "domain": "documentation",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "documentation",
+      "skill_count": 29
+    },
+    {
+      "id": "skill_domain:incident",
+      "kind": "skill_domain",
+      "domain": "incident",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "incident",
+      "skill_count": 34
+    },
+    {
+      "id": "skill_domain:knowledge",
+      "kind": "skill_domain",
+      "domain": "knowledge",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "knowledge",
+      "skill_count": 7
+    },
+    {
+      "id": "skill_domain:multitenant",
+      "kind": "skill_domain",
+      "domain": "multitenant",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "multitenant",
+      "skill_count": 26
+    },
+    {
+      "id": "skill_domain:network",
+      "kind": "skill_domain",
+      "domain": "network",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "network",
+      "skill_count": 15
+    },
+    {
+      "id": "skill_domain:oracle",
+      "kind": "skill_domain",
+      "domain": "oracle",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "oracle",
+      "skill_count": 18
+    },
+    {
+      "id": "skill_domain:os",
+      "kind": "skill_domain",
+      "domain": "os",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "os",
+      "skill_count": 45
+    },
+    {
+      "id": "skill_domain:performance",
+      "kind": "skill_domain",
+      "domain": "performance",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "performance",
+      "skill_count": 31
+    },
+    {
+      "id": "skill_domain:rac",
+      "kind": "skill_domain",
+      "domain": "rac",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "rac",
+      "skill_count": 31
+    },
+    {
+      "id": "skill_domain:rman",
+      "kind": "skill_domain",
+      "domain": "rman",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "rman",
+      "skill_count": 30
+    },
+    {
+      "id": "skill_domain:security",
+      "kind": "skill_domain",
+      "domain": "security",
+      "maturity": "CONTRACT_ONLY",
+      "notes": "Skills are instruction contracts for the model; they are not executed code.",
+      "test_refs": [],
+      "skill_domain": "security",
+      "skill_count": 39
+    }
+  ]
+}

@@ -48,4 +48,5 @@ Toda tool nueva nace en `queries/REGISTRY.md` como propuesta vía `/change query
 - Adaptadores: `fixture` (`VERIFIED_FIXTURE`, único habilitado), `oracle_sql` (`DISABLED`), `oracle_diag_file` y `os_readonly` (`CONTRACT_ONLY`).
 - Configuración de ejemplo para Claude Code, sin credenciales: [`claude-code.mcp.example.json`](claude-code.mcp.example.json) (cópiela usted mismo; el repositorio no modifica su configuración).
 - «MCP local» no equivale a «modelo local»: la evidencia saneada que recibe el cliente puede salir del equipo según el producto que la consuma.
-- Pruebas: `tests/test_p13_*.sh`.
+- Pruebas: `tests/test_p13_*.sh` y, desde la Fase 14, `tests/test_p14_*.sh`.
+- Límites opcionales (sólo a la baja; fuera de rango el arranque se rechaza): `--operation-timeout`, `--max-session-calls`, `--max-rows`, `--max-message-bytes`. Operación, logging, recuperación y retención: [`docs/OPERATIONS_RUNBOOK.md`](../docs/OPERATIONS_RUNBOOK.md).

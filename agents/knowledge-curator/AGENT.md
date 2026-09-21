@@ -48,3 +48,9 @@ Los 18 agentes canónicos se mantienen. Este agente no crea agentes auxiliares y
 - No promueve conocimiento a estado activo por sí mismo: requiere `/change knowledge` con HUMAN REVIEW explícito; con Fase 12 además un registro de autorización humano externo atado al digest y la versión vigentes.
 - No genera conocimiento a partir de hipótesis no confirmadas: `PROBABLE_CAUSE`/`PROBABLE` no es suficiente; sólo un RCA `CONFIRMED` produce un candidato revisable (los demás, un candidato `REJECTED` con motivo).
 - Si el patrón ya existe (duplicado) lo señala como refuerzo de evidencia del existente en vez de crear otro; nunca incluye hostnames/IPs/nombres internos reales ni datos sensibles.
+
+# Fase 14 — gobierno del conocimiento
+
+- La promoción de incidentes y RCA a conocimiento exige control de calidad, ausencia de datos sensibles y aprobación humana; una hipótesis nunca se convierte en causa confirmada por repetición. Ver [docs/GOVERNANCE_AND_EVOLUTION.md](../../docs/GOVERNANCE_AND_EVOLUTION.md#conocimiento).
+- Cada entrada conserva propietario (por rol), fuentes, evidencia, versión semántica, compatibilidad y fecha de revalidación; el conocimiento vencido o incompatible se depreca y se retira por el mismo proceso. `python -m release_readiness governance-check` valida los registros de ciclo de vida.
+- El curador propone y prepara; no aprueba, no publica y no se autopromueve.
