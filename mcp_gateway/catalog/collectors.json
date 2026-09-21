@@ -50,6 +50,7 @@
     {
       "collector_id": "Q-ORA-DIAGNOSTICS-ALERTLOG-001",
       "kind": "alert_log_excerpt",
+      "supported_oracle_versions": ["11g", "12c", "18c", "19c", "21c", "23ai"],
       "domain": "oracle",
       "title": "Bounded alert log excerpt (signatures and timestamps only)",
       "row_limit": 200,
@@ -79,6 +80,7 @@
     {
       "collector_id": "os.get_process_limits",
       "kind": "semantic_os",
+      "oracle_version_scope": "ANY",
       "domain": "os",
       "title": "OS process limit utilization (semantic, read-only)",
       "reference": "docs/OS_READONLY_COLLECTOR_MODEL.md#get_process_limits",
@@ -96,6 +98,7 @@
     {
       "collector_id": "os.get_oracle_process_summary",
       "kind": "semantic_os",
+      "oracle_version_scope": "ANY",
       "domain": "os",
       "title": "Oracle process creation failures (semantic, read-only)",
       "reference": "docs/OS_READONLY_COLLECTOR_MODEL.md#get_oracle_process_summary",

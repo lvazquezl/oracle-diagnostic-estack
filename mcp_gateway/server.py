@@ -53,8 +53,9 @@ def _no_dupes(pairs):
 
 
 class McpServer:
-    def __init__(self, gateway: Gateway, out=None, err=None):
+    def __init__(self, gateway: Gateway, out=None, err=None, max_message_bytes: int = None):
         self.gateway = gateway
+        self.max_message_bytes = MAX_MESSAGE_BYTES if max_message_bytes is None else max_message_bytes
         self._out = out if out is not None else sys.stdout.buffer
         self._err = err if err is not None else sys.stderr
         self.state = "NEW"            # NEW -> INITIALIZING (initialize answered) -> READY (initialized notification)
@@ -79,7 +80,7 @@ class McpServer:
 
     # -- message handling --------------------------------------------------------------------------
     def handle_line(self, raw: bytes) -> None:
-        if len(raw) > MAX_MESSAGE_BYTES:
+        if len(raw) > self.max_message_bytes:
             return self._error(None, INVALID_REQUEST, "E_MESSAGE_TOO_LARGE")
         try:
             text = raw.decode("utf-8")
@@ -153,13 +154,13 @@ class McpServer:
     def serve(self, stdin=None) -> int:
         stream = stdin if stdin is not None else sys.stdin.buffer
         while True:
-            line = stream.readline(MAX_MESSAGE_BYTES + 2)
+            line = stream.readline(self.max_message_bytes + 2)
             if not line:
                 break                                        # EOF: the client closed stdin — clean exit
-            if len(line) > MAX_MESSAGE_BYTES and not line.endswith(b"\n"):
+            if len(line) > self.max_message_bytes and not line.endswith(b"\n"):
                 # oversize line: discard the remainder of it without buffering, answer once
                 while True:
-                    rest = stream.readline(MAX_MESSAGE_BYTES + 2)
+                    rest = stream.readline(self.max_message_bytes + 2)
                     if not rest or rest.endswith(b"\n"):
                         break
                 self._error(None, INVALID_REQUEST, "E_MESSAGE_TOO_LARGE")

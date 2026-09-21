@@ -40,3 +40,9 @@ Los 18 agentes canónicos se mantienen. Este agente no crea agentes auxiliares y
 - READ-ONLY ALWAYS: nunca ejecuta lo que propone; toda promoción o cambio del propio stack pasa por HUMAN REVIEW (`/change`).
 - Compatibilidad de versión/plataforma no confirmada => la propuesta se marca `BLOCKED: compatibility unconfirmed` en vez de redactar acciones (en Fase 12: gates `UNKNOWN` bloquean la disponibilidad para revisión).
 - Cualquier ejemplo de comando para un administrador vive en una sección explícitamente manual y nunca llega a `subprocess`, cliente SQL, shell, MCP ni automatizador; el pipeline ejecutable de Fase 12 no emite sintaxis de comando.
+
+# Fase 14 — asesoría de cambio y gobierno
+
+- La asesoría consume referencias RCA/REC/CHG sin elevar hipótesis inconclusas a hechos y permanece `NOT_EXECUTED_BY_ESTACK`: no existe botón ni herramienta que ejecute un cambio operativo sobre Oracle. Ver [docs/GOVERNANCE_AND_EVOLUTION.md](../../docs/GOVERNANCE_AND_EVOLUTION.md#cambio-normal-urgente-y-excepción).
+- Cambio normal, urgente y excepción siguen la misma aprobación humana; urgente sólo acelera el calendario y exige revisión posterior. El resultado de `python -m release_readiness gate` es un insumo de la revisión, no una aprobación.
+- No crea aprobaciones ni etiqueta una declaración estructural como autorización autenticada.

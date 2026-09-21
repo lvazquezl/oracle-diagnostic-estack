@@ -20,6 +20,7 @@ import os
 import re
 
 from .common import AdapterStatus, CapabilityStatus, GatewayError
+from .versions import family_of
 
 PKG_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(PKG_DIR)
@@ -92,6 +93,34 @@ def assert_read_only_sql(block: str) -> None:
         raise RuntimeError("certified query is not a read-only single statement")
 
 
+def _families(values, what: str) -> list:
+    if not isinstance(values, list) or not values:
+        raise RuntimeError("invalid version metadata")
+    out = []
+    for v in values:
+        fam = family_of(v)
+        if fam is None or fam not in ORACLE_VERSIONS:
+            raise RuntimeError("invalid version metadata")
+        if fam not in out:
+            out.append(fam)
+    return out
+
+
+def _effective_versions(spec: dict, query_meta) -> list:
+    """Fail closed: missing or unusable version metadata means NO supported version, never 'all of them'.
+    A query-backed collector inherits the versions of its certified query; a semantic (OS) collector must
+    declare oracle_version_scope == "ANY" explicitly. A collector may only NARROW that set."""
+    if query_meta is not None:
+        raw = query_meta.get("supported_oracle_versions")
+        base = _families(raw, "query") if isinstance(raw, list) and raw else []
+    else:
+        base = list(ORACLE_VERSIONS) if spec.get("oracle_version_scope") == "ANY" else []
+    declared = spec.get("supported_oracle_versions")
+    if declared is not None:
+        base = [v for v in base if v in _families(declared, "collector")]
+    return base
+
+
 class Collector:
     def __init__(self, spec: dict, query_meta: dict = None):
         self.spec = spec
@@ -108,7 +137,7 @@ class Collector:
         q = query_meta or {}
         self.query_id = q.get("query_id")
         self.query_sha256 = q.get("sql_sha256")
-        self.supported_oracle_versions = q.get("supported_oracle_versions") or list(ORACLE_VERSIONS)
+        self.supported_oracle_versions = _effective_versions(spec, query_meta)
         self.database_role_scope = q.get("database_role_scope", "ANY")
         self.container_scope = q.get("container_scope", "NOT_APPLICABLE")
         self.license_requirements = q.get("license_requirements", "none")
@@ -178,12 +207,14 @@ class Target:
         self.alias = spec["alias"]
         self.adapter = spec["adapter"]
         self.enabled = bool(spec.get("enabled", False))
-        self.oracle_version = spec.get("oracle_version")
+        self.oracle_version = family_of(spec["oracle_version"]) if spec.get("oracle_version") is not None else None
         self.role = spec.get("role", "UNKNOWN")
         self.container = spec.get("container", "UNKNOWN")
         self.architecture = spec.get("architecture", {})
         self.license_status = spec.get("license_status", {})
         self.allowed_collectors = frozenset(spec.get("allowed_collectors", []))
+        # Declared by an administrator: collectors whose minimum privileges the diagnostic account is known NOT to hold.
+        self.missing_privileges = frozenset(spec.get("missing_privileges", []))
         self.budget = {"max_calls": int(spec.get("budget", {}).get("max_calls", 50)),
                        "max_rows": int(spec.get("budget", {}).get("max_rows", 1000))}
 
@@ -200,8 +231,8 @@ def load_targets(path: str = DEFAULT_TARGETS_FILE, collectors: dict = None) -> d
         alias = spec["alias"]
         if not ALIAS_RE.match(alias) or alias in out:
             raise RuntimeError("invalid target catalog")
-        if spec.get("oracle_version") is not None and spec["oracle_version"] not in ORACLE_VERSIONS:
-            raise RuntimeError("invalid target version")
+        if spec.get("oracle_version") is not None and family_of(spec["oracle_version"]) not in ORACLE_VERSIONS:
+            raise RuntimeError("invalid target version")      # 'latest', unknown or unsupported majors are refused
         if spec.get("role", "UNKNOWN") not in ROLES + ("UNKNOWN",):
             raise RuntimeError("invalid target role")
         # Connection material must never live in this file.
@@ -209,6 +240,8 @@ def load_targets(path: str = DEFAULT_TARGETS_FILE, collectors: dict = None) -> d
             raise RuntimeError("target catalog must not contain connection material")
         if collectors is not None and not set(spec.get("allowed_collectors", [])) <= set(collectors):
             raise RuntimeError("target allows an uncertified collector")
+        if not isinstance(spec.get("missing_privileges", []), list) or (collectors is not None and not set(spec.get("missing_privileges", [])) <= set(collectors)):
+            raise RuntimeError("invalid missing_privileges declaration")
         out[alias] = Target(spec)
     return out
 
@@ -231,6 +264,8 @@ def evaluate_capability(target: Target, col: Collector, adapter_status: str) -> 
             return CapabilityStatus.ENVIRONMENT_UNKNOWN
         if target.role != col.database_role_scope:
             return CapabilityStatus.NOT_APPLICABLE
+    if col.collector_id in target.missing_privileges:
+        return CapabilityStatus.INSUFFICIENT_PRIVILEGES
     lic = (col.license_requirements or "none").lower()
     if lic not in ("none", "n/a", ""):
         key = ("diagnostics_pack" if "diagnostic" in lic or "awr" in lic or "ash" in lic

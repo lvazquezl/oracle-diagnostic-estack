@@ -2,6 +2,41 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — 2026-09-20 — PHASE 14 — PRODUCTION READINESS, GOVERNANCE & E-STACK EVOLUTION
+
+Rama `phase/14-production-readiness-governance` sobre la baseline `v0.13.0-mcp-diagnostic-gateway`. Entrega la capa de decisión
+para preparar un piloto autorizado: registro de capacidades verificable, gate de release ejecutable, paquete de evidencias con
+identidad de árbol, gobierno de cambios y runbooks. **No** habilita adaptadores reales: `READY_FOR_REAL_ENVIRONMENT_PILOT` es `NO`.
+Ver `docs/PHASE_14_PRODUCTION_READINESS_GOVERNANCE.md`.
+
+### Added
+
+- `release_readiness/` (stdlib): `run`/`verify` (fingerprint SHA-256 antes/después, conteo de scripts únicos, veredictos fail-closed, redacción de
+  rutas personales), `gate` (10 comprobaciones que ejecutan código; informes JSON/Markdown sanitizados; exit 0/1/2), `registry-check`,
+  `governance-check`, `snapshot`.
+- `config/production-readiness-registry.json` (75 componentes verificados contra el código), `config/governance/risk-register.json`
+  (RSK-001..009 con responsable por rol) y `config/governance/lifecycle-records.json`.
+- `mcp_gateway/versions.py` (resolución numérica de versiones), límites configurables **sólo a la baja** (`--operation-timeout`,
+  `--max-session-calls`, `--max-rows`, `--max-message-bytes`) y `missing_privileges` en destinos (`INSUFFICIENT_PRIVILEGES`).
+- 6 documentos: `PRODUCTION_READINESS`, `OPERATIONS_RUNBOOK`, `SECURITY_AND_PRIVACY`, `RELEASE_AND_ROLLBACK`, `GOVERNANCE_AND_EVOLUTION`,
+  `PILOT_ACCEPTANCE_CHECKLIST`, más `PHASE_14_PRODUCTION_READINESS_GOVERNANCE`.
+- 10 suites `tests/test_p14_*.sh` (registro, empaquetador, gate, threat model, operabilidad, gobierno, empaquetado reproducible, integración
+  13→11→12, controles de mutación, consistencia documental).
+
+### Changed
+
+- Fail closed en versiones: metadatos de versión ausentes soportan **cero** versiones (antes, todas); el colector de alert log se limita a 11g+
+  (ADR); los destinos aceptan versiones completas normalizadas a su familia y rechazan `latest`.
+- `agents/estack-evolution-architect.md`, `agents/knowledge-curator/AGENT.md`, `agents/change-advisor/AGENT.md`, `SECURITY.md`,
+  `ARCHITECTURE.md`, `README.md`.
+- `tests/p13/check_security.py`: un caso de versión de destino se ajustó al nuevo comportamiento (`19.3.0` ahora es `19c`; el caso hostil es `latest`).
+
+### Limitaciones declaradas
+
+- Los adaptadores contra Oracle/OS reales siguen `DISABLED`/`CONTRACT_ONLY`; sin piloto no hay `PILOT_VALIDATED` ni `CERTIFIED`.
+- stdio local no autentica a la persona; las aprobaciones son estructurales; los hashes dan integridad, no autenticidad; validado sólo en
+  Windows con Git Bash y Python 3.13.
+
 ## [Unreleased] — 2026-09-19 — PHASE 13 — MCP DIAGNOSTIC GATEWAY & LOCAL INTEGRATION
 
 Rama `phase/13-mcp-diagnostic-gateway` sobre la baseline `v0.12.0-change-documentation-knowledge`. Entrega un servidor MCP local real

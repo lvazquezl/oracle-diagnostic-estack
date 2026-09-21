@@ -21,7 +21,7 @@ from . import bridge
 from .adapters import AdapterRegistry, run_with_timeout
 from .catalog import COLLECTOR_ID_RE, Target, evaluate_capability
 from .common import (
-    DEFAULT_OPERATION_TIMEOUT_SECONDS, GATEWAY_NAME, GATEWAY_VERSION, MAX_RESPONSE_BYTES, MAX_SESSION_CALLS,
+    DEFAULT_OPERATION_TIMEOUT_SECONDS, GATEWAY_NAME, GATEWAY_VERSION, MAX_RESPONSE_BYTES, MAX_ROWS_HARD, MAX_SESSION_CALLS,
     SCHEMA_VERSION, CapabilityStatus, GatewayError,
 )
 from .evidence import EvidenceStore, SessionScope, canonical_digest, final_audit, sanitize_rows
@@ -109,13 +109,16 @@ class Session:
 
 class Gateway:
     def __init__(self, collectors: dict, targets: dict, adapters: AdapterRegistry, audit: Audit = None,
-                 store: EvidenceStore = None, operation_timeout: float = DEFAULT_OPERATION_TIMEOUT_SECONDS):
+                 store: EvidenceStore = None, operation_timeout: float = DEFAULT_OPERATION_TIMEOUT_SECONDS,
+                 max_session_calls: int = None, max_rows: int = None):
         self.collectors = collectors
         self.targets = targets
         self.adapters = adapters
         self.audit = audit or Audit()
         self.store = store or EvidenceStore()
         self.operation_timeout = operation_timeout
+        self.max_session_calls = MAX_SESSION_CALLS if max_session_calls is None else max_session_calls
+        self.max_rows = MAX_ROWS_HARD if max_rows is None else max_rows
 
     # -- envelope helpers ------------------------------------------------------------------------
     def _base(self, tool_id, session, request_id, target: Target = None, collector_id: str = None) -> dict:
@@ -179,7 +182,7 @@ class Gateway:
         if cap != CapabilityStatus.SUPPORTED:
             raise GatewayError("E_CAPABILITY", cap)
         if count_call:
-            if session.calls >= MAX_SESSION_CALLS or session.target_calls.get(target.alias, 0) >= target.budget["max_calls"] \
+            if session.calls >= self.max_session_calls or session.target_calls.get(target.alias, 0) >= target.budget["max_calls"] \
                     or session.target_rows.get(target.alias, 0) >= target.budget["max_rows"]:
                 raise GatewayError("E_BUDGET_EXCEEDED")
         return cap
@@ -227,7 +230,7 @@ class Gateway:
         session.calls += 1
         session.target_calls[target.alias] = session.target_calls.get(target.alias, 0) + 1
         rows_left = target.budget["max_rows"] - session.target_rows.get(target.alias, 0)
-        cap_rows = min(args.get("max_rows", col.row_limit), col.row_limit, rows_left)
+        cap_rows = min(args.get("max_rows", col.row_limit), col.row_limit, rows_left, self.max_rows)
         timeout = min(col.timeout_seconds, self.operation_timeout)
         raw = run_with_timeout(lambda: adapter.fetch(target, col, {}), timeout)
         payload = sanitize_rows(col, raw, session.scope, target.alias, cap_rows)
