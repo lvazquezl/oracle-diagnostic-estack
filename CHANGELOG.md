@@ -2,9 +2,10 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — 2026-09-22 — `/change compatibility|security` — CHG-ESTACK-MCP-META-001 — MCP gateway acepta `_meta` en `tools/call`
+## [0.14.1] — 2026-09-22 — `v0.14.1-mcp-meta-params` — `/change compatibility|security` — CHG-ESTACK-MCP-META-001 — MCP gateway acepta `_meta` en `tools/call`
 
-Rama `change/mcp-gateway-meta-params` sobre `v0.14.0-production-readiness-governance`. Estado: **`PENDING_HUMAN_REVIEW`** (no promovido).
+Rama `change/mcp-gateway-meta-params` sobre `v0.14.0-production-readiness-governance`, integrada a `main` vía PR #1 (merge `0abaf73`),
+tag `v0.14.1-mcp-meta-params`. Aprobación humana en la sesión `/change` (conversacional; no es un registro externo verificable).
 
 ### Fixed
 
