@@ -61,7 +61,7 @@ stdin ─► server.py (framing, lifecycle, límites) ─► gateway.py (registr
 
 - `stdout` = sólo mensajes JSON-RPC (una línea, UTF-8 ASCII-escapado, `\n`); `stderr` = auditoría/log sanitizado. Sin listener TCP/HTTP, sin red, sin telemetría.
 - Ciclo de vida: `initialize` → respuesta → `notifications/initialized` → `tools/*`. Antes de eso `tools/*` da `-32600`; `ping` funciona siempre; un segundo `initialize` se rechaza.
-- Rechazados con texto fijo (sin reflejar la entrada): JSON inválido (`-32700`), lotes (arrays), tipos de `id` inválidos, claves duplicadas, `NaN/Infinity`, campos extra, métodos desconocidos (`-32601`, incluidos `resources/*`, `prompts/*`), parámetros mal formados (`-32602`).
+- Rechazados con texto fijo (sin reflejar la entrada): JSON inválido (`-32700`), lotes (arrays), tipos de `id` inválidos, claves duplicadas, `NaN/Infinity`, campos extra (única excepción: en `tools/call` se acepta la llave reservada MCP `_meta`, sólo como objeto; nunca se inspecciona, registra ni pasa al gateway — `CHG-ESTACK-MCP-META-001`), métodos desconocidos (`-32601`, incluidos `resources/*`, `prompts/*`), parámetros mal formados (`-32602`).
 - Límites: 1 MiB por mensaje, profundidad 24, 2000 nodos, respuesta ≤ 256 KiB, ≤ 200 llamadas por sesión, ≤ 200 filas, plazo por operación (≤ 15 s; las llamadas a adaptadores corren con plazo duro y el bucle nunca se bloquea).
 - Cierre limpio: EOF en stdin ⇒ exit 0; una línea parcial no cuelga el servidor.
 
@@ -126,7 +126,7 @@ Autorización por llamada (todas fallan cerradas): destino registrado y habilita
 
 ```text
 → {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"demo","version":"0"}}}
-← {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{"listChanged":false}},"serverInfo":{"name":"oracle-diagnostic-estack-mcp-gateway","version":"1.0.0"},…}}
+← {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{"listChanged":false}},"serverInfo":{"name":"oracle-diagnostic-estack-mcp-gateway","version":"1.0.1"},…}}
 → {"jsonrpc":"2.0","method":"notifications/initialized"}
 → {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"diagnostics.collect","arguments":{"collector_id":"Q-ORA-PROCESSES-SUMMARY-001","target_alias":"fixture-primary-19c"}}}
 ← …"structuredContent":{"status":"OK","capability_status":"SUPPORTED","collected_at_utc":null,"provenance":{"kind":"FIXTURE","real_observation":false},

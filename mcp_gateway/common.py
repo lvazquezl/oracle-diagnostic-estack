@@ -13,7 +13,7 @@ Design invariants (asserted by tests/test_p13_*.sh):
 from __future__ import annotations
 
 GATEWAY_NAME = "oracle-diagnostic-estack-mcp-gateway"
-GATEWAY_VERSION = "1.0.0"
+GATEWAY_VERSION = "1.0.1"
 SCHEMA_VERSION = "1.0.0"
 
 # MCP protocol versions this gateway implements (newest first). The negotiated version is echoed in
