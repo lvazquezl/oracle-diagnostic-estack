@@ -2,6 +2,21 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — 2026-09-22 — `/change compatibility|security` — CHG-ESTACK-MCP-META-001 — MCP gateway acepta `_meta` en `tools/call`
+
+Rama `change/mcp-gateway-meta-params` sobre `v0.14.0-production-readiness-governance`. Estado: **`PENDING_HUMAN_REVIEW`** (no promovido).
+
+### Fixed
+
+- `mcp_gateway/server.py` (gateway `1.0.0` → `1.0.1`, PATCH): `tools/call` rechazaba la llave reservada MCP `params._meta`, que Claude Code
+  envía en cada llamada, así que todas las herramientas respondían `-32602 parameters are invalid`. Ahora `_meta` se acepta sólo como objeto,
+  no se inspecciona, no se registra y no se pasa al gateway. Cualquier otra llave extra, o un `_meta` que no sea objeto, se sigue rechazando con `-32602`.
+
+### Tests
+
+- `tests/p13/check_protocol.py`: nuevo caso `tool_calls_accept_the_reserved_meta_key_but_still_reject_any_other_extra_key` (verificado
+  con control negativo: falla contra el servidor anterior). El caso existente que rechaza `extra` se conserva sin cambios.
+
 ## [Unreleased] — 2026-09-20 — PHASE 14 — PRODUCTION READINESS, GOVERNANCE & E-STACK EVOLUTION
 
 Rama `phase/14-production-readiness-governance` sobre la baseline `v0.13.0-mcp-diagnostic-gateway`. Entrega la capa de decisión

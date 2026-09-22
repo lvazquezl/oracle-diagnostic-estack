@@ -137,6 +137,26 @@ def tool_calls_with_bad_params_shapes_are_protocol_errors_and_unknown_tools_are_
 
 
 @test
+def tool_calls_accept_the_reserved_meta_key_but_still_reject_any_other_extra_key():
+    c = ready()
+    meta = {"claudecode/toolUseId": MARKER, "progressToken": 7}
+    r = c.request("tools/call", {"name": "diagnostics.list_capabilities", "arguments": {}, "_meta": meta})
+    assert r["result"]["isError"] is False and r["result"]["structuredContent"]["status"] == "OK"
+    r = c.request("tools/call", {"name": "diagnostics.collect", "_meta": meta,
+                                 "arguments": {"collector_id": "Q-DISC-IDENTITY-001", "target_alias": "fixture-primary-19c"}})
+    assert r["result"]["structuredContent"]["status"] == "OK" and r["result"]["structuredContent"]["provenance"]
+    assert MARKER not in json.dumps(r), "_meta must never be echoed"
+    for params in ({"name": "diagnostics.list_capabilities", "arguments": {}, "foo": 1},
+                   {"name": "diagnostics.list_capabilities", "arguments": {}, "_meta": {}, "foo": 1},
+                   {"name": "diagnostics.list_capabilities", "arguments": {}, "_meta": "x"},
+                   {"name": "diagnostics.list_capabilities", "arguments": {}, "_meta": [1]}):
+        r = c.request("tools/call", params)
+        assert r["error"]["code"] == -32602 and r["error"]["message"] == "parameters are invalid", params
+    c.close()
+    assert not leaks(all_output(c)), "_meta content must not reach stdout/stderr"
+
+
+@test
 def stdout_carries_only_json_rpc_lines_and_stderr_only_sanitized_audit_lines():
     c = ready()
     c.call("diagnostics.list_capabilities")

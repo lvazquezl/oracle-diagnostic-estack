@@ -141,8 +141,11 @@ class McpServer:
         if method == "tools/list":
             return self._send({"jsonrpc": "2.0", "id": req_id, "result": {"tools": tool_list()}})
         if method == "tools/call":
-            name, arguments = params.get("name"), params.get("arguments")
-            if set(params) - {"name", "arguments"} or not isinstance(name, str) or (arguments is not None and not isinstance(arguments, dict)):
+            # `_meta` is reserved by MCP for client metadata (e.g. a tool-use id): accepted only as an object,
+            # never inspected and never passed to the gateway. Any other extra key is still rejected.
+            name, arguments, meta = params.get("name"), params.get("arguments"), params.get("_meta", {})
+            if (set(params) - {"name", "arguments", "_meta"} or not isinstance(name, str)
+                    or (arguments is not None and not isinstance(arguments, dict)) or not isinstance(meta, dict)):
                 raise GatewayError("E_INVALID_PARAMS")
             envelope, is_error = self.gateway.call(self.session, name, arguments)
             text = json.dumps(envelope, ensure_ascii=True, sort_keys=True)
