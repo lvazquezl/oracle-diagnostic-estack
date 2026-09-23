@@ -1,7 +1,7 @@
 # CHG-ESTACK-ORA19C-LAB-002 — `Q-ORA-RESOURCE-LIMITS-001` en el adaptador `oracle_sql` de laboratorio
 
 **Tipo:** `/change security|compatibility` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `feature/oracle19c-readonly-lab` · **Depende de:** `CHG-ESTACK-ORA19C-LAB-001` (sin commit, también pendiente de HUMAN REVIEW)
-**Estado:** `APPROVED_BY_HUMAN` (`AUTH-ORA19C-LAB-002`, `REV-DBAMANAGER`, `2026-09-23T15:16:57Z`; verificación estructural, no de identidad) e integrado a `main` vía PR #3 (`7eb585f`), versión `0.15.0`. El tag lo crea una persona.
+**Estado:** `APPROVED_BY_HUMAN` (`AUTH-ORA19C-LAB-002`, `REV-DBAMANAGER`, `2026-09-23T15:16:57Z`; verificación estructural, no de identidad) e integrado a `main` vía PR #3 (`7eb585f`), versión `0.15.0`, tag `v0.15.0-oracle19c-lab` (sobre `8a62cdd`, PR #4).
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. Ninguna política cambia.
 
