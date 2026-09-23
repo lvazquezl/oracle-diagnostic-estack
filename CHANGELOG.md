@@ -2,9 +2,11 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — 2026-09-23 — `/change security|compatibility` — CHG-ESTACK-ORA19C-LAB-003 — lote 1 de dominios en el lab: tablespaces/TEMP por PDB y FRA
+## [0.16.0] — 2026-09-23 — `v0.16.0-oracle19c-lab-domains` — `/change security|compatibility` — CHG-ESTACK-ORA19C-LAB-003 — lote 1 de dominios en el lab: tablespaces/TEMP por PDB y FRA
 
-Rama `change/lab-domains-batch1` sobre `main` (`053e461`). Estado `PROPOSED`; el motor de gobernanza informa `PENDING_HUMAN_REVIEW`.
+Rama `change/lab-domains-batch1` sobre `main` (`053e461`), commit `1a7d11d`, integrada a `main` vía PR #6 (merge `b885e90`). Aprobación humana
+registrada: `AUTH-ORA19C-LAB-003`, revisor `REV-DBAMANAGER`, `2026-09-23T18:00:27Z`, contra el digest `6506894a…d795c`. El motor informa
+`APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el digest, no la identidad del firmante.
 Validado en el lab desde `CDB$ROOT`: tablespaces de `PRUEBAS` (`con_id` 3) y FRA con evidencia REAL. `Q-CDB-TEMP-001` devolvió asignación sin uso,
 así que no se habilita en el lab (decisión del DBA). Origen: REC-0002 de `ANA-20260922-002`.
 Ver `docs/ORACLE19C_LAB_DOMAINS.md`.
