@@ -251,7 +251,7 @@ def load_targets(path: str = DEFAULT_TARGETS_FILE, collectors: dict = None) -> d
 def evaluate_capability(target: Target, col: Collector, adapter_status: str) -> str:
     """Never assume: unknown version/role, unconfirmed license or a disabled adapter each produce an explicit
     status instead of an attempt."""
-    if not target.enabled or adapter_status not in (AdapterStatus.VERIFIED_FIXTURE, AdapterStatus.VERIFIED_LAB):   # anything else never runs
+    if not target.enabled or adapter_status not in (AdapterStatus.VERIFIED_FIXTURE, AdapterStatus.VERIFIED_LAB, AdapterStatus.LAB_ENABLED):   # anything else never runs
         return CapabilityStatus.DISABLED
     if col.collector_id not in target.allowed_collectors:
         return CapabilityStatus.UNSUPPORTED

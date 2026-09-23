@@ -2,6 +2,67 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — 2026-09-22 — `/change security|compatibility` — CHG-ESTACK-ORA19C-LAB-002 — `Q-ORA-RESOURCE-LIMITS-001` en el adaptador `oracle_sql` de laboratorio
+
+Rama `feature/oracle19c-readonly-lab`, sobre CHG-ESTACK-ORA19C-LAB-001 (sin commit). Estado `PROPOSED`; el motor de gobernanza informa
+`PENDING_HUMAN_REVIEW`. Validado en el lab: una sesión en la PDB no ve filas de `V$RESOURCE_LIMIT` (FAIL para `PDB`). Por decisión del DBA,
+el target lab pasó a `CDB$ROOT` con usuario común `C##` y nueva autorización humana; desde root, evidencia REAL de 4 filas de instancia
+(`docs/ORACLE19C_LAB_COLLECTORS.md` §6, §9b). Pendiente
+de HUMAN REVIEW. Sin commit, merge, tag ni despliegue. Origen: `ANA-20260922-002` (REC-0001 parcial, REC-0005). Ver `docs/ORACLE19C_LAB_COLLECTORS.md`.
+
+### Added
+
+- `mcp_gateway_lab` `0.2.0`: `Q-ORA-RESOURCE-LIMITS-001` en `SUPPORTED_COLLECTORS`. Sigue la misma secuencia de guardas (sólo lectura →
+  sesión/privilegios → identidad → query), y se habilita sólo si el targets file privado lo lista y el DBA otorgó `SELECT` sobre `V_$RESOURCE_LIMIT`.
+  `Q-ORA-PROCESSES-SUMMARY-001` se descartó por mínimo privilegio (decisión del DBA): no se implementa y el lanzador lo rechaza.
+- `sqlsource`: resolución de la variante **implícita** (`docs/QUERY_VARIANTS.md`), sólo con una entrada `implicit_full_range` +
+  `COMPATIBLE` de `config/query-compatibility-matrix.yaml` para el mismo archivo y la versión cubierta; si no, falla cerrado.
+- Conversión tipada en el adaptador para campos `integer`/`integer_or_unlimited` que Oracle devuelve como `VARCHAR2` con relleno (dígitos estrictos
+  → `int`, `UNLIMITED`). Cualquier otro valor lo descarta el sanitizer.
+- Pruebas P15: adapter 14 → 18 y security 22 → 27 casos (incluye target `CDB_ROOT` con usuario común y rechazo de sesión que cae en una PDB). Mutaciones detectadas: variante implícita sin `COMPATIBLE`, sin rango, conversión laxa,
+  query antes de la identidad, estado de adapter sin `implemented_collectors`.
+
+### Fixed
+
+- `diagnostics.describe_collector` (`mcp_gateway/adapters.py`, `gateway.py`): `adapter_status` refleja el registro vivo por colector
+  (`LAB_ENABLED` / `UNSUPPORTED` en el lab). Antes publicaba el `DISABLED` estático de `collectors.json` (FND-0004 de `ANA-20260922-002`). El runtime
+  por defecto responde igual que antes.
+
+### Deferred (CHG-REQ propuestos, sin implementar)
+
+- `CHG-REQ-LAB-ALERTLOG` (alert log vía `V$DIAG_ALERT_EXT` o adapter de archivos), `CHG-REQ-LAB-DOMAINS` (tablespaces/RMAN/PDB/seguridad por
+  lotes), `CHG-REQ-LAB-CONTAINER` (contexto de contenedor como evidencia).
+
+### Regression
+
+- 949/962 antes y después. Los 13 fallos son los mismos, preexistentes y ajenos a este cambio.
+
+## [Unreleased] — 2026-09-22 — `/change security|compatibility` — CHG-ESTACK-ORA19C-LAB-001 — adaptador `oracle_sql` de laboratorio (Oracle 19c, sólo lectura)
+
+Rama `feature/oracle19c-readonly-lab`. Estado `PROPOSED`, pendiente de HUMAN REVIEW. Sin commit, merge, tag ni despliegue.
+**No** declara preparación para producción: `READY_FOR_REAL_ENVIRONMENT_PILOT` sigue en `NO`. Ver `docs/ORACLE19C_LAB_ADAPTER.md`.
+
+### Added
+
+- `mcp_gateway_lab/` (paquete separado del runtime stdlib-only): `python -m mcp_gateway_lab {validate-config|check|serve}`. `OracleSqlAdapter`
+  (`python-oracledb` thin): un target `NON_PRODUCTION` con autorización humana que vence (≤ 90 días); password desde el Keychain de macOS en cada
+  conexión; `SET TRANSACTION READ ONLY`; guardas de sesión (`ISDBA`, cuentas de Oracle, privilegios de sistema ⊆ `CREATE SESSION`/`SELECT ANY
+  DICTIONARY`); validación de servicio, versión, rol, contenedor y `db_name` antes de devolver evidencia; SQL certificado con hash verificado en
+  cada llamada; límites de tiempo, filas, bytes, tipos y concurrencia; `rollback` + `close` siempre. Único colector: `Q-DISC-IDENTITY-001`.
+- `tests/p15/` + `tests/test_p15_oracle_lab_adapter.sh` (14 casos funcionales) y `tests/test_p15_oracle_lab_security.sh` (22 casos negativos),
+  con driver y Keychain simulados (sin Oracle, red ni Keychain real).
+- `docs/ORACLE19C_LAB_ADAPTER.md`: alcance, controles, aprovisionamiento para ejecución humana del DBA, comandos macOS de instalación, configuración,
+  prueba, registro en Claude Code, desconexión y retiro; gobernanza propuesta (`GOV-LAB-ORA19C-001`, `RSK-010`) para la revisión humana.
+
+### Changed
+
+- `mcp_gateway/common.py`: estado `AdapterStatus.LAB_ENABLED` (no es `VERIFIED_LAB`/`PILOT_VALIDATED`); errores fijos `E_TARGET_MISMATCH`,
+  `E_PRIVILEGES_EXCESSIVE`, `E_AUTHORIZATION_EXPIRED`, `E_BUSY`.
+- `mcp_gateway/catalog.py`: `evaluate_capability` acepta `LAB_ENABLED` como adaptador ejecutable.
+- `mcp_gateway/gateway.py` / `server.py`: la procedencia (`FIXTURE`/`REAL`) y `collected_at_utc` se conservan en `get_evidence` y
+  `analyze_incident`; en modo laboratorio, las instrucciones y las descripciones de tools no afirman datos sintéticos. El modo por defecto responde igual que antes.
+- `.gitignore`: perfiles y targets privados de laboratorio.
+
 ## [0.14.1] — 2026-09-22 — `v0.14.1-mcp-meta-params` — `/change compatibility|security` — CHG-ESTACK-MCP-META-001 — MCP gateway acepta `_meta` en `tools/call`
 
 Rama `change/mcp-gateway-meta-params` sobre `v0.14.0-production-readiness-governance`, integrada a `main` vía PR #1 (merge `0abaf73`),

@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0",
+  "profile_id": "LAB-OL8-19C-001",
+  "description": "EXAMPLE ONLY. Copy to ~/.config/oracle-diagnostic-estack/lab-profile.json, chmod 600, replace every <...>. Never put a password here: it lives in macOS Keychain.",
+  "targets": {
+    "lab-ol8-19c": {
+      "environment_class": "NON_PRODUCTION",
+      "connection": {
+        "host": "<LAB_DB_HOST>",
+        "port": 1521,
+        "service_name": "<LAB_SERVICE_NAME>",
+        "transport": "tcp",
+        "username": "ESTACK_DIAG"
+      },
+      "credential": {"provider": "macos_keychain", "service": "oracle-estack-lab", "account": "lab-ol8-19c"},
+      "expected": {
+        "oracle_version_family": "19c",
+        "database_role": "PRIMARY",
+        "container": "<NON_CDB|PDB|CDB_ROOT>",
+        "db_name": "<V$DATABASE.NAME>"
+      },
+      "allowed_system_privileges": ["CREATE SESSION"],
+      "limits": {"connect_timeout_seconds": 5, "call_timeout_ms": 8000, "max_rows": 5, "max_output_bytes": 4096},
+      "authorization": {
+        "approved_by": "<ROLE OF THE APPROVER>",
+        "change_ref": "CHG-ESTACK-ORA19C-LAB-001",
+        "approved_at_utc": "<YYYY-MM-DDTHH:MM:SSZ>",
+        "expires_at_utc": "<YYYY-MM-DDTHH:MM:SSZ, at most 90 days later>"
+      }
+    }
+  }
+}

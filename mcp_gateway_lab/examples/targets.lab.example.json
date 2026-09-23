@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "description": "EXAMPLE ONLY. Lab targets file for python -m mcp_gateway_lab: exactly one target, adapter oracle_sql, alias equal to the lab profile. No hosts, users, DSNs or secrets belong here. container must equal expected.container of the lab profile (NON_CDB, PDB or CDB_ROOT).",
+  "targets": [
+    {
+      "alias": "lab-ol8-19c",
+      "adapter": "oracle_sql",
+      "enabled": true,
+      "oracle_version": "19c",
+      "role": "PRIMARY",
+      "container": "NON_CDB",
+      "architecture": {"rac": false, "dataguard": false, "asm": false},
+      "license_status": {},
+      "allowed_collectors": ["Q-DISC-IDENTITY-001"],
+      "budget": {"max_calls": 30, "max_rows": 60}
+    }
+  ]
+}

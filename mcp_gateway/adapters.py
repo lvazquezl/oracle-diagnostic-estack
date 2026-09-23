@@ -2,12 +2,15 @@
 mcp_gateway.adapters — adapter registry. FIXTURE is the only adapter that can run.
 
   fixture           VERIFIED_FIXTURE   reads synthetic JSON from a confined directory (no SQL is executed)
-  oracle_sql        DISABLED           contract stub: no driver is imported, no connection is ever attempted
+  oracle_sql        DISABLED           contract stub here: no driver is imported, no connection is ever attempted.
+                                       The real read-only implementation lives OUTSIDE this package
+                                       (mcp_gateway_lab.oracle_sql, status LAB_ENABLED) and is injected only by
+                                       `python -m mcp_gateway_lab` for one human-authorized non-production target.
   oracle_diag_file / os_readonly   CONTRACT_ONLY   (declared, not implemented)
 
 A real adapter could only be enabled by an explicit, reviewed code + configuration change AND human
 authorization per target; there is no runtime switch, environment variable or tool argument that turns one
-on. Adapter output is UNTRUSTED data: it always goes through evidence.sanitize_rows().
+on, and `python -m mcp_gateway` never does. Adapter output is UNTRUSTED data: it always goes through evidence.sanitize_rows().
 """
 from __future__ import annotations
 
@@ -62,7 +65,7 @@ class AdapterRegistry:
             "oracle_diag_file": DisabledAdapter("oracle_diag_file", AdapterStatus.CONTRACT_ONLY),
             "os_readonly": DisabledAdapter("os_readonly", AdapterStatus.CONTRACT_ONLY),
         }
-        if extra:                                    # test injection point only (never reachable from the CLI)
+        if extra:                                    # test injection + the separate lab launcher (never reachable from `python -m mcp_gateway`)
             self._adapters.update(extra)
 
     def get(self, name: str):
@@ -74,6 +77,18 @@ class AdapterRegistry:
     def status_of(self, name: str) -> str:
         a = self._adapters.get(name)
         return a.status if a is not None else AdapterStatus.UNSUPPORTED
+
+    def status_for(self, name: str, collector_id: str, declared: str) -> str:
+        """Live status of adapter `name` for one collector: the registered adapter's status, or UNSUPPORTED when that
+        adapter declares `implemented_collectors` without this collector. The catalog's declared value is used only
+        for adapters this registry does not know."""
+        a = self._adapters.get(name)
+        if a is None:
+            return declared
+        implemented = getattr(a, "implemented_collectors", None)
+        if implemented is not None and collector_id not in implemented:
+            return AdapterStatus.UNSUPPORTED
+        return a.status
 
     def describe(self) -> dict:
         return {name: a.status for name, a in sorted(self._adapters.items())}
