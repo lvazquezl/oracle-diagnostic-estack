@@ -6,7 +6,9 @@ Design invariants (asserted by tests/test_p13_*.sh):
   * READ-ONLY ALWAYS / HUMAN-EXECUTED REMEDIATION ONLY: no tool takes SQL, shell, paths, URLs or connection
     parameters; only certified collector ids + typed allowlisted parameters + registered target aliases.
   * Every error message is a fixed string from ERROR_MESSAGES — never built from client input.
-  * Fixture mode is the ONLY enabled adapter. Real adapters exist as DISABLED / CONTRACT_ONLY stubs.
+  * Fixture mode is the ONLY adapter `python -m mcp_gateway` can run. Real adapters exist as DISABLED /
+    CONTRACT_ONLY stubs; `oracle_sql` can only be LAB_ENABLED by the separate `python -m mcp_gateway_lab`
+    launcher (one non-production target, human authorization, dedicated least-privilege account).
   * Python standard library only (plus the repository's own rca_engine / change_documentation_knowledge
     public helpers). No network, no telemetry, no listener: stdio only.
 """
@@ -82,6 +84,10 @@ ERROR_MESSAGES = {
     "E_SANITIZATION": "output could not be sanitized safely",
     "E_INSUFFICIENT_EVIDENCE": "not enough sanitized evidence to run this analysis",
     "E_ANALYSIS_FAILED": "analysis input was rejected by the analysis engine",
+    "E_TARGET_MISMATCH": "connected target does not match its authorized identity",
+    "E_PRIVILEGES_EXCESSIVE": "diagnostic account holds privileges beyond the approved minimum",
+    "E_AUTHORIZATION_EXPIRED": "human authorization for this target is missing or expired",
+    "E_BUSY": "a previous operation for this target is still in progress",
     "E_INTERNAL": "unexpected internal error (details suppressed)",
 }
 
@@ -113,6 +119,9 @@ class CapabilityStatus:
 class AdapterStatus:
     VERIFIED_FIXTURE = "VERIFIED_FIXTURE"
     VERIFIED_LAB = "VERIFIED_LAB"
+    # Real adapter enabled ONLY by the separate lab launcher (mcp_gateway_lab) for one human-authorized,
+    # non-production target. It is NOT a verification claim: maturity stays below PILOT_VALIDATED.
+    LAB_ENABLED = "LAB_ENABLED"
     CONTRACT_ONLY = "CONTRACT_ONLY"
     DISABLED = "DISABLED"
     UNSUPPORTED = "UNSUPPORTED"

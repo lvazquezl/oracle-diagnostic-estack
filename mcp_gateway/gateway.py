@@ -75,8 +75,25 @@ for _name, _t in TOOLS.items():
     check_schema(_t["inputSchema"])                       # registration-time sanity: a permissive schema is a bug
 
 
-def tool_list() -> list:
-    return [{"name": n, "description": t["description"], "inputSchema": t["inputSchema"]} for n, t in TOOLS.items()]
+# In the lab launcher (mcp_gateway_lab) the provenance sentences must not claim synthetic data.
+_LAB_DESCRIPTION_REWRITES = {
+    "Read-only; fixture mode is the only enabled adapter.":
+        "Read-only; a LAB launcher: one human-authorized non-production target may use the real read-only oracle_sql adapter.",
+    " In this release the data is SYNTHETIC fixture data (provenance: FIXTURE).": "",
+}
+
+
+def tool_list(lab_mode: bool = False) -> list:
+    out = []
+    for n, t in TOOLS.items():
+        desc = t["description"]
+        if lab_mode:
+            for old, new in _LAB_DESCRIPTION_REWRITES.items():
+                desc = desc.replace(old, new)
+            if n in ("diagnostics.collect", "diagnostics.get_evidence", "diagnostics.analyze_incident"):
+                desc = desc.rstrip() + " Every response states its provenance (FIXTURE or REAL); REAL evidence is sanitized before it is returned."
+        out.append({"name": n, "description": desc, "inputSchema": t["inputSchema"]})
+    return out
 
 
 class Audit:
@@ -110,7 +127,8 @@ class Session:
 class Gateway:
     def __init__(self, collectors: dict, targets: dict, adapters: AdapterRegistry, audit: Audit = None,
                  store: EvidenceStore = None, operation_timeout: float = DEFAULT_OPERATION_TIMEOUT_SECONDS,
-                 max_session_calls: int = None, max_rows: int = None):
+                 max_session_calls: int = None, max_rows: int = None, lab_mode: bool = False):
+        self.lab_mode = bool(lab_mode)
         self.collectors = collectors
         self.targets = targets
         self.adapters = adapters
@@ -204,7 +222,9 @@ class Gateway:
                     "evidence_refs": [], "provenance": {"kind": "CATALOG", "real_observation": False},
                     "adapters": self.adapters.describe(), "targets": targets,
                     "collectors": [{"collector_id": cid, "domain": c.domain, "kind": c.kind, "title": c.title} for cid, c in sorted(self.collectors.items())],
-                    "limitations": ["only the fixture adapter can run; real adapters are DISABLED or CONTRACT_ONLY",
+                    "limitations": [("LAB launcher: oracle_sql is LAB_ENABLED for one human-authorized non-production target only; "
+                                     "this is not production readiness") if self.lab_mode else
+                                    "only the fixture adapter can run; real adapters are DISABLED or CONTRACT_ONLY",
                                     "a registered alias does not grant authorization; every call is evaluated per target and collector"]})
         return env
 
@@ -215,8 +235,10 @@ class Gateway:
         env = self._base("diagnostics.describe_collector", session, request_id, collector_id=col.collector_id)
         per_target = {a: (evaluate_capability(t, col, self.adapters.status_of(t.adapter)) if col.collector_id in t.allowed_collectors
                           else CapabilityStatus.UNSUPPORTED) for a, t in sorted(self.targets.items())}
+        view = col.public_view()
+        view["adapter_status"] = {name: self.adapters.status_for(name, col.collector_id, declared) for name, declared in sorted(col.adapters.items())}
         env.update({"status": "OK", "capability_status": CapabilityStatus.SUPPORTED, "sanitization_status": "SANITIZED",
-                    "evidence_refs": [], "collector": col.public_view(), "capability_by_target": per_target,
+                    "evidence_refs": [], "collector": view, "capability_by_target": per_target,
                     "limitations": []})
         return env
 
@@ -236,12 +258,15 @@ class Gateway:
         payload = sanitize_rows(col, raw, session.scope, target.alias, cap_rows)
         payload["digest_algorithm"] = "sha256"
         payload["digest"] = canonical_digest({"columns": payload["columns"], "rows": payload["rows"]})
+        real = adapter.name != "fixture"
+        payload["provenance_kind"] = "REAL" if real else "FIXTURE"
+        payload["collected_at_utc"] = datetime.now(timezone.utc).replace(microsecond=0).isoformat() if real else None
         session.target_rows[target.alias] = session.target_rows.get(target.alias, 0) + payload["row_count"]
         ref = self.store.put(session.scope.session_id, target.alias, col.collector_id, payload)
         env = self._base("diagnostics.collect", session, request_id, target, col.collector_id)
         env.update({"status": "OK" if not payload["limitations"] else "DEGRADED", "capability_status": cap,
-                    "collected_at_utc": None,
-                    "provenance": {"kind": "FIXTURE" if adapter.name == "fixture" else "REAL", "real_observation": adapter.name != "fixture"},
+                    "collected_at_utc": payload["collected_at_utc"],
+                    "provenance": {"kind": payload["provenance_kind"], "real_observation": real},
                     "sanitization_status": "SANITIZED", "evidence_refs": [ref],
                     "evidence": {"columns": payload["columns"], "rows": payload["rows"], "row_count": payload["row_count"], "digest": payload["digest"]},
                     "query_sha256": col.query_sha256, "limitations": payload["limitations"]})
@@ -255,8 +280,9 @@ class Gateway:
         col = self.collectors[e["collector"]]
         env = self._base("diagnostics.get_evidence", session, request_id, target, col.collector_id)
         p = e["payload"]
-        env.update({"status": "OK", "capability_status": CapabilityStatus.SUPPORTED, "collected_at_utc": None,
-                    "provenance": {"kind": "FIXTURE", "real_observation": False},
+        kind = p.get("provenance_kind", "FIXTURE")
+        env.update({"status": "OK", "capability_status": CapabilityStatus.SUPPORTED, "collected_at_utc": p.get("collected_at_utc"),
+                    "provenance": {"kind": kind, "real_observation": kind == "REAL"},
                     "sanitization_status": "SANITIZED", "evidence_refs": [args["evidence_ref"]],
                     "evidence": {"columns": p["columns"], "rows": p["rows"], "row_count": p["row_count"], "digest": p["digest"]},
                     "limitations": list(p["limitations"])})
@@ -274,10 +300,12 @@ class Gateway:
             e = self.store.get(ref, session.scope.session_id, target.alias)      # same scope rules as get_evidence
             items.append((self.collectors[e["collector"]], ref, e["payload"]))
         analysis = bridge.analyze(target.alias, items)
+        real = any(p.get("provenance_kind") == "REAL" for _c, _r, p in items)
         env = self._base("diagnostics.analyze_incident", session, request_id, target)
         env.update({"status": "OK", "capability_status": CapabilityStatus.SUPPORTED, "collected_at_utc": None,
-                    "provenance": {"kind": "FIXTURE", "real_observation": False},
+                    "provenance": {"kind": "REAL" if real else "FIXTURE", "real_observation": real},
                     "sanitization_status": "SANITIZED", "evidence_refs": refs, "analysis": analysis,
-                    "limitations": ["derived from sanitized fixture evidence; correlation in time is not causation (rca_engine contract)",
+                    "limitations": [("derived from sanitized REAL lab evidence" if real else "derived from sanitized fixture evidence")
+                                    + "; correlation in time is not causation (rca_engine contract)",
                                     "advisory and candidate are proposals: nothing is executed, approved or published by the gateway"]})
         return env

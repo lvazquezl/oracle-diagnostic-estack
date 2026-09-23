@@ -131,15 +131,17 @@ class McpServer:
                 "protocolVersion": self.protocol_version,
                 "capabilities": {"tools": {"listChanged": False}},
                 "serverInfo": {"name": GATEWAY_NAME, "version": GATEWAY_VERSION},
-                "instructions": ("Local read-only diagnostic gateway. Data in this release is synthetic fixture data. Use "
-                                 "diagnostics.list_capabilities first; tools accept only certified collector ids, registered target "
+                "instructions": ((("Local read-only diagnostic gateway, LAB launcher: one human-authorized non-production Oracle target "
+                                   "may return REAL sanitized evidence; each response states its provenance. ") if self.gateway.lab_mode else
+                                  "Local read-only diagnostic gateway. Data in this release is synthetic fixture data. ") +
+                                 "Use diagnostics.list_capabilities first; tools accept only certified collector ids, registered target "
                                  "aliases and opaque evidence references.")}})
         if method == "ping":
             return self._send({"jsonrpc": "2.0", "id": req_id, "result": {}})
         if self.state != "READY":
             raise GatewayError("E_NOT_INITIALIZED")
         if method == "tools/list":
-            return self._send({"jsonrpc": "2.0", "id": req_id, "result": {"tools": tool_list()}})
+            return self._send({"jsonrpc": "2.0", "id": req_id, "result": {"tools": tool_list(self.gateway.lab_mode)}})
         if method == "tools/call":
             # `_meta` is reserved by MCP for client metadata (e.g. a tool-use id): accepted only as an object,
             # never inspected and never passed to the gateway. Any other extra key is still rejected.

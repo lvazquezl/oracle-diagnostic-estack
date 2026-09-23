@@ -1,0 +1,275 @@
+"""
+tests/p15/harness.py — fakes and builders for the LAB oracle_sql adapter tests (CHG-ESTACK-ORA19C-LAB-001, CHG-ESTACK-ORA19C-LAB-002).
+
+Nothing here touches Oracle, the network, the Keychain or the host: the python-oracledb driver and the
+`/usr/bin/security` runner are replaced by in-process fakes that RECORD what the adapter asked for (connect
+parameters without the password, every SQL statement, commits, rollbacks, closes, fetch sizes).
+"""
+import copy
+import json
+import os
+import stat
+import subprocess
+import sys
+import threading
+import time
+from datetime import datetime, timedelta, timezone
+
+from tests.p13.harness import MARKER, ROOT, Skip, run_all, test, tmpdir  # noqa: F401  (re-exported for the checks)
+
+ALIAS = "lab-ol8-19c"
+SECRET = "Lab-" + MARKER + "-pw"                      # the fake Keychain password; must never appear in any output
+RAW_NAMES = ("LAB19C", "LABCDB", "LABPDB1", "ESTACK_DIAG", "db19-lab.example.internal")
+FAKEDRIVER_DIR = os.path.join(ROOT, "tests", "p15", "fakedriver")
+
+
+def utc(dt):
+    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def profile_doc(**over):
+    now = datetime.now(timezone.utc)
+    t = {
+        "environment_class": "NON_PRODUCTION",
+        "connection": {"host": "db19-lab.example.internal", "port": 1521, "service_name": "LAB19C", "transport": "tcp", "username": "ESTACK_DIAG"},
+        "credential": {"provider": "macos_keychain", "service": "oracle-estack-lab", "account": ALIAS},
+        "expected": {"oracle_version_family": "19c", "database_role": "PRIMARY", "container": "NON_CDB", "db_name": "LAB19C"},
+        "allowed_system_privileges": ["CREATE SESSION"],
+        "limits": {"connect_timeout_seconds": 5, "call_timeout_ms": 8000, "max_rows": 5, "max_output_bytes": 4096},
+        "authorization": {"approved_by": "DBA lead (lab)", "change_ref": "CHG-ESTACK-ORA19C-LAB-001",
+                          "approved_at_utc": utc(now - timedelta(days=1)), "expires_at_utc": utc(now + timedelta(days=6))},
+    }
+    for path, value in over.items():                   # "connection.port" -> t["connection"]["port"]
+        node = t
+        keys = path.split(".")
+        for k in keys[:-1]:
+            node = node[k]
+        if value is _DELETE:
+            node.pop(keys[-1], None)
+        else:
+            node[keys[-1]] = value
+    return {"schema_version": "1.0.0", "profile_id": "LAB-OL8-19C-TEST", "targets": {ALIAS: t}}
+
+
+_DELETE = object()
+DELETE = _DELETE
+
+
+def lab_target(**over):
+    t = {"alias": ALIAS, "adapter": "oracle_sql", "enabled": True, "oracle_version": "19c", "role": "PRIMARY", "container": "NON_CDB",
+         "architecture": {"rac": False, "dataguard": False, "asm": False}, "license_status": {},
+         "allowed_collectors": ["Q-DISC-IDENTITY-001"], "budget": {"max_calls": 20, "max_rows": 50}}
+    t.update(over)
+    return t
+
+
+def write_private(d, name, doc, mode=0o600, raw=None):
+    p = os.path.join(d, name)
+    with open(p, "w", encoding="utf-8") as f:
+        f.write(raw if raw is not None else json.dumps(doc))
+    os.chmod(p, mode)
+    return p
+
+
+def write_targets(d, targets):
+    return write_private(d, "targets.lab.json", {"schema_version": "1.0.0", "targets": targets}, mode=0o644)
+
+
+# --- fake python-oracledb ---------------------------------------------------------------------------
+
+class FakeDbError(Exception):
+    pass
+
+
+class _ErrInfo:
+    def __init__(self, code, message):
+        self.full_code = code
+        self.message = message
+
+
+def driver_error(code, message="ORA failure mentioning " + SECRET + " at db19-lab.example.internal:1521/LAB19C"):
+    return FakeDbError(_ErrInfo(code, message))
+
+
+class Scenario:
+    def __init__(self, **kw):
+        self.thin_mode = True
+        self.conn_thin = True
+        self.connect_error = None
+        self.session = {"service_name": "LAB19C", "con_name": "LAB19C", "sess_user": "ESTACK_DIAG", "isdba": "FALSE"}
+        self.privileges = ["CREATE SESSION"]
+        self.identity = [{"instance_name": "LAB19C", "version_full": "19.27.0.0.0", "db_name": "LAB19C",
+                          "database_role": "PRIMARY", "cdb": "NO", "open_mode": "READ WRITE"}]
+        self.identity_delay = 0.0
+        self.identity_error = None
+        # V$RESOURCE_LIMIT.LIMIT_VALUE and V$PARAMETER.VALUE are padded VARCHAR2 in Oracle; the fake reproduces that.
+        self.resource_limits = [
+            {"resource_name": "dml_locks", "current_utilization": 0, "max_utilization": 12, "limit_value": " UNLIMITED"},
+            {"resource_name": "enqueue_locks", "current_utilization": 31, "max_utilization": 64, "limit_value": "      4340"},
+            {"resource_name": "processes", "current_utilization": 71, "max_utilization": 96, "limit_value": "       320"},
+            {"resource_name": "sessions", "current_utilization": 84, "max_utilization": 110, "limit_value": "       504"}]
+        self.processes = [{"process_count": 71, "processes_limit": "320"}]
+        self.main_error = None                       # raised by any non-identity certified query (e.g. ORA-00942)
+        for k, v in kw.items():
+            if k.startswith("session_"):
+                self.session[k[len("session_"):]] = v
+            elif k.startswith("id_"):
+                self.identity = [dict(r, **{k[len("id_"):]: v}) for r in self.identity]
+            else:
+                setattr(self, k, v)
+
+
+class FakeDriver:
+    def __init__(self, scenario=None):
+        self.s = scenario or Scenario()
+        self.lock = threading.Lock()
+        self.connects = []            # connect kwargs WITHOUT the password
+        self.password_ok = []         # whether the password handed to connect was the Keychain value
+        self.statements = []
+        self.fetch_sizes = []
+        self.events = []              # commit / rollback / close
+
+    def is_thin_mode(self):
+        return self.s.thin_mode
+
+    def connect(self, **kw):
+        with self.lock:
+            self.password_ok.append(kw.get("password") == SECRET)
+            self.connects.append({k: v for k, v in kw.items() if k != "password"})
+        if self.s.connect_error is not None:
+            raise self.s.connect_error
+        return FakeConnection(self)
+
+
+class FakeConnection:
+    def __init__(self, drv):
+        self.drv = drv
+        self.thin = drv.s.conn_thin
+        self.autocommit = True
+        self.module = self.action = None
+        self.call_timeout = 0
+        self.call_timeouts = []
+
+    def __setattr__(self, k, v):
+        if k == "call_timeout" and hasattr(self, "call_timeouts"):
+            self.call_timeouts.append(v)
+        object.__setattr__(self, k, v)
+
+    def cursor(self):
+        return FakeCursor(self)
+
+    def commit(self):
+        self.drv.events.append("commit")
+
+    def rollback(self):
+        self.drv.events.append("rollback")
+
+    def close(self):
+        self.drv.events.append("close")
+
+
+class FakeCursor:
+    def __init__(self, conn):
+        self.conn = conn
+        self.drv = conn.drv
+        self.description = None
+        self._rows = []
+        self.arraysize = 100
+        self.prefetchrows = 2
+
+    def execute(self, sql, *args, **kw):
+        assert not args and not kw, "the adapter must never bind client values"
+        self.drv.statements.append(sql)
+        s = self.drv.s
+        low = sql.lower()
+        if sql == "SET TRANSACTION READ ONLY":
+            return
+        if "sys_context" in low:
+            self._set([s.session])
+        elif "session_privs" in low:
+            self._set([{"privilege": p} for p in s.privileges])
+        elif "v$instance" in low:
+            if s.identity_delay:
+                time.sleep(s.identity_delay)
+            if s.identity_error is not None:
+                raise s.identity_error
+            self._set(s.identity)
+        elif "v$resource_limit" in low or "v$process" in low:
+            if s.main_error is not None:
+                raise s.main_error
+            self._set(s.resource_limits if "v$resource_limit" in low else s.processes)
+        else:
+            raise driver_error("ORA-00900", "invalid SQL statement")
+
+    def _set(self, rows):
+        cols = list(rows[0]) if rows else ["x"]
+        self.description = [(c.upper(), None) for c in cols]
+        self._rows = [tuple(r.get(c) for c in cols) for r in rows]
+
+    def fetchmany(self, n):
+        self.drv.fetch_sizes.append(n)
+        return self._rows[:n]
+
+    def close(self):
+        pass
+
+
+class FakeKeychain:
+    def __init__(self, rc=0, out=None):
+        self.rc = rc
+        self.out = (SECRET + "\n").encode() if out is None else out
+        self.calls = []
+
+    def __call__(self, argv, **kw):
+        self.calls.append((list(argv), dict(kw)))
+        return subprocess.CompletedProcess(argv, self.rc, stdout=self.out if self.rc == 0 else b"", stderr=b"")
+
+
+# --- builders ---------------------------------------------------------------------------------------
+
+class Lab:
+    """A lab gateway wired to fakes, built through the real mcp_gateway_lab.cli.build_lab_gateway."""
+
+    def __init__(self, d, scenario=None, profile=None, targets=None, keychain=None, wallclock=None, operation_timeout=None):
+        from mcp_gateway_lab.cli import build_lab_gateway
+        self.driver = FakeDriver(scenario)
+        self.keychain = keychain or FakeKeychain()
+        self.audit_lines = []
+        self.profile_path = write_private(d, "lab-profile.json", profile or profile_doc())
+        self.targets_path = write_targets(d, targets or [lab_target()])
+        self.gateway, self.adapter = build_lab_gateway(self.targets_path, self.profile_path, self.audit_lines.append, driver=self.driver,
+                                                       credential_runner=self.keychain, wallclock=wallclock)
+        if operation_timeout is not None:
+            self.gateway.operation_timeout = operation_timeout
+        from mcp_gateway.gateway import Session
+        self.session = Session()
+
+    def call(self, tool, args):
+        return self.gateway.call(self.session, tool, args)
+
+    def collect(self, collector_id="Q-DISC-IDENTITY-001", **extra):
+        return self.call("diagnostics.collect", dict({"collector_id": collector_id, "target_alias": ALIAS}, **extra))
+
+
+def leaks(text: str) -> list:
+    """Raw identifiers, host, user or the secret found in `text` (case-insensitive for names)."""
+    found = [SECRET] if SECRET in text or MARKER in text else []
+    low = text.lower()
+    return found + [n for n in RAW_NAMES if n.lower() in low]
+
+
+def run_lab_cli(*args, env_extra=None, fake_driver=True):
+    env = {"PATH": "/usr/bin:/bin", "PYTHONDONTWRITEBYTECODE": "1", "PYTHONUTF8": "1",
+           "PYTHONPATH": os.pathsep.join(([FAKEDRIVER_DIR] if fake_driver else []) + [ROOT])}
+    env.update(env_extra or {})
+    p = subprocess.run([sys.executable, "-m", "mcp_gateway_lab", *args], capture_output=True, text=True, encoding="utf-8", cwd=ROOT,
+                       env=env, stdin=subprocess.DEVNULL, timeout=60)
+    return p.returncode, p.stdout, p.stderr
+
+
+def deepcopy(x):
+    return copy.deepcopy(x)
+
+
+def is_private(path):
+    return not (os.stat(path).st_mode & (stat.S_IRWXG | stat.S_IRWXO))

@@ -60,3 +60,9 @@ desktop.ini
 # evidence/raw/
 # evidence/sanitized/
 # evidence/derived/
+# LAB oracle_sql adapter (CHG-ESTACK-ORA19C-LAB-001): private profile / real targets must never be versioned.
+# They live in ~/.config/oracle-diagnostic-estack/ (outside the checkout; the launcher refuses a profile inside it).
+lab-profile.json
+targets.lab.json
+*.lab-profile.json
+evidence/lab/**/raw/

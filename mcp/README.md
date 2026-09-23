@@ -2,6 +2,10 @@
 
 Estado: el diseño de la Fase 1 sigue vigente. La **Fase 13** entrega un servidor MCP local real por stdio (`python -m mcp_gateway`, ver [`docs/PHASE_13_MCP_DIAGNOSTIC_GATEWAY.md`](../docs/PHASE_13_MCP_DIAGNOSTIC_GATEWAY.md)) con datos **sintéticos de fixture**; los adaptadores contra Oracle/OS reales están `DISABLED` o `CONTRACT_ONLY` y `NOT_INTEGRATION_TESTED` hasta que un humano apruebe un laboratorio.
 
+**Laboratorio (`CHG-ESTACK-ORA19C-LAB-001`, `PROPOSED`):** un lanzador separado, `python -m mcp_gateway_lab`, habilita el adaptador `oracle_sql` real
+(`LAB_ENABLED`, sólo lectura, `python-oracledb` thin) para **un** target Oracle 19c no productivo con autorización humana vigente, y un solo colector
+(`Q-DISC-IDENTITY-001`). El runtime por defecto no cambia. No es preparación para producción. Ver [`docs/ORACLE19C_LAB_ADAPTER.md`](../docs/ORACLE19C_LAB_ADAPTER.md).
+
 ## Principio
 
 No se expone SQL ni shell arbitrario al modelo. Sólo tools semánticas, parametrizadas, certificadas (`queries/REGISTRY.md`).
