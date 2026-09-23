@@ -110,6 +110,8 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-RMAN-BACKUP-DEVICE-001` | Canales actualmente asignados | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
 | `Q-RMAN-FRA-USAGE-001` | Uso/límite de la Fast Recovery Area | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
 | `Q-RMAN-CONTROLFILE-RECORD-SECTION-001` | Utilización de secciones de registro del controlfile | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+| `Q-RMAN-BACKUP-FRESHNESS-001` | Frescura por categoría (horas desde el último full/level 0, incremental, archivelog, controlfile, SPFILE), antigüedad calculada en la base — CHG-ESTACK-ORA19C-LAB-004 | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-JOB-SUMMARY-001` | Resumen de jobs RMAN por tipo (último estado, horas desde último inicio/éxito, fallos 7 días), antigüedad calculada en la base — CHG-ESTACK-ORA19C-LAB-004 | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-SEC-ACCOUNT-INVENTORY-001` | Inventario de cuentas (status/auth type/profile/common/last_login) | 10g–23ai (common/oracle_maintained/last_login sólo 12.1+) | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-SEC-DEFAULT-ACCOUNTS-001` | Cuentas con contraseña por defecto | 11g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-SEC-COMMON-LOCAL-USERS-001` | Usuarios comunes/locales con posture completa (extiende Q-CDB-USERS-001) | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
@@ -205,6 +207,8 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-RMAN-BACKUP-DEVICE-001` | `V$BACKUP_DEVICE` | R0 | LOW | 10 | 100 | MEDIUM | none |
 | `Q-RMAN-FRA-USAGE-001` | `V$FLASH_RECOVERY_AREA_USAGE`, `V$RECOVERY_FILE_DEST` | R0 | LOW | 15 | 50 | LOW | none |
 | `Q-RMAN-CONTROLFILE-RECORD-SECTION-001` | `V$CONTROLFILE_RECORD_SECTION` | R0 | LOW | 10 | 50 | LOW | none |
+| `Q-RMAN-BACKUP-FRESHNESS-001` | `V$BACKUP_DATAFILE`, `V$BACKUP_SET`, `V$BACKUP_SPFILE` | R0 | LOW | 20 | 10 | LOW | none |
+| `Q-RMAN-JOB-SUMMARY-001` | `V$RMAN_BACKUP_JOB_DETAILS` | R0 | MEDIUM | 30 | 20 | LOW | none |
 | `Q-SEC-ACCOUNT-INVENTORY-001` | `DBA_USERS` | R0 | LOW | 15 | 500 | HIGH | none |
 | `Q-SEC-DEFAULT-ACCOUNTS-001` | `DBA_USERS_WITH_DEFPWD`, `DBA_USERS` | R0 | LOW | 10 | 200 | HIGH | none |
 | `Q-SEC-COMMON-LOCAL-USERS-001` | `CDB_USERS` | R0 | MEDIUM | 20 | 500 | HIGH | none |

@@ -239,7 +239,8 @@ def collectors_the_adapter_does_not_implement_are_denied_even_if_forced():
                 raise AssertionError("adapter ran an unimplemented collector")
             except Exception as e:
                 assert getattr(e, "code", None) == "E_COLLECTOR_NOT_ALLOWED", cid
-        assert set(oracle_sql.SUPPORTED_COLLECTORS) == {ID, "Q-ORA-RESOURCE-LIMITS-001", "Q-CDB-TABLESPACES-001", "Q-RMAN-FRA-USAGE-001"}
+        assert set(oracle_sql.SUPPORTED_COLLECTORS) == {ID, "Q-ORA-RESOURCE-LIMITS-001", "Q-CDB-TABLESPACES-001", "Q-RMAN-FRA-USAGE-001",
+                                                         "Q-RMAN-BACKUP-FRESHNESS-001", "Q-RMAN-JOB-SUMMARY-001"}
         assert lab.driver.connects == []
     with tmpdir() as d:                                                              # the launcher refuses such a target file
         assert refused(d, targets=[lab_target(allowed_collectors=[ID, "Q-DG-STATS-001"])])
@@ -568,6 +569,34 @@ def output_byte_ceiling_is_enforced_on_multi_row_results():
         sc.tablespaces = [dict(sc.tablespaces[0], tablespace_name=f"TS{i}") for i in range(40)]
         lab = Lab(d, scenario=sc, profile=prof, targets=[lab_target(container="CDB_ROOT", allowed_collectors=[ID, "Q-CDB-TABLESPACES-001"])])
         denied(lab, "E_OUTPUT_TOO_LARGE", collector="Q-CDB-TABLESPACES-001")
+
+
+
+# --- CHG-ESTACK-ORA19C-LAB-004 -----------------------------------------------------------------------------
+
+@test
+def a_driver_date_value_is_refused_never_converted():
+    import datetime as _dt
+    with tmpdir() as d:
+        sc = Scenario()
+        sc.freshness = [{"backup_kind": "FULL_OR_LEVEL0", "record_count": 1, "hours_since_last": _dt.datetime(2026, 9, 1, 3, 0)}]
+        lab = Lab(d, scenario=sc, targets=[lab_target(allowed_collectors=[ID, "Q-RMAN-BACKUP-FRESHNESS-001"])])
+        denied(lab, "E_RESULT_INVALID", collector="Q-RMAN-BACKUP-FRESHNESS-001")
+        assert lab.adapter.last_failure == "RESULT_TYPE_REFUSED"
+
+
+@test
+def out_of_range_or_textual_ages_are_dropped_and_reported():
+    with tmpdir() as d:
+        sc = Scenario()
+        sc.jobs = [{"input_type": "DB FULL", "jobs_total": 1, "last_status": "COMPLETED", "hours_since_last_start": -500.0,
+                    "hours_since_last_success": "180.5", "failed_last_7d": 0, "last_elapsed_seconds": 10}]
+        lab = Lab(d, scenario=sc, targets=[lab_target(allowed_collectors=[ID, "Q-RMAN-JOB-SUMMARY-001"])])
+        env, is_error = lab.collect("Q-RMAN-JOB-SUMMARY-001")
+        assert not is_error and env["status"] == "DEGRADED", env
+        row, = env["evidence"]["rows"]
+        assert "hours_since_last_start" not in row and "hours_since_last_success" not in row
+        assert any(l.startswith("INVALID_VALUES_DROPPED") for l in env["limitations"]), env["limitations"]
 
 
 if __name__ == "__main__":

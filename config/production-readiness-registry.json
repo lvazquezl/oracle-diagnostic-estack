@@ -441,6 +441,90 @@
       ]
     },
     {
+      "id": "collector:Q-RMAN-BACKUP-FRESHNESS-001",
+      "kind": "collector",
+      "domain": "rman",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Backup freshness per category as hours since the last recorded backup (computed in the database, no absolute dates). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-004); a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-RMAN-BACKUP-FRESHNESS-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on V$BACKUP_DATAFILE",
+        "SELECT on V$BACKUP_SET",
+        "SELECT on V$BACKUP_SPFILE"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 10,
+        "timeout_seconds": 20
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-RMAN-JOB-SUMMARY-001",
+      "kind": "collector",
+      "domain": "rman",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "RMAN job summary per input type: last status, hours since last start and last success, failures in 7 days (computed in the database). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-004); a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-RMAN-JOB-SUMMARY-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on V$RMAN_BACKUP_JOB_DETAILS"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 20,
+        "timeout_seconds": 30
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
       "id": "collector:os.get_process_limits",
       "kind": "collector",
       "domain": "os",

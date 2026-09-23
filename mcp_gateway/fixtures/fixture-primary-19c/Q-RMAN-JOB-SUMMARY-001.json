@@ -1,0 +1,32 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "input_type": "ARCHIVELOG",
+      "jobs_total": 168,
+      "last_status": "COMPLETED",
+      "hours_since_last_start": 1.1,
+      "hours_since_last_success": 1.02,
+      "failed_last_7d": 0,
+      "last_elapsed_seconds": 42
+    },
+    {
+      "input_type": "DB FULL",
+      "jobs_total": 4,
+      "last_status": "COMPLETED",
+      "hours_since_last_start": 152.0,
+      "hours_since_last_success": 151.25,
+      "failed_last_7d": 0,
+      "last_elapsed_seconds": 2700
+    },
+    {
+      "input_type": "DB INCR",
+      "jobs_total": 24,
+      "last_status": "FAILED",
+      "hours_since_last_start": 7.9,
+      "hours_since_last_success": 31.5,
+      "failed_last_7d": 2,
+      "last_elapsed_seconds": 95
+    }
+  ]
+}

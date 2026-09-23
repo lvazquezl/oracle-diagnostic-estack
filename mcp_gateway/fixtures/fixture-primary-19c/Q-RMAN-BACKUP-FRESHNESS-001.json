@@ -1,0 +1,30 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "backup_kind": "FULL_OR_LEVEL0",
+      "record_count": 48,
+      "hours_since_last": 151.25
+    },
+    {
+      "backup_kind": "INCREMENTAL",
+      "record_count": 120,
+      "hours_since_last": 7.5
+    },
+    {
+      "backup_kind": "ARCHIVELOG",
+      "record_count": 900,
+      "hours_since_last": 1.02
+    },
+    {
+      "backup_kind": "CONTROLFILE",
+      "record_count": 35,
+      "hours_since_last": 1.0
+    },
+    {
+      "backup_kind": "SPFILE",
+      "record_count": 35,
+      "hours_since_last": 1.0
+    }
+  ]
+}

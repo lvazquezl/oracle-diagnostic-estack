@@ -427,6 +427,22 @@ queries:
     was: VARIANT_REQUIRED
   Q-RMAN-BACKUP-DEVICE-001: {file: queries/rman/Q-RMAN-BACKUP-DEVICE-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$BACKUP_DEVICE], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-RMAN-FRA-USAGE-001: {file: queries/rman/Q-RMAN-FRA-USAGE-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$FLASH_RECOVERY_AREA_USAGE, V$RECOVERY_FILE_DEST], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-RMAN-BACKUP-FRESHNESS-001:
+    file: queries/rman/Q-RMAN-BACKUP-FRESHNESS-001.md
+    variants:
+      - {variant_id: Q-RMAN-BACKUP-FRESHNESS-001-V1, label: all_versions, min: "10.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$BACKUP_DATAFILE, V$BACKUP_SET, V$BACKUP_SPFILE]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-004: sin Top-N ni CON_ID, columnas min_version all
+  Q-RMAN-JOB-SUMMARY-001:
+    file: queries/rman/Q-RMAN-JOB-SUMMARY-001.md
+    variants:
+      - {variant_id: Q-RMAN-JOB-SUMMARY-001-V1, label: all_versions, min: "10.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$RMAN_BACKUP_JOB_DETAILS]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-004: sin Top-N ni CON_ID, columnas min_version 10.2
   Q-RMAN-CONTROLFILE-RECORD-SECTION-001: {file: queries/rman/Q-RMAN-CONTROLFILE-RECORD-SECTION-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$CONTROLFILE_RECORD_SECTION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
 
   # --- PHASE 8 — ORACLE SECURITY & COMPLIANCE ---
