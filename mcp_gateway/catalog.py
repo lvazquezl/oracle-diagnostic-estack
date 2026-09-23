@@ -259,6 +259,11 @@ def evaluate_capability(target: Target, col: Collector, adapter_status: str) -> 
         return CapabilityStatus.ENVIRONMENT_UNKNOWN
     if target.oracle_version not in col.supported_oracle_versions:
         return CapabilityStatus.UNSUPPORTED
+    if col.container_scope == "CDB_ROOT_ONLY":                  # CDB_* views: only meaningful from CDB$ROOT
+        if target.container == "UNKNOWN":
+            return CapabilityStatus.ENVIRONMENT_UNKNOWN
+        if target.container != "CDB_ROOT":
+            return CapabilityStatus.NOT_APPLICABLE
     if col.database_role_scope not in ("ANY", None):
         if target.role == "UNKNOWN":
             return CapabilityStatus.ENVIRONMENT_UNKNOWN

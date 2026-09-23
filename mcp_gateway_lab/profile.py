@@ -30,9 +30,10 @@ CREDENTIAL_PROVIDERS = ("macos_keychain",)
 # System privileges a diagnostic session may hold. CREATE SESSION is mandatory; SELECT ANY DICTIONARY is tolerated
 # only when the profile opts in explicitly (object grants on V_$ views are the least-privilege option).
 PRIVILEGE_CEILING = frozenset({"CREATE SESSION", "SELECT ANY DICTIONARY"})
-# Ceilings = the tightest certified query contract the adapter implements (Q-DISC-IDENTITY-001: timeout 10 s,
-# max_rows 5, max_output_bytes 4096). The adapter still applies min(profile, query, collector) per call.
-LIMIT_BOUNDS = {"connect_timeout_seconds": (1, 10), "call_timeout_ms": (500, 10_000), "max_rows": (1, 5), "max_output_bytes": (256, 4096)}
+# Ceilings for the profile limits. They are upper bounds only: every call still applies min(profile, certified query,
+# collector) — e.g. Q-DISC-IDENTITY-001 stays at 5 rows / 4096 bytes / 10 s whatever the profile says. Raised in
+# CHG-ESTACK-ORA19C-LAB-003 for multi-container CDB_* views (rows = MAX_ROWS_HARD, bytes = Q-CDB-TABLESPACES-001).
+LIMIT_BOUNDS = {"connect_timeout_seconds": (1, 10), "call_timeout_ms": (500, 20_000), "max_rows": (1, 200), "max_output_bytes": (256, 65_536)}
 FORBIDDEN_KEYS = frozenset({"password", "passwd", "pwd", "secret", "token", "wallet_password", "dsn", "connect_string",
                             "connection_string", "easy_connect", "private_key", "api_key"})
 

@@ -105,7 +105,7 @@ def profile_structure_scope_and_limits_fail_closed():
         {"allowed_system_privileges": ["CREATE SESSION", "CREATE TABLE"]},
         {"allowed_system_privileges": ["DBA"]},
         {"allowed_system_privileges": []},
-        {"limits.max_rows": 50},
+        {"limits.max_rows": 201},
         {"limits.call_timeout_ms": 60000},
         {"limits.max_output_bytes": 1_000_000},
         {"limits.connect_timeout_seconds": 0},
@@ -233,18 +233,21 @@ def collectors_the_adapter_does_not_implement_are_denied_even_if_forced():
         lab = Lab(d)
         denied(lab, "E_COLLECTOR_NOT_ALLOWED", collector="Q-ORA-RESOURCE-LIMITS-001")      # implemented but not allowed by the target
         target = lab.gateway.targets[ALIAS]
-        for cid in ("Q-ORA-PROCESSES-SUMMARY-001", "Q-DG-STATS-001", "Q-ORA-DIAGNOSTICS-ALERTLOG-001", "os.get_process_limits"):
+        for cid in ("Q-ORA-PROCESSES-SUMMARY-001", "Q-CDB-TEMP-001", "Q-DG-STATS-001", "Q-ORA-DIAGNOSTICS-ALERTLOG-001", "os.get_process_limits"):
             try:
                 lab.adapter.fetch(target, lab.gateway.collectors[cid], {})               # adapter defense in depth
                 raise AssertionError("adapter ran an unimplemented collector")
             except Exception as e:
                 assert getattr(e, "code", None) == "E_COLLECTOR_NOT_ALLOWED", cid
-        assert set(oracle_sql.SUPPORTED_COLLECTORS) == {ID, "Q-ORA-RESOURCE-LIMITS-001"}
+        assert set(oracle_sql.SUPPORTED_COLLECTORS) == {ID, "Q-ORA-RESOURCE-LIMITS-001", "Q-CDB-TABLESPACES-001", "Q-RMAN-FRA-USAGE-001"}
         assert lab.driver.connects == []
     with tmpdir() as d:                                                              # the launcher refuses such a target file
         assert refused(d, targets=[lab_target(allowed_collectors=[ID, "Q-DG-STATS-001"])])
     with tmpdir() as d:                                                              # least privilege: not implemented on purpose
         assert refused(d, targets=[lab_target(allowed_collectors=[ID, "Q-ORA-RESOURCE-LIMITS-001", "Q-ORA-PROCESSES-SUMMARY-001"])])
+    with tmpdir() as d:                                                              # lab-validated partial result: not implemented
+        assert refused(d, targets=[lab_target(container="CDB_ROOT", allowed_collectors=[ID, "Q-CDB-TEMP-001"])],
+                       profile=profile_doc(**{"expected.container": "CDB_ROOT"}))
 
 
 @test
@@ -523,6 +526,48 @@ def a_cdb_root_profile_refuses_a_session_that_lands_in_a_pdb():
         assert not any("v$resource_limit" in s.lower() for s in lab.driver.statements)
     with tmpdir() as d:                                                    # registration and profile must agree on the container
         assert refused(d, profile=prof, targets=[lab_target(container="PDB", allowed_collectors=ALL)])
+
+
+
+# --- CHG-ESTACK-ORA19C-LAB-003 -----------------------------------------------------------------------------
+
+@test
+def cdb_root_only_collectors_are_not_applicable_outside_cdb_root_and_never_connect():
+    from mcp_gateway import catalog
+    for container, expected in (("PDB", "NOT_APPLICABLE"), ("NON_CDB", "NOT_APPLICABLE")):
+        with tmpdir() as d:
+            prof = profile_doc(**{"expected.container": container, **({"expected.con_name": "LABPDB1"} if container == "PDB" else {})})
+            sc = Scenario(session_con_name="LABPDB1") if container == "PDB" else None
+            lab = Lab(d, scenario=sc, profile=prof,
+                      targets=[lab_target(container=container, allowed_collectors=[ID, "Q-CDB-TABLESPACES-001"])])
+            for cid in ("Q-CDB-TABLESPACES-001",):
+                env = denied(lab, "E_CAPABILITY", collector=cid)
+                assert env["capability_status"] == expected, env
+            assert lab.driver.connects == [], "a NOT_APPLICABLE collector must be refused before any connection"
+    t = catalog.Target({"alias": "x-unknown", "adapter": "fixture", "enabled": True, "oracle_version": "19c", "container": "UNKNOWN",
+                        "allowed_collectors": ["Q-CDB-TABLESPACES-001"]})
+    col = catalog.load_collectors()["Q-CDB-TABLESPACES-001"]
+    assert catalog.evaluate_capability(t, col, "VERIFIED_FIXTURE") == "ENVIRONMENT_UNKNOWN"
+
+
+@test
+def raised_profile_ceilings_still_fail_closed_above_their_bounds():
+    for key, bad in (("max_rows", 201), ("max_output_bytes", 65537), ("call_timeout_ms", 20001), ("max_rows", 0)):
+        with tmpdir() as d:
+            assert refused(d, profile=profile_doc(**{"limits." + key: bad})), (key, bad)
+    with tmpdir() as d:
+        assert not refused(d, profile=profile_doc(**{"limits.max_rows": 200, "limits.max_output_bytes": 65536, "limits.call_timeout_ms": 20000}))
+
+
+@test
+def output_byte_ceiling_is_enforced_on_multi_row_results():
+    with tmpdir() as d:
+        prof = profile_doc(**{"connection.username": "C##ESTACK_DIAG", "connection.service_name": "LABCDB", "expected.container": "CDB_ROOT",
+                              "expected.db_name": "LABCDB", "limits.max_rows": 200, "limits.max_output_bytes": 512})
+        sc = Scenario(session_service_name="LABCDB", session_con_name="CDB$ROOT", session_sess_user="C##ESTACK_DIAG", id_db_name="LABCDB", id_cdb="YES")
+        sc.tablespaces = [dict(sc.tablespaces[0], tablespace_name=f"TS{i}") for i in range(40)]
+        lab = Lab(d, scenario=sc, profile=prof, targets=[lab_target(container="CDB_ROOT", allowed_collectors=[ID, "Q-CDB-TABLESPACES-001"])])
+        denied(lab, "E_OUTPUT_TOO_LARGE", collector="Q-CDB-TABLESPACES-001")
 
 
 if __name__ == "__main__":

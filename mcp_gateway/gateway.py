@@ -253,6 +253,9 @@ class Gateway:
         session.target_calls[target.alias] = session.target_calls.get(target.alias, 0) + 1
         rows_left = target.budget["max_rows"] - session.target_rows.get(target.alias, 0)
         cap_rows = min(args.get("max_rows", col.row_limit), col.row_limit, rows_left, self.max_rows)
+        adapter_cap = getattr(adapter, "row_cap", None)          # an adapter that over-fetches to detect truncation
+        if adapter_cap is not None:                               # declares its own cap; the extra row is then cut and
+            cap_rows = min(cap_rows, adapter_cap(target, col))    # reported as ROWS_TRUNCATED_TO_LIMIT, never returned
         timeout = min(col.timeout_seconds, self.operation_timeout)
         raw = run_with_timeout(lambda: adapter.fetch(target, col, {}), timeout)
         payload = sanitize_rows(col, raw, session.scope, target.alias, cap_rows)

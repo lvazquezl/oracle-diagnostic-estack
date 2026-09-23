@@ -97,6 +97,9 @@ def the_whole_chain_is_read_only_for_the_repository():
     assert not os.path.exists(os.path.join(ROOT, ".audit")) and not os.path.exists(os.path.join(ROOT, "analysis", "ANA-20260311-001"))
 
 
+CDB_ROOT_COLLECTORS = ("Q-CDB-TABLESPACES-001", "Q-CDB-TEMP-001", "Q-RMAN-FRA-USAGE-001")   # CHG-ESTACK-ORA19C-LAB-003: fixture-cdb-root-19c
+
+
 @test
 def runtime_provenance_and_the_registry_maturity_tell_the_same_story():
     from release_readiness import registry
@@ -107,7 +110,8 @@ def runtime_provenance_and_the_registry_maturity_tell_the_same_story():
         for cid, comp in by_collector.items():
             if cid == "Q-DG-STATS-001":
                 continue                                             # standby-only: not applicable to the primary fixture target
-            env = c.collect(cid)
+            env = c.collect(cid, "fixture-cdb-root-19c") if cid in CDB_ROOT_COLLECTORS else c.collect(cid)
+            assert "error" not in env, (cid, env.get("error"))
             assert env["provenance"] == {"kind": "FIXTURE", "real_observation": False} and env["collected_at_utc"] is None, cid
             assert comp["maturity"] == "TESTED_WITH_SYNTHETIC_FIXTURES", "a collector whose evidence is fixture data must not be registered above that"
         caps = c.call("diagnostics.list_capabilities", {})[0]

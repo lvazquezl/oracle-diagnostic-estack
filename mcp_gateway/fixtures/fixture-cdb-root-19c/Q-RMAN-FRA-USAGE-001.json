@@ -1,0 +1,25 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "file_type": "ARCHIVED LOG",
+      "percent_space_used": 61.2,
+      "percent_space_reclaimable": 20.0,
+      "number_of_files": 240,
+      "space_limit": 10737418240,
+      "space_used": 7516192768,
+      "space_reclaimable": 2147483648,
+      "dest_files": 262
+    },
+    {
+      "file_type": "BACKUP PIECE",
+      "percent_space_used": 8.8,
+      "percent_space_reclaimable": 0,
+      "number_of_files": 22,
+      "space_limit": 10737418240,
+      "space_used": 7516192768,
+      "space_reclaimable": 2147483648,
+      "dest_files": 262
+    }
+  ]
+}

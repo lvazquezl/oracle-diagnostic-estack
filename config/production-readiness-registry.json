@@ -320,6 +320,127 @@
       ]
     },
     {
+      "id": "collector:Q-CDB-TABLESPACES-001",
+      "kind": "collector",
+      "domain": "multitenant",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "PDB tablespace usage from CDB$ROOT (percent of max size; autoextend and file names not exposed). Executed through the fixture adapter (fixture-cdb-root-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-003); a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-CDB-TABLESPACES-001",
+      "oracle_versions": [
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "CDB"
+      ],
+      "min_privileges": [
+        "SELECT on CDB_TABLESPACE_USAGE_METRICS",
+        "SELECT on CDB_TABLESPACES",
+        "SELECT on CDB_DATA_FILES"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 200,
+        "timeout_seconds": 20
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-CDB-TEMP-001",
+      "kind": "collector",
+      "domain": "multitenant",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "PDB TEMP allocation and use from CDB$ROOT (bytes). Executed through the fixture adapter (fixture-cdb-root-19c) only. NOT implemented by the lab oracle_sql adapter: a real lab run from CDB$ROOT returned allocation without usage (GV$TEMP_SPACE_HEADER join), pending a /change query (CHG-ESTACK-ORA19C-LAB-003).",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh"
+      ],
+      "collector_id": "Q-CDB-TEMP-001",
+      "oracle_versions": [
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "CDB"
+      ],
+      "min_privileges": [
+        "SELECT on CDB_TEMP_FILES",
+        "SELECT on GV$TEMP_SPACE_HEADER"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 100,
+        "timeout_seconds": 15
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-RMAN-FRA-USAGE-001",
+      "kind": "collector",
+      "domain": "rman",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Fast Recovery Area usage by file type vs limit (destination path not exposed). Executed through the fixture adapter (fixture-cdb-root-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-003); a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-RMAN-FRA-USAGE-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on V$FLASH_RECOVERY_AREA_USAGE",
+        "SELECT on V$RECOVERY_FILE_DEST"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 20,
+        "timeout_seconds": 15
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
       "id": "collector:os.get_process_limits",
       "kind": "collector",
       "domain": "os",

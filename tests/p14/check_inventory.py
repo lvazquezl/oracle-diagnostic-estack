@@ -30,7 +30,7 @@ def the_registry_is_consistent_with_the_running_code_and_registries():
     from release_readiness import registry
     res = registry.verify_registry(ROOT)
     assert res["findings"] == [], res["findings"][:5]
-    assert sum(res["counts"].values()) == len(reg()["components"]) == 75
+    assert sum(res["counts"].values()) == len(reg()["components"]) == 78
 
 
 @test
@@ -53,7 +53,7 @@ def every_agent_collector_adapter_domain_and_skill_domain_is_registered():
     for x in reg()["components"]:
         kinds.setdefault(x["kind"], set()).add(x["id"])
     assert len(kinds["agent"]) == len(facts["agents"]) == 18
-    assert len(kinds["collector"]) == len(facts["collectors"]) == 7
+    assert len(kinds["collector"]) == len(facts["collectors"]) == 10
     assert len(kinds["adapter"]) == len(facts["adapters"]) == 4
     assert len(kinds["domain"]) == len(facts["matrix"]) == 20
     assert len(kinds["skill_domain"]) == len(facts["skill_domains"]) == 16

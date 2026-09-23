@@ -2,6 +2,40 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — 2026-09-23 — `/change security|compatibility` — CHG-ESTACK-ORA19C-LAB-003 — lote 1 de dominios en el lab: tablespaces/TEMP por PDB y FRA
+
+Rama `change/lab-domains-batch1` sobre `main` (`053e461`). Estado `PROPOSED`; el motor de gobernanza informa `PENDING_HUMAN_REVIEW`.
+Validado en el lab desde `CDB$ROOT`: tablespaces de `PRUEBAS` (`con_id` 3) y FRA con evidencia REAL. `Q-CDB-TEMP-001` devolvió asignación sin uso,
+así que no se habilita en el lab (decisión del DBA). Origen: REC-0002 de `ANA-20260922-002`.
+Ver `docs/ORACLE19C_LAB_DOMAINS.md`.
+
+### Added
+
+- Collectors `Q-CDB-TABLESPACES-001`, `Q-CDB-TEMP-001` (`CDB_ROOT_ONLY`) y `Q-RMAN-FRA-USAGE-001` en el catálogo del gateway; en el adaptador lab
+  (`mcp_gateway_lab` `0.3.0`) sólo tablespaces y FRA. Nombres de tablespace MASK; la ruta de la FRA y el `autoextend` (poco fiable en la query certificada) no se exponen.
+- Target fixture SYNTHETIC `fixture-cdb-root-19c` con los 3 collectors; registro de readiness con 78 componentes.
+- `evaluate_capability`: `CDB_ROOT_ONLY` → `NOT_APPLICABLE` fuera de `CDB_ROOT`, `ENVIRONMENT_UNKNOWN` si el contenedor es desconocido.
+
+### Changed
+
+- Techos del perfil lab: `max_rows` 5 → 200, `max_output_bytes` 4096 → 65536, `call_timeout_ms` 10000 → 20000. Cada llamada sigue aplicando
+  min(perfil, query certificada, collector).
+
+### Fixed
+
+- Filas de más en el lab (desde LAB-001): el adapter trae `max_rows + 1` filas para detectar truncamiento y el gateway las devolvía todas sin
+  avisar. Ahora el gateway aplica el `row_cap` del adapter y marca `ROWS_TRUNCATED_TO_LIMIT`.
+
+### Deferred
+
+- `CHG-REQ-LAB-RMAN-TIMESTAMPS` (jobs/estado RMAN: `DATE` sin zona horaria), `CHG-REQ-QUERY-CDB-TEMP-USAGE` (join con
+  `GV$TEMP_SPACE_HEADER` sin uso desde root), `CHG-REQ-QUERY-CDB-TBS-AUTOEXTEND`, `CHG-REQ-TEST-BSD-GREP`
+  (los 5 `test_rman_*_variant_*` fallan en macOS por `grep '\|'`, no por el catálogo).
+
+### Regression
+
+- 949/962 antes y después, con los mismos 13 fallos preexistentes. P15: adapter 18 → 21, security 27 → 30 casos.
+
 ## [0.15.0] — 2026-09-23 — `v0.15.0-oracle19c-lab` — `/change security|compatibility` — CHG-ESTACK-ORA19C-LAB-002 — `Q-ORA-RESOURCE-LIMITS-001` en el adaptador `oracle_sql` de laboratorio
 
 Rama `feature/oracle19c-readonly-lab`, junto con CHG-ESTACK-ORA19C-LAB-001 en el commit `d56f95d`, integrada a `main` vía PR #3 (merge `7eb585f`).

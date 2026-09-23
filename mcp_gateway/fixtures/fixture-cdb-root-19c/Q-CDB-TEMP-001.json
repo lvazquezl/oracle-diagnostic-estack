@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "con_id": 3,
+      "tablespace_name": "TEMP",
+      "allocated_bytes": 36700160,
+      "bytes_used": 1048576,
+      "bytes_free": 35651584
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "instance_name": "SYNTHCDB1",
+      "version": "19.0.0.0.0",
+      "db_name": "SYNTHCDB",
+      "database_role": "PRIMARY",
+      "cdb": "YES",
+      "open_mode": "READ WRITE"
+    }
+  ]
+}

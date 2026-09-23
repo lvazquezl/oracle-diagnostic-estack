@@ -7,7 +7,7 @@ This package is deliberately SEPARATE from the stdlib-only runtime `mcp_gateway`
       - a private lab profile (outside the repository, owner-only permissions, no secrets inside) names exactly
         ONE non-production target with a current human authorization;
       - a lab targets file registers exactly that alias, adapter `oracle_sql`, and only collectors this adapter
-        implements (Q-DISC-IDENTITY-001, Q-ORA-RESOURCE-LIMITS-001);
+        implements (identity, instance resource limits, PDB tablespaces from CDB$ROOT, FRA usage);
       - the password is read at connect time from an approved secret store (macOS Keychain), never from
         prompts, Git, environment variables or the profile;
       - the connected session proves, before any evidence is returned, that it is the authorized service,

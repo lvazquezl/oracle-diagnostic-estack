@@ -1,0 +1,41 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "con_id": 3,
+      "tablespace_name": "SYSTEM",
+      "used_percent": 1.9,
+      "used_space": 62400,
+      "tablespace_size": 4194302,
+      "status": "ONLINE",
+      "contents": "PERMANENT"
+    },
+    {
+      "con_id": 3,
+      "tablespace_name": "SYSAUX",
+      "used_percent": 2.6,
+      "used_space": 109000,
+      "tablespace_size": 4194302,
+      "status": "ONLINE",
+      "contents": "PERMANENT"
+    },
+    {
+      "con_id": 3,
+      "tablespace_name": "UNDOTBS1",
+      "used_percent": 0.3,
+      "used_space": 12800,
+      "tablespace_size": 4194302,
+      "status": "ONLINE",
+      "contents": "UNDO"
+    },
+    {
+      "con_id": 3,
+      "tablespace_name": "SYNTH_DATA",
+      "used_percent": 92.5,
+      "used_space": 970000,
+      "tablespace_size": 1048576,
+      "status": "ONLINE",
+      "contents": "PERMANENT"
+    }
+  ]
+}
