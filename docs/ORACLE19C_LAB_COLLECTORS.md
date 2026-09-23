@@ -1,7 +1,7 @@
 # CHG-ESTACK-ORA19C-LAB-002 — `Q-ORA-RESOURCE-LIMITS-001` en el adaptador `oracle_sql` de laboratorio
 
 **Tipo:** `/change security|compatibility` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `feature/oracle19c-readonly-lab` · **Depende de:** `CHG-ESTACK-ORA19C-LAB-001` (sin commit, también pendiente de HUMAN REVIEW)
-**Estado:** propuesto. El motor de gobernanza informa `PENDING_HUMAN_REVIEW` (todos los checks de compatibilidad en PASS tras la validación en el lab, §6). `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** `APPROVED_BY_HUMAN` (`AUTH-ORA19C-LAB-002`, `REV-DBAMANAGER`, `2026-09-23T15:16:57Z`; verificación estructural, no de identidad) e integrado a `main` vía PR #3 (`7eb585f`), versión `0.15.0`. El tag lo crea una persona.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. Ninguna política cambia.
 
@@ -175,7 +175,7 @@ Alcance: desde root, `Q-DISC-IDENTITY-001` y `Q-ORA-RESOURCE-LIMITS-001` leen da
 - **`CHG-REQ-LAB-DOMAINS`**: por lotes. Cada query de tablespaces/parámetros/PDB/`Q-RMAN-*`/`Q-SEC-*` necesita una entrada en `collectors.json` con política por campo, fixtures, alias de columnas en el lab, grants mínimos y pruebas. Orden sugerido: tablespaces/FRA → RMAN → PDB → seguridad (esta última con revisión de sensibilidad).
 - **`CHG-REQ-LAB-CONTAINER`**: exponer `CON_NAME`/`CON_ID` (el adaptador ya los valida) como evidencia certificada, con una query `Q-DISC-CONTAINER-001` o un campo derivado declarado. Ayuda a cerrar el `UNKNOWN` de §6.
 
-## 11. HUMAN REVIEW (pendiente)
+## 11. HUMAN REVIEW (aprobado)
 
 Motor de gobernanza (`advise --mode estack`, 2026-09-23T05:48:22Z): `governance_state: PENDING_HUMAN_REVIEW`, `blockers: []`, `promote_status: HUMAN_ACTION_REQUIRED`, `content_digest: 22cb98cb5eccde2a47c2d48d0a7c2f3d83bb08a6d3dbf64c2c3b9ba1cabc39d6`. La salida queda fuera del repo, en `~/.local/share/oracle-diagnostic-estack/change-evidence/CHG-ESTACK-ORA19C-LAB-002/`. La aprobación del revisor se registra contra ese digest.
 

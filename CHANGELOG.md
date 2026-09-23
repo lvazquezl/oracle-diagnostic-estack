@@ -2,10 +2,12 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — 2026-09-22 — `/change security|compatibility` — CHG-ESTACK-ORA19C-LAB-002 — `Q-ORA-RESOURCE-LIMITS-001` en el adaptador `oracle_sql` de laboratorio
+## [0.15.0] — 2026-09-23 — `v0.15.0-oracle19c-lab` (tag propuesto) — `/change security|compatibility` — CHG-ESTACK-ORA19C-LAB-002 — `Q-ORA-RESOURCE-LIMITS-001` en el adaptador `oracle_sql` de laboratorio
 
-Rama `feature/oracle19c-readonly-lab`, sobre CHG-ESTACK-ORA19C-LAB-001 (sin commit). Estado `PROPOSED`; el motor de gobernanza informa
-`PENDING_HUMAN_REVIEW`. Validado en el lab: una sesión en la PDB no ve filas de `V$RESOURCE_LIMIT` (FAIL para `PDB`). Por decisión del DBA,
+Rama `feature/oracle19c-readonly-lab`, junto con CHG-ESTACK-ORA19C-LAB-001 en el commit `d56f95d`, integrada a `main` vía PR #3 (merge `7eb585f`).
+Aprobación humana registrada: `AUTH-ORA19C-LAB-002`, revisor `REV-DBAMANAGER`, `2026-09-23T15:16:57Z`, contra el digest
+`22cb98cb…c39d6`. El motor informa `APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el
+digest, no la identidad del firmante. El tag lo crea una persona. Validado en el lab: una sesión en la PDB no ve filas de `V$RESOURCE_LIMIT` (FAIL para `PDB`). Por decisión del DBA,
 el target lab pasó a `CDB$ROOT` con usuario común `C##` y nueva autorización humana; desde root, evidencia REAL de 4 filas de instancia
 (`docs/ORACLE19C_LAB_COLLECTORS.md` §6, §9b). Pendiente
 de HUMAN REVIEW. Sin commit, merge, tag ni despliegue. Origen: `ANA-20260922-002` (REC-0001 parcial, REC-0005). Ver `docs/ORACLE19C_LAB_COLLECTORS.md`.
@@ -37,9 +39,11 @@ de HUMAN REVIEW. Sin commit, merge, tag ni despliegue. Origen: `ANA-20260922-002
 
 - 949/962 antes y después. Los 13 fallos son los mismos, preexistentes y ajenos a este cambio.
 
-## [Unreleased] — 2026-09-22 — `/change security|compatibility` — CHG-ESTACK-ORA19C-LAB-001 — adaptador `oracle_sql` de laboratorio (Oracle 19c, sólo lectura)
+## [0.15.0] — 2026-09-22 — `v0.15.0-oracle19c-lab` (tag propuesto) — `/change security|compatibility` — CHG-ESTACK-ORA19C-LAB-001 — adaptador `oracle_sql` de laboratorio (Oracle 19c, sólo lectura)
 
-Rama `feature/oracle19c-readonly-lab`. Estado `PROPOSED`, pendiente de HUMAN REVIEW. Sin commit, merge, tag ni despliegue.
+Rama `feature/oracle19c-readonly-lab`, commit `d56f95d`, integrada a `main` vía PR #3 (merge `7eb585f`). Aprobación humana en la sesión `/change`
+(conversacional; no es un registro externo verificable: el motor sólo registró `AUTH-*` para LAB-002). Gobernanza `GOV-LAB-ORA19C-001` / `RSK-010`
+(`config/governance/`) sigue sin aplicar, pendiente del revisor.
 **No** declara preparación para producción: `READY_FOR_REAL_ENVIRONMENT_PILOT` sigue en `NO`. Ver `docs/ORACLE19C_LAB_ADAPTER.md`.
 
 ### Added

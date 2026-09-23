@@ -1,6 +1,6 @@
 # Adaptador `oracle_sql` de laboratorio — Oracle Database 19c sobre Oracle Linux 8.10
 
-**Cambio:** `CHG-ESTACK-ORA19C-LAB-001` (`/change security|compatibility`) · **Rama:** `feature/oracle19c-readonly-lab` · **Estado:** `PROPOSED` — pendiente de **HUMAN REVIEW**.
+**Cambio:** `CHG-ESTACK-ORA19C-LAB-001` (`/change security|compatibility`) · **Rama:** `feature/oracle19c-readonly-lab` · **Estado:** aprobado (conversacional) e integrado a `main` vía PR #3 (`7eb585f`), versión `0.15.0`. La gobernanza de la §10 sigue pendiente.
 
 > **Esto no es preparación para producción.** Un `check` exitoso contra el laboratorio demuestra que el camino de lectura funciona contra *un* target no productivo. El release gate de Fase 14 sigue calculando `READY_FOR_REAL_ENVIRONMENT_PILOT = NO`, y así debe quedar hasta que se complete la revisión humana y exista un registro de piloto (ver [PILOT_ACCEPTANCE_CHECKLIST.md](PILOT_ACCEPTANCE_CHECKLIST.md)).
 
