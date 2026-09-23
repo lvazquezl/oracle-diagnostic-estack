@@ -2,7 +2,7 @@
 
 **Tipo:** `/change security|compatibility` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/lab-domains-batch1` (desde `main` `053e461`, `v0.15.0-oracle19c-lab` + PR #5)
 **Origen:** `CHG-REQ-LAB-DOMAINS` / REC-0002 de `ANA-20260922-002`
-**Estado:** propuesto. El motor de gobernanza informa `PENDING_HUMAN_REVIEW` (validación en el lab, §6). `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** `APPROVED_BY_HUMAN` (`AUTH-ORA19C-LAB-003`, `REV-DBAMANAGER`, `2026-09-23T18:00:27Z`; verificación estructural, no de identidad) e integrado a `main` vía PR #6 (`b885e90`), versión `0.16.0`, tag `v0.16.0-oracle19c-lab-domains`.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. Ninguna política cambia.
 
@@ -127,7 +127,7 @@ Criterio de cierre de `architecture` (cumplido, §6): con evidencia REAL, `Q-CDB
 - `CHG-REQ-TEST-BSD-GREP`: portabilidad de `tests/test_rman_*_variant_*.sh` en macOS.
 - `CHG-REQ-LAB-EMPTY-EVIDENCE`: sigue abierto (FND-0006).
 
-## 11. HUMAN REVIEW (pendiente)
+## 11. HUMAN REVIEW (aprobado)
 
 Revisor distinto del proponente (`E_AUTH_SELF_APPROVAL`). La aprobación se registra contra el `content_digest` que informa el motor (§12).
 
