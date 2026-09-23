@@ -283,5 +283,66 @@ def cdb_root_target_with_a_common_user_returns_instance_level_resource_limits():
         assert row["cdb"] == "YES" and not leaks(json.dumps(env)) and "C##ESTACK_DIAG" not in json.dumps(env)
 
 
+
+# --- CHG-ESTACK-ORA19C-LAB-003: tablespaces / TEMP from CDB$ROOT, FRA usage ------------------------------
+
+TBS, FRA = "Q-CDB-TABLESPACES-001", "Q-RMAN-FRA-USAGE-001"
+BATCH1 = ["Q-DISC-IDENTITY-001", RL, TBS, FRA]
+
+
+def root_lab(d, scenario=None, **limits):
+    prof = profile_doc(**{"connection.username": "C##ESTACK_DIAG", "connection.service_name": "LABCDB", "expected.container": "CDB_ROOT",
+                          "expected.db_name": "LABCDB", **{"limits." + k: v for k, v in limits.items()}})
+    sc = scenario or Scenario()
+    sc.session.update(service_name="LABCDB", con_name="CDB$ROOT", sess_user="C##ESTACK_DIAG")
+    sc.identity = [dict(r, db_name="LABCDB", cdb="YES", instance_name="LABCDB") for r in sc.identity]
+    return Lab(d, scenario=sc, profile=prof, targets=[lab_target(container="CDB_ROOT", allowed_collectors=BATCH1, budget={"max_calls": 20, "max_rows": 300})])
+
+
+@test
+def cdb_tablespaces_are_masked_per_pdb_and_never_expose_autoextend_or_raw_names():
+    with tmpdir() as d:
+        lab = root_lab(d, max_rows=50, max_output_bytes=16384)
+        env, is_error = lab.collect(TBS)
+        assert not is_error and env["status"] == "OK" and env["provenance"]["kind"] == "REAL", env
+        rows = env["evidence"]["rows"]
+        assert len(rows) == 3 and all(r["con_id"] == 3 for r in rows)
+        assert all(r["tablespace_name"].startswith("ts-A") for r in rows), rows
+        assert {r["contents"] for r in rows} == {"PERMANENT", "UNDO"} and max(r["used_percent"] for r in rows) == 91.4
+        assert all("autoextend" not in r for r in rows) and "autoextend" not in env["evidence"]["columns"]
+        assert not leaks(json.dumps(env)), leaks(json.dumps(env))
+
+
+@test
+def fra_returns_typed_evidence_without_the_destination_path():
+    with tmpdir() as d:
+        lab = root_lab(d, max_rows=50, max_output_bytes=16384)
+        env, is_error = lab.collect(FRA)
+        assert not is_error and env["status"] == "OK", env
+        rows = {r["file_type"]: r for r in env["evidence"]["rows"]}
+        assert rows["ARCHIVED LOG"]["percent_space_used"] == 42.5 and rows["ARCHIVED LOG"]["space_limit"] == 21474836480
+        assert all("dest_name" not in r for r in rows.values()) and not leaks(json.dumps(env))
+
+
+@test
+def effective_row_cap_is_the_tightest_of_profile_query_and_collector():
+    with tmpdir() as d:
+        lab = root_lab(d)                                                     # harness profile: max_rows 5
+        sc = lab.driver.s
+        sc.tablespaces = [dict(sc.tablespaces[0], tablespace_name=f"TS{i}") for i in range(12)]
+        env, is_error = lab.collect(TBS)
+        assert not is_error and env["evidence"]["row_count"] == 5 and "ROWS_TRUNCATED_TO_LIMIT" in env["limitations"], env
+        assert lab.driver.fetch_sizes[-1] == 6
+    with tmpdir() as d:
+        lab = root_lab(d, max_rows=200, max_output_bytes=65536)
+        target, cols = lab.gateway.targets[ALIAS], lab.gateway.collectors
+        assert lab.adapter.row_cap(target, cols["Q-DISC-IDENTITY-001"]) == 5, "identity keeps its 5-row ceiling whatever the profile allows"
+        assert lab.adapter.row_cap(target, cols[FRA]) == 20 and lab.adapter.row_cap(target, cols[TBS]) == 200
+        sc = lab.driver.s
+        sc.fra = [dict(sc.fra[0]) for _ in range(25)]
+        env, is_error = lab.collect(FRA)
+        assert not is_error and env["evidence"]["row_count"] == 20 and "ROWS_TRUNCATED_TO_LIMIT" in env["limitations"], env["limitations"]
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

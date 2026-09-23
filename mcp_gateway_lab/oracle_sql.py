@@ -40,10 +40,14 @@ from .credentials import CredentialError, provider_for
 
 IDENTITY_COLLECTOR = "Q-DISC-IDENTITY-001"
 # collector id -> column aliases (driver column name, lower-cased -> catalog output field).
-# Only instance-level R0 views with object grants (CHG-ESTACK-ORA19C-LAB-002); every other collector stays refused.
+# Only R0 views with object grants (CHG-ESTACK-ORA19C-LAB-002, -003); every other collector stays refused.
+# Columns the catalog does not declare (FRA dest_name path, tablespace autoextend) are dropped here, at the source.
 SUPPORTED_COLLECTORS = {
     IDENTITY_COLLECTOR: {"version_full": "version"},
     "Q-ORA-RESOURCE-LIMITS-001": {},
+    "Q-CDB-TABLESPACES-001": {},
+    "Q-RMAN-FRA-USAGE-001": {},
+    # Q-CDB-TEMP-001 deliberately absent: validated in the lab, its GV$TEMP_SPACE_HEADER join returns no usage from CDB$ROOT.
 }
 
 GUARD_SESSION_SQL = ("SELECT SYS_CONTEXT('USERENV', 'SERVICE_NAME') AS service_name, "
@@ -209,6 +213,13 @@ class OracleSqlAdapter:
             kwargs.clear()
 
     # -- adapter interface -------------------------------------------------------------------------------
+    def row_cap(self, target, collector) -> int:
+        """Rows this adapter may return for (target, collector): min(profile, collector). The certified query's max_rows is
+        never lower (catalog load enforces row_limit <= query max_rows). _query fetches one extra row so the gateway can
+        report truncation instead of silently returning a partial set."""
+        spec = self._profile.get(target.alias)
+        return min(spec.limits["max_rows"], collector.row_limit) if spec is not None else 0
+
     def fetch(self, target, collector, params: dict):
         self.last_failure = None
         try:

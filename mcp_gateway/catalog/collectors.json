@@ -112,6 +112,59 @@
       "rca": {"domain": "os", "event_type": "SYMPTOM_OBSERVED", "source_id": "os-fork-audit-collector", "timestamp_field": "observed_at_utc", "signature_field": null,
               "attributes": {"fork_failures_observed": "fork_failures_observed"}},
       "adapters": {"fixture": "VERIFIED_FIXTURE", "os_readonly": "CONTRACT_ONLY"}
+    },
+    {
+      "collector_id": "Q-CDB-TABLESPACES-001",
+      "kind": "sql_query",
+      "domain": "multitenant",
+      "title": "PDB tablespace usage from CDB$ROOT (percent of max size; autoextend and file names not exposed)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {"type": "integer", "min": 0, "max": 4098, "policy": "KEEP"},
+        "tablespace_name": {"type": "identifier", "policy": "MASK", "alias_prefix": "ts"},
+        "used_percent": {"type": "number", "min": 0, "max": 100, "policy": "KEEP"},
+        "used_space": {"type": "integer", "min": 0, "max": 10000000000000, "policy": "KEEP"},
+        "tablespace_size": {"type": "integer", "min": 0, "max": 10000000000000, "policy": "KEEP"},
+        "status": {"type": "enum", "values": ["ONLINE", "OFFLINE", "READ ONLY"], "policy": "KEEP"},
+        "contents": {"type": "enum", "values": ["PERMANENT", "TEMPORARY", "UNDO", "LOST WRITE PROTECTION"], "policy": "KEEP"}
+      },
+      "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_sql": "DISABLED"}
+    },
+    {
+      "collector_id": "Q-CDB-TEMP-001",
+      "kind": "sql_query",
+      "domain": "multitenant",
+      "title": "PDB TEMP allocation and use from CDB$ROOT (bytes)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "con_id": {"type": "integer", "min": 0, "max": 4098, "policy": "KEEP"},
+        "tablespace_name": {"type": "identifier", "policy": "MASK", "alias_prefix": "ts"},
+        "allocated_bytes": {"type": "integer", "min": 0, "max": 100000000000000, "policy": "KEEP"},
+        "bytes_used": {"type": "integer", "min": 0, "max": 100000000000000, "policy": "KEEP"},
+        "bytes_free": {"type": "integer", "min": 0, "max": 100000000000000, "policy": "KEEP"}
+      },
+      "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_sql": "DISABLED"}
+    },
+    {
+      "collector_id": "Q-RMAN-FRA-USAGE-001",
+      "kind": "sql_query",
+      "domain": "rman",
+      "title": "Fast Recovery Area usage by file type vs limit (destination path not exposed)",
+      "row_limit": 20,
+      "params": {},
+      "output_fields": {
+        "file_type": {"type": "enum", "values": ["CONTROL FILE", "REDO LOG", "ARCHIVED LOG", "BACKUP PIECE", "IMAGE COPY", "FLASHBACK LOG", "FOREIGN ARCHIVED LOG", "AUXILIARY DATAFILE COPY"], "policy": "KEEP"},
+        "percent_space_used": {"type": "number", "min": 0, "max": 100, "policy": "KEEP"},
+        "percent_space_reclaimable": {"type": "number", "min": 0, "max": 100, "policy": "KEEP"},
+        "number_of_files": {"type": "integer", "min": 0, "max": 100000000, "policy": "KEEP"},
+        "space_limit": {"type": "integer", "min": 0, "max": 1000000000000000, "policy": "KEEP"},
+        "space_used": {"type": "integer", "min": 0, "max": 1000000000000000, "policy": "KEEP"},
+        "space_reclaimable": {"type": "integer", "min": 0, "max": 1000000000000000, "policy": "KEEP"},
+        "dest_files": {"type": "integer", "min": 0, "max": 100000000, "policy": "KEEP"}
+      },
+      "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_sql": "DISABLED"}
     }
   ]
 }

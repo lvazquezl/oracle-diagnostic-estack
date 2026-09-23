@@ -19,7 +19,7 @@ from tests.p13.harness import MARKER, ROOT, Skip, run_all, test, tmpdir  # noqa:
 
 ALIAS = "lab-ol8-19c"
 SECRET = "Lab-" + MARKER + "-pw"                      # the fake Keychain password; must never appear in any output
-RAW_NAMES = ("LAB19C", "LABCDB", "LABPDB1", "ESTACK_DIAG", "db19-lab.example.internal")
+RAW_NAMES = ("LAB19C", "LABCDB", "LABPDB1", "ESTACK_DIAG", "db19-lab.example.internal", "fast_recovery_area", "APP_DATA")
 FAKEDRIVER_DIR = os.path.join(ROOT, "tests", "p15", "fakedriver")
 
 
@@ -110,6 +110,22 @@ class Scenario:
             {"resource_name": "sessions", "current_utilization": 84, "max_utilization": 110, "limit_value": "       504"}]
         self.processes = [{"process_count": 71, "processes_limit": "320"}]
         self.main_error = None                       # raised by any non-identity certified query (e.g. ORA-00942)
+        # CHG-ESTACK-ORA19C-LAB-003: CDB_* rows per PDB (con_id > 1) and FRA usage with the (undeclared) destination path.
+        self.tablespaces = [
+            {"con_id": 3, "tablespace_name": "SYSTEM", "used_percent": 1.87, "used_space": 62400, "tablespace_size": 4194302,
+             "status": "ONLINE", "contents": "PERMANENT", "autoextend": "YES"},
+            {"con_id": 3, "tablespace_name": "APP_DATA_LABPDB1", "used_percent": 91.4, "used_space": 958464, "tablespace_size": 1048576,
+             "status": "ONLINE", "contents": "PERMANENT", "autoextend": "NO"},
+            {"con_id": 3, "tablespace_name": "UNDOTBS1", "used_percent": 0.2, "used_space": 8192, "tablespace_size": 4194302,
+             "status": "ONLINE", "contents": "UNDO", "autoextend": "NO"}]
+        self.temp = [{"con_id": 3, "tablespace_name": "TEMP", "allocated_bytes": 36700160, "bytes_used": 2097152, "bytes_free": 34603008}]
+        self.fra = [
+            {"file_type": "ARCHIVED LOG", "percent_space_used": 42.5, "percent_space_reclaimable": 30.1, "number_of_files": 118,
+             "dest_name": "/u01/app/oracle/fast_recovery_area/LABCDB", "space_limit": 21474836480, "space_used": 10307921510,
+             "space_reclaimable": 6979321856, "dest_files": 131},
+            {"file_type": "BACKUP PIECE", "percent_space_used": 5.5, "percent_space_reclaimable": 0, "number_of_files": 13,
+             "dest_name": "/u01/app/oracle/fast_recovery_area/LABCDB", "space_limit": 21474836480, "space_used": 10307921510,
+             "space_reclaimable": 6979321856, "dest_files": 131}]
         for k, v in kw.items():
             if k.startswith("session_"):
                 self.session[k[len("session_"):]] = v
@@ -194,10 +210,12 @@ class FakeCursor:
             if s.identity_error is not None:
                 raise s.identity_error
             self._set(s.identity)
-        elif "v$resource_limit" in low or "v$process" in low:
+        elif any(v in low for v in ("v$resource_limit", "v$process", "cdb_tablespace_usage_metrics", "cdb_temp_files",
+                                     "v$flash_recovery_area_usage")):
             if s.main_error is not None:
                 raise s.main_error
-            self._set(s.resource_limits if "v$resource_limit" in low else s.processes)
+            self._set(s.resource_limits if "v$resource_limit" in low else s.processes if "v$process" in low
+                      else s.tablespaces if "cdb_tablespace_usage_metrics" in low else s.temp if "cdb_temp_files" in low else s.fra)
         else:
             raise driver_error("ORA-00900", "invalid SQL statement")
 
