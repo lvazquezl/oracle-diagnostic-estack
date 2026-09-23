@@ -344,5 +344,44 @@ def effective_row_cap_is_the_tightest_of_profile_query_and_collector():
         assert not is_error and env["evidence"]["row_count"] == 20 and "ROWS_TRUNCATED_TO_LIMIT" in env["limitations"], env["limitations"]
 
 
+
+# --- CHG-ESTACK-ORA19C-LAB-004: backup freshness and RMAN job summary (ages computed in the database) ----------
+
+FRS, JOBS = "Q-RMAN-BACKUP-FRESHNESS-001", "Q-RMAN-JOB-SUMMARY-001"
+
+
+
+
+@test
+def backup_freshness_reports_hours_per_category_and_keeps_missing_categories_explicit():
+    from mcp_gateway import catalog
+    with tmpdir() as d:
+        lab = root_lab(d, max_rows=50, max_output_bytes=16384)
+        lab.gateway.targets[ALIAS].allowed_collectors = frozenset(lab.gateway.targets[ALIAS].allowed_collectors | {FRS, JOBS})
+        env, is_error = lab.collect(FRS)
+        assert not is_error and env["provenance"]["kind"] == "REAL", env
+        rows = {r["backup_kind"]: r for r in env["evidence"]["rows"]}
+        assert set(rows) == {"FULL_OR_LEVEL0", "INCREMENTAL", "ARCHIVELOG", "CONTROLFILE", "SPFILE"}
+        assert rows["FULL_OR_LEVEL0"] == {"backup_kind": "FULL_OR_LEVEL0", "record_count": 6, "hours_since_last": 180.5}
+        assert rows["INCREMENTAL"] == {"backup_kind": "INCREMENTAL", "record_count": 0}, "no backup: count 0, no invented age"
+        block, = catalog.sql_blocks(open(catalog._find_query_file(FRS), encoding="utf-8").read())
+        assert lab.driver.statements[-1] == block.rstrip().rstrip(";").rstrip(), "the certified V1 block runs verbatim"
+        assert "sysdate" in lab.driver.statements[-1].lower() and "fetch first" not in lab.driver.statements[-1].lower()
+
+
+@test
+def job_summary_exposes_status_age_and_failures_without_absolute_dates():
+    with tmpdir() as d:
+        lab = root_lab(d, max_rows=50, max_output_bytes=16384)
+        lab.gateway.targets[ALIAS].allowed_collectors = frozenset(lab.gateway.targets[ALIAS].allowed_collectors | {FRS, JOBS})
+        env, is_error = lab.collect(JOBS)
+        assert not is_error, env
+        rows = {r["input_type"]: r for r in env["evidence"]["rows"]}
+        assert rows["ARCHIVELOG"]["last_status"] == "FAILED" and rows["ARCHIVELOG"]["failed_last_7d"] == 1
+        assert rows["DB FULL"]["hours_since_last_success"] == 180.5
+        text = json.dumps(env)
+        assert not any(k in text for k in ("start_time", "end_time", "completion_time", "session_key")), "no absolute dates or keys leave"
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

@@ -11,7 +11,7 @@
       "container": "NON_CDB",
       "architecture": {"rac": false, "dataguard": false, "asm": false},
       "license_status": {"diagnostics_pack": "UNKNOWN", "active_data_guard": "UNKNOWN"},
-      "allowed_collectors": ["Q-DISC-IDENTITY-001", "Q-ORA-RESOURCE-LIMITS-001", "Q-ORA-PROCESSES-SUMMARY-001", "Q-ORA-DIAGNOSTICS-ALERTLOG-001", "os.get_process_limits", "os.get_oracle_process_summary"],
+      "allowed_collectors": ["Q-DISC-IDENTITY-001", "Q-ORA-RESOURCE-LIMITS-001", "Q-ORA-PROCESSES-SUMMARY-001", "Q-ORA-DIAGNOSTICS-ALERTLOG-001", "os.get_process_limits", "os.get_oracle_process_summary", "Q-RMAN-BACKUP-FRESHNESS-001", "Q-RMAN-JOB-SUMMARY-001"],
       "budget": {"max_calls": 100, "max_rows": 2000}
     },
     {

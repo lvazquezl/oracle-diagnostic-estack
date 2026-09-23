@@ -119,6 +119,18 @@ class Scenario:
             {"con_id": 3, "tablespace_name": "UNDOTBS1", "used_percent": 0.2, "used_space": 8192, "tablespace_size": 4194302,
              "status": "ONLINE", "contents": "UNDO", "autoextend": "NO"}]
         self.temp = [{"con_id": 3, "tablespace_name": "TEMP", "allocated_bytes": 36700160, "bytes_used": 2097152, "bytes_free": 34603008}]
+        # CHG-ESTACK-ORA19C-LAB-004: ages come already computed by the database (NUMBER), never as DATE.
+        self.freshness = [
+            {"backup_kind": "FULL_OR_LEVEL0", "record_count": 6, "hours_since_last": 180.5},
+            {"backup_kind": "INCREMENTAL", "record_count": 0, "hours_since_last": None},
+            {"backup_kind": "ARCHIVELOG", "record_count": 4, "hours_since_last": 26.75},
+            {"backup_kind": "CONTROLFILE", "record_count": 1, "hours_since_last": 180.4},
+            {"backup_kind": "SPFILE", "record_count": 1, "hours_since_last": 180.4}]
+        self.jobs = [
+            {"input_type": "DB FULL", "jobs_total": 2, "last_status": "COMPLETED", "hours_since_last_start": 181.0,
+             "hours_since_last_success": 180.5, "failed_last_7d": 0, "last_elapsed_seconds": 612},
+            {"input_type": "ARCHIVELOG", "jobs_total": 3, "last_status": "FAILED", "hours_since_last_start": 2.5,
+             "hours_since_last_success": 26.75, "failed_last_7d": 1, "last_elapsed_seconds": 14}]
         self.fra = [
             {"file_type": "ARCHIVED LOG", "percent_space_used": 42.5, "percent_space_reclaimable": 30.1, "number_of_files": 118,
              "dest_name": "/u01/app/oracle/fast_recovery_area/LABCDB", "space_limit": 21474836480, "space_used": 10307921510,
@@ -211,11 +223,12 @@ class FakeCursor:
                 raise s.identity_error
             self._set(s.identity)
         elif any(v in low for v in ("v$resource_limit", "v$process", "cdb_tablespace_usage_metrics", "cdb_temp_files",
-                                     "v$flash_recovery_area_usage")):
+                                     "v$flash_recovery_area_usage", "v$backup_datafile", "v$rman_backup_job_details")):
             if s.main_error is not None:
                 raise s.main_error
             self._set(s.resource_limits if "v$resource_limit" in low else s.processes if "v$process" in low
-                      else s.tablespaces if "cdb_tablespace_usage_metrics" in low else s.temp if "cdb_temp_files" in low else s.fra)
+                      else s.tablespaces if "cdb_tablespace_usage_metrics" in low else s.temp if "cdb_temp_files" in low
+                      else s.freshness if "v$backup_datafile" in low else s.jobs if "v$rman_backup_job_details" in low else s.fra)
         else:
             raise driver_error("ORA-00900", "invalid SQL statement")
 

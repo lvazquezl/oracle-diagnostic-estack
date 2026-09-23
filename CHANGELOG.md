@@ -2,6 +2,26 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — 2026-09-23 — `/change query|security` — CHG-ESTACK-ORA19C-LAB-004 — lote 2 RMAN: frescura de backups y resumen de jobs
+
+Rama `change/lab-rman-freshness` sobre `main` (`cdd6f62`). Estado `PROPOSED`; el motor de gobernanza informa `PENDING_HUMAN_REVIEW`. Validado
+en el lab desde `CDB$ROOT`: frescura con 5 filas (sin backups de datos ni de archivelogs; un autobackup de controlfile/SPFILE de hace ~25 h) y
+jobs con 0 filas, confirmado por el DBA. El primer intento reveló que `V$BACKUP_REDOLOG` no tiene `COMPLETION_TIME`; la query se corrigió antes de
+certificarse, y el defecto previo del diccionario y de `Q-RMAN-ARCHIVELOG-BACKUP-001` queda como `CHG-REQ-DICT-BACKUP-REDOLOG`. Origen: REC-0009 / FND-0008 de `ANA-20260922-002`; decisión del DBA: opción C
+(antigüedad calculada en la base, sin fechas absolutas). Ver `docs/ORACLE19C_LAB_RMAN.md`.
+
+### Added
+
+- Queries certificadas `Q-RMAN-BACKUP-FRESHNESS-001` (horas desde el último full/level 0, incremental, archivelog, controlfile y SPFILE, sobre
+  `V$BACKUP_DATAFILE`/`V$BACKUP_REDOLOG`/`V$BACKUP_SET`/`V$BACKUP_SPFILE`) y `Q-RMAN-JOB-SUMMARY-001` (por `INPUT_TYPE` sobre
+  `V$RMAN_BACKUP_JOB_DETAILS`). Variante única `V1` `10.2`–`23.0`, sin Top-N ni `CON_ID`. Las 14 `Q-RMAN-*` existentes no cambian.
+- Ambas en el catálogo del gateway (fixture sintético en `fixture-primary-19c`) y en el adaptador lab (`mcp_gateway_lab` `0.4.0`); registro de
+  readiness con 80 componentes.
+
+### Regression
+
+- 949/962 antes y después, con los mismos 13 fallos preexistentes. P15: adapter 21 → 23, security 30 → 32 casos.
+
 ## [0.16.0] — 2026-09-23 — `v0.16.0-oracle19c-lab-domains` — `/change security|compatibility` — CHG-ESTACK-ORA19C-LAB-003 — lote 1 de dominios en el lab: tablespaces/TEMP por PDB y FRA
 
 Rama `change/lab-domains-batch1` sobre `main` (`053e461`), commit `1a7d11d`, integrada a `main` vía PR #6 (merge `b885e90`). Aprobación humana
