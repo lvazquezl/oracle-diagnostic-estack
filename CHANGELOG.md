@@ -2,9 +2,11 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — 2026-09-23 — `/change query|security` — CHG-ESTACK-ORA19C-LAB-004 — lote 2 RMAN: frescura de backups y resumen de jobs
+## [0.17.0] — 2026-09-23 — `v0.17.0-oracle19c-lab-rman` — `/change query|security` — CHG-ESTACK-ORA19C-LAB-004 — lote 2 RMAN: frescura de backups y resumen de jobs
 
-Rama `change/lab-rman-freshness` sobre `main` (`cdd6f62`). Estado `PROPOSED`; el motor de gobernanza informa `PENDING_HUMAN_REVIEW`. Validado
+Rama `change/lab-rman-freshness` sobre `main` (`cdd6f62`), commit `c1fcf82`, integrada a `main` vía PR #8 (merge `dad3def`). Aprobación humana
+registrada: `AUTH-ORA19C-LAB-004`, revisor `REV-DBAMANAGER`, `2026-09-23T19:40:02Z`, contra el digest `f9e9e27c…1fddaf`. El motor informa
+`APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el digest, no la identidad del firmante. Validado
 en el lab desde `CDB$ROOT`: frescura con 5 filas (sin backups de datos ni de archivelogs; un autobackup de controlfile/SPFILE de hace ~25 h) y
 jobs con 0 filas, confirmado por el DBA. El primer intento reveló que `V$BACKUP_REDOLOG` no tiene `COMPLETION_TIME`; la query se corrigió antes de
 certificarse, y el defecto previo del diccionario y de `Q-RMAN-ARCHIVELOG-BACKUP-001` queda como `CHG-REQ-DICT-BACKUP-REDOLOG`. Origen: REC-0009 / FND-0008 de `ANA-20260922-002`; decisión del DBA: opción C
