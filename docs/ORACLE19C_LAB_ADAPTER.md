@@ -11,7 +11,7 @@ READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY — sin cambios en ninguna d
 | Elemento | Alcance de este cambio |
 |---|---|
 | Target | **Uno solo**, Oracle 19c no productivo (`environment_class: NON_PRODUCTION`) |
-| Colectores | `Q-DISC-IDENTITY-001` (variante V3 `modern_18plus`, hash verificado). Desde `CHG-ESTACK-ORA19C-LAB-002`: `Q-ORA-RESOURCE-LIMITS-001` (variante implícita). Desde `CHG-ESTACK-ORA19C-LAB-003` (`0.16.0`): `Q-CDB-TABLESPACES-001` (sólo `CDB_ROOT`) y `Q-RMAN-FRA-USAGE-001`. Desde `CHG-ESTACK-ORA19C-LAB-004` (propuesto): `Q-RMAN-BACKUP-FRESHNESS-001` y `Q-RMAN-JOB-SUMMARY-001` — ver [ORACLE19C_LAB_RMAN.md](ORACLE19C_LAB_RMAN.md) — ver [ORACLE19C_LAB_DOMAINS.md](ORACLE19C_LAB_DOMAINS.md), sólo si el targets file privado los lista — ver [ORACLE19C_LAB_COLLECTORS.md](ORACLE19C_LAB_COLLECTORS.md) |
+| Colectores | `Q-DISC-IDENTITY-001` (variante V3 `modern_18plus`, hash verificado). Desde `CHG-ESTACK-ORA19C-LAB-002`: `Q-ORA-RESOURCE-LIMITS-001` (variante implícita). Desde `CHG-ESTACK-ORA19C-LAB-003` (`0.16.0`): `Q-CDB-TABLESPACES-001` (sólo `CDB_ROOT`) y `Q-RMAN-FRA-USAGE-001`. Desde `CHG-ESTACK-ORA19C-LAB-004` (`0.17.0`): `Q-RMAN-BACKUP-FRESHNESS-001` y `Q-RMAN-JOB-SUMMARY-001` — ver [ORACLE19C_LAB_RMAN.md](ORACLE19C_LAB_RMAN.md) — ver [ORACLE19C_LAB_DOMAINS.md](ORACLE19C_LAB_DOMAINS.md), sólo si el targets file privado los lista — ver [ORACLE19C_LAB_COLLECTORS.md](ORACLE19C_LAB_COLLECTORS.md) |
 | Cuenta | Usuario diagnóstico dedicado: `CREATE SESSION` + `SELECT` sobre `V_$INSTANCE` y `V_$DATABASE` |
 | Secreto | Keychain de macOS (`/usr/bin/security`), leído en cada conexión; nunca en prompts, Git, variables de entorno ni archivos compartidos |
 | Driver | `python-oracledb` en modo **thin** (nunca `init_oracle_client`) |
