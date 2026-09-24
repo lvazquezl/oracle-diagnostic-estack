@@ -15,8 +15,13 @@ else
 fi
 
 # Cada comando en la tabla debe ser uno de los binarios allowlisted del dominio GI/ASM/Net.
-ALLOWED='olsnodes|crsctl|srvctl|lsnrctl|oifcfg|ocrcheck|asmcmd|ip |ss |getent|nslookup'
-if grep -E '^\| \`get_' "$DOC" | grep -vE "$ALLOWED"; then
+# CHG-ESTACK-PORTABILITY-001: 'ss' también cuando va entre comillas invertidas (`ss`/…), y lectura de ruta FIJA
+# /etc/hostname (get_host_identity). Estas dos filas nunca se habían revisado en GNU (ver el patrón [`] abajo);
+# el "o equivalente" del documento queda para HUMAN REVIEW (CHG-REQ-DOC-GI-HOSTNAME).
+ALLOWED='olsnodes|crsctl|srvctl|lsnrctl|oifcfg|ocrcheck|asmcmd|ip |ss |[`]ss[`]|getent|nslookup|lectura de [`]/etc/hostname[`]'
+# CHG-ESTACK-PORTABILITY-001: [`] literal; con \` GNU grep lo interpretaba como ancla de inicio de buffer y el
+# patrón no coincidía con ninguna fila (el test pasaba sin revisar nada en Windows/Linux).
+if grep -E '^\| [`]get_' "$DOC" | grep -vE "$ALLOWED"; then
   echo "[FAIL] fila de collector con comando fuera del allowlist detectada arriba"
   FAIL=1
 else

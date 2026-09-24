@@ -22,7 +22,7 @@ dict_cols=$(awk '
 
 sql_block=$(awk '/```sql/{f=1;next} /```/{f=0} f' "$Q" | tr '\n' ' ')
 select_line=$(echo "$sql_block" | sed -E 's/.*SELECT //I; s/ FROM.*//I')
-select_cols=$(echo "$select_line" | tr ',' '\n' | sed -E 's/^\s+|\s+$//g' | tr 'A-Z' 'a-z')
+select_cols=$(echo "$select_line" | tr ',' '\n' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g' | tr 'A-Z' 'a-z')
 
 n=0
 while IFS= read -r c; do

@@ -11,7 +11,7 @@ import os
 import time
 from datetime import datetime, timedelta, timezone
 
-from tests.p15.harness import (ALIAS, DELETE, ROOT, SECRET, FakeKeychain, Lab, Scenario, driver_error, lab_target, leaks, profile_doc,
+from tests.p15.harness import (posix_test, ALIAS, DELETE, ROOT, SECRET, FakeKeychain, Lab, Scenario, driver_error, lab_target, leaks, profile_doc,
                                run_all, run_lab_cli, test, tmpdir, utc, write_private, write_targets)
 
 ID = "Q-DISC-IDENTITY-001"
@@ -45,7 +45,7 @@ def denied(lab, code, capability_status=None, collector=ID):
 
 # --- lab profile ------------------------------------------------------------------------------------
 
-@test
+@posix_test
 def profile_with_a_secret_or_connect_string_anywhere_is_refused():
     for key, where in (("password", "connection"), ("wallet_password", "connection"), ("dsn", "connection"), ("token", "credential"),
                        ("secret", "authorization")):
@@ -55,7 +55,7 @@ def profile_with_a_secret_or_connect_string_anywhere_is_refused():
             assert refused(d, profile=doc), key
 
 
-@test
+@posix_test
 def profile_file_must_be_private_regular_owned_and_outside_the_repository():
     with tmpdir() as d:
         assert refused(d, mode=0o644), "group/world-readable profile accepted"
@@ -90,7 +90,7 @@ def profile_file_must_be_private_regular_owned_and_outside_the_repository():
             os.remove(inside)
 
 
-@test
+@posix_test
 def profile_structure_scope_and_limits_fail_closed():
     now = datetime.now(timezone.utc)
     bad = [
@@ -128,7 +128,7 @@ def profile_structure_scope_and_limits_fail_closed():
 
 # --- lab targets file --------------------------------------------------------------------------------
 
-@test
+@posix_test
 def lab_targets_file_must_register_exactly_the_profile_target_consistently():
     fixture_like = dict(lab_target(), alias="fixture-primary-19c", adapter="fixture")
     for targets in ([lab_target(), dict(lab_target(), alias="lab-other-19c")],
@@ -143,7 +143,7 @@ def lab_targets_file_must_register_exactly_the_profile_target_consistently():
 
 # --- runtime authorization, identity and privilege guards -----------------------------------------
 
-@test
+@posix_test
 def authorization_expiring_during_the_session_stops_collection_before_connecting():
     with tmpdir() as d:
         later = [datetime.now(timezone.utc)]
@@ -155,7 +155,7 @@ def authorization_expiring_during_the_session_stops_collection_before_connecting
         assert len(lab.driver.connects) == n and lab.adapter.last_failure == "AUTHORIZATION_EXPIRED"
 
 
-@test
+@posix_test
 def connected_identity_must_match_the_authorized_target():
     cases = [
         (Scenario(id_version_full="21.3.0.0.0"), "MISMATCH_VERSION"),
@@ -178,7 +178,7 @@ def connected_identity_must_match_the_authorized_target():
             assert lab.driver.events[-2:] == ["rollback", "close"] and "commit" not in lab.driver.events
 
 
-@test
+@posix_test
 def pdb_container_name_mismatch_is_refused():
     with tmpdir() as d:
         sc = Scenario(session_service_name="LABPDB1", session_con_name="LABPDB2", id_cdb="YES", id_db_name="LABCDB")
@@ -188,7 +188,7 @@ def pdb_container_name_mismatch_is_refused():
         assert lab.adapter.last_failure == "MISMATCH_CONTAINER_NAME"
 
 
-@test
+@posix_test
 def privileged_or_over_granted_sessions_are_refused_before_the_identity_query():
     for sc, category in ((Scenario(session_isdba="TRUE"), "PRIVILEGED_SESSION"),
                          (Scenario(session_sess_user="SYS"), "PRIVILEGED_SESSION"),
@@ -205,7 +205,7 @@ def privileged_or_over_granted_sessions_are_refused_before_the_identity_query():
             assert not any("v$instance" in s.lower() for s in lab.driver.statements), "identity query ran on a refused session"
 
 
-@test
+@posix_test
 def thick_mode_is_refused():
     for sc in (Scenario(thin_mode=False), Scenario(conn_thin=False)):
         with tmpdir() as d:
@@ -217,7 +217,7 @@ def thick_mode_is_refused():
 
 # --- SQL source integrity ----------------------------------------------------------------------------
 
-@test
+@posix_test
 def a_certified_query_changed_after_startup_is_never_executed():
     with tmpdir() as d:
         lab = Lab(d)
@@ -226,7 +226,7 @@ def a_certified_query_changed_after_startup_is_never_executed():
         assert lab.adapter.last_failure == "SQL_SOURCE_REFUSED" and lab.driver.connects == [] and lab.keychain.calls == []
 
 
-@test
+@posix_test
 def collectors_the_adapter_does_not_implement_are_denied_even_if_forced():
     from mcp_gateway_lab import oracle_sql
     with tmpdir() as d:
@@ -251,7 +251,7 @@ def collectors_the_adapter_does_not_implement_are_denied_even_if_forced():
                        profile=profile_doc(**{"expected.container": "CDB_ROOT"}))
 
 
-@test
+@posix_test
 def tool_arguments_cannot_carry_sql_connection_or_paths():
     with tmpdir() as d:
         lab = Lab(d)
@@ -266,7 +266,7 @@ def tool_arguments_cannot_carry_sql_connection_or_paths():
 
 # --- result limits -----------------------------------------------------------------------------------
 
-@test
+@posix_test
 def non_scalar_oversized_or_too_large_results_are_refused():
     for value, category in ((b"\x00LOB", "RESULT_TYPE_REFUSED"), (datetime.now(), "RESULT_TYPE_REFUSED"), ({"x": 1}, "RESULT_TYPE_REFUSED"),
                             ("A" * 300, "RESULT_VALUE_TOO_LONG")):
@@ -282,7 +282,7 @@ def non_scalar_oversized_or_too_large_results_are_refused():
         denied(lab, "E_OUTPUT_TOO_LARGE")
 
 
-@test
+@posix_test
 def a_hung_query_times_out_and_blocks_concurrent_calls_until_the_driver_returns():
     with tmpdir() as d:
         lab = Lab(d, scenario=Scenario(identity_delay=1.5), operation_timeout=0.4)
@@ -298,7 +298,7 @@ def a_hung_query_times_out_and_blocks_concurrent_calls_until_the_driver_returns(
         assert lab.driver.events.count("close") == len(lab.driver.connects), "every connection was closed"
 
 
-@test
+@posix_test
 def call_timeouts_never_exceed_the_profile_cap():
     with tmpdir() as d:
         lab = Lab(d, profile=profile_doc(**{"limits.call_timeout_ms": 1500}))
@@ -312,7 +312,7 @@ def call_timeouts_never_exceed_the_profile_cap():
 
 # --- secrets and driver errors -----------------------------------------------------------------------
 
-@test
+@posix_test
 def driver_errors_never_leak_messages_secrets_or_coordinates():
     for code, category in (("ORA-01017", "CREDENTIALS_REJECTED"), ("ORA-28000", "ACCOUNT_LOCKED"), ("ORA-12514", "SERVICE_NOT_REGISTERED"),
                            ("DPY-6005", "NETWORK_UNREACHABLE"), ("DPY-3001", "NATIVE_NETWORK_ENCRYPTION_NEEDS_THICK_MODE"),
@@ -327,7 +327,7 @@ def driver_errors_never_leak_messages_secrets_or_coordinates():
         assert lab.adapter.last_failure == "MISSING_OBJECT_PRIVILEGE" and lab.driver.events[-2:] == ["rollback", "close"]
 
 
-@test
+@posix_test
 def keychain_failures_fail_closed_without_connecting():
     for kc in (FakeKeychain(rc=44), FakeKeychain(out=b""), FakeKeychain(out=b"two\nlines\n"), FakeKeychain(out=b"\xff\xfe"),
                FakeKeychain(out=b"x" * 5000)):
@@ -350,7 +350,7 @@ def lab_cli_has_no_connection_sql_or_secret_flags_and_never_echoes_input():
         assert rc == 2 and out == "" and SECRET not in err and err.strip() in ("mcp_gateway_lab: invalid command line usage",), (bad, err)
 
 
-@test
+@posix_test
 def startup_refusals_are_fixed_text_and_environment_variables_change_nothing():
     with tmpdir() as d:
         prof = write_private(d, "lab-profile.json", profile_doc(), mode=0o644)
@@ -368,7 +368,7 @@ def startup_refusals_are_fixed_text_and_environment_variables_change_nothing():
     assert rc == 2 and out == ""
 
 
-@test
+@posix_test
 def missing_driver_is_a_fixed_startup_refusal():
     import subprocess, sys
     with tmpdir() as d:
@@ -434,7 +434,7 @@ def lab_package_static_scan_no_network_eval_env_commit_or_thick_mode():
 ALL = [ID, "Q-ORA-RESOURCE-LIMITS-001"]
 
 
-@test
+@posix_test
 def a_missing_object_grant_fails_closed_after_the_guards_without_partial_evidence():
     with tmpdir() as d:
         lab = Lab(d, scenario=Scenario(main_error=driver_error("ORA-00942")), targets=[lab_target(allowed_collectors=ALL)])
@@ -443,7 +443,7 @@ def a_missing_object_grant_fails_closed_after_the_guards_without_partial_evidenc
         assert "commit" not in lab.driver.events and lab.driver.events[-2:] == ["rollback", "close"]
 
 
-@test
+@posix_test
 def the_new_collectors_still_require_the_identity_guard_first():
     with tmpdir() as d:
         lab = Lab(d, scenario=Scenario(id_db_name="OTHERDB"), targets=[lab_target(allowed_collectors=ALL)])
@@ -451,7 +451,7 @@ def the_new_collectors_still_require_the_identity_guard_first():
         assert not any("v$resource_limit" in s.lower() for s in lab.driver.statements), "the requested query ran before identity was proven"
 
 
-@test
+@posix_test
 def numeric_strings_are_converted_only_when_strictly_numeric():
     with tmpdir() as d:
         sc = Scenario()
@@ -514,7 +514,7 @@ def implicit_variant_requires_a_compatible_matrix_entry_for_the_same_file():
 
 
 
-@test
+@posix_test
 def a_cdb_root_profile_refuses_a_session_that_lands_in_a_pdb():
     prof = profile_doc(**{"connection.username": "C##ESTACK_DIAG", "connection.service_name": "LABCDB",
                           "expected.container": "CDB_ROOT", "expected.db_name": "LABCDB"})
@@ -532,7 +532,7 @@ def a_cdb_root_profile_refuses_a_session_that_lands_in_a_pdb():
 
 # --- CHG-ESTACK-ORA19C-LAB-003 -----------------------------------------------------------------------------
 
-@test
+@posix_test
 def cdb_root_only_collectors_are_not_applicable_outside_cdb_root_and_never_connect():
     from mcp_gateway import catalog
     for container, expected in (("PDB", "NOT_APPLICABLE"), ("NON_CDB", "NOT_APPLICABLE")):
@@ -551,7 +551,7 @@ def cdb_root_only_collectors_are_not_applicable_outside_cdb_root_and_never_conne
     assert catalog.evaluate_capability(t, col, "VERIFIED_FIXTURE") == "ENVIRONMENT_UNKNOWN"
 
 
-@test
+@posix_test
 def raised_profile_ceilings_still_fail_closed_above_their_bounds():
     for key, bad in (("max_rows", 201), ("max_output_bytes", 65537), ("call_timeout_ms", 20001), ("max_rows", 0)):
         with tmpdir() as d:
@@ -560,7 +560,7 @@ def raised_profile_ceilings_still_fail_closed_above_their_bounds():
         assert not refused(d, profile=profile_doc(**{"limits.max_rows": 200, "limits.max_output_bytes": 65536, "limits.call_timeout_ms": 20000}))
 
 
-@test
+@posix_test
 def output_byte_ceiling_is_enforced_on_multi_row_results():
     with tmpdir() as d:
         prof = profile_doc(**{"connection.username": "C##ESTACK_DIAG", "connection.service_name": "LABCDB", "expected.container": "CDB_ROOT",
@@ -574,7 +574,7 @@ def output_byte_ceiling_is_enforced_on_multi_row_results():
 
 # --- CHG-ESTACK-ORA19C-LAB-004 -----------------------------------------------------------------------------
 
-@test
+@posix_test
 def a_driver_date_value_is_refused_never_converted():
     import datetime as _dt
     with tmpdir() as d:
@@ -585,7 +585,7 @@ def a_driver_date_value_is_refused_never_converted():
         assert lab.adapter.last_failure == "RESULT_TYPE_REFUSED"
 
 
-@test
+@posix_test
 def out_of_range_or_textual_ages_are_dropped_and_reported():
     with tmpdir() as d:
         sc = Scenario()
@@ -597,6 +597,47 @@ def out_of_range_or_textual_ages_are_dropped_and_reported():
         row, = env["evidence"]["rows"]
         assert "hours_since_last_start" not in row and "hours_since_last_success" not in row
         assert any(l.startswith("INVALID_VALUES_DROPPED") for l in env["limitations"]), env["limitations"]
+
+
+
+# --- CHG-ESTACK-PORTABILITY-001 (run on every platform) -------------------------------------------------------
+
+@test
+def non_posix_hosts_are_refused_with_fixed_text_instead_of_a_traceback():
+    from mcp_gateway_lab import profile
+    saved = getattr(os, "getuid", None)
+    if saved is not None:
+        delattr(os, "getuid")                                   # simulate a host without POSIX owner checks
+    try:
+        try:
+            profile.check_private_file(os.path.abspath(__file__))
+            raise AssertionError("a non-POSIX host was accepted")
+        except profile.ProfileError as e:
+            assert str(e) == "the lab launcher requires a POSIX host (owner-only file checks are not available here)", str(e)
+    finally:
+        if saved is not None:
+            os.getuid = saved
+
+
+@test
+def the_keychain_provider_is_refused_at_startup_off_macos_when_no_test_runner_is_injected():
+    import sys
+    from mcp_gateway_lab import cli, profile
+    from tests.p15.harness import FakeDriver
+    saved = sys.platform
+    with tmpdir() as d:
+        prof = write_private(d, "lab-profile.json", profile_doc())
+        tf = write_targets(d, [lab_target()])
+        sys.platform = "linux"
+        try:
+            try:
+                cli.build_lab_gateway(tf, prof, driver=FakeDriver())          # no credential_runner: production path
+                raise AssertionError("macos_keychain accepted off macOS")
+            except profile.ProfileError as e:
+                assert str(e) in ("the macos_keychain credential provider requires macOS",
+                                  "the lab launcher requires a POSIX host (owner-only file checks are not available here)"), str(e)
+        finally:
+            sys.platform = saved
 
 
 if __name__ == "__main__":

@@ -14,14 +14,14 @@ C="$ROOT/agents/oracle-rac-analyst/collaboration.yaml"
 extract_list() {
   local file="$1" key="$2"
   local inline
-  inline=$(grep -E "^${key}:\s*\[" "$file" | head -1)
+  inline=$(grep -E "^${key}:[[:space:]]*\[" "$file" | head -1)
   if [ -n "$inline" ]; then
-    echo "$inline" | sed -E "s/^${key}:\s*\[//; s/\]\s*$//" | tr ',' '\n' | sed -E 's/^\s+|\s+$//g' | grep -v '^$'
+    echo "$inline" | sed -E "s/^${key}:[[:space:]]*\[//; s/\][[:space:]]*$//" | tr ',' '\n' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g' | grep -v '^$'
     return
   fi
   awk "/^${key}:/{f=1;next} /^[a-zA-Z_]+:/{f=0} f" "$file" \
-    | grep -E '^\s*-\s' \
-    | sed -E 's/^\s*-\s*//; s/\s*#.*$//' \
+    | grep -E '^[[:space:]]*-[[:space:]]' \
+    | sed -E 's/^[[:space:]]*-[[:space:]]*//; s/[[:space:]]*#.*$//' \
     | grep -v '^$'
 }
 
@@ -29,7 +29,7 @@ forbidden=$(extract_list "$R" "must_not_delegate_to")
 
 # delegates_to en routing.yaml usa "  - agent: <name>" incluso en este formato; extraído aparte.
 delegated=$(awk '/^delegates_to:/{f=1;next} /^[a-zA-Z_]+:/{f=0} f' "$R" \
-  | grep -oE 'agent:\s*[a-z0-9-]+' | sed -E 's/agent:\s*//')
+  | grep -oE 'agent:[[:space:]]*[a-z0-9-]+' | sed -E 's/agent:[[:space:]]*//')
 
 may_delegate=$(extract_list "$C" "may_delegate_to")
 

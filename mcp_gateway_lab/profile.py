@@ -72,6 +72,8 @@ def _forbidden_key_anywhere(obj) -> bool:
 
 def check_private_file(path: str, what: str = "lab profile") -> str:
     """Return the real path of an owner-only regular file outside the repository, or raise ProfileError."""
+    if not hasattr(os, "getuid") or os.name != "posix":      # CHG-ESTACK-PORTABILITY-001: owner/permission checks need POSIX
+        raise ProfileError("the lab launcher requires a POSIX host (owner-only file checks are not available here)")
     if not isinstance(path, str) or not os.path.isabs(path):
         raise ProfileError(f"{what} path must be absolute")
     try:

@@ -6,13 +6,13 @@ import hashlib
 import io
 import json
 
-from tests.p15.harness import (ALIAS, SECRET, Lab, Scenario, leaks, profile_doc, run_all, run_lab_cli, test, tmpdir, write_private,
+from tests.p15.harness import (posix_test, ALIAS, SECRET, Lab, Scenario, leaks, profile_doc, run_all, run_lab_cli, test, tmpdir, write_private,
                                write_targets, lab_target)
 
 ID = "Q-DISC-IDENTITY-001"
 
 
-@test
+@posix_test
 def identity_collection_returns_real_sanitized_evidence():
     with tmpdir() as d:
         lab = Lab(d)
@@ -29,7 +29,7 @@ def identity_collection_returns_real_sanitized_evidence():
         assert not leaks(text), leaks(text)
 
 
-@test
+@posix_test
 def get_evidence_and_analyze_keep_real_provenance():
     with tmpdir() as d:
         lab = Lab(d)
@@ -42,7 +42,7 @@ def get_evidence_and_analyze_keep_real_provenance():
         assert ana["provenance"]["kind"] == "REAL" if not is_error else ana["error"]["code"] in ("E_INSUFFICIENT_EVIDENCE", "E_ANALYSIS_FAILED")
 
 
-@test
+@posix_test
 def only_certified_and_guard_sql_is_executed_in_a_read_only_transaction():
     from mcp_gateway import catalog
     from mcp_gateway_lab import oracle_sql
@@ -59,7 +59,7 @@ def only_certified_and_guard_sql_is_executed_in_a_read_only_transaction():
         assert "commit" not in lab.driver.events and lab.driver.events[-2:] == ["rollback", "close"]
 
 
-@test
+@posix_test
 def connection_uses_profile_coordinates_thin_mode_no_retries_and_bounded_timeouts():
     with tmpdir() as d:
         lab = Lab(d)
@@ -72,7 +72,7 @@ def connection_uses_profile_coordinates_thin_mode_no_retries_and_bounded_timeout
         assert max(lab.driver.fetch_sizes[-1:]) <= 2, "identity fetch is bounded to 1 row + 1 truncation probe"
 
 
-@test
+@posix_test
 def tcps_transport_requests_server_dn_match():
     with tmpdir() as d:
         prof = profile_doc(**{"connection.transport": "tcps", "connection.port": 2484,
@@ -84,7 +84,7 @@ def tcps_transport_requests_server_dn_match():
         assert kw["protocol"] == "tcps" and kw["ssl_server_dn_match"] is True and kw["ssl_server_cert_dn"].startswith("CN=")
 
 
-@test
+@posix_test
 def keychain_lookup_uses_a_fixed_argv_without_shell_and_a_minimal_environment():
     with tmpdir() as d:
         lab = Lab(d)
@@ -95,7 +95,7 @@ def keychain_lookup_uses_a_fixed_argv_without_shell_and_a_minimal_environment():
         assert kw["check"] is False and kw["capture_output"] is True
 
 
-@test
+@posix_test
 def password_is_fetched_per_connection_and_never_retained():
     with tmpdir() as d:
         lab = Lab(d)
@@ -106,7 +106,7 @@ def password_is_fetched_per_connection_and_never_retained():
         assert SECRET not in blob
 
 
-@test
+@posix_test
 def undeclared_columns_and_nulls_are_minimized_at_the_source():
     with tmpdir() as d:
         sc = Scenario()
@@ -118,7 +118,7 @@ def undeclared_columns_and_nulls_are_minimized_at_the_source():
         assert "host_name" not in row and "open_mode" not in row and not leaks(json.dumps(env))
 
 
-@test
+@posix_test
 def pdb_target_is_validated_by_container_name():
     with tmpdir() as d:
         sc = Scenario(session_service_name="LABPDB1", session_con_name="LABPDB1", id_cdb="YES", id_db_name="LABCDB")
@@ -129,7 +129,7 @@ def pdb_target_is_validated_by_container_name():
         assert not is_error and env["evidence"]["rows"][0]["cdb"] == "YES", env
 
 
-@test
+@posix_test
 def select_any_dictionary_is_accepted_only_when_the_profile_opts_in():
     with tmpdir() as d:
         sc = Scenario(privileges=["CREATE SESSION", "SELECT ANY DICTIONARY"])
@@ -138,7 +138,7 @@ def select_any_dictionary_is_accepted_only_when_the_profile_opts_in():
         assert not is_error, env
 
 
-@test
+@posix_test
 def mcp_protocol_in_lab_mode_announces_lab_provenance_and_keeps_the_static_tool_surface():
     from mcp_gateway.gateway import TOOLS
     from mcp_gateway.server import McpServer
@@ -166,7 +166,7 @@ def mcp_protocol_in_lab_mode_announces_lab_provenance_and_keeps_the_static_tool_
         assert col["provenance"]["kind"] == "REAL" and not leaks(out.getvalue().decode())
 
 
-@test
+@posix_test
 def check_command_report_is_sanitized_and_explains_failures_by_category_only():
     from mcp_gateway_lab.cli import run_check
     with tmpdir() as d:
@@ -180,7 +180,7 @@ def check_command_report_is_sanitized_and_explains_failures_by_category_only():
         assert not leaks(json.dumps(report))
 
 
-@test
+@posix_test
 def validate_config_subcommand_is_offline_and_prints_no_connection_material():
     with tmpdir() as d:
         prof = write_private(d, "lab-profile.json", profile_doc())
@@ -192,7 +192,7 @@ def validate_config_subcommand_is_offline_and_prints_no_connection_material():
         assert not leaks(out) and "oracle-estack-lab" not in out and "1521" not in out
 
 
-@test
+@posix_test
 def serve_subcommand_speaks_mcp_over_stdio_without_connecting_at_startup():
     import subprocess, sys, os
     from tests.p15.harness import FAKEDRIVER_DIR, ROOT
@@ -219,7 +219,7 @@ RL = "Q-ORA-RESOURCE-LIMITS-001"
 ALL = ["Q-DISC-IDENTITY-001", RL]
 
 
-@test
+@posix_test
 def resource_limits_returns_typed_real_evidence_after_the_identity_guard():
     from mcp_gateway import catalog
     with tmpdir() as d:
@@ -237,7 +237,7 @@ def resource_limits_returns_typed_real_evidence_after_the_identity_guard():
         assert not leaks(json.dumps(env))
 
 
-@test
+@posix_test
 def resource_limits_fetch_is_bounded_by_the_tightest_limit():
     with tmpdir() as d:
         lab = Lab(d, targets=[lab_target(allowed_collectors=ALL)])
@@ -246,7 +246,7 @@ def resource_limits_fetch_is_bounded_by_the_tightest_limit():
         assert lab.driver.fetch_sizes[-1] == 6, lab.driver.fetch_sizes          # min(profile 5, query 50, collector 50) + 1
 
 
-@test
+@posix_test
 def describe_collector_reports_the_live_adapter_status_per_collector():
     with tmpdir() as d:
         lab = Lab(d, targets=[lab_target(allowed_collectors=ALL)])
@@ -267,7 +267,7 @@ def describe_collector_reports_the_live_adapter_status_per_collector():
 
 
 
-@test
+@posix_test
 def cdb_root_target_with_a_common_user_returns_instance_level_resource_limits():
     """Option C of CHG-ESTACK-ORA19C-LAB-002: a PDB session sees no V$RESOURCE_LIMIT rows, so the lab target is CDB$ROOT."""
     with tmpdir() as d:
@@ -299,7 +299,7 @@ def root_lab(d, scenario=None, **limits):
     return Lab(d, scenario=sc, profile=prof, targets=[lab_target(container="CDB_ROOT", allowed_collectors=BATCH1, budget={"max_calls": 20, "max_rows": 300})])
 
 
-@test
+@posix_test
 def cdb_tablespaces_are_masked_per_pdb_and_never_expose_autoextend_or_raw_names():
     with tmpdir() as d:
         lab = root_lab(d, max_rows=50, max_output_bytes=16384)
@@ -313,7 +313,7 @@ def cdb_tablespaces_are_masked_per_pdb_and_never_expose_autoextend_or_raw_names(
         assert not leaks(json.dumps(env)), leaks(json.dumps(env))
 
 
-@test
+@posix_test
 def fra_returns_typed_evidence_without_the_destination_path():
     with tmpdir() as d:
         lab = root_lab(d, max_rows=50, max_output_bytes=16384)
@@ -324,7 +324,7 @@ def fra_returns_typed_evidence_without_the_destination_path():
         assert all("dest_name" not in r for r in rows.values()) and not leaks(json.dumps(env))
 
 
-@test
+@posix_test
 def effective_row_cap_is_the_tightest_of_profile_query_and_collector():
     with tmpdir() as d:
         lab = root_lab(d)                                                     # harness profile: max_rows 5
@@ -352,7 +352,7 @@ FRS, JOBS = "Q-RMAN-BACKUP-FRESHNESS-001", "Q-RMAN-JOB-SUMMARY-001"
 
 
 
-@test
+@posix_test
 def backup_freshness_reports_hours_per_category_and_keeps_missing_categories_explicit():
     from mcp_gateway import catalog
     with tmpdir() as d:
@@ -369,7 +369,7 @@ def backup_freshness_reports_hours_per_category_and_keeps_missing_categories_exp
         assert "sysdate" in lab.driver.statements[-1].lower() and "fetch first" not in lab.driver.statements[-1].lower()
 
 
-@test
+@posix_test
 def job_summary_exposes_status_age_and_failures_without_absolute_dates():
     with tmpdir() as d:
         lab = root_lab(d, max_rows=50, max_output_bytes=16384)
