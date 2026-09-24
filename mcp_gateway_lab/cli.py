@@ -52,6 +52,10 @@ def _load_driver():
 def build_lab_gateway(targets_file: str, profile_file: str, audit_sink=None, driver=None, credential_runner=None, wallclock=None):
     """Returns (gateway, adapter). Raises ProfileError / RuntimeError with fixed text on any refusal."""
     profile = load_profile(profile_file)
+    # CHG-ESTACK-PORTABILITY-001: the only approved secret store is the macOS Keychain; refuse at startup elsewhere
+    # instead of failing at the first connection. An injected runner (tests) is not a production secret store.
+    if credential_runner is None and profile.target.credential["provider"] == "macos_keychain" and sys.platform != "darwin":
+        raise ProfileError("the macos_keychain credential provider requires macOS")
     if not isinstance(targets_file, str) or not os.path.isabs(targets_file) or os.path.islink(targets_file) or not os.path.isfile(targets_file):
         raise ProfileError("lab targets file must be an absolute path to a regular file")
     collectors = catalog.load_collectors()

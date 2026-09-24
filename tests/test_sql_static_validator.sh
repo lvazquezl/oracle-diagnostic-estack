@@ -20,6 +20,13 @@
 # de fases anteriores (`test_fixture_query_variant_resolution.sh`) tiene el mismo perfil y ya fue
 # aceptado como tolerable en este proyecto por el mismo motivo.
 set -uo pipefail
+# CHG-ESTACK-PORTABILITY-001: este script usa arreglos asociativos (declare -A), que requieren bash >= 4.
+# En bash 3.2 (el /bin/bash de macOS) declare -A falla y el script terminaba en PASS sin validar nada.
+# Fallar explícitamente es preferible a un PASS silencioso (docs/CONTRACTS.md#capability-status-model).
+if [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
+  echo "[FAIL] $(basename "$0") requiere bash >= 4 (arreglos asociativos); bash actual: ${BASH_VERSION:-desconocido}. En macOS: brew install bash"
+  exit 1
+fi
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DICT="$ROOT/compatibility/oracle-dictionary/views.yaml"
 FAIL=0
@@ -429,6 +436,9 @@ $vw"
 
       case "$col_name_l" in
         case|when|then|else|end|as|distinct|null|and|or|not|count|max|min|sum|avg|select|from|join|on|where|group|by|order|union|all|in|to_char|to_number|nvl|decode|trunc|round|cast) continue ;;
+        # CHG-ESTACK-PORTABILITY-001: pseudocolumnas/funciones/palabras de SQL Oracle, no columnas de vista
+        # (falsos positivos en GNU/Windows sobre Q-RMAN-BACKUP-FRESHNESS-001 / Q-RMAN-JOB-SUMMARY-001).
+        sysdate|systimestamp|keep|dense_rank|first|last) continue ;;
       esac
 
       local target_view=""

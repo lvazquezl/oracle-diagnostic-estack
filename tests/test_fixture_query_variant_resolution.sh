@@ -21,6 +21,13 @@
 #     valor repetido) -- ningun proceso externo se spawnea en el hot loop fixture x query x rango.
 # Mismo comportamiento observable (mismos PASS/FAIL) que la version original; sólo cambia el costo.
 set -uo pipefail
+# CHG-ESTACK-PORTABILITY-001: este script usa arreglos asociativos (declare -A), que requieren bash >= 4.
+# En bash 3.2 (el /bin/bash de macOS) declare -A falla y el script terminaba en PASS sin validar nada.
+# Fallar explícitamente es preferible a un PASS silencioso (docs/CONTRACTS.md#capability-status-model).
+if [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
+  echo "[FAIL] $(basename "$0") requiere bash >= 4 (arreglos asociativos); bash actual: ${BASH_VERSION:-desconocido}. En macOS: brew install bash"
+  exit 1
+fi
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$ROOT/scripts/lib/version.sh"
 FAIL=0

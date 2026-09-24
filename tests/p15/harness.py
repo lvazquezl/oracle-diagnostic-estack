@@ -17,6 +17,22 @@ from datetime import datetime, timedelta, timezone
 
 from tests.p13.harness import MARKER, ROOT, Skip, run_all, test, tmpdir  # noqa: F401  (re-exported for the checks)
 
+import functools
+
+# CHG-ESTACK-PORTABILITY-001: the lab launcher refuses non-POSIX hosts by design (owner-only profile checks, macOS
+# Keychain). Cases that build a lab gateway or rely on POSIX file permissions are reported as an explicit [SKIP] there,
+# never as a silent PASS; platform-agnostic cases (static scans, SQL source resolution, refusal paths) always run.
+POSIX_HOST = hasattr(os, "getuid") and os.name == "posix"
+
+
+def posix_test(fn):
+    @functools.wraps(fn)
+    def wrapper():
+        if not POSIX_HOST:
+            raise Skip("requires a POSIX host: the lab launcher refuses non-POSIX hosts by design")
+        return fn()
+    return test(wrapper)
+
 ALIAS = "lab-ol8-19c"
 SECRET = "Lab-" + MARKER + "-pw"                      # the fake Keychain password; must never appear in any output
 RAW_NAMES = ("LAB19C", "LABCDB", "LABPDB1", "ESTACK_DIAG", "db19-lab.example.internal", "fast_recovery_area", "APP_DATA")

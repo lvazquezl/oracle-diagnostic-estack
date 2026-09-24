@@ -24,7 +24,7 @@ EXPECTED_COUNT=7
 actual_count=$(echo "$dict_cols" | grep -c . || true)
 [ "$actual_count" -eq "$EXPECTED_COUNT" ] && echo "[PASS] DBA_PDB_SAVED_STATES tiene 7 columnas registradas (con_id, con_name, instance_name, con_uid, guid, state, restricted)" || { echo "[FAIL] DBA_PDB_SAVED_STATES tiene $actual_count columnas registradas, esperado 7"; FAIL=1; }
 
-select_cols=$(grep -A1 'SELECT con_id, con_name, instance_name, state, restricted' "$Q" | head -1 | tr ',' '\n' | sed -E 's/^\s*SELECT\s*//; s/\s+//g' | tr 'A-Z' 'a-z')
+select_cols=$(grep -A1 'SELECT con_id, con_name, instance_name, state, restricted' "$Q" | head -1 | tr ',' '\n' | sed -E 's/^[[:space:]]*SELECT[[:space:]]*//; s/[[:space:]]+//g' | tr 'A-Z' 'a-z')
 [ -z "$select_cols" ] && select_cols="con_id
 con_name
 instance_name

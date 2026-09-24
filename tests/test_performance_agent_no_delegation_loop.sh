@@ -11,18 +11,18 @@ C="$ROOT/agents/oracle-performance-analyst/collaboration.yaml"
 # must_not_delegate_to entries are plain "- agent-name" list items (no "agent:" key) — extract
 # just the first token after "- ", stripping any trailing inline comment.
 forbidden=$(awk '/^must_not_delegate_to:/{f=1;next} /^[a-zA-Z_]+:/{f=0} f' "$R" \
-  | grep -E '^\s*-\s' \
-  | sed -E 's/^\s*-\s*//; s/\s*#.*$//' \
+  | grep -E '^[[:space:]]*-[[:space:]]' \
+  | sed -E 's/^[[:space:]]*-[[:space:]]*//; s/[[:space:]]*#.*$//' \
   | grep -v '^$')
 
 # delegates_to entries use "  - agent: <name>" — extract just the agent names in that section.
 delegated=$(awk '/^delegates_to:/{f=1;next} /^[a-zA-Z_]+:/{f=0} f' "$R" \
-  | grep -oE 'agent:\s*[a-z0-9-]+' | sed -E 's/agent:\s*//')
+  | grep -oE 'agent:[[:space:]]*[a-z0-9-]+' | sed -E 's/agent:[[:space:]]*//')
 
 # may_delegate_to (collaboration.yaml) entries are plain "- agent-name" list items.
 may_delegate=$(awk '/^may_delegate_to:/{f=1;next} /^[a-zA-Z_]+:/{f=0} f' "$C" \
-  | grep -E '^\s*-\s' \
-  | sed -E 's/^\s*-\s*//; s/\s*#.*$//' \
+  | grep -E '^[[:space:]]*-[[:space:]]' \
+  | sed -E 's/^[[:space:]]*-[[:space:]]*//; s/[[:space:]]*#.*$//' \
   | grep -v '^$')
 
 [ -n "$forbidden" ] && echo "[PASS] must_not_delegate_to no está vacío: $forbidden" || { echo "[FAIL] must_not_delegate_to está vacío"; FAIL=1; }

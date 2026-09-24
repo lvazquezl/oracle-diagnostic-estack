@@ -29,7 +29,7 @@ for f in "$ROOT"/queries/rman/Q-*.md; do
   resolved_id=$(echo "$ids" | sed -n "${resolved_i}p")
   block=$(awk -v n="$resolved_i" '/```sql/{c++} c==n && /```sql/{flag=1;next} flag && /```/{flag=0} flag' "$f")
 
-  if echo "$resolved_id" | grep -qi -- '-V1$\|legacy'; then
+  if echo "$resolved_id" | grep -qiE -- '-V1$|legacy'; then
     echo "[PASS] $qid — resuelve variante legacy ($resolved_id) para 11g"
   else
     echo "[FAIL] $qid — resolvió $resolved_id para 11g, esperada la variante legacy"

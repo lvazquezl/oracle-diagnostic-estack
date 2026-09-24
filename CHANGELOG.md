@@ -2,6 +2,24 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change compatibility|documentation` — CHG-ESTACK-PORTABILITY-001 — portabilidad Windows/macOS/Linux
+
+Rama `change/portability-001` sobre `main` (`a00ea2c`). Pendiente: validación en Windows y HUMAN REVIEW. Ver `docs/PORTABILITY_CHG001.md`.
+
+### Fixed
+
+- `test_sql_static_validator`: `SYSDATE`, `SYSTIMESTAMP`, `KEEP`, `DENSE_RANK`, `FIRST` y `LAST` ya no se toman por columnas (falsos positivos en Windows desde 0.17.0).
+- Tests con `\s` en ERE, `grep '…\|…'` en BRE o `` \` `` en el patrón, que no son portables entre GNU y BSD: `*_no_delegation_loop` ×5, `test_pdb_*_columns_valid` ×2, `test_rman_*_variant_*` ×5, `test_hugepages_calculation` y `test_collectors_are_allowlisted` (este último en GNU grep no revisaba ninguna fila).
+- `mcp_gateway_lab`: fuera de POSIX, y con `macos_keychain` fuera de macOS, rechaza con texto fijo en vez de un traceback. P15 marca los casos POSIX-only como `[SKIP]` explícito, con 2 casos nuevos que corren en toda plataforma.
+
+### Changed
+
+- `test_sql_static_validator` y `test_fixture_query_variant_resolution` fallan explícitamente con bash < 4 (macOS `/bin/bash` 3.2), donde antes pasaban sin validar.
+
+### Errata
+
+- Los "13 fallos preexistentes" que declaran 0.15.0–0.17.0 eran exclusivos de macOS, y los PASS del validador estático que se citan en macOS no validaron columnas.
+
 ## [0.17.0] — 2026-09-23 — `v0.17.0-oracle19c-lab-rman` — `/change query|security` — CHG-ESTACK-ORA19C-LAB-004 — lote 2 RMAN: frescura de backups y resumen de jobs
 
 Rama `change/lab-rman-freshness` sobre `main` (`cdd6f62`), commit `c1fcf82`, integrada a `main` vía PR #8 (merge `dad3def`). Aprobación humana
