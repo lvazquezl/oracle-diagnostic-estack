@@ -1,7 +1,7 @@
 # CHG-ESTACK-PORTABILITY-001 — Portabilidad Windows/macOS/Linux de la suite y del lanzador lab
 
 **Tipo:** `/change compatibility|documentation` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/portability-001` (desde `main` `a00ea2c`, `v0.17.0-oracle19c-lab-rman`)
-**Estado:** propuesto. Requiere validación en Windows antes de HUMAN REVIEW (§8). `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** propuesto. Validado en Windows (§8); el motor de gobernanza informa `PENDING_HUMAN_REVIEW` (§12). `PROMOTE`, commit, merge, tag y push son acciones humanas.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. Ninguna política cambia y no se agregan queries, collectors ni herramientas.
 
@@ -21,7 +21,7 @@ A su vez, los "13 fallos preexistentes" que declaraban los registros de LAB-002�
 |---|---|
 | `*_no_delegation_loop` ×5, `test_pdb_{resource_usage,saved_state}_columns_valid` | `\s` en `sed -E`/`grep -E`: en BSD es una `s` literal |
 | `test_rman_*_variant_*` ×5 | `grep '…$\|…'` (BRE con alternancia GNU): en BSD el `$` queda literal |
-| `test_collectors_are_allowlisted` | `` \` `` en el patrón. En GNU grep es el ancla de inicio de buffer, así que el test **no revisaba ninguna fila** en Windows/Linux (hipótesis por confirmar en Windows, §8). En BSD sí revisaba y fallaba por `lectura de /etc/hostname` y `` `ss` `` |
+| `test_collectors_are_allowlisted` | `` \` `` en el patrón. En GNU grep es el ancla de inicio de buffer, así que el test **no revisaba ninguna fila** en Windows/Linux (**confirmado** en Windows, §8). En BSD sí revisaba y fallaba por `lectura de /etc/hostname` y `` `ss` `` |
 
 Además, un defecto silencioso: `/bin/bash` 3.2 de macOS no tiene `declare -A`. `test_sql_static_validator` y `test_fixture_query_variant_resolution` **pasaban sin validar nada**. Por eso los PASS del validador en macOS que citan los registros de LAB-002…005 no tienen valor probatorio. Los falsos positivos de LAB-004 sólo se vieron en Windows por esa razón.
 
@@ -61,7 +61,7 @@ Además, un defecto silencioso: `/bin/bash` 3.2 de macOS no tiene `declare -A`. 
 - Mutaciones sobre los guards del lanzador: quitar el guard POSIX → FAIL `non_posix_hosts_are_refused_with_fixed_text_instead_of_a_traceback`; quitar el guard del Keychain → FAIL `the_keychain_provider_is_refused_at_startup_off_macos_when_no_test_runner_is_injected`.
 - Simulación no POSIX de P15 security (`POSIX_HOST=False`): 34/34 con `[SKIP]` explícitos en los casos POSIX y en verde los 4 independientes más los 2 nuevos.
 - Control negativo del allowlist: una fila con `curl` → FAIL.
-- **Pendiente en Windows:** palabras reservadas del validador (no se pueden probar en macOS con bash 3.2) y el `[SKIP]` real de P15.
+- Windows (§8): palabras reservadas del validador en verde con bash 5.3; P15 con `[SKIP]` reales.
 
 ## 6. SECURITY VALIDATION
 
@@ -75,22 +75,36 @@ Además, un defecto silencioso: `/bin/bash` 3.2 de macOS no tiene `declare -A`. 
 | Plataforma | Antes (`v0.17.0`) | Después |
 |---|---|---|
 | macOS (bash 3.2, BSD) | 949/962 (13 exclusivos de macOS; validador vacío) | **957/962**: 5 FAIL explícitos del guard bash ≥ 4 (`test_sql_static_validator`, `test_fixture_query_variant_resolution`, `test_no_variant_references_unknown_column`, `test_static_validator_checks_aliased_columns`, `test_static_validator_validates_non_v_dollar_dictionary_objects`) |
-| Windows (Git Bash, GNU) | 955/962 | **pendiente** (esperado 962/962) |
+| Windows (Git Bash 5.3, GNU) | 955/962 | **961/962**: el único FAIL es `test_p14_mutation_controls` dentro de `run-all.sh`, que aislado pasa 18/18 (igual que en la línea base; fuera de alcance, `CHG-REQ-TEST-P14-WINDOWS-SUITE`) |
 | Linux | sin medición | sin medición: propuesta `CHG-REQ-CI-MATRIX` |
 
-## 8. Validación en Windows (pendiente, la ejecuta el usuario)
+## 8. Validación en Windows (ejecutada por el usuario, 2026-09-24, commit `476fe03`)
 
-Requisito para pasar a HUMAN REVIEW: `tests/run-all.sh` en verde en Windows y P15 con `[SKIP]` explícitos (no PASS silenciosos).
+| Comprobación | Resultado |
+|---|---|
+| `bash --version` | GNU bash 5.3.15 (cygwin) |
+| Patrón viejo `` ^\| \`get_ `` vs. nuevo `` ^\| [`]get_ `` sobre `docs/GI_READONLY_COLLECTORS.md` | **0** vs. **16** filas: en GNU grep el test de collectors no revisaba nada |
+| `test_sql_static_validator` | PASS (los falsos positivos `SYSDATE`/`KEEP`/`DENSE_RANK`/`LAST` desaparecen) |
+| `test_p15_oracle_lab_security` | 28 `[SKIP]` explícitos (los 28 casos POSIX-only); los 4 independientes y los 2 nuevos corren y pasan |
+| `test_p15_oracle_lab_adapter` | "23/23 checks OK": los 23 casos son POSIX-only y salen `[SKIP]`; el harness P13 cuenta SKIP como OK en ese resumen |
+| `test_collectors_are_allowlisted` | PASS (ahora revisando las 16 filas) |
+| `tests/run-all.sh` | 961/962; `test_p14_mutation_controls` aislado 18/18 |
 
 ## 9–10. Registros relacionados
 
 - Cierra `CHG-REQ-TEST-BSD-GREP`.
 - Corrige lo que declaraban los registros de LAB-002…005 sobre los "13 fallos preexistentes" y los PASS del validador en macOS. Los CHANGELOG ya publicados no se reescriben; esta entrada es la fe de erratas.
 - Propuestas nuevas:
+  - `CHG-REQ-TEST-P14-WINDOWS-SUITE`: `test_p14_mutation_controls` falla dentro de `run-all.sh` en Windows (en la línea base, exit 130) y pasa aislado; posible límite de tiempo (`timeout_seconds=120` en `tests/p14/check_mutation.py`) bajo carga.
+  - `CHG-REQ-P13-SKIP-SUMMARY`: el resumen "N/M checks OK" del harness P13 debería contar los SKIP aparte.
   - `CHG-REQ-CI-MATRIX`: GitHub Actions con `windows-latest`, `ubuntu-latest` y `macos-latest`, con bash ≥ 4.
   - `CHG-REQ-DOC-GI-HOSTNAME`.
 - `CHG-ESTACK-ORA19C-LAB-005` (en pausa) se rebasa sobre esta rama cuando se integre, y su guard nuevo también se valida en Windows.
 
 ## 11. HUMAN REVIEW (pendiente)
 
-Revisor distinto del proponente. La aprobación se registra contra el `content_digest` que informe el motor, **después** de la validación en Windows.
+Revisor distinto del proponente. La aprobación se registra contra el `content_digest` que informa el motor (§12).
+
+## 12. Motor de gobernanza
+
+`advise --mode estack` (2026-09-24T22:07:58Z): `governance_state: PENDING_HUMAN_REVIEW`, `blockers: []`, `promote_status: HUMAN_ACTION_REQUIRED`, `content_digest: 435b25115ffe63de988af91914bd9537a666b11385f7622549ba5e86b471b691`. El motor sólo admite `PASS|FAIL|UNKNOWN` en compatibilidad; `version_coverage`, `query_contract`, `dictionary_columns` y `cost_and_license` se declaran `PASS` por no cambiar (no se tocan queries, diccionario ni costo). La salida queda fuera del repo, en `~/.local/share/oracle-diagnostic-estack/change-evidence/CHG-ESTACK-PORTABILITY-001/`.

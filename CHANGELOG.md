@@ -4,7 +4,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change compatibility|documentation` — CHG-ESTACK-PORTABILITY-001 — portabilidad Windows/macOS/Linux
 
-Rama `change/portability-001` sobre `main` (`a00ea2c`). Pendiente: validación en Windows y HUMAN REVIEW. Ver `docs/PORTABILITY_CHG001.md`.
+Rama `change/portability-001` sobre `main` (`a00ea2c`). Validado en Windows (Git Bash 5.3: 961/962, el único fallo es `test_p14_mutation_controls` en suite, que aislado pasa, igual que en la línea base) y en macOS (957/962: 5 FAIL explícitos por bash < 4). Pendiente: HUMAN REVIEW. Ver `docs/PORTABILITY_CHG001.md`.
 
 ### Fixed
 
