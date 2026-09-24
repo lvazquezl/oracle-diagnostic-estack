@@ -1,7 +1,7 @@
 # CHG-ESTACK-PORTABILITY-001 — Portabilidad Windows/macOS/Linux de la suite y del lanzador lab
 
 **Tipo:** `/change compatibility|documentation` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/portability-001` (desde `main` `a00ea2c`, `v0.17.0-oracle19c-lab-rman`)
-**Estado:** propuesto. Validado en Windows (§8); el motor de gobernanza informa `PENDING_HUMAN_REVIEW` (§12). `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** aprobado por revisión humana (§11). Validado en Windows (§8). Pendiente: `PROMOTE` (acción humana). `PROMOTE`, commit, merge, tag y push son acciones humanas.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. Ninguna política cambia y no se agregan queries, collectors ni herramientas.
 
@@ -101,9 +101,9 @@ Además, un defecto silencioso: `/bin/bash` 3.2 de macOS no tiene `declare -A`. 
   - `CHG-REQ-DOC-GI-HOSTNAME`.
 - `CHG-ESTACK-ORA19C-LAB-005` (en pausa) se rebasa sobre esta rama cuando se integre, y su guard nuevo también se valida en Windows.
 
-## 11. HUMAN REVIEW (pendiente)
+## 11. HUMAN REVIEW — aprobado
 
-Revisor distinto del proponente. La aprobación se registra contra el `content_digest` que informa el motor (§12).
+`AUTH-PORTABILITY-001`, revisor `REV-DBAMANAGER` (distinto del proponente `REV-CLAUDEAGENT`), `2026-09-24T22:13:34Z`, contra el digest `435b2511…71b691`. El motor informa `review_status: APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el digest, no la identidad del firmante. `PROMOTE` (merge, tag) sigue siendo acción humana.
 
 ## 12. Motor de gobernanza
 
