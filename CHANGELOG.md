@@ -2,9 +2,9 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — `/change compatibility|documentation` — CHG-ESTACK-PORTABILITY-001 — portabilidad Windows/macOS/Linux
+## [0.18.0] — 2026-09-24 — `v0.18.0-portability` — `/change compatibility|documentation` — CHG-ESTACK-PORTABILITY-001 — portabilidad Windows/macOS/Linux
 
-Rama `change/portability-001` sobre `main` (`a00ea2c`). Validado en Windows (Git Bash 5.3: 961/962, el único fallo es `test_p14_mutation_controls` en suite, que aislado pasa, igual que en la línea base) y en macOS (957/962: 5 FAIL explícitos por bash < 4). Aprobación humana registrada: `AUTH-PORTABILITY-001`, revisor `REV-DBAMANAGER`, `2026-09-24T22:13:34Z`, contra el digest `435b2511…71b691` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/PORTABILITY_CHG001.md`.
+Rama `change/portability-001` sobre `main` (`a00ea2c`), commits `476fe03`, `11a71dc` y `afd5c7b`, integrada a `main` vía PR #10 (merge `20c817a`). Validado en Windows (Git Bash 5.3: 961/962, el único fallo es `test_p14_mutation_controls` en suite, que aislado pasa, igual que en la línea base) y en macOS (957/962: 5 FAIL explícitos por bash < 4). Aprobación humana registrada: `AUTH-PORTABILITY-001`, revisor `REV-DBAMANAGER`, `2026-09-24T22:13:34Z`, contra el digest `435b2511…71b691` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/PORTABILITY_CHG001.md`.
 
 ### Fixed
 
