@@ -1,7 +1,7 @@
 # CHG-ESTACK-PORTABILITY-001 — Portabilidad Windows/macOS/Linux de la suite y del lanzador lab
 
 **Tipo:** `/change compatibility|documentation` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/portability-001` (desde `main` `a00ea2c`, `v0.17.0-oracle19c-lab-rman`)
-**Estado:** aprobado por revisión humana (§11). Validado en Windows (§8). Pendiente: `PROMOTE` (acción humana). `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** aprobado por revisión humana (§11), validado en Windows (§8) e integrado a `main` vía PR #10 (merge `20c817a`). Release `0.18.0`, tag `v0.18.0-portability` (se crea sobre el merge de la rama del changelog). `PROMOTE`, commit, merge, tag y push son acciones humanas.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. Ninguna política cambia y no se agregan queries, collectors ni herramientas.
 
