@@ -242,8 +242,11 @@ def malformed_adapter_payloads_and_failures_give_fixed_errors_without_retries():
     c.initialize()
     c.server.gateway.adapters._adapters["fixture"] = counter = Counting(exc=RuntimeError("connect failed user=" + MARKER + " host=db01.prod.example"))
     env, raw = c.call("diagnostics.collect", {"collector_id": "Q-ORA-PROCESSES-SUMMARY-001", "target_alias": PRIMARY})
-    assert env["error"]["code"] == "E_ADAPTER_FAILED" and counter.calls == 1 and MARKER not in json.dumps(env) and "db01" not in json.dumps(env)
-    assert MARKER not in json.dumps(c.server.gateway.audit.records)
+    # CHG-ESTACK-CI-MATRIX-001: explicit diagnostics (fixed codes/booleans only, never the marker) — this failed on the
+    # Windows CI runner with a bare AssertionError and nothing to diagnose it from.
+    code, leaked = (env.get("error") or {}).get("code"), [MARKER in json.dumps(env), "db01" in json.dumps(env)]
+    assert code == "E_ADAPTER_FAILED" and counter.calls == 1 and not any(leaked), ("code", code, "calls", counter.calls, "leaked", leaked)
+    assert MARKER not in json.dumps(c.server.gateway.audit.records), "marker reached the audit records"
 
 
 @test

@@ -6,7 +6,7 @@ import hashlib
 import io
 import json
 
-from tests.p15.harness import (posix_test, ALIAS, SECRET, Lab, Scenario, leaks, profile_doc, run_all, run_lab_cli, test, tmpdir, write_private,
+from tests.p15.harness import (macos_test, posix_test, ALIAS, SECRET, Lab, Scenario, leaks, profile_doc, run_all, run_lab_cli, test, tmpdir, write_private,
                                write_targets, lab_target)
 
 ID = "Q-DISC-IDENTITY-001"
@@ -180,7 +180,7 @@ def check_command_report_is_sanitized_and_explains_failures_by_category_only():
         assert not leaks(json.dumps(report))
 
 
-@posix_test
+@macos_test
 def validate_config_subcommand_is_offline_and_prints_no_connection_material():
     with tmpdir() as d:
         prof = write_private(d, "lab-profile.json", profile_doc())
@@ -192,7 +192,7 @@ def validate_config_subcommand_is_offline_and_prints_no_connection_material():
         assert not leaks(out) and "oracle-estack-lab" not in out and "1521" not in out
 
 
-@posix_test
+@macos_test
 def serve_subcommand_speaks_mcp_over_stdio_without_connecting_at_startup():
     import subprocess, sys, os
     from tests.p15.harness import FAKEDRIVER_DIR, ROOT

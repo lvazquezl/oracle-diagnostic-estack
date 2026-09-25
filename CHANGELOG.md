@@ -9,7 +9,13 @@ Rama `change/ci-matrix` sobre `main` (`ab6c90c`). Pendiente: primera ejecución 
 ### Added
 
 - `.github/workflows/tests.yml`: `tests/run-all.sh` en `ubuntu-latest`, `windows-latest` y `macos-latest` (bash ≥ 4 vía Homebrew), con Python 3.13. Solo lectura (`contents: read`), sin secretos, sin lab y con acciones fijadas por SHA.
-- `tests/test_ci_workflow_is_read_only.sh`: guard de seguridad de los workflows (10 mutaciones detectadas).
+- `tests/test_ci_workflow_is_read_only.sh`: guard de seguridad de los workflows (12 mutaciones detectadas).
+
+### Fixed
+
+- P15 en Linux (defecto de 0.18.0 detectado por la primera ejecución de la CI): 4 casos que lanzan el CLI lab real con `macos_keychain` salen como `[SKIP]` explícito fuera de macOS (`macos_test`).
+- `release_readiness` en Windows: `bash`/`git` se resuelven por PATH. `subprocess` elegía `System32\bash.exe` (lanzador de WSL) y el log de evidencia salía vacío.
+- Workflow en macOS: solo se expone `bash` de Homebrew; antes también tapaba el `python3` 3.13 de `setup-python`.
 
 ### Regression
 

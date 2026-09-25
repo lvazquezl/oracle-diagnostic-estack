@@ -38,6 +38,9 @@ done
 grep -qE 'fail-fast:[[:space:]]*false' <<<"$WFB" || fail "tests.yml: fail-fast debe ser false (un SO no oculta a otro)"
 grep -qE 'bash tests/run-all\.sh' <<<"$WFB" || fail "tests.yml: no corre tests/run-all.sh"
 grep -qE 'brew install bash' <<<"$WFB" || fail "tests.yml: macOS necesita bash >= 4"
+grep -nE 'brew --prefix\)/bin"?[[:space:]]*>>[[:space:]]*"?\$GITHUB_PATH' <<<"$WFB" \
+  && fail "tests.yml: anteponer todo el bin de Homebrew al PATH tapa el python3 de setup-python"
+grep -qE "sys\.version_info\[:2\] == \(3, 13\)" <<<"$WFB" || fail "tests.yml: debe verificar que python3 es el de setup-python (3.13)"
 
 [ "$FAIL" -eq 0 ] && echo "[PASS] los workflows de CI son de solo lectura, sintéticos y fijados por SHA en ubuntu/windows/macos"
 exit "$FAIL"

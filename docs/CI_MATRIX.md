@@ -16,6 +16,7 @@ En `CHG-ESTACK-PORTABILITY-001`, los defectos de portabilidad se acumularon dura
 |---|---|
 | `.github/workflows/tests.yml` (nuevo) | `tests/run-all.sh` en `ubuntu-latest`, `windows-latest` y `macos-latest`, en cada PR, en cada push a `main` y a demanda |
 | `tests/test_ci_workflow_is_read_only.sh` (nuevo) | Guard de seguridad de los workflows |
+| `tests/p15/harness.py`, `check_lab_{adapter,security}.py` | `macos_test`: 4 casos que lanzan el CLI lab real con el perfil `macos_keychain` salen `[SKIP]` explícito fuera de macOS (defecto de `v0.18.0` detectado por la primera ejecución en Linux, §8) |
 
 ## 3. GAP ANALYSIS
 
@@ -71,9 +72,29 @@ En `CHG-ESTACK-PORTABILITY-001`, los defectos de portabilidad se acumularon dura
 | macOS local (bash 5.3.20 Homebrew) | **963/963** (962 de `v0.18.0` + guard). Primera corrida en macOS con el validador SQL realmente activo: 962/962 antes del cambio |
 | GitHub Actions (ubuntu / windows / macos) | pendiente (§8) |
 
-## 8. Validación en GitHub Actions (pendiente)
+## 8. Validación en GitHub Actions
 
-La primera ejecución ocurre al hacer push de la rama y abrir la PR. Requisito para HUMAN REVIEW: los tres jobs en verde, o fallos explicados y registrados. También se registran la duración por SO y la salida del paso `toolchain`.
+Requisito para HUMAN REVIEW: los tres jobs en verde, o fallos explicados y registrados. También se registran la duración por SO y la salida del paso `toolchain`.
+
+**Ejecución 1** (PR #12, run `36082396894`, commit `f00f0f5`, 2026-09-25):
+
+| Job | Toolchain | Resultado | Duración |
+|---|---|---|---|
+| ubuntu-latest | bash 5.2.21, Python 3.13.15, GNU grep 3.11 | **FAIL 961/963**: `test_p15_oracle_lab_{adapter,security}` | 3 min |
+| macos-latest | bash 5.3.15 (Homebrew), **Python 3.14.7**, BSD grep 2.6.0 | 963/963 | 5 min |
+| windows-latest | bash 5.3.15 (Git Bash), Python 3.13.15 | **FAIL 960/963**: `test_p14_{evidence_packager,operability,release_gate}` | 41 min |
+
+Tres defectos encontrados, y una observación:
+
+1. **Linux (defecto de `v0.18.0`, `CHG-ESTACK-PORTABILITY-001`):** el rechazo de `macos_keychain` fuera de darwin también se dispara en Linux. Cuatro casos P15 lanzan el CLI lab real como subproceso sin runner inyectado (`validate_config_…`, `serve_subcommand_…`, `startup_refusals_…`, `missing_driver_…`) y recibían ese rechazo. El comportamiento del lanzador es el correcto (el lab es solo macOS); los casos pasan a `macos_test` (`[SKIP]` explícito fuera de macOS). El rechazo sigue cubierto en toda plataforma por `the_keychain_provider_is_refused_at_startup_off_macos_…`. Linux nunca se había probado.
+2. **macOS (defecto del workflow):** anteponer todo `$(brew --prefix)/bin` a `GITHUB_PATH` tapaba el `python3` de `setup-python` con el de Homebrew (3.14). Ahora solo se expone un symlink a `bash`, y `toolchain` exige Python 3.13. El guard detecta ambas regresiones (2 mutaciones nuevas).
+
+3. **Windows (defecto de `release_readiness`, anterior a este cambio):** `runner.run_to_file` y `runner.version_line` lanzaban `["bash", …]` con `subprocess`. En Windows, `CreateProcess` busca en `System32` **antes** que en el PATH, y los runners de GitHub traen `System32\bash.exe` (el lanzador de WSL, sin distro): no ejecuta nada, y el log de evidencia salía vacío (`LOG_EMPTY`/`LOG_TRUNCATED`). De ahí salen los fallos de `evidence_packager` y `release_gate`. En la estación del usuario pasa, probablemente porque no tiene ese `bash.exe`. Ahora `bash`/`git` se resuelven por PATH (`shutil.which`), el mismo orden que usa Git Bash; si no se resuelven, se usa el nombre sin cambios y falla igual que antes. El manifiesto sigue registrando `["bash", "tests/run-all.sh"]`.
+4. **Observación, `test_p14_operability`:** el caso `malformed_adapter_payloads_…` falló en Windows con un `AssertionError` sin mensaje; el log no permite diagnosticarlo y no se adivina la causa. Sus asserts ahora reportan código de error, número de llamadas y si hubo fuga (booleanos, nunca el marcador). La ejecución 2 lo mostrará.
+
+Duración: Windows **41 min** en la CI, contra ~3 h en la estación del usuario. Alimenta `CHG-REQ-TEST-SUITE-WINDOWS-PERF`: la lentitud es de esa estación (antivirus u otro factor local), no de la suite.
+
+Local tras las correcciones (macOS, bash 5.3.20): 963/963. Simulación Linux de P15: 4 `[SKIP]` y el resto en verde. **Ejecución 2:** pendiente.
 
 ## 9–10. Registros relacionados
 
