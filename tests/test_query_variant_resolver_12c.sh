@@ -17,7 +17,9 @@ TARGET="12.1"
 # ese mínimo real. Con el comparador 2-tier anterior (vernum, ignoraba patch level) esto pasaba
 # desapercibido -- descubierto al migrar a scripts/lib/version.sh (patch-level-aware), PHASE 6 —
 # VERSION RESOLVER CONSOLIDATION FINALIZATION. Comportamiento nuevo correcto, no una regresión.
-EXPECTED_UNSUPPORTED="Q-CDB-PDB-SAVED-STATE-001"
+EXPECTED_UNSUPPORTED="Q-CDB-PDB-SAVED-STATE-001 Q-DICT-VERIFY-001 Q-DICT-VERIFY-002 Q-DICT-VERIFY-003 Q-DICT-VERIFY-004 Q-DICT-VERIFY-005"
+# CHG-ESTACK-ORA19C-LAB-006: Q-DICT-VERIFY-00N se generan desde views.yaml SÓLO para 19c (la lista embebida
+# depende de la versión); otra versión requiere su propia variante generada (CHG-REQ-LAB-MULTIVERSION).
 
 for f in $(grep -rl '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null); do
   qid=$(grep -m1 '^query_id:' "$f" | awk '{print $2}')

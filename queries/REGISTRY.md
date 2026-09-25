@@ -271,6 +271,11 @@ Todas con `status: active`, `execution_mode: READ_ONLY`, `tests:` referenciado a
 | `Q-ORA-RESOURCE-LIMITS-001` | Uso pico vs. límite de recursos | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
 | `Q-ORA-DIAGNOSTICS-ADR-001` | Incidentes ADR abiertos | 11g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
 | `Q-ORA-DIAGNOSTICS-ALERTLOG-001` | Extracto acotado de alert log (errores ORA-*) | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+| `Q-DICT-VERIFY-001` | Verificación del diccionario contra el catálogo real, parte 1/5 (ALL_SOURCE.* … DBA_TAB_COLUMNS.COLUMN_NAME): sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-DICT-VERIFY-002` | Verificación del diccionario contra el catálogo real, parte 2/5 (DBA_TAB_COLUMNS.OWNER … V$ARCHIVED_LOG.NEXT_TIME): sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-DICT-VERIFY-003` | Verificación del diccionario contra el catálogo real, parte 3/5 (V$ARCHIVED_LOG.SEQUENCE# … V$DATABASE.NAME): sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-DICT-VERIFY-004` | Verificación del diccionario contra el catálogo real, parte 4/5 (V$DATABASE.OPEN_MODE … V$RECOVERY_FILE_DEST.*): sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-DICT-VERIFY-005` | Verificación del diccionario contra el catálogo real, parte 5/5 (V$RECOVERY_FILE_DEST.NAME … V$UNDOSTAT.*): sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 
 ## Oracle Core queries (Fase 2) — Cost, Risk & Sensitivity
 
@@ -296,6 +301,11 @@ Todas con `status: active`, `execution_mode: READ_ONLY`, `tests:` referenciado a
 | `Q-ORA-RESOURCE-LIMITS-001` | `V$RESOURCE_LIMIT` | R0 | LOW | 10 | 50 | LOW | none |
 | `Q-ORA-DIAGNOSTICS-ADR-001` | `V$DIAG_INFO`, `DBA_OUTSTANDING_ALERTS` | R0 | LOW | 15 | 100 | MEDIUM | none |
 | `Q-ORA-DIAGNOSTICS-ALERTLOG-001` | alert log (archivo, collector certificado) | R0 | MEDIUM | 30 | 2000 | HIGH | none |
+| `Q-DICT-VERIFY-001` | `DBA_TAB_COLUMNS` (sólo nombres, owners SYS/AUDSYS/PERFSTAT) | R0 | MEDIUM | 30 | 120 | LOW | none |
+| `Q-DICT-VERIFY-002` | `DBA_TAB_COLUMNS` (sólo nombres, owners SYS/AUDSYS/PERFSTAT) | R0 | MEDIUM | 30 | 120 | LOW | none |
+| `Q-DICT-VERIFY-003` | `DBA_TAB_COLUMNS` (sólo nombres, owners SYS/AUDSYS/PERFSTAT) | R0 | MEDIUM | 30 | 120 | LOW | none |
+| `Q-DICT-VERIFY-004` | `DBA_TAB_COLUMNS` (sólo nombres, owners SYS/AUDSYS/PERFSTAT) | R0 | MEDIUM | 30 | 120 | LOW | none |
+| `Q-DICT-VERIFY-005` | `DBA_TAB_COLUMNS` (sólo nombres, owners SYS/AUDSYS/PERFSTAT) | R0 | MEDIUM | 30 | 120 | LOW | none |
 
 Todas con `status: active`, `execution_mode: READ_ONLY`, mismo set mínimo de tests que el resto del catálogo. Ninguna es `cost_class: BLOCKED`. Ninguna toca tablas de aplicación (`tests/test_no_application_table_access.sh`, `tests/test_application_data_blocked.sh`).
 

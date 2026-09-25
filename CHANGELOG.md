@@ -2,6 +2,16 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change query|compatibility|security` — CHG-ESTACK-ORA19C-LAB-006 — verificación del diccionario contra el catálogo real (19c)
+
+Rama `change/lab-dict-verify` sobre `main` (`ab6c90c`). Pendiente: grant `SELECT_CATALOG_ROLE` y validación en el lab, HUMAN REVIEW. Ver `docs/ORACLE19C_LAB_DICT_VERIFY.md`.
+
+### Added
+
+- `Q-DICT-VERIFY-001` … `-005`, **generadas** desde `compatibility/oracle-dictionary/views.yaml` por `scripts/dict_verify/generate.py`. La base compara 477 pares `VISTA.COLUMNA` declarados para 19c contra `DBA_TAB_COLUMNS` y devuelve sólo discrepancias (`COLUMN_NOT_FOUND`/`VIEW_NOT_FOUND`) + una fila `CHECKED`. Nombres como enums acotados al diccionario; cada sentencia cabe en el techo de 4000 caracteres del lanzador lab.
+- Collectors en el gateway (fixture sintético) y en el adaptador lab (`mcp_gateway_lab` `0.5.0`); registro de readiness con 85 componentes.
+- `tests/test_dict_verify_queries_match_dictionary.sh`: guard de deriva entre el diccionario, las queries y los collectors.
+
 ## [0.18.0] — 2026-09-24 — `v0.18.0-portability` — `/change compatibility|documentation` — CHG-ESTACK-PORTABILITY-001 — portabilidad Windows/macOS/Linux
 
 Rama `change/portability-001` sobre `main` (`a00ea2c`), commits `476fe03`, `11a71dc` y `afd5c7b`, integrada a `main` vía PR #10 (merge `20c817a`). Validado en Windows (Git Bash 5.3: 961/962, el único fallo es `test_p14_mutation_controls` en suite, que aislado pasa, igual que en la línea base) y en macOS (957/962: 5 FAIL explícitos por bash < 4). Aprobación humana registrada: `AUTH-PORTABILITY-001`, revisor `REV-DBAMANAGER`, `2026-09-24T22:13:34Z`, contra el digest `435b2511…71b691` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/PORTABILITY_CHG001.md`.

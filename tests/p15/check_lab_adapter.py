@@ -383,5 +383,26 @@ def job_summary_exposes_status_age_and_failures_without_absolute_dates():
         assert not any(k in text for k in ("start_time", "end_time", "completion_time", "session_key")), "no absolute dates or keys leave"
 
 
+# --- CHG-ESTACK-ORA19C-LAB-006: dictionary verification (generated from views.yaml) --------------------------
+
+@posix_test
+def dictionary_verification_runs_the_generated_block_and_returns_only_discrepancies():
+    from mcp_gateway import catalog
+    q = "Q-DICT-VERIFY-003"
+    with tmpdir() as d:
+        sc = Scenario()
+        sc.dictverify = [{"finding": "COLUMN_NOT_FOUND", "view_name": "V$BACKUP_REDOLOG", "column_name": "THREAD#", "tokens": 1},
+                         {"finding": "CHECKED", "view_name": "*", "column_name": "*", "tokens": 94}]
+        lab = root_lab(d, scenario=sc, max_rows=150, max_output_bytes=16384)
+        lab.gateway.targets[ALIAS].allowed_collectors = frozenset(lab.gateway.targets[ALIAS].allowed_collectors | {q})
+        env, is_error = lab.collect(q)
+        assert not is_error and env["status"] == "OK" and env["provenance"]["kind"] == "REAL", env
+        assert env["evidence"]["rows"] == sc.dictverify, env["evidence"]["rows"]
+        block, = catalog.sql_blocks(open(catalog._find_query_file(q), encoding="utf-8").read())
+        stmt = lab.driver.statements[-1]
+        assert stmt == block.rstrip().rstrip(";").rstrip() and len(stmt) <= 4000, "the generated block runs verbatim, within the ceiling"
+        assert "dba_tab_columns" in stmt.lower() and "'SYS', 'AUDSYS', 'PERFSTAT'" in stmt
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

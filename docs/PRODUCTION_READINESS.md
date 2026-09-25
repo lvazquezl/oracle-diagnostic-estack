@@ -23,13 +23,13 @@ La fuente única de verdad es [`config/production-readiness-registry.json`](../c
 |---|---|
 | adapter | 4 |
 | mcp_tool | 5 |
-| collector | 12 |
+| collector | 17 |
 | engine | 5 |
 | agent | 18 |
 | domain | 20 |
 | skill_domain | 16 |
 
-Distribución de madurez: `TESTED_WITH_SYNTHETIC_FIXTURES` 50, `CONTRACT_ONLY` 29, `DISABLED` 1; ningún componente en `PILOT_VALIDATED`, `CERTIFIED` ni `UNSUPPORTED` a nivel de registro (la incompatibilidad por versión o licencia se resuelve por destino en tiempo de ejecución, no en el registro).
+Distribución de madurez: `TESTED_WITH_SYNTHETIC_FIXTURES` 55, `CONTRACT_ONLY` 29, `DISABLED` 1; ningún componente en `PILOT_VALIDATED`, `CERTIFIED` ni `UNSUPPORTED` a nivel de registro (la incompatibilidad por versión o licencia se resuelve por destino en tiempo de ejecución, no en el registro).
 
 ## Estados de madurez
 
