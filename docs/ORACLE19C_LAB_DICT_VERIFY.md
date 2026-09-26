@@ -115,9 +115,9 @@ Ninguna corrección entra en este cambio. Se abren:
 - `CHG-ESTACK-ORA19C-LAB-005`: al integrarse, `--write` regenera las queries (la columna sale del diccionario) y el control positivo desaparece.
 - `CHG-REQ-LAB-MULTIVERSION`: generación por versión.
 
-## 11. HUMAN REVIEW (pendiente)
+## 11. HUMAN REVIEW — aprobado
 
-Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+`AUTH-ORA19C-LAB-006`, revisor `REV-DBAMANAGER` (distinto del proponente `REV-CLAUDEAGENT`), `2026-09-26T04:46:29Z`, contra el digest `6d9da119…6177e8`. El motor informa `review_status: APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el digest, no la identidad del firmante. `PROMOTE` (merge, tag) sigue siendo acción humana.
 
 ## 12. Motor de gobernanza
 
