@@ -112,9 +112,9 @@ Local tras las correcciones (macOS, bash 5.3.20): 963/963. Simulación Linux de 
 - Alimenta `CHG-REQ-TEST-SUITE-WINDOWS-PERF` (duración medida) y `CHG-REQ-TEST-P14-WINDOWS-SUITE` (corrida completa sin intervención humana).
 - Siguiente: `CHG-REQ-LAB-DICT-VERIFY`.
 
-## 11. HUMAN REVIEW (pendiente)
+## 11. HUMAN REVIEW — aprobado
 
-Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+`AUTH-CI-MATRIX-001`, revisor `REV-DBAMANAGER` (distinto del proponente `REV-CLAUDEAGENT`), `2026-09-26T04:46:29Z`, contra el digest `5c1282f8…79dc9ef`. El motor informa `review_status: APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el digest, no la identidad del firmante. `PROMOTE` (merge, tag) sigue siendo acción humana.
 
 ## 12. Motor de gobernanza
 
