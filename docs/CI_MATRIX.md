@@ -2,7 +2,7 @@
 
 **Tipo:** `/change security|documentation` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/ci-matrix` (desde `main` `ab6c90c`, `v0.18.0-portability`)
 **Origen:** `CHG-REQ-CI-MATRIX` (propuesto en `CHG-ESTACK-PORTABILITY-001`)
-**Estado:** propuesto. Pendiente: primera ejecución en GitHub Actions (§8) y HUMAN REVIEW. `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** propuesto. Validado en GitHub Actions en los tres sistemas (§8, ejecución 2). Pendiente: HUMAN REVIEW. `PROMOTE`, commit, merge, tag y push son acciones humanas.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. La CI no toca Oracle, el lab ni credenciales.
 
@@ -70,7 +70,7 @@ En `CHG-ESTACK-PORTABILITY-001`, los defectos de portabilidad se acumularon dura
 | Plataforma | Resultado |
 |---|---|
 | macOS local (bash 5.3.20 Homebrew) | **963/963** (962 de `v0.18.0` + guard). Primera corrida en macOS con el validador SQL realmente activo: 962/962 antes del cambio |
-| GitHub Actions (ubuntu / windows / macos) | pendiente (§8) |
+| GitHub Actions (ubuntu / windows / macos) | **963/963** en los tres (§8, ejecución 2) |
 
 ## 8. Validación en GitHub Actions
 
@@ -94,7 +94,17 @@ Tres defectos encontrados, y una observación:
 
 Duración: Windows **41 min** en la CI, contra ~3 h en la estación del usuario. Alimenta `CHG-REQ-TEST-SUITE-WINDOWS-PERF`: la lentitud es de esa estación (antivirus u otro factor local), no de la suite.
 
-Local tras las correcciones (macOS, bash 5.3.20): 963/963. Simulación Linux de P15: 4 `[SKIP]` y el resto en verde. **Ejecución 2:** pendiente.
+Local tras las correcciones (macOS, bash 5.3.20): 963/963. Simulación Linux de P15: 4 `[SKIP]` y el resto en verde.
+
+**Ejecución 2** (run `36088771415`, commit `1ba3722`, 2026-09-25):
+
+| Job | Toolchain | Resultado | `[SKIP]` | Duración |
+|---|---|---|---|---|
+| ubuntu-latest | bash 5.2.21, Python 3.13.15, GNU grep 3.11 | **963/963** | 4 (`macos_test`) | 3 min |
+| macos-latest | bash 5.3.15 (solo el symlink `bash4`), **Python 3.13.15**, BSD grep 2.6.0 | **963/963** | 0 | 5 min |
+| windows-latest | bash 5.3.15 (Git Bash), Python 3.13.15, GNU grep 3.0 | **963/963** | 51 (23 + 28 `posix_test`) | 33 min |
+
+`test_p14_operability` pasó en Windows con los asserts diagnósticos nuevos. El fallo de la ejecución 1 **no se reprodujo** y su causa queda sin determinar: si reaparece, el mensaje dirá código, llamadas y fuga.
 
 ## 9–10. Registros relacionados
 
@@ -104,4 +114,8 @@ Local tras las correcciones (macOS, bash 5.3.20): 963/963. Simulación Linux de 
 
 ## 11. HUMAN REVIEW (pendiente)
 
-## 12. Motor de gobernanza (pendiente, después de §8)
+Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+
+## 12. Motor de gobernanza
+
+`advise --mode estack` (2026-09-25T03:37:33Z): `governance_state: PENDING_HUMAN_REVIEW`, `blockers: []`, `promote_status: HUMAN_ACTION_REQUIRED`, `content_digest: 5c1282f87fd7508284a83f52acb7abae9cd6fb428ab0534ced632e36d79dc9ef`. La salida queda fuera del repo, en `~/.local/share/oracle-diagnostic-estack/change-evidence/CHG-ESTACK-CI-MATRIX-001/`.

@@ -4,7 +4,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change security|documentation` — CHG-ESTACK-CI-MATRIX-001 — suite en CI: Windows, Linux y macOS
 
-Rama `change/ci-matrix` sobre `main` (`ab6c90c`). Pendiente: primera ejecución en GitHub Actions y HUMAN REVIEW. Ver `docs/CI_MATRIX.md`.
+Rama `change/ci-matrix` sobre `main` (`ab6c90c`). Validado en GitHub Actions: 963/963 en ubuntu, macos y windows (ejecución 2, `1ba3722`). Pendiente: HUMAN REVIEW. Ver `docs/CI_MATRIX.md`.
 
 ### Added
 
