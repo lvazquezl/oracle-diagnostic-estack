@@ -4,7 +4,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change query|compatibility|security` — CHG-ESTACK-ORA19C-LAB-006 — verificación del diccionario contra el catálogo real (19c)
 
-Rama `change/lab-dict-verify` sobre `main` (`ab6c90c`). Pendiente: grant `SELECT_CATALOG_ROLE` y validación en el lab, HUMAN REVIEW. Ver `docs/ORACLE19C_LAB_DICT_VERIFY.md`.
+Rama `change/lab-dict-verify` sobre `main` (`ab6c90c`). Validado en el lab (19c, `CDB$ROOT`, con `SELECT_CATALOG_ROLE`): 477 pares verificados, 13 discrepancias, incluido el control positivo `V$BACKUP_REDOLOG.COMPLETION_TIME`; 6 afectan a queries certificadas (`CHG-REQ-DICT-19C-FIXES`). Pendiente: HUMAN REVIEW. Ver `docs/ORACLE19C_LAB_DICT_VERIFY.md`.
 
 ### Added
 

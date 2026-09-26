@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|compatibility|security` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/lab-dict-verify` (desde `main` `ab6c90c`, `v0.18.0-portability`)
 **Origen:** `CHG-REQ-LAB-DICT-VERIFY` (cubre `CHG-REQ-DICT-RMAN-AUDIT` para todos los dominios)
-**Estado:** propuesto. Pendiente: grant y validación en el lab (§8), HUMAN REVIEW. `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** propuesto. Validado en el lab (§8). Pendiente: HUMAN REVIEW. `PROMOTE`, commit, merge, tag y push son acciones humanas.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 
@@ -65,7 +65,7 @@ READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 
 macOS (bash 5.3.20): 962/962 antes y **963/963** después (+ guard de deriva). P15: adapter 23 → 24, security 34 → 35. `test_query_variant_resolver_*`: las 5 declaradas 19c-only.
 
-## 8. Pasos humanos y validación en el lab (pendiente)
+## 8. Pasos humanos y validación en el lab
 
 1. **DBA, en `CDB$ROOT`:**
    - `GRANT SELECT_CATALOG_ROLE TO C##ESTACK_DIAG CONTAINER=CURRENT;`
@@ -73,6 +73,41 @@ macOS (bash 5.3.20): 962/962 antes y **963/963** después (+ guard de deriva). P
 2. **Targets file privado** (`~/.config/oracle-diagnostic-estack/targets.lab.json`): agregar `Q-DICT-VERIFY-001` … `-005` a `allowed_collectors`. Reconectar el lanzador lab.
 3. **Resultado esperado** (control positivo): `Q-DICT-VERIFY-003` debe reportar `COLUMN_NOT_FOUND` para `V$BACKUP_REDOLOG.COMPLETION_TIME`, el defecto conocido que corrige `CHG-ESTACK-ORA19C-LAB-005`, aún no integrado. Si no aparece, la verificación no funciona.
 4. Cualquier otra discrepancia se registra y se corrige por `/change compatibility`, no en este cambio.
+
+### Resultado (2026-09-25, `lab-ol8-19c`, Oracle 19c RU 19.32, `CDB$ROOT`, commit `ddd7cac`)
+
+Grant `SELECT_CATALOG_ROLE` aplicado por el DBA. El lanzador arrancó con el rol, así que el guard de `SESSION_PRIVS` no vio privilegios de sistema nuevos. Las 5 partes corrieron `OK`, `REAL`, sin limitaciones ni truncamiento: **477 tokens verificados** (97 + 96 + 94 + 98 + 92), **13 discrepancias**.
+
+| Parte | Evidencia | Discrepancias |
+|---|---|---|
+| 001 | `EVR-c9cacd6ae196366a278b6327` | 0 |
+| 002 | `EVR-f6336d2eab00c3662bf82405` | 7 |
+| 003 | `EVR-87aed04cdabc648ad38da4bf` | 2 (incluye el control positivo) |
+| 004 | `EVR-3b42e93c2ed96aa4a7872b85` | 3 |
+| 005 | `EVR-3343ada52daa6722482cc342` | 1 |
+
+**Control positivo:** `V$BACKUP_REDOLOG.COMPLETION_TIME` → `COLUMN_NOT_FOUND`. ✔ La verificación funciona contra Oracle real.
+
+Clasificación (cruce con las queries certificadas que usan cada nombre):
+
+| # | Hallazgo | Tipo | Query certificada afectada | Lectura |
+|---|---|---|---|---|
+| 1 | `V$BACKUP_REDOLOG.COMPLETION_TIME` | columna inexistente | `Q-RMAN-ARCHIVELOG-BACKUP-001` | Conocido; lo corrige `CHG-ESTACK-ORA19C-LAB-005` |
+| 2 | `V$BACKUP_DEVICE.PHYSICAL_DEVICE_NAME` | columna inexistente | `Q-RMAN-BACKUP-DEVICE-001` | **Defecto:** la query fallaría con `ORA-00904` |
+| 3 | `PROXY_USERS.AUTHORIZATION_CONSTRAINT` | columna inexistente | `Q-SEC-PROXY-AUTHENTICATION-001` | **Defecto** |
+| 4 | `REDACTION_COLUMNS.POLICY_NAME` | columna inexistente | `Q-SEC-DATA-REDACTION-POLICIES-001` | **Defecto** |
+| 5 | `GV$ASM_INSTANCE` | vista inexistente | `Q-ASM-TOPOLOGY-001` | **Defecto probable** |
+| 6–7 | `GV$GCS_STATISTICS`, `GV$GES_STATISTICS` | vista inexistente | `Q-RAC-GES-GCS-001` | **Defecto probable** |
+| 8 | `V$STANDBY_LOG.GROUPS` | columna inexistente | ninguna | Error del diccionario, sin query afectada |
+| 9–10 | `V$DATAGUARD_STATS.APPLY_LAG`, `.TRANSPORT_LAG` | columna inexistente | ninguna | El diccionario modela como columnas valores de la columna `NAME` |
+| 11 | `V$PGASTAT.PGA_AGGREGATE_LIMIT_ROW` | columna inexistente | ninguna | Marcador documental (su nota ya dice que no es fila ni columna), no una columna |
+| 12–13 | `STATS$SNAPSHOT`, `STATS$SYSTEM_EVENT` | vista inexistente | `Q-PERF-WAIT-STATSPACK-001` | **Esperado:** Statspack no está instalado en el lab; no es defecto |
+
+Alcance de la conclusión: el catálogo es el de **19c**, en una base single-instance (sin RAC) **sobre ASM** (dato del DBA, 2026-09-25; el registro del target decía `asm: false` y el discovery de `ANA-20260922-002` lo dejó `ENVIRONMENT_UNKNOWN`). `DBA_TAB_COLUMNS` refleja el catálogo instalado, que no depende de RAC/ASM. Que `GV$ASM_INSTANCE` no exista **en una base que usa ASM** refuerza que el nombre es incorrecto. Aun así, los hallazgos 5–7 se confirman con la documentación antes de corregirlos. Las entradas 2–4 tenían `DOCUMENTATION_VALIDATED`, igual que la 1: esa marca no es suficiente.
+
+Ninguna corrección entra en este cambio. Se abren:
+- `CHG-REQ-DICT-19C-FIXES` (hallazgos 2–11): diccionario y queries afectadas.
+- `CHG-REQ-DICT-PSEUDO-COLUMNS` (hallazgos 9–11): definir cómo modelar valores de `NAME` sin declararlos como columnas.
 
 ## 9–10. Registros relacionados
 
@@ -82,4 +117,8 @@ macOS (bash 5.3.20): 962/962 antes y **963/963** después (+ guard de deriva). P
 
 ## 11. HUMAN REVIEW (pendiente)
 
-## 12. Motor de gobernanza (pendiente, después de §8)
+Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+
+## 12. Motor de gobernanza
+
+`advise --mode estack` (2026-09-25T03:09:37Z): `governance_state: PENDING_HUMAN_REVIEW`, `blockers: []`, `promote_status: HUMAN_ACTION_REQUIRED`, `content_digest: 6d9da11972c019ac350973b347c9e17c9f06b8a116dcebcf1b7b9bb31d6177e8`. La salida queda fuera del repo, en `~/.local/share/oracle-diagnostic-estack/change-evidence/CHG-ESTACK-ORA19C-LAB-006/`.
