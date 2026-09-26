@@ -2,6 +2,25 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change security|documentation` — CHG-ESTACK-CI-MATRIX-001 — suite en CI: Windows, Linux y macOS
+
+Rama `change/ci-matrix` sobre `main` (`ab6c90c`). Validado en GitHub Actions: 963/963 en ubuntu, macos y windows (ejecución 2, `1ba3722`). Aprobación humana registrada: `AUTH-CI-MATRIX-001`, revisor `REV-DBAMANAGER`, `2026-09-26T04:46:29Z`, contra el digest `5c1282f8…79dc9ef` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/CI_MATRIX.md`.
+
+### Added
+
+- `.github/workflows/tests.yml`: `tests/run-all.sh` en `ubuntu-latest`, `windows-latest` y `macos-latest` (bash ≥ 4 vía Homebrew), con Python 3.13. Solo lectura (`contents: read`), sin secretos, sin lab y con acciones fijadas por SHA.
+- `tests/test_ci_workflow_is_read_only.sh`: guard de seguridad de los workflows (12 mutaciones detectadas).
+
+### Fixed
+
+- P15 en Linux (defecto de 0.18.0 detectado por la primera ejecución de la CI): 4 casos que lanzan el CLI lab real con `macos_keychain` salen como `[SKIP]` explícito fuera de macOS (`macos_test`).
+- `release_readiness` en Windows: `bash`/`git` se resuelven por PATH. `subprocess` elegía `System32\bash.exe` (lanzador de WSL) y el log de evidencia salía vacío.
+- Workflow en macOS: solo se expone `bash` de Homebrew; antes también tapaba el `python3` 3.13 de `setup-python`.
+
+### Regression
+
+- macOS con bash 5.3: 962/962 antes y 963/963 después.
+
 ## [0.18.0] — 2026-09-24 — `v0.18.0-portability` — `/change compatibility|documentation` — CHG-ESTACK-PORTABILITY-001 — portabilidad Windows/macOS/Linux
 
 Rama `change/portability-001` sobre `main` (`a00ea2c`), commits `476fe03`, `11a71dc` y `afd5c7b`, integrada a `main` vía PR #10 (merge `20c817a`). Validado en Windows (Git Bash 5.3: 961/962, el único fallo es `test_p14_mutation_controls` en suite, que aislado pasa, igual que en la línea base) y en macOS (957/962: 5 FAIL explícitos por bash < 4). Aprobación humana registrada: `AUTH-PORTABILITY-001`, revisor `REV-DBAMANAGER`, `2026-09-24T22:13:34Z`, contra el digest `435b2511…71b691` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/PORTABILITY_CHG001.md`.

@@ -11,7 +11,7 @@ import os
 import time
 from datetime import datetime, timedelta, timezone
 
-from tests.p15.harness import (posix_test, ALIAS, DELETE, ROOT, SECRET, FakeKeychain, Lab, Scenario, driver_error, lab_target, leaks, profile_doc,
+from tests.p15.harness import (macos_test, posix_test, ALIAS, DELETE, ROOT, SECRET, FakeKeychain, Lab, Scenario, driver_error, lab_target, leaks, profile_doc,
                                run_all, run_lab_cli, test, tmpdir, utc, write_private, write_targets)
 
 ID = "Q-DISC-IDENTITY-001"
@@ -350,7 +350,7 @@ def lab_cli_has_no_connection_sql_or_secret_flags_and_never_echoes_input():
         assert rc == 2 and out == "" and SECRET not in err and err.strip() in ("mcp_gateway_lab: invalid command line usage",), (bad, err)
 
 
-@posix_test
+@macos_test
 def startup_refusals_are_fixed_text_and_environment_variables_change_nothing():
     with tmpdir() as d:
         prof = write_private(d, "lab-profile.json", profile_doc(), mode=0o644)
@@ -368,7 +368,7 @@ def startup_refusals_are_fixed_text_and_environment_variables_change_nothing():
     assert rc == 2 and out == ""
 
 
-@posix_test
+@macos_test
 def missing_driver_is_a_fixed_startup_refusal():
     import subprocess, sys
     with tmpdir() as d:

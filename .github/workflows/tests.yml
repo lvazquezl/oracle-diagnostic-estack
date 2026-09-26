@@ -1,0 +1,67 @@
+# CHG-REQ-CI-MATRIX — static/synthetic test suite on Windows, Linux and macOS.
+# READ-ONLY: no Oracle, no lab launcher, no secrets, no write permissions. The lab (mcp_gateway_lab) is validated
+# only by a human from the macOS workstation; here its POSIX-only cases run on Linux/macOS and are an explicit
+# [SKIP] on Windows. Guarded by tests/test_ci_workflow_is_read_only.sh.
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  suite:
+    name: run-all (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6.3.0
+        with:
+          python-version: "3.13"
+
+      - name: bash >= 4 on macOS (/bin/bash is 3.2)
+        if: runner.os == 'macOS'
+        run: |
+          brew install bash
+          # expose ONLY bash: prepending the whole Homebrew bin also shadows setup-python's python3
+          mkdir -p "$RUNNER_TEMP/bash4"
+          ln -sf "$(brew --prefix)/bin/bash" "$RUNNER_TEMP/bash4/bash"
+          echo "$RUNNER_TEMP/bash4" >> "$GITHUB_PATH"
+
+      - name: python3 on Windows
+        if: runner.os == 'Windows'
+        run: |
+          if ! command -v python3 >/dev/null 2>&1; then
+            py="$(command -v python)"
+            cp "$py" "$(dirname "$py")/python3.exe"
+          fi
+
+      - name: toolchain
+        run: |
+          which bash
+          bash --version | head -1
+          python3 --version
+          python3 -c 'import sys; assert sys.version_info[:2] == (3, 13), sys.version'
+          grep --version | head -1
+
+      - name: tests/run-all.sh
+        run: bash tests/run-all.sh

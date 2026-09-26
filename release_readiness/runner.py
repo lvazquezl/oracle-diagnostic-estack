@@ -10,6 +10,7 @@ A timeout ends the whole process tree and is reported as `timed_out` — never a
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -73,6 +74,16 @@ def kill_tree(proc: subprocess.Popen) -> None:
         pass
 
 
+def _resolve_tool(name: str) -> str:
+    """CHG-ESTACK-CI-MATRIX-001: resolve `bash`/`git` through PATH. On Windows CreateProcess searches System32 BEFORE
+    PATH, and GitHub-hosted runners ship System32\\bash.exe (the WSL launcher, no distro): it runs nothing, so the
+    evidence log came out empty. PATH order is what the invoking shell (Git Bash) would use. Unresolvable → the bare
+    name, which then fails like before (never a different program)."""
+    if name not in ("bash", "git"):
+        return name
+    return shutil.which(name, path=os.environ.get("PATH")) or name
+
+
 def run_to_file(argv: list, cwd: str, log_path: str, timeout_seconds: float) -> dict:
     """Run `argv` (no shell), stdout+stderr appended to `log_path`. Returns
     {exit_code: int|None, timed_out: bool, started_monotonic, ended_monotonic}. exit_code is None on timeout/failure to start."""
@@ -84,7 +95,7 @@ def run_to_file(argv: list, cwd: str, log_path: str, timeout_seconds: float) -> 
         try:
             # The repository's own test suite runs with the INHERITED environment (a scrubbed one could make legitimate tests
             # fail and so falsify the evidence); only git and the gateway probe use the scrubbed environment.
-            proc = subprocess.Popen(argv, cwd=cwd, stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
+            proc = subprocess.Popen([_resolve_tool(argv[0])] + argv[1:], cwd=cwd, stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
                                     env=dict(os.environ, GIT_TERMINAL_PROMPT="0"), shell=False, **kwargs)
         except OSError:
             return {"exit_code": None, "timed_out": False, "started_monotonic": started, "ended_monotonic": time.monotonic(), "start_failed": True}
@@ -128,7 +139,7 @@ def version_line(tool: str) -> str:
     if tool not in ("git", "bash"):
         raise ReadinessError("E_COMMAND")
     try:
-        out = subprocess.run([tool, "--version"], capture_output=True, timeout=30, env=clean_env(), shell=False).stdout
+        out = subprocess.run([_resolve_tool(tool), "--version"], capture_output=True, timeout=30, env=clean_env(), shell=False).stdout
         return (out.decode("utf-8", "replace").splitlines() or ["UNAVAILABLE"])[0][:120]
     except (OSError, subprocess.SubprocessError):
         return "UNAVAILABLE"
