@@ -2,34 +2,38 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — `/change query|compatibility|security` — CHG-ESTACK-ORA19C-LAB-006 — verificación del diccionario contra el catálogo real (19c)
+## [0.19.0] — 2026-09-26 — `v0.19.0-ci-dictionary-verify` — CHG-ESTACK-CI-MATRIX-001 + CHG-ESTACK-ORA19C-LAB-006
 
-Rama `change/lab-dict-verify` sobre `main` (`ab6c90c`). Validado en el lab (19c, `CDB$ROOT`, con `SELECT_CATALOG_ROLE`): 477 pares verificados, 13 discrepancias, incluido el control positivo `V$BACKUP_REDOLOG.COMPLETION_TIME`; 6 afectan a queries certificadas (`CHG-REQ-DICT-19C-FIXES`). Aprobación humana registrada: `AUTH-ORA19C-LAB-006`, revisor `REV-DBAMANAGER`, `2026-09-26T04:46:29Z`, contra el digest `6d9da119…6177e8` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/ORACLE19C_LAB_DICT_VERIFY.md`.
+Dos cambios aprobados por revisión humana e integrados por separado: la suite corre en CI en Windows, Linux y macOS, y el diccionario se verifica contra el catálogo real de 19c. `main` pasa la suite completa en los tres sistemas. Regresión local (macOS, bash 5.3): 964/964.
 
-### Added
+### `/change security|documentation` — CHG-ESTACK-CI-MATRIX-001 — suite en CI: Windows, Linux y macOS
 
-- `Q-DICT-VERIFY-001` … `-005`, **generadas** desde `compatibility/oracle-dictionary/views.yaml` por `scripts/dict_verify/generate.py`. La base compara 477 pares `VISTA.COLUMNA` declarados para 19c contra `DBA_TAB_COLUMNS` y devuelve sólo discrepancias (`COLUMN_NOT_FOUND`/`VIEW_NOT_FOUND`) + una fila `CHECKED`. Nombres como enums acotados al diccionario; cada sentencia cabe en el techo de 4000 caracteres del lanzador lab.
-- Collectors en el gateway (fixture sintético) y en el adaptador lab (`mcp_gateway_lab` `0.5.0`); registro de readiness con 85 componentes.
-- `tests/test_dict_verify_queries_match_dictionary.sh`: guard de deriva entre el diccionario, las queries y los collectors.
+Rama `change/ci-matrix` sobre `main` (`ab6c90c`), commits `f00f0f5`, `1ba3722`, `d9be79d` y `215f72c`, integrada a `main` vía PR #12 (merge `70e2f31`). Validado en GitHub Actions: 963/963 en ubuntu, macos y windows (ejecución 2, `1ba3722`). Aprobación humana registrada: `AUTH-CI-MATRIX-001`, revisor `REV-DBAMANAGER`, `2026-09-26T04:46:29Z`, contra el digest `5c1282f8…79dc9ef` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/CI_MATRIX.md`.
 
-## [Unreleased] — `/change security|documentation` — CHG-ESTACK-CI-MATRIX-001 — suite en CI: Windows, Linux y macOS
-
-Rama `change/ci-matrix` sobre `main` (`ab6c90c`). Validado en GitHub Actions: 963/963 en ubuntu, macos y windows (ejecución 2, `1ba3722`). Aprobación humana registrada: `AUTH-CI-MATRIX-001`, revisor `REV-DBAMANAGER`, `2026-09-26T04:46:29Z`, contra el digest `5c1282f8…79dc9ef` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/CI_MATRIX.md`.
-
-### Added
+#### Added
 
 - `.github/workflows/tests.yml`: `tests/run-all.sh` en `ubuntu-latest`, `windows-latest` y `macos-latest` (bash ≥ 4 vía Homebrew), con Python 3.13. Solo lectura (`contents: read`), sin secretos, sin lab y con acciones fijadas por SHA.
 - `tests/test_ci_workflow_is_read_only.sh`: guard de seguridad de los workflows (12 mutaciones detectadas).
 
-### Fixed
+#### Fixed
 
 - P15 en Linux (defecto de 0.18.0 detectado por la primera ejecución de la CI): 4 casos que lanzan el CLI lab real con `macos_keychain` salen como `[SKIP]` explícito fuera de macOS (`macos_test`).
 - `release_readiness` en Windows: `bash`/`git` se resuelven por PATH. `subprocess` elegía `System32\bash.exe` (lanzador de WSL) y el log de evidencia salía vacío.
 - Workflow en macOS: solo se expone `bash` de Homebrew; antes también tapaba el `python3` 3.13 de `setup-python`.
 
-### Regression
+#### Regression
 
 - macOS con bash 5.3: 962/962 antes y 963/963 después.
+
+### `/change query|compatibility|security` — CHG-ESTACK-ORA19C-LAB-006 — verificación del diccionario contra el catálogo real (19c)
+
+Rama `change/lab-dict-verify` sobre `main` (`ab6c90c`), commits `ddd7cac`, `05640eb` y `51e9df2` (más `7badd7f`, merge de `main` con el conflicto de `CHANGELOG.md` resuelto), integrada a `main` vía PR #13 (merge `996ebbb`); CI en verde en ubuntu, macos y windows antes del merge. Validado en el lab (19c, `CDB$ROOT`, con `SELECT_CATALOG_ROLE`): 477 pares verificados, 13 discrepancias, incluido el control positivo `V$BACKUP_REDOLOG.COMPLETION_TIME`; 6 afectan a queries certificadas (`CHG-REQ-DICT-19C-FIXES`). Aprobación humana registrada: `AUTH-ORA19C-LAB-006`, revisor `REV-DBAMANAGER`, `2026-09-26T04:46:29Z`, contra el digest `6d9da119…6177e8` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/ORACLE19C_LAB_DICT_VERIFY.md`.
+
+#### Added
+
+- `Q-DICT-VERIFY-001` … `-005`, **generadas** desde `compatibility/oracle-dictionary/views.yaml` por `scripts/dict_verify/generate.py`. La base compara 477 pares `VISTA.COLUMNA` declarados para 19c contra `DBA_TAB_COLUMNS` y devuelve sólo discrepancias (`COLUMN_NOT_FOUND`/`VIEW_NOT_FOUND`) + una fila `CHECKED`. Nombres como enums acotados al diccionario; cada sentencia cabe en el techo de 4000 caracteres del lanzador lab.
+- Collectors en el gateway (fixture sintético) y en el adaptador lab (`mcp_gateway_lab` `0.5.0`); registro de readiness con 85 componentes.
+- `tests/test_dict_verify_queries_match_dictionary.sh`: guard de deriva entre el diccionario, las queries y los collectors.
 
 ## [0.18.0] — 2026-09-24 — `v0.18.0-portability` — `/change compatibility|documentation` — CHG-ESTACK-PORTABILITY-001 — portabilidad Windows/macOS/Linux
 
