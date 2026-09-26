@@ -33,6 +33,21 @@ def posix_test(fn):
         return fn()
     return test(wrapper)
 
+
+# CHG-ESTACK-CI-MATRIX-001: cases that start the real lab CLI in a subprocess with the default profile (credential
+# provider `macos_keychain`, no injected runner). Off macOS the launcher refuses that provider at startup by design,
+# so they are an explicit [SKIP] there; the refusal itself is covered on every platform in check_lab_security.
+MACOS_HOST = POSIX_HOST and sys.platform == "darwin"
+
+
+def macos_test(fn):
+    @functools.wraps(fn)
+    def wrapper():
+        if not MACOS_HOST:
+            raise Skip("requires macOS: the default lab profile uses the macos_keychain provider, refused elsewhere by design")
+        return fn()
+    return test(wrapper)
+
 ALIAS = "lab-ol8-19c"
 SECRET = "Lab-" + MARKER + "-pw"                      # the fake Keychain password; must never appear in any output
 RAW_NAMES = ("LAB19C", "LABCDB", "LABPDB1", "ESTACK_DIAG", "db19-lab.example.internal", "fast_recovery_area", "APP_DATA")
