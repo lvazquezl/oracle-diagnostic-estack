@@ -1355,3 +1355,15 @@ views:
       status: DOCUMENTATION_VALIDATED
       validated_for: ["11.2", "19", "21"]
     notes: "Fase 8 (# 118 del prompt). CONNECT THROUGH awareness — nunca credenciales, sólo relación proxy/client."
+
+  DBA_TAB_COLUMNS:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      owner:         {min_version: all}
+      table_name:     {min_version: all}
+      column_name:     {min_version: all}
+    notes: >
+      CHG-ESTACK-ORA19C-LAB-006. Usada SÓLO por Q-DICT-VERIFY-00N (generadas desde este archivo por
+      scripts/dict_verify/generate.py) para comparar en la base las columnas declaradas aquí contra el catálogo
+      real; filtro fijo owner IN ('SYS', 'AUDSYS', 'PERFSTAT'). Sólo metadatos (nombres), nunca datos de aplicación.

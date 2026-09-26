@@ -2,6 +2,16 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change query|compatibility|security` — CHG-ESTACK-ORA19C-LAB-006 — verificación del diccionario contra el catálogo real (19c)
+
+Rama `change/lab-dict-verify` sobre `main` (`ab6c90c`). Validado en el lab (19c, `CDB$ROOT`, con `SELECT_CATALOG_ROLE`): 477 pares verificados, 13 discrepancias, incluido el control positivo `V$BACKUP_REDOLOG.COMPLETION_TIME`; 6 afectan a queries certificadas (`CHG-REQ-DICT-19C-FIXES`). Aprobación humana registrada: `AUTH-ORA19C-LAB-006`, revisor `REV-DBAMANAGER`, `2026-09-26T04:46:29Z`, contra el digest `6d9da119…6177e8` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/ORACLE19C_LAB_DICT_VERIFY.md`.
+
+### Added
+
+- `Q-DICT-VERIFY-001` … `-005`, **generadas** desde `compatibility/oracle-dictionary/views.yaml` por `scripts/dict_verify/generate.py`. La base compara 477 pares `VISTA.COLUMNA` declarados para 19c contra `DBA_TAB_COLUMNS` y devuelve sólo discrepancias (`COLUMN_NOT_FOUND`/`VIEW_NOT_FOUND`) + una fila `CHECKED`. Nombres como enums acotados al diccionario; cada sentencia cabe en el techo de 4000 caracteres del lanzador lab.
+- Collectors en el gateway (fixture sintético) y en el adaptador lab (`mcp_gateway_lab` `0.5.0`); registro de readiness con 85 componentes.
+- `tests/test_dict_verify_queries_match_dictionary.sh`: guard de deriva entre el diccionario, las queries y los collectors.
+
 ## [Unreleased] — `/change security|documentation` — CHG-ESTACK-CI-MATRIX-001 — suite en CI: Windows, Linux y macOS
 
 Rama `change/ci-matrix` sobre `main` (`ab6c90c`). Validado en GitHub Actions: 963/963 en ubuntu, macos y windows (ejecución 2, `1ba3722`). Aprobación humana registrada: `AUTH-CI-MATRIX-001`, revisor `REV-DBAMANAGER`, `2026-09-26T04:46:29Z`, contra el digest `5c1282f8…79dc9ef` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/CI_MATRIX.md`.

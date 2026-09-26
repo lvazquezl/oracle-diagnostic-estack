@@ -49,6 +49,11 @@ SUPPORTED_COLLECTORS = {
     "Q-RMAN-FRA-USAGE-001": {},
     "Q-RMAN-BACKUP-FRESHNESS-001": {},                            # CHG-ESTACK-ORA19C-LAB-004: ages computed in the database
     "Q-RMAN-JOB-SUMMARY-001": {},
+    "Q-DICT-VERIFY-001": {},                                      # CHG-ESTACK-ORA19C-LAB-006: generated dictionary verification
+    "Q-DICT-VERIFY-002": {},
+    "Q-DICT-VERIFY-003": {},
+    "Q-DICT-VERIFY-004": {},
+    "Q-DICT-VERIFY-005": {},
     # Q-CDB-TEMP-001 deliberately absent: validated in the lab, its GV$TEMP_SPACE_HEADER join returns no usage from CDB$ROOT.
 }
 

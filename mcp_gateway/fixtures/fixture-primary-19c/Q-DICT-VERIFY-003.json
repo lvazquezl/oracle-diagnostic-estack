@@ -1,0 +1,17 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "finding": "COLUMN_NOT_FOUND",
+      "view_name": "V$BACKUP_REDOLOG",
+      "column_name": "THREAD#",
+      "tokens": 1
+    },
+    {
+      "finding": "CHECKED",
+      "view_name": "*",
+      "column_name": "*",
+      "tokens": 94
+    }
+  ]
+}

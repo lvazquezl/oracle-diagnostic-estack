@@ -443,6 +443,46 @@ queries:
     role_scope: ANY
     cost_class: MEDIUM
     validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-004: sin Top-N ni CON_ID, columnas min_version 10.2
+  Q-DICT-VERIFY-001:
+    file: queries/oracle/dictionary/Q-DICT-VERIFY-001.md
+    variants:
+      - {variant_id: Q-DICT-VERIFY-001-V1, label: oracle_19c, min: "19.0", max: "19.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_TAB_COLUMNS]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-006: generada desde views.yaml para 19c
+  Q-DICT-VERIFY-002:
+    file: queries/oracle/dictionary/Q-DICT-VERIFY-002.md
+    variants:
+      - {variant_id: Q-DICT-VERIFY-002-V1, label: oracle_19c, min: "19.0", max: "19.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_TAB_COLUMNS]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-006: generada desde views.yaml para 19c
+  Q-DICT-VERIFY-003:
+    file: queries/oracle/dictionary/Q-DICT-VERIFY-003.md
+    variants:
+      - {variant_id: Q-DICT-VERIFY-003-V1, label: oracle_19c, min: "19.0", max: "19.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_TAB_COLUMNS]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-006: generada desde views.yaml para 19c
+  Q-DICT-VERIFY-004:
+    file: queries/oracle/dictionary/Q-DICT-VERIFY-004.md
+    variants:
+      - {variant_id: Q-DICT-VERIFY-004-V1, label: oracle_19c, min: "19.0", max: "19.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_TAB_COLUMNS]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-006: generada desde views.yaml para 19c
+  Q-DICT-VERIFY-005:
+    file: queries/oracle/dictionary/Q-DICT-VERIFY-005.md
+    variants:
+      - {variant_id: Q-DICT-VERIFY-005-V1, label: oracle_19c, min: "19.0", max: "19.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_TAB_COLUMNS]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-006: generada desde views.yaml para 19c
   Q-RMAN-CONTROLFILE-RECORD-SECTION-001: {file: queries/rman/Q-RMAN-CONTROLFILE-RECORD-SECTION-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$CONTROLFILE_RECORD_SECTION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
 
   # --- PHASE 8 — ORACLE SECURITY & COMPLIANCE ---

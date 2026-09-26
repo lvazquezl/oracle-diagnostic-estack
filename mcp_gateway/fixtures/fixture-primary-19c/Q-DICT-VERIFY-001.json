@@ -1,0 +1,11 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "finding": "CHECKED",
+      "view_name": "*",
+      "column_name": "*",
+      "tokens": 97
+    }
+  ]
+}

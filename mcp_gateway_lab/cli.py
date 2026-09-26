@@ -29,7 +29,7 @@ from mcp_gateway.server import McpServer
 from .oracle_sql import IDENTITY_COLLECTOR, SUPPORTED_COLLECTORS, OracleSqlAdapter
 from .profile import CONTAINERS, ProfileError, load_profile
 
-LAB_VERSION = "0.4.0"
+LAB_VERSION = "0.5.0"
 REFUSED = "mcp_gateway_lab: startup refused ({})\n"
 
 

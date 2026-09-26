@@ -240,7 +240,8 @@ def collectors_the_adapter_does_not_implement_are_denied_even_if_forced():
             except Exception as e:
                 assert getattr(e, "code", None) == "E_COLLECTOR_NOT_ALLOWED", cid
         assert set(oracle_sql.SUPPORTED_COLLECTORS) == {ID, "Q-ORA-RESOURCE-LIMITS-001", "Q-CDB-TABLESPACES-001", "Q-RMAN-FRA-USAGE-001",
-                                                         "Q-RMAN-BACKUP-FRESHNESS-001", "Q-RMAN-JOB-SUMMARY-001"}
+                                                         "Q-RMAN-BACKUP-FRESHNESS-001", "Q-RMAN-JOB-SUMMARY-001",
+                                                         *("Q-DICT-VERIFY-%03d" % i for i in range(1, 6))}
         assert lab.driver.connects == []
     with tmpdir() as d:                                                              # the launcher refuses such a target file
         assert refused(d, targets=[lab_target(allowed_collectors=[ID, "Q-DG-STATS-001"])])
@@ -598,6 +599,23 @@ def out_of_range_or_textual_ages_are_dropped_and_reported():
         assert "hours_since_last_start" not in row and "hours_since_last_success" not in row
         assert any(l.startswith("INVALID_VALUES_DROPPED") for l in env["limitations"]), env["limitations"]
 
+
+
+# --- CHG-ESTACK-ORA19C-LAB-006: dictionary verification -----------------------------------------------------
+
+@posix_test
+def dictionary_verification_never_lets_a_name_outside_its_part_of_the_dictionary_leave():
+    with tmpdir() as d:
+        sc = Scenario()
+        sc.dictverify = [{"finding": "COLUMN_NOT_FOUND", "view_name": "EMPLOYEES", "column_name": "SALARY", "tokens": 1},
+                         {"finding": "COLUMN_NOT_FOUND", "view_name": "V$DATABASE", "column_name": "SSN", "tokens": 1},
+                         {"finding": "CHECKED", "view_name": "*", "column_name": "*", "tokens": 94}]
+        lab = Lab(d, scenario=sc, targets=[lab_target(allowed_collectors=[ID, "Q-DICT-VERIFY-003"])])
+        env, is_error = lab.collect("Q-DICT-VERIFY-003")
+        assert not is_error and env["status"] == "DEGRADED", env
+        text = json.dumps(env)
+        assert "EMPLOYEES" not in text and "SALARY" not in text and "SSN" not in text, "application-like names never leave"
+        assert any(l.startswith("INVALID_VALUES_DROPPED") for l in env["limitations"]), env["limitations"]
 
 
 # --- CHG-ESTACK-PORTABILITY-001 (run on every platform) -------------------------------------------------------

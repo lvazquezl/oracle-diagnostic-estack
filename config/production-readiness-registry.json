@@ -525,6 +525,186 @@
       ]
     },
     {
+      "id": "collector:Q-DICT-VERIFY-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Dictionary verification part 1/5: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh",
+        "tests/test_dict_verify_queries_match_dictionary.sh"
+      ],
+      "collector_id": "Q-DICT-VERIFY-001",
+      "oracle_versions": [
+        "19c"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on DBA_TAB_COLUMNS"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 120,
+        "timeout_seconds": 30
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-DICT-VERIFY-002",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Dictionary verification part 2/5: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh",
+        "tests/test_dict_verify_queries_match_dictionary.sh"
+      ],
+      "collector_id": "Q-DICT-VERIFY-002",
+      "oracle_versions": [
+        "19c"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on DBA_TAB_COLUMNS"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 120,
+        "timeout_seconds": 30
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-DICT-VERIFY-003",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Dictionary verification part 3/5: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh",
+        "tests/test_dict_verify_queries_match_dictionary.sh"
+      ],
+      "collector_id": "Q-DICT-VERIFY-003",
+      "oracle_versions": [
+        "19c"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on DBA_TAB_COLUMNS"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 120,
+        "timeout_seconds": 30
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-DICT-VERIFY-004",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Dictionary verification part 4/5: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh",
+        "tests/test_dict_verify_queries_match_dictionary.sh"
+      ],
+      "collector_id": "Q-DICT-VERIFY-004",
+      "oracle_versions": [
+        "19c"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on DBA_TAB_COLUMNS"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 120,
+        "timeout_seconds": 30
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-DICT-VERIFY-005",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Dictionary verification part 5/5: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh",
+        "tests/test_dict_verify_queries_match_dictionary.sh"
+      ],
+      "collector_id": "Q-DICT-VERIFY-005",
+      "oracle_versions": [
+        "19c"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on DBA_TAB_COLUMNS"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 120,
+        "timeout_seconds": 30
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
       "id": "collector:os.get_process_limits",
       "kind": "collector",
       "domain": "os",
