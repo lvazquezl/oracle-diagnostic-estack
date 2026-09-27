@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|compatibility|skill` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/dict-backup-redolog-v2` (desde `0.19.0`, `1275c17`; reaplica `f565d7d` de `change/dict-backup-redolog`, que partía de `a00ea2c`)
 **Origen:** `CHG-REQ-DICT-BACKUP-REDOLOG`, detectado en la validación en el lab de `CHG-ESTACK-ORA19C-LAB-004`
-**Estado:** propuesto. Validado en el lab (§8). Pendiente: HUMAN REVIEW (§11–12). `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** aprobado por revisión humana (§11), validado en el lab (§8). Pendiente: `PROMOTE` (acción humana). `PROMOTE`, commit, merge, tag y push son acciones humanas.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. Ninguna política cambia.
 
@@ -85,9 +85,9 @@ Un primer intento el mismo día falló en todos los collectors, incluida la iden
 - `CHG-REQ-TEST-BSD-GREP` quedó cerrado por `CHG-ESTACK-PORTABILITY-001` (`0.18.0`).
 - `CHG-REQ-DICT-RMAN-AUDIT` lo cubrió `CHG-ESTACK-ORA19C-LAB-006` (`0.19.0`) para todos los dominios: confirmó esta columna en Oracle real y encontró 12 discrepancias más (`CHG-REQ-DICT-19C-FIXES`).
 
-## 11. HUMAN REVIEW (pendiente)
+## 11. HUMAN REVIEW — aprobado
 
-Revisor distinto del proponente (`E_AUTH_SELF_APPROVAL`). La aprobación se registra contra el `content_digest` que informa el motor (§12).
+`AUTH-ORA19C-LAB-005`, revisor `REV-DBAMANAGER` (distinto del proponente `REV-CLAUDEAGENT`), `2026-09-27T04:45:18Z`, contra el digest `85c3e5ad…2a45c1f1f`. El motor informa `review_status: APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el digest, no la identidad del firmante. `PROMOTE` (merge, tag) sigue siendo acción humana.
 
 ## 12. Motor de gobernanza
 

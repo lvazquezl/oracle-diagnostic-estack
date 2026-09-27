@@ -4,7 +4,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change query|compatibility|skill` — CHG-ESTACK-ORA19C-LAB-005 — `V$BACKUP_REDOLOG` sin `COMPLETION_TIME`
 
-Rama `change/dict-backup-redolog-v2` sobre `0.19.0` (el trabajo original de `change/dict-backup-redolog`, `f565d7d`, reaplicado). Validado en el lab (19c): la verificación del diccionario ya no reporta `V$BACKUP_REDOLOG.COMPLETION_TIME` (476 tokens, 12 discrepancias restantes → `CHG-REQ-DICT-19C-FIXES`). Estado `PROPOSED`. Origen:
+Rama `change/dict-backup-redolog-v2` sobre `0.19.0` (el trabajo original de `change/dict-backup-redolog`, `f565d7d`, reaplicado). Validado en el lab (19c): la verificación del diccionario ya no reporta `V$BACKUP_REDOLOG.COMPLETION_TIME` (476 tokens, 12 discrepancias restantes → `CHG-REQ-DICT-19C-FIXES`). Aprobación humana registrada: `AUTH-ORA19C-LAB-005`, revisor `REV-DBAMANAGER`, `2026-09-27T04:45:18Z`, contra el digest `85c3e5ad…2a45c1f1f` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Origen:
 `CHG-REQ-DICT-BACKUP-REDOLOG`, detectado al validar CHG-ESTACK-ORA19C-LAB-004 en el lab. Ver `docs/ORACLE19C_LAB_DICT_FIX.md`.
 
 ### Fixed
