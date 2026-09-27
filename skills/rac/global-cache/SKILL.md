@@ -28,7 +28,7 @@ RAC exclusivamente (Cache Fusion no aplica a RAC One Node con una sola instancia
 
 # Required evidence
 
-- `Q-RAC-GES-GCS-001` (`GV$GES_STATISTICS`, `GV$GCS_STATISTICS`, `GV$INSTANCE_CACHE_TRANSFER`)
+- `Q-RAC-GES-GCS-001` (`GV$GES_STATISTICS`, `GV$SYSSTAT (estadísticas `gc ...`)`, `GV$INSTANCE_CACHE_TRANSFER`)
 
 # Optional evidence
 
@@ -36,7 +36,7 @@ Ninguna propia — para cuantificar impacto en DB Time, delegar a `performance/w
 
 # Read-only operations
 
-Lectura de `GV$GES_STATISTICS`/`GV$GCS_STATISTICS`/`GV$INSTANCE_CACHE_TRANSFER`.
+Lectura de `GV$GES_STATISTICS`/`GV$SYSSTAT (estadísticas `gc ...`)`/`GV$INSTANCE_CACHE_TRANSFER`.
 
 # Forbidden operations
 

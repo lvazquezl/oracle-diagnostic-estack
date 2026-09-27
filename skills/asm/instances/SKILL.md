@@ -28,7 +28,7 @@ Standalone y RAC.
 
 # Required evidence
 
-- `Q-ASM-TOPOLOGY-001` (`GV$ASM_INSTANCE` — `STATUS`)
+- `Q-ASM-TOPOLOGY-001` (`V$ASM_CLIENT` — `STATUS`)
 
 # Optional evidence
 
@@ -36,7 +36,7 @@ Ninguna.
 
 # Read-only operations
 
-Lectura de `GV$ASM_INSTANCE`.
+Lectura de `V$ASM_CLIENT`.
 
 # Forbidden operations
 

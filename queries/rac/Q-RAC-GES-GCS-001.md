@@ -1,6 +1,6 @@
 ---
 query_id: Q-RAC-GES-GCS-001
-version: 1.0.0
+version: 2.0.0
 
 domain: rac
 purpose: Indicadores agregados de Global Enqueue Service / Global Cache Service por instancia
@@ -12,8 +12,8 @@ supported_architectures: [RAC]
 container_scope: NOT_APPLICABLE
 database_role_scope: ANY
 
-objects_accessed: [GV$GES_STATISTICS, GV$GCS_STATISTICS, GV$INSTANCE_CACHE_TRANSFER]
-privileges_required: [SELECT on GV$GES_STATISTICS, SELECT on GV$GCS_STATISTICS, SELECT on GV$INSTANCE_CACHE_TRANSFER]
+objects_accessed: [GV$GES_STATISTICS, GV$SYSSTAT, GV$INSTANCE_CACHE_TRANSFER]
+privileges_required: [SELECT on GV$GES_STATISTICS, SELECT on GV$SYSSTAT, SELECT on GV$INSTANCE_CACHE_TRANSFER]
 
 risk_class: R0
 cost_class: MEDIUM
@@ -41,8 +41,8 @@ FROM   gv$ges_statistics g
 WHERE  g.name IN ('global lock async converts', 'global lock sync converts', 'global lock releases')
 UNION ALL
 SELECT c.inst_id, c.name AS gcs_stat, c.value AS gcs_value
-FROM   gv$gcs_statistics c
-WHERE  c.name IN ('global cache cr blocks received', 'global cache current blocks received')
+FROM   gv$sysstat c
+WHERE  c.name IN ('gc cr blocks received', 'gc current blocks received')
 ORDER  BY 1;
 ```
 
@@ -50,7 +50,9 @@ Sólo estadísticas agregadas, nunca detalle por bloque/objeto individual — ev
 
 # Notes by version
 
-`GV$GES_STATISTICS`/`GV$GCS_STATISTICS`/`GV$INSTANCE_CACHE_TRANSFER` estables desde 11gR2.
+**2.0.0 (`CHG-ESTACK-ORA19C-LAB-007`, breaking):** `GV$GCS_STATISTICS` no existe en la Reference 19c (confirmado en Oracle real por `Q-DICT-VERIFY`). Las estadísticas de global cache se leen de `GV$SYSSTAT` con sus nombres actuales (`gc cr blocks received`, `gc current blocks received`). Los **nombres de estadística** son valores, no columnas: la verificación de diccionario no los cubre, y sin un RAC real quedan validados sólo por documentación.
+
+`GV$GES_STATISTICS`/`GV$SYSSTAT`/`GV$INSTANCE_CACHE_TRANSFER` desde 11gR2.
 
 # Notes by platform
 
@@ -62,7 +64,7 @@ Ninguna — SQL puro.
 
 # Cost classification rationale
 
-`MEDIUM` — las vistas `GV$GES_STATISTICS`/`GV$GCS_STATISTICS` pueden ser costosas de agregar cross-instance bajo carga alta; se acota a los nombres de estadística relevantes, nunca `SELECT *`.
+`MEDIUM` — las vistas `GV$GES_STATISTICS`/`GV$SYSSTAT` pueden ser costosas de agregar cross-instance bajo carga alta; se acota a los nombres de estadística relevantes, nunca `SELECT *`.
 
 # License notes
 

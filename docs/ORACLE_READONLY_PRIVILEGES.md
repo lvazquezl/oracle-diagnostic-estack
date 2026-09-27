@@ -57,7 +57,7 @@ GRANT SELECT ON GV_$SERVICES                  TO estack_diagnostic_role;
 GRANT SELECT ON GV_$ACTIVE_SERVICES           TO estack_diagnostic_role;   -- 11.2+
 GRANT SELECT ON GV_$CLUSTER_INTERCONNECTS     TO estack_diagnostic_role;   -- 11.2+
 GRANT SELECT ON GV_$GES_STATISTICS            TO estack_diagnostic_role;   -- 11.2+
-GRANT SELECT ON GV_$GCS_STATISTICS            TO estack_diagnostic_role;   -- 11.2+
+GRANT SELECT ON GV_$SYSSTAT                   TO estack_diagnostic_role;   -- 11.2+ (CHG-ESTACK-ORA19C-LAB-007: GV$GCS_STATISTICS no existe)
 GRANT SELECT ON GV_$INSTANCE_CACHE_TRANSFER   TO estack_diagnostic_role;   -- 11.2+
 ```
 
@@ -67,7 +67,7 @@ Los collectors GI/Clusterware/red (`docs/GI_READONLY_COLLECTORS.md`) no usan SQL
 
 ```sql
 -- Ejecutados contra la instancia +ASM, no contra la base de datos — conexión SQL separada.
-GRANT SELECT ON GV_$ASM_INSTANCE       TO estack_diagnostic_role;   -- 11.2+
+GRANT SELECT ON V_$ASM_CLIENT          TO estack_diagnostic_role;   -- 11.2+ (CHG-ESTACK-ORA19C-LAB-007: GV$ASM_INSTANCE no existe)
 GRANT SELECT ON V_$ASM_DISKGROUP_STAT  TO estack_diagnostic_role;   -- default de monitoreo rutinario
 GRANT SELECT ON V_$ASM_DISK            TO estack_diagnostic_role;   -- 11.2+, cost_class MEDIUM
 GRANT SELECT ON GV_$ASM_OPERATION      TO estack_diagnostic_role;   -- 11.2+

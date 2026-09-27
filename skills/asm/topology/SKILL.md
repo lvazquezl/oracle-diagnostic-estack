@@ -28,7 +28,7 @@ Target Profile con `architecture.storage_mode = asm`.
 
 # Required evidence
 
-- `Q-ASM-TOPOLOGY-001` (`V$ASM_DISKGROUP_STAT`, `GV$ASM_INSTANCE` cuando aplique)
+- `Q-ASM-TOPOLOGY-001` (`V$ASM_DISKGROUP_STAT`, `V$ASM_CLIENT` cuando aplique)
 
 # Optional evidence
 
@@ -36,7 +36,7 @@ Ninguna.
 
 # Read-only operations
 
-Lectura de `V$ASM_DISKGROUP_STAT`/`GV$ASM_INSTANCE`.
+Lectura de `V$ASM_DISKGROUP_STAT`/`V$ASM_CLIENT`.
 
 # Forbidden operations
 

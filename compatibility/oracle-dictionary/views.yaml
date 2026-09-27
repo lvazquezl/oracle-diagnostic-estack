@@ -379,9 +379,13 @@ views:
     min_version: "11.2"
     notes: "Usada por Q-RAC-GES-GCS-001 (rac/global-cache)."
 
-  GV$GCS_STATISTICS:
-    min_version: "11.2"
-    notes: "Usada por Q-RAC-GES-GCS-001 (rac/global-cache)."
+  GV$SYSSTAT:
+    min_version: all
+    columns:
+      inst_id:   {min_version: all}
+      name:        {min_version: all}
+      value:         {min_version: all}
+    notes: "CHG-ESTACK-ORA19C-LAB-007: reemplaza a GV$GCS_STATISTICS (no existe en la Reference 19c) en Q-RAC-GES-GCS-001 para las estadísticas de global cache ('gc ...'). Filtrado por columna 'name', mismo patrón que V$SYSSTAT."
 
   GV$INSTANCE_CACHE_TRANSFER:
     min_version: "11.2"
@@ -395,9 +399,15 @@ views:
     min_version: "11.2"
     notes: "Ya registrada arriba — reutilizada por Q-RAC-TOPOLOGY-001 junto con GV$INSTANCE."
 
-  GV$ASM_INSTANCE:
+  V$ASM_CLIENT:
     min_version: "11.2"
-    notes: "Usada por Q-ASM-TOPOLOGY-001 (asm/topology, asm/instances)."
+    columns:
+      group_number:      {min_version: "11.2"}
+      instance_name:       {min_version: "11.2"}
+      db_name:               {min_version: "11.2"}
+      status:                  {min_version: "11.2"}
+      software_version:          {min_version: "11.2"}
+    notes: "CHG-ESTACK-ORA19C-LAB-007: reemplaza a GV$ASM_INSTANCE (no existe; Storage Administrator's Guide 19c). Desde una instancia de base de datos muestra la instancia ASM que atiende sus archivos abiertos (Reference 19c). min_version 11.2 = piso de Q-ASM-TOPOLOGY-001; verificado sólo en 19c."
 
   V$ASM_DISK:
     min_version: "11.2"
@@ -528,7 +538,7 @@ views:
     columns_exhaustive: true
     columns:
       thread#: {min_version: all}
-      groups: {min_version: all}
+      group#: {min_version: all}   # CHG-ESTACK-ORA19C-LAB-007: antes 'groups', que no existe
       status: {min_version: all}
       bytes: {min_version: all}
     notes: "Usada por Q-DG-SRL-001 (dataguard/standby-redo-logs), junto con V$LOG (ya registrada) para comparar contra online redo del primary."
@@ -982,7 +992,6 @@ views:
     columns:
       device_type:              {min_version: all}
       device_name:                {min_version: all}
-      physical_device_name:         {min_version: all}
     validation:
       source_type: ORACLE_DOCUMENTATION
       status: DOCUMENTATION_VALIDATED
@@ -990,6 +999,8 @@ views:
     notes: >
       Fase 7. Vista pre-10g. Refleja sólo canales actualmente asignados durante un job en curso —
       vacía si no hay backup/restore corriendo (comportamiento documentado, no error).
+      CHG-ESTACK-ORA19C-LAB-007: se retira physical_device_name — no existe (Oracle Database Reference 19c:
+      DEVICE_TYPE, DEVICE_NAME, CON_ID; confirmado en Oracle real por Q-DICT-VERIFY).
 
   V$CONTROLFILE_RECORD_SECTION:
     min_version: all
@@ -1345,9 +1356,8 @@ views:
       object_owner:     {min_version: "12.1"}
       object_name:        {min_version: "12.1"}
       column_name:          {min_version: "12.1"}
-      policy_name:            {min_version: "12.1"}
       function_type:            {min_version: "12.1"}
-    notes: "Fase 8. Mismo boundary que REDACTION_POLICIES."
+    notes: "Fase 8. Mismo boundary que REDACTION_POLICIES. CHG-ESTACK-ORA19C-LAB-007: policy_name no existe en esta vista (Reference 19c); el nombre de la política está en REDACTION_POLICIES (una por objeto)."
 
   PROXY_USERS:
     min_version: all
@@ -1356,12 +1366,12 @@ views:
       proxy:                     {min_version: all}
       client:                      {min_version: all}
       authentication:                {min_version: all}
-      authorization_constraint:        {min_version: all}
+      flags:                            {min_version: "11.2"}   # CHG-ESTACK-ORA19C-LAB-007: documentada en 11.2 y 19c; 10.2 sin verificar
     validation:
       source_type: ORACLE_DOCUMENTATION
       status: DOCUMENTATION_VALIDATED
       validated_for: ["11.2", "19", "21"]
-    notes: "Fase 8 (# 118 del prompt). CONNECT THROUGH awareness — nunca credenciales, sólo relación proxy/client."
+    notes: "Fase 8 (# 118 del prompt). CONNECT THROUGH awareness — nunca credenciales, sólo relación proxy/client. CHG-ESTACK-ORA19C-LAB-007: authorization_constraint no existe (Reference 11.2 y 19c: PROXY, CLIENT, AUTHENTICATION, FLAGS); el dato de amplitud de roles está en FLAGS."
 
   DBA_TAB_COLUMNS:
     min_version: all
@@ -1374,3 +1384,15 @@ views:
       CHG-ESTACK-ORA19C-LAB-006. Usada SÓLO por Q-DICT-VERIFY-00N (generadas desde este archivo por
       scripts/dict_verify/generate.py) para comparar en la base las columnas declaradas aquí contra el catálogo
       real; filtro fijo owner IN ('SYS', 'AUDSYS', 'PERFSTAT'). Sólo metadatos (nombres), nunca datos de aplicación.
+
+  DBA_SYNONYMS:
+    min_version: all
+    columns_exhaustive: true
+    columns:
+      owner:          {min_version: all}
+      synonym_name:    {min_version: all}
+      table_owner:      {min_version: all}
+      table_name:        {min_version: all}
+    notes: >
+      CHG-ESTACK-ORA19C-LAB-007. Usada SÓLO por Q-DICT-VERIFY-00N para resolver el objeto real de cada sinónimo
+      público (V$X → SYS.V_$X u otro nombre); destino acotado a owner IN ('SYS', 'AUDSYS', 'PERFSTAT').

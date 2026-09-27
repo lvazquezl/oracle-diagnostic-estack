@@ -58,8 +58,10 @@ Nunca otorga/revoca `CONNECT THROUGH`.
 # Decision logic
 
 1. Relación `proxy`/`client` se reporta tal cual — nunca inferida.
-2. `authorization_constraint` se evalúa para detectar `PROXY MAY ACTIVATE ALL CLIENT ROLES`
-   (amplitud máxima de rol activable) vs. constraint más restrictivo.
+2. `flags` (`PROXY_USERS.FLAGS`, 11.2+) se evalúa para detectar `PROXY MAY ACTIVATE ALL CLIENT ROLES`
+   (amplitud máxima de rol activable) vs. `NO CLIENT ROLES MAY BE ACTIVATED`/`PROXY MAY ACTIVATE ROLE`/
+   `PROXY MAY NOT ACTIVATE ROLE`. Por debajo de 11.2 (variante V1) `flags` no existe: la amplitud se reporta
+   `INSUFFICIENT_EVIDENCE`, nunca se supone. (CHG-ESTACK-ORA19C-LAB-007: antes `authorization_constraint`, columna inexistente.)
 
 # Normal state
 
@@ -83,7 +85,7 @@ Alimenta `security/security-healthcheck`.
 
 # Severity
 
-`MEDIUM`/`HIGH` según amplitud de `authorization_constraint` y privilegios del `client`.
+`MEDIUM`/`HIGH` según amplitud de `flags` y privilegios del `client`.
 
 # Output schema
 
@@ -92,7 +94,7 @@ proxy_authentication:
   - proxy_token: string
     client_token: string
     authentication: string
-    authorization_constraint: string
+    flags: string|null          # null en 10.2–11.1 (V1)
     evidence_refs: [EVD-...]
 ```
 

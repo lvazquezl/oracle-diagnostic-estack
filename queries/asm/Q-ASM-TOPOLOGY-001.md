@@ -1,6 +1,6 @@
 ---
 query_id: Q-ASM-TOPOLOGY-001
-version: 1.0.0
+version: 2.0.0
 
 domain: asm
 purpose: Topología ASM — instancias y disk groups montados, capacidad vía V$ASM_DISKGROUP_STAT (sin disco discovery)
@@ -12,8 +12,8 @@ supported_architectures: [Standalone, RAC, RAC One Node]
 container_scope: NOT_APPLICABLE
 database_role_scope: ANY
 
-objects_accessed: [GV$ASM_INSTANCE, V$ASM_DISKGROUP_STAT]
-privileges_required: [SELECT on GV$ASM_INSTANCE, SELECT on V$ASM_DISKGROUP_STAT]
+objects_accessed: [V$ASM_CLIENT, V$ASM_DISKGROUP_STAT]
+privileges_required: [SELECT on V$ASM_CLIENT, SELECT on V$ASM_DISKGROUP_STAT]
 
 risk_class: R0
 cost_class: LOW
@@ -36,19 +36,21 @@ status: active
 # Statement / procedure (read-only)
 
 ```sql
-SELECT i.inst_id, i.instance_name, i.status,
+SELECT c.instance_name AS asm_instance, c.db_name, c.status, c.software_version,
        g.name AS diskgroup, g.state, g.type,
        g.total_mb, g.free_mb, g.usable_file_mb, g.required_mirror_free_mb
-FROM   gv$asm_instance i
-LEFT   JOIN v$asm_diskgroup_stat g ON 1=1
-ORDER  BY i.inst_id, g.name;
+FROM   v$asm_client c
+LEFT   JOIN v$asm_diskgroup_stat g ON g.group_number = c.group_number
+ORDER  BY c.instance_name, g.name;
 ```
 
 Usa `V$ASM_DISKGROUP_STAT`, no `V$ASM_DISKGROUP` — no dispara disk discovery, apto para polling rutinario (`# 23` del prompt de Fase 4, hardening heredado de Foundation).
 
 # Notes by version
 
-`GV$ASM_INSTANCE`/`V$ASM_DISKGROUP_STAT` estables desde 11gR2.
+**2.0.0 (`CHG-ESTACK-ORA19C-LAB-007`, breaking):** `GV$ASM_INSTANCE` no existe (no figura en *Automatic Storage Management Administrator's Guide* 19c ni en la Reference; confirmado en Oracle real por `Q-DICT-VERIFY`, sobre una base que usa ASM). Se reemplaza por `V$ASM_CLIENT`, que desde una instancia de base de datos muestra la instancia ASM que atiende sus archivos abiertos, con una fila por disk group en uso (se une a `V$ASM_DISKGROUP_STAT` por `group_number`, ya no con `ON 1=1`). Alcance: la(s) instancia(s) ASM **de esta base**, no un inventario del clúster.
+
+`V$ASM_CLIENT`/`V$ASM_DISKGROUP_STAT` desde 11gR2 (verificado en la documentación y en Oracle real sólo en 19c).
 
 # Notes by platform
 
