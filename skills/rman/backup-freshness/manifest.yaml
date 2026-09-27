@@ -1,7 +1,7 @@
 name: backup-freshness
 display_name: "Backup Freshness / Completeness"
 id: rman/backup-freshness
-version: 1.0.0
+version: 1.1.0
 domain: rman
 status: active
 
@@ -18,7 +18,7 @@ required_evidence:
   - query_id: Q-RMAN-CONTROLFILE-BACKUP-001
   - query_id: Q-RMAN-SPFILE-BACKUP-001
 optional_evidence:
-  - query_id: Q-RMAN-ARCHIVELOG-BACKUP-001
+  - query_id: Q-RMAN-BACKUP-FRESHNESS-001
 data_sensitivity: MEDIUM
 context_budget: MEDIUM
 
