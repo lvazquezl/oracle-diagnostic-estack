@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|compatibility|skill` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/dict-backup-redolog-v2` (desde `0.19.0`, `1275c17`; reaplica `f565d7d` de `change/dict-backup-redolog`, que partía de `a00ea2c`)
 **Origen:** `CHG-REQ-DICT-BACKUP-REDOLOG`, detectado en la validación en el lab de `CHG-ESTACK-ORA19C-LAB-004`
-**Estado:** propuesto. Pendiente: validación en el lab con `Q-DICT-VERIFY-003` (§8) y HUMAN REVIEW (§12). `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** propuesto. Validado en el lab (§8). Pendiente: HUMAN REVIEW (§11–12). `PROMOTE`, commit, merge, tag y push son acciones humanas.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. Ninguna política cambia.
 
@@ -72,7 +72,9 @@ Sin superficie nueva: la query queda con menos columnas, sigue siendo `SELECT`-o
 
 **Base `0.19.0`** (macOS, bash 5.3.20, validador estático activo): **965/965** (964 de `0.19.0` + el guard nuevo). Mutación: con la versión anterior de `Q-RMAN-ARCHIVELOG-BACKUP-001`, el guard falla en los dos bloques.
 
-**Validación en el lab (pendiente):** `Q-DICT-VERIFY-003` se regeneró sin el par `V$BACKUP_REDOLOG.COMPLETION_TIME`. Tras integrar, esa parte debe dejar de reportarlo en el lab 19c; el resto de sus hallazgos no cambia.
+**Validación en el lab** (2026-09-27, `lab-ol8-19c`, 19c, `CDB$ROOT`, commit `dfd17ba`): las 5 partes regeneradas corrieron `OK`/`REAL`, sin limitaciones, **476 tokens** (96 + 95 + 94 + 98 + 93). `V$BACKUP_REDOLOG.COMPLETION_TIME` **ya no aparece**. Las 12 discrepancias restantes son exactamente las de `CHG-ESTACK-ORA19C-LAB-006` §8 (`CHG-REQ-DICT-19C-FIXES`). Evidencia: `EVR-58719b3fc57edb1aacdd95f1` (001), `EVR-24120c73e93166a862970a60` (002), `EVR-5323e0c9f50a5e8ab6ae819d` (003), `EVR-2eb75b010d22ca4108c3bad0` (004), `EVR-53a6ddc4acd4d5c027a0bfea` (005).
+
+Un primer intento el mismo día falló en todos los collectors, incluida la identidad, con `NETWORK_UNREACHABLE`: la red del lab estaba caída. Se confirmó con `check` y con una prueba TCP ("host is down"). No tuvo relación con este cambio.
 
 **Errata del registro original (2026-09-23):** la línea "949/962 antes y 950/963 después, con los mismos 13 fallos preexistentes" se midió en macOS con `/bin/bash` 3.2. Esos 13 fallos eran exclusivos de macOS, y con esa versión de bash `test_sql_static_validator` pasaba sin validar nada (`CHG-ESTACK-PORTABILITY-001`, `0.18.0`). Los PASS del validador citados en §6 no tenían valor probatorio en ese momento; la cifra de arriba sí.
 
@@ -89,4 +91,4 @@ Revisor distinto del proponente (`E_AUTH_SELF_APPROVAL`). La aprobación se regi
 
 ## 12. Motor de gobernanza
 
-Pendiente: se vuelve a ejecutar sobre la base `0.19.0`. El digest anterior (`00d7f0cb…eced88`, sobre `a00ea2c`) ya no aplica.
+`advise --mode estack` (2026-09-27T04:31:43Z), base `0.19.0`: `governance_state: PENDING_HUMAN_REVIEW`, `blockers: []`, `promote_status: HUMAN_ACTION_REQUIRED`, `content_digest: 85c3e5adce8868fe03b4d60f9ff0ae3aaff63ff59db418ce62a15e62a45c1f1f`. Reemplaza al digest anterior (`00d7f0cb…eced88`, sobre `a00ea2c`). La salida queda fuera del repo, en `~/.local/share/oracle-diagnostic-estack/change-evidence/CHG-ESTACK-ORA19C-LAB-005/`.
