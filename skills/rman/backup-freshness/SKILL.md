@@ -34,7 +34,7 @@ Standalone y RAC.
 
 # Optional evidence
 
-`Q-RMAN-ARCHIVELOG-BACKUP-001` (frescura de backup de archivelog).
+`Q-RMAN-BACKUP-FRESHNESS-001` (frescura por categoría como horas desde el último backup, calculada en la base; incluye archivelog). Reemplaza a `Q-RMAN-ARCHIVELOG-BACKUP-001` como fuente de frescura de archivelog desde CHG-ESTACK-ORA19C-LAB-005: `V$BACKUP_REDOLOG` no tiene `COMPLETION_TIME`.
 
 # Licensing requirements
 
@@ -42,7 +42,7 @@ Ninguno.
 
 # Query IDs
 
-`Q-RMAN-BACKUP-SET-001`, `Q-RMAN-CONTROLFILE-BACKUP-001`, `Q-RMAN-SPFILE-BACKUP-001`, `Q-RMAN-ARCHIVELOG-BACKUP-001`.
+`Q-RMAN-BACKUP-SET-001`, `Q-RMAN-CONTROLFILE-BACKUP-001`, `Q-RMAN-SPFILE-BACKUP-001`, `Q-RMAN-BACKUP-FRESHNESS-001`.
 
 # Collector IDs
 
@@ -58,7 +58,7 @@ Ninguna operación de escritura.
 
 # Decision logic
 
-1. `last_full_or_level0`, `last_incremental`, `last_archivelog_backup`, `last_controlfile_backup`, `last_spfile_backup` — cada uno derivado independientemente, nunca inferido de otro.
+1. `last_full_or_level0`, `last_incremental`, `last_archivelog_backup`, `last_controlfile_backup`, `last_spfile_backup` — cada uno derivado independientemente, nunca inferido de otro. Si provienen de `Q-RMAN-BACKUP-FRESHNESS-001`, el valor es una antigüedad (`"<horas>h"`, respecto de `collected_at_utc` de la evidencia), nunca una fecha absoluta inventada; `record_count = 0` → `null`.
 2. `COMPLETE` sólo si los cinco puntos anteriores están dentro de la ventana esperada (definida por retención/RPO declarado); de lo contrario `PARTIAL`.
 3. Sin ningún backup reciente → `STALE`.
 4. Sin evidencia suficiente para evaluar (ej. Recovery Catalog inaccesible y controlfile rotado) → `INSUFFICIENT_EVIDENCE`, nunca se asume el peor ni el mejor caso.

@@ -2,6 +2,33 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change query|compatibility|skill` — CHG-ESTACK-ORA19C-LAB-005 — `V$BACKUP_REDOLOG` sin `COMPLETION_TIME`
+
+Rama `change/dict-backup-redolog-v2` sobre `0.19.0` (el trabajo original de `change/dict-backup-redolog`, `f565d7d`, reaplicado). Validado en el lab (19c): la verificación del diccionario ya no reporta `V$BACKUP_REDOLOG.COMPLETION_TIME` (476 tokens, 12 discrepancias restantes → `CHG-REQ-DICT-19C-FIXES`). Aprobación humana registrada: `AUTH-ORA19C-LAB-005`, revisor `REV-DBAMANAGER`, `2026-09-27T04:45:18Z`, contra el digest `85c3e5ad…2a45c1f1f` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Origen:
+`CHG-REQ-DICT-BACKUP-REDOLOG`, detectado al validar CHG-ESTACK-ORA19C-LAB-004 en el lab. Ver `docs/ORACLE19C_LAB_DICT_FIX.md`.
+
+### Fixed
+
+- `compatibility/oracle-dictionary/views.yaml`: se retira `V$BACKUP_REDOLOG.completion_time`, declarada por error desde Fase 7. La vista no tiene esa
+  columna (Oracle Database Reference 19c; confirmado en Oracle real).
+- `Q-RMAN-ARCHIVELOG-BACKUP-001` **2.0.0 (breaking)**: se retira `completion_time` de V1 y V2. En Oracle real fallaba con `ORA-00904` en 10g–23ai.
+  Sigue respondiendo qué secuencias tienen backup, por thread.
+
+### Changed
+
+- `rman/backup-freshness` 1.1.0: la frescura de archivelog proviene de `Q-RMAN-BACKUP-FRESHNESS-001` (antigüedad calculada en la base), no de
+  `Q-RMAN-ARCHIVELOG-BACKUP-001`. `rman/archivelog-backup` no cambia (sólo usa `backed_up` por secuencia).
+
+### Added
+
+- `tests/test_backup_redolog_has_no_completion_time.sh`: guardia de regresión que revisa cada tramo `UNION [ALL]` de cada sentencia certificada
+  sobre `v$backup_redolog` y el diccionario; probada con mutaciones.
+
+### Regression
+
+- `Q-DICT-VERIFY-001` … `-005` regeneradas: `V$BACKUP_REDOLOG.COMPLETION_TIME` sale del diccionario, así que la verificación en el lab deja de reportarla.
+- Errata del registro original: los "13 fallos preexistentes" eran exclusivos de macOS con bash 3.2, y ahí el validador estático no validaba (ver 0.18.0).
+
 ## [0.19.0] — 2026-09-26 — `v0.19.0-ci-dictionary-verify` — CHG-ESTACK-CI-MATRIX-001 + CHG-ESTACK-ORA19C-LAB-006
 
 Dos cambios aprobados por revisión humana e integrados por separado: la suite corre en CI en Windows, Linux y macOS, y el diccionario se verifica contra el catálogo real de 19c. `main` pasa la suite completa en los tres sistemas. Regresión local (macOS, bash 5.3): 964/964.
@@ -52,7 +79,6 @@ Rama `change/portability-001` sobre `main` (`a00ea2c`), commits `476fe03`, `11a7
 ### Errata
 
 - Los "13 fallos preexistentes" que declaran 0.15.0–0.17.0 eran exclusivos de macOS, y los PASS del validador estático que se citan en macOS no validaron columnas.
-
 ## [0.17.0] — 2026-09-23 — `v0.17.0-oracle19c-lab-rman` — `/change query|security` — CHG-ESTACK-ORA19C-LAB-004 — lote 2 RMAN: frescura de backups y resumen de jobs
 
 Rama `change/lab-rman-freshness` sobre `main` (`cdd6f62`), commit `c1fcf82`, integrada a `main` vía PR #8 (merge `dad3def`). Aprobación humana

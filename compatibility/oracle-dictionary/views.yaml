@@ -945,14 +945,21 @@ views:
       sequence#:       {min_version: all}
       first_time:          {min_version: all}
       next_time:             {min_version: all}
-      completion_time:        {min_version: all}
+      # completion_time RETIRADA (CHG-ESTACK-ORA19C-LAB-005): la vista NO tiene esa columna (Oracle Database
+      # Reference 19c; confirmado en Oracle real: la primera versión de Q-RMAN-BACKUP-FRESHNESS-001 falló con
+      # DRIVER_ERROR en el lab). La fecha de finalización de un backup de archivelog está en V$BACKUP_SET
+      # (BACKUP_TYPE 'L').
     validation:
       source_type: ORACLE_DOCUMENTATION
       status: DOCUMENTATION_VALIDATED
       validated_for: ["10.2", "11.2", "12.1", "12.2", "18", "19", "21", "23"]
     notes: >
       Fase 7. Vista pre-10g. Siempre agrupada por THREAD# antes que SEQUENCE# — nunca mezclada
-      entre threads (# 17 del prompt).
+      entre threads (# 17 del prompt). CHG-ESTACK-ORA19C-LAB-005 (2026-09-23): se retira
+      COMPLETION_TIME, declarada por error desde Fase 7. Columnas reales según Oracle Database
+      Reference 19c: RECID, STAMP, SET_STAMP, SET_COUNT, THREAD#, SEQUENCE#, RESETLOGS_CHANGE#,
+      RESETLOGS_TIME, FIRST_CHANGE#, FIRST_TIME, NEXT_CHANGE#, NEXT_TIME, BLOCKS, BLOCK_SIZE,
+      TERMINAL, CON_ID. Sólo se listan las que usan queries certificadas.
 
   V$BACKUP_SPFILE:
     min_version: all

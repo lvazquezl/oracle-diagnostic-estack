@@ -1,6 +1,6 @@
 ---
 query_id: Q-RMAN-ARCHIVELOG-BACKUP-001
-version: 1.0.0
+version: 2.0.0
 
 domain: rman
 purpose: Cobertura de backup de archivelogs (qué secuencias tienen backup, por thread) — nunca mezcla threads
@@ -50,7 +50,7 @@ status: active
 ```sql
 SELECT *
 FROM (
-  SELECT thread#, sequence#, first_time, next_time, completion_time
+  SELECT thread#, sequence#, first_time, next_time
   FROM   v$backup_redolog
   ORDER  BY thread#, sequence# DESC
 )
@@ -60,13 +60,15 @@ WHERE  ROWNUM <= 1000;
 # Statement / procedure (read-only) — Variant V2 (modern_12plus, 12.1+)
 
 ```sql
-SELECT thread#, sequence#, first_time, next_time, completion_time
+SELECT thread#, sequence#, first_time, next_time
 FROM   v$backup_redolog
 ORDER  BY thread#, sequence# DESC
 FETCH  FIRST 1000 ROWS ONLY;
 ```
 
 Siempre agrupada por `THREAD#` antes que por `SEQUENCE#` — nunca se compara `SEQUENCE#` entre threads distintos como si fuera una secuencia global única (`# 17` del prompt). Se correlaciona contra `Q-RMAN-ARCHIVED-LOG-COVERAGE-001` (`V$ARCHIVED_LOG`) para distinguir `not backed up` de `not archived`.
+
+**2.0.0 (CHG-ESTACK-ORA19C-LAB-005, breaking):** se retira `completion_time`. `V$BACKUP_REDOLOG` no tiene esa columna (Oracle Database Reference 19c), así que la 1.0.0 fallaría con `ORA-00904` (invalid identifier) en cualquier Oracle real. La misma columna hizo fallar en el lab (`DRIVER_ERROR`) la primera versión de `Q-RMAN-BACKUP-FRESHNESS-001`. Esta query responde **qué** secuencias tienen backup; **cuándo** fue el último backup de archivelogs lo da `Q-RMAN-BACKUP-FRESHNESS-001` (`ARCHIVELOG`, antigüedad calculada en la base).
 
 # Notes by version
 
@@ -90,8 +92,8 @@ Ninguna.
 
 # Sanitization notes
 
-Ninguna — sólo números de secuencia y timestamps.
+Ninguna — sólo números de secuencia y los timestamps `FIRST_TIME`/`NEXT_TIME` del rango del log (no del backup).
 
 # Evolution via `/change query`
 
-N/A — vista estable.
+2.0.0: corrección de una columna inexistente (ver arriba). Una fecha de finalización por secuencia requeriría un `JOIN` con `V$BACKUP_SET` por `SET_STAMP`/`SET_COUNT`, con esas columnas validadas en el diccionario para 10g-23ai; no se agrega sin esa validación.
