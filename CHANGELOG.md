@@ -2,46 +2,50 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — `/change query|compatibility|skill` — CHG-ESTACK-ORA19C-LAB-007 — correcciones del diccionario y de 5 queries (19c)
+## [0.20.0] — 2026-09-27 — `v0.20.0-dictionary-19c-fixes` — CHG-ESTACK-ORA19C-LAB-005 + CHG-ESTACK-ORA19C-LAB-007
 
-Rama `change/dict-19c-fixes` sobre LAB-005 (`073efc8`). Validado en el lab (19c): 487 tokens, sólo quedan los 5 hallazgos esperados (Statspack y pseudo-columnas); `GV$GES_STATISTICS` era un falso positivo del verificador anterior. Aprobación humana registrada: `AUTH-ORA19C-LAB-007`, revisor `REV-DBAMANAGER`, `2026-09-27T05:22:22Z`, contra el digest `9eb0d4e1…1c68ecbf` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/ORACLE19C_LAB_DICT_19C_FIXES.md`.
+El diccionario y las queries certificadas quedan coherentes con el catálogo real de 19c: la verificación en el lab reporta sólo los 5 hallazgos esperados (Statspack no instalado y 3 pseudo-columnas, `CHG-REQ-DICT-PSEUDO-COLUMNS`). Seis queries que fallaban en Oracle real quedan corregidas. Ambos cambios aprobados por revisión humana, con CI en verde en ubuntu, macos y windows antes de cada merge. Regresión local (macOS, bash 5.3): 966/966.
 
-### Fixed
+### `/change query|compatibility|skill` — CHG-ESTACK-ORA19C-LAB-005 — `V$BACKUP_REDOLOG` sin `COMPLETION_TIME`
 
-- 5 queries certificadas que fallaban en Oracle real, a 2.0.0 (breaking): `Q-RMAN-BACKUP-DEVICE-001` (sin `physical_device_name`), `Q-SEC-PROXY-AUTHENTICATION-001` (`FLAGS` desde 11.2 en lugar de `authorization_constraint`; skill `security/proxy-authentication` 1.1.0), `Q-SEC-DATA-REDACTION-POLICIES-001` (sin `REDACTION_COLUMNS.policy_name`), `Q-ASM-TOPOLOGY-001` (`V$ASM_CLIENT` en lugar de `GV$ASM_INSTANCE`), `Q-RAC-GES-GCS-001` (`GV$SYSSTAT` en lugar de `GV$GCS_STATISTICS`).
-- Diccionario: retira columnas y vistas inexistentes; `V$STANDBY_LOG.groups` → `group#`.
-- Verificador del diccionario: resuelve nombres por sinónimo público (`DBA_SYNONYMS`) en lugar de suponer `V$X → V_$X`.
-
-### Added
-
-- `tests/test_no_known_nonexistent_views.sh`: las vistas confirmadas como inexistentes no pueden volver.
-
-## [Unreleased] — `/change query|compatibility|skill` — CHG-ESTACK-ORA19C-LAB-005 — `V$BACKUP_REDOLOG` sin `COMPLETION_TIME`
-
-Rama `change/dict-backup-redolog-v2` sobre `0.19.0` (el trabajo original de `change/dict-backup-redolog`, `f565d7d`, reaplicado). Validado en el lab (19c): la verificación del diccionario ya no reporta `V$BACKUP_REDOLOG.COMPLETION_TIME` (476 tokens, 12 discrepancias restantes → `CHG-REQ-DICT-19C-FIXES`). Aprobación humana registrada: `AUTH-ORA19C-LAB-005`, revisor `REV-DBAMANAGER`, `2026-09-27T04:45:18Z`, contra el digest `85c3e5ad…2a45c1f1f` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Origen:
+Rama `change/dict-backup-redolog-v2` sobre `0.19.0` (el trabajo original de `change/dict-backup-redolog`, `f565d7d`, reaplicado), commits `dfd17ba`, `1516670` y `073efc8`, integrada a `main` vía PR #15 (merge `16d006e`). Validado en el lab (19c): la verificación del diccionario ya no reporta `V$BACKUP_REDOLOG.COMPLETION_TIME` (476 tokens, 12 discrepancias restantes → `CHG-REQ-DICT-19C-FIXES`). Aprobación humana registrada: `AUTH-ORA19C-LAB-005`, revisor `REV-DBAMANAGER`, `2026-09-27T04:45:18Z`, contra el digest `85c3e5ad…2a45c1f1f` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Origen:
 `CHG-REQ-DICT-BACKUP-REDOLOG`, detectado al validar CHG-ESTACK-ORA19C-LAB-004 en el lab. Ver `docs/ORACLE19C_LAB_DICT_FIX.md`.
 
-### Fixed
+#### Fixed
 
 - `compatibility/oracle-dictionary/views.yaml`: se retira `V$BACKUP_REDOLOG.completion_time`, declarada por error desde Fase 7. La vista no tiene esa
   columna (Oracle Database Reference 19c; confirmado en Oracle real).
 - `Q-RMAN-ARCHIVELOG-BACKUP-001` **2.0.0 (breaking)**: se retira `completion_time` de V1 y V2. En Oracle real fallaba con `ORA-00904` en 10g–23ai.
   Sigue respondiendo qué secuencias tienen backup, por thread.
 
-### Changed
+#### Changed
 
 - `rman/backup-freshness` 1.1.0: la frescura de archivelog proviene de `Q-RMAN-BACKUP-FRESHNESS-001` (antigüedad calculada en la base), no de
   `Q-RMAN-ARCHIVELOG-BACKUP-001`. `rman/archivelog-backup` no cambia (sólo usa `backed_up` por secuencia).
 
-### Added
+#### Added
 
 - `tests/test_backup_redolog_has_no_completion_time.sh`: guardia de regresión que revisa cada tramo `UNION [ALL]` de cada sentencia certificada
   sobre `v$backup_redolog` y el diccionario; probada con mutaciones.
 
-### Regression
+#### Regression
 
 - `Q-DICT-VERIFY-001` … `-005` regeneradas: `V$BACKUP_REDOLOG.COMPLETION_TIME` sale del diccionario, así que la verificación en el lab deja de reportarla.
 - Errata del registro original: los "13 fallos preexistentes" eran exclusivos de macOS con bash 3.2, y ahí el validador estático no validaba (ver 0.18.0).
+
+### `/change query|compatibility|skill` — CHG-ESTACK-ORA19C-LAB-007 — correcciones del diccionario y de 5 queries (19c)
+
+Rama `change/dict-19c-fixes` sobre LAB-005 (`073efc8`), commits `33bf6f6` y `f3953a1` (más `8ac9c19`, merge de `main`), integrada a `main` vía PR #16 (merge `acc606f`). Validado en el lab (19c): 487 tokens, sólo quedan los 5 hallazgos esperados (Statspack y pseudo-columnas); `GV$GES_STATISTICS` era un falso positivo del verificador anterior. Aprobación humana registrada: `AUTH-ORA19C-LAB-007`, revisor `REV-DBAMANAGER`, `2026-09-27T05:22:22Z`, contra el digest `9eb0d4e1…1c68ecbf` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/ORACLE19C_LAB_DICT_19C_FIXES.md`.
+
+#### Fixed
+
+- 5 queries certificadas que fallaban en Oracle real, a 2.0.0 (breaking): `Q-RMAN-BACKUP-DEVICE-001` (sin `physical_device_name`), `Q-SEC-PROXY-AUTHENTICATION-001` (`FLAGS` desde 11.2 en lugar de `authorization_constraint`; skill `security/proxy-authentication` 1.1.0), `Q-SEC-DATA-REDACTION-POLICIES-001` (sin `REDACTION_COLUMNS.policy_name`), `Q-ASM-TOPOLOGY-001` (`V$ASM_CLIENT` en lugar de `GV$ASM_INSTANCE`), `Q-RAC-GES-GCS-001` (`GV$SYSSTAT` en lugar de `GV$GCS_STATISTICS`).
+- Diccionario: retira columnas y vistas inexistentes; `V$STANDBY_LOG.groups` → `group#`.
+- Verificador del diccionario: resuelve nombres por sinónimo público (`DBA_SYNONYMS`) en lugar de suponer `V$X → V_$X`.
+
+#### Added
+
+- `tests/test_no_known_nonexistent_views.sh`: las vistas confirmadas como inexistentes no pueden volver.
 
 ## [0.19.0] — 2026-09-26 — `v0.19.0-ci-dictionary-verify` — CHG-ESTACK-CI-MATRIX-001 + CHG-ESTACK-ORA19C-LAB-006
 

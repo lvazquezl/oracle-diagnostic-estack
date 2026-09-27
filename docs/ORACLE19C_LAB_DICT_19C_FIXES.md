@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|compatibility|skill` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/dict-19c-fixes` (desde `change/dict-backup-redolog-v2`, `073efc8`, `CHG-ESTACK-ORA19C-LAB-005`, PR #15)
 **Origen:** `CHG-REQ-DICT-19C-FIXES` (hallazgos de `CHG-ESTACK-ORA19C-LAB-006` §8)
-**Estado:** aprobado por revisión humana (§11), validado en el lab (§8). Pendiente: `PROMOTE` (acción humana). `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** aprobado (§11), validado en el lab (§8) e integrado a `main` vía PR #16 (merge `acc606f`). Release `0.20.0`, tag `v0.20.0-dictionary-19c-fixes`. `PROMOTE`, commit, merge, tag y push son acciones humanas.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 
