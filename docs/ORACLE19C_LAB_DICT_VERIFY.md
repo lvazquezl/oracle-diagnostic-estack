@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|compatibility|security` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/lab-dict-verify` (desde `main` `ab6c90c`, `v0.18.0-portability`)
 **Origen:** `CHG-REQ-LAB-DICT-VERIFY` (cubre `CHG-REQ-DICT-RMAN-AUDIT` para todos los dominios)
-**Estado:** propuesto. Validado en el lab (§8). Pendiente: HUMAN REVIEW. `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** aprobado (§11), validado en el lab (§8) e integrado a `main` vía PR #13 (merge `996ebbb`). Release `0.19.0`, tag `v0.19.0-ci-dictionary-verify`. Correcciones de los hallazgos: `CHG-REQ-DICT-19C-FIXES`. `PROMOTE`, commit, merge, tag y push son acciones humanas.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 

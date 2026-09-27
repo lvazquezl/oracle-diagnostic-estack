@@ -2,7 +2,7 @@
 
 **Tipo:** `/change security|documentation` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/ci-matrix` (desde `main` `ab6c90c`, `v0.18.0-portability`)
 **Origen:** `CHG-REQ-CI-MATRIX` (propuesto en `CHG-ESTACK-PORTABILITY-001`)
-**Estado:** propuesto. Validado en GitHub Actions en los tres sistemas (§8, ejecución 2). Pendiente: HUMAN REVIEW. `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** aprobado (§11) e integrado a `main` vía PR #12 (merge `70e2f31`). Release `0.19.0`, tag `v0.19.0-ci-dictionary-verify` (se crea sobre el merge de la rama del changelog). `PROMOTE`, commit, merge, tag y push son acciones humanas.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. La CI no toca Oracle, el lab ni credenciales.
 
