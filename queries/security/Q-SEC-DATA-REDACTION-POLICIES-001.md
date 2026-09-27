@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-DATA-REDACTION-POLICIES-001
-version: 1.0.0
+version: 2.0.0
 
 domain: security
 purpose: >
@@ -45,13 +45,15 @@ ORDER  BY object_owner, object_name;
 ```
 
 ```sql
-SELECT object_owner, object_name, column_name, policy_name, function_type
+SELECT object_owner, object_name, column_name, function_type
 FROM   redaction_columns
 ORDER  BY object_owner, object_name, column_name;
 ```
 
 Requiere `SELECT_CATALOG_ROLE` (verificado WebSearch). Nunca ejecuta `DBMS_REDACT.ADD_POLICY/
 ALTER_POLICY/DROP_POLICY` — sólo lectura de metadata ya configurada.
+
+**2.0.0 (`CHG-ESTACK-ORA19C-LAB-007`, breaking):** el segundo bloque ya no selecciona `policy_name`, que no existe en `REDACTION_COLUMNS` (Reference 19c; confirmado en Oracle real por `Q-DICT-VERIFY`). El nombre de la política sale del primer bloque (`REDACTION_POLICIES`, una política por objeto) uniendo por `object_owner`/`object_name`.
 
 # Notes by version
 

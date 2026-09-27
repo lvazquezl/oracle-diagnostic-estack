@@ -48,7 +48,6 @@ def load_tokens(version="19.0"):
         if _FORBIDDEN.search(" " + view + " "):
             skipped.append(view)
             continue
-        assert "V$" not in view or view.startswith(("V$", "GV$")), view   # REPLACE('V$','V_$') maps only V$/GV$
         tokens.append(view + ".*")
         for col, cmin in _COL.findall(block):
             if _ver(cmin)[:2] > target[:2]:
@@ -79,16 +78,18 @@ def chunk(tokens):
 
 SQL = """WITH s AS (SELECT '{literal}' AS l FROM dual),
 e AS (SELECT REGEXP_SUBSTR(l, '[^ ]+', 1, LEVEL) AS p FROM s CONNECT BY LEVEL <= REGEXP_COUNT(l, '[^ ]+')),
-x AS (SELECT SUBSTR(p, 1, INSTR(p, '.') - 1) AS view_name, SUBSTR(p, INSTR(p, '.') + 1) AS column_name,
-             REPLACE(SUBSTR(p, 1, INSTR(p, '.') - 1), 'V$', 'V_$') AS object_name FROM e)
-SELECT CASE WHEN NOT EXISTS (SELECT 1 FROM dba_tab_columns d WHERE d.owner IN ({owners}) AND d.table_name = x.object_name)
+x AS (SELECT SUBSTR(p, 1, INSTR(p, '.') - 1) AS view_name, SUBSTR(p, INSTR(p, '.') + 1) AS column_name FROM e),
+o AS (SELECT x.view_name, x.column_name, NVL(y.table_owner, '-') AS obj_owner, NVL(y.table_name, x.view_name) AS obj_name
+      FROM x LEFT JOIN dba_synonyms y ON y.owner = 'PUBLIC' AND y.synonym_name = x.view_name AND y.table_owner IN ({owners}))
+SELECT CASE WHEN NOT EXISTS (SELECT 1 FROM dba_tab_columns d WHERE d.owner IN ({owners}) AND d.table_name = o.obj_name
+                             AND (o.obj_owner = '-' OR d.owner = o.obj_owner))
             THEN 'VIEW_NOT_FOUND' ELSE 'COLUMN_NOT_FOUND' END AS finding,
-       x.view_name, x.column_name, CAST(1 AS NUMBER(10)) AS tokens
-FROM   x
-WHERE  NOT EXISTS (SELECT 1 FROM dba_tab_columns d WHERE d.owner IN ({owners}) AND d.table_name = x.object_name
-                   AND (x.column_name = '*' OR d.column_name = x.column_name))
+       o.view_name, o.column_name, CAST(1 AS NUMBER(10)) AS tokens
+FROM   o
+WHERE  NOT EXISTS (SELECT 1 FROM dba_tab_columns d WHERE d.owner IN ({owners}) AND d.table_name = o.obj_name
+                   AND (o.obj_owner = '-' OR d.owner = o.obj_owner) AND (o.column_name = '*' OR d.column_name = o.column_name))
 UNION ALL
-SELECT 'CHECKED', '*', '*', CAST(COUNT(*) AS NUMBER(10)) FROM x;"""
+SELECT 'CHECKED', '*', '*', CAST(COUNT(*) AS NUMBER(10)) FROM o;"""
 
 
 def render_sql(part):
@@ -130,8 +131,8 @@ supported_architectures: [standalone, rac]
 container_scope: ANY_CONTAINER
 database_role_scope: ANY
 
-objects_accessed: [DBA_TAB_COLUMNS]
-privileges_required: [SELECT on DBA_TAB_COLUMNS]
+objects_accessed: [DBA_TAB_COLUMNS, DBA_SYNONYMS]
+privileges_required: [SELECT on DBA_TAB_COLUMNS, SELECT on DBA_SYNONYMS]
 
 risk_class: R0
 cost_class: MEDIUM
@@ -172,7 +173,7 @@ por token **no encontrado** (`VIEW_NOT_FOUND` si la vista no existe para los own
 `COLUMN_NOT_FOUND`) y siempre una fila `CHECKED` con el total de tokens verificados. Un diccionario correcto responde
 sólo la fila `CHECKED`.
 
-- `V$X`/`GV$X` se buscan por su objeto real `V_$X`/`GV_$X` (las `V$` son sinónimos públicos).
+- Cada nombre se resuelve por su sinónimo público (`DBA_SYNONYMS`, destino acotado a los mismos owners); sin sinónimo, se busca el objeto con ese nombre. Así `V$X` llega a su objeto real aunque no se llame `V_$X`.
 - La comparación ocurre en la base: la respuesta nunca contiene el catálogo, sólo discrepancias.
 
 # Notes by version
@@ -189,7 +190,7 @@ Ninguna.
 
 # Cost classification rationale
 
-`MEDIUM`: {len(part)} búsquedas por nombre en el catálogo (`owner`, `table_name`), sin datos de aplicación.
+`MEDIUM`: {len(part)} búsquedas por nombre en el catálogo (`DBA_SYNONYMS`, `DBA_TAB_COLUMNS`), sin datos de aplicación.
 
 # License notes
 

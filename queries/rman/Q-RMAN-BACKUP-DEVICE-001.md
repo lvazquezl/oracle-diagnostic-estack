@@ -1,6 +1,6 @@
 ---
 query_id: Q-RMAN-BACKUP-DEVICE-001
-version: 1.0.0
+version: 2.0.0
 
 domain: rman
 purpose: Dispositivos/canales actualmente asignados (device type, estado) — visibilidad, nunca ALLOCATE/RELEASE CHANNEL
@@ -43,11 +43,13 @@ status: active
 # Statement / procedure (read-only) — Variant V1 (all_versions, 10g-23ai)
 
 ```sql
-SELECT device_type, device_name, physical_device_name
+SELECT device_type, device_name
 FROM   v$backup_device;
 ```
 
 Refleja únicamente dispositivos actualmente asignados durante un job en ejecución — vacía si no hay backup/restore corriendo en ese momento (comportamiento documentado, no error). Sólo lectura — nunca `ALLOCATE CHANNEL`/`RELEASE CHANNEL`.
+
+**2.0.0 (`CHG-ESTACK-ORA19C-LAB-007`, breaking):** se retira `physical_device_name`, que no existe en `V$BACKUP_DEVICE` (Oracle Database Reference 19c: `DEVICE_TYPE`, `DEVICE_NAME`, `CON_ID`; confirmado en Oracle real por `Q-DICT-VERIFY`). La versión 1.0.0 fallaba con `ORA-00904`.
 
 # Notes by version
 

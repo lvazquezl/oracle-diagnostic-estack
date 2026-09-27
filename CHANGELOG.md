@@ -2,6 +2,20 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change query|compatibility|skill` — CHG-ESTACK-ORA19C-LAB-007 — correcciones del diccionario y de 5 queries (19c)
+
+Rama `change/dict-19c-fixes` sobre LAB-005 (`073efc8`). Pendiente: validación en el lab y HUMAN REVIEW. Ver `docs/ORACLE19C_LAB_DICT_19C_FIXES.md`.
+
+### Fixed
+
+- 5 queries certificadas que fallaban en Oracle real, a 2.0.0 (breaking): `Q-RMAN-BACKUP-DEVICE-001` (sin `physical_device_name`), `Q-SEC-PROXY-AUTHENTICATION-001` (`FLAGS` desde 11.2 en lugar de `authorization_constraint`; skill `security/proxy-authentication` 1.1.0), `Q-SEC-DATA-REDACTION-POLICIES-001` (sin `REDACTION_COLUMNS.policy_name`), `Q-ASM-TOPOLOGY-001` (`V$ASM_CLIENT` en lugar de `GV$ASM_INSTANCE`), `Q-RAC-GES-GCS-001` (`GV$SYSSTAT` en lugar de `GV$GCS_STATISTICS`).
+- Diccionario: retira columnas y vistas inexistentes; `V$STANDBY_LOG.groups` → `group#`.
+- Verificador del diccionario: resuelve nombres por sinónimo público (`DBA_SYNONYMS`) en lugar de suponer `V$X → V_$X`.
+
+### Added
+
+- `tests/test_no_known_nonexistent_views.sh`: las vistas confirmadas como inexistentes no pueden volver.
+
 ## [Unreleased] — `/change query|compatibility|skill` — CHG-ESTACK-ORA19C-LAB-005 — `V$BACKUP_REDOLOG` sin `COMPLETION_TIME`
 
 Rama `change/dict-backup-redolog-v2` sobre `0.19.0` (el trabajo original de `change/dict-backup-redolog`, `f565d7d`, reaplicado). Validado en el lab (19c): la verificación del diccionario ya no reporta `V$BACKUP_REDOLOG.COMPLETION_TIME` (476 tokens, 12 discrepancias restantes → `CHG-REQ-DICT-19C-FIXES`). Aprobación humana registrada: `AUTH-ORA19C-LAB-005`, revisor `REV-DBAMANAGER`, `2026-09-27T04:45:18Z`, contra el digest `85c3e5ad…2a45c1f1f` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Origen:

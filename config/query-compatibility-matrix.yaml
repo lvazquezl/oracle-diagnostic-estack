@@ -225,8 +225,8 @@ queries:
     validation_status: COMPATIBLE
 
   Q-RAC-INTERCONNECT-001: {file: queries/rac/Q-RAC-INTERCONNECT-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$CLUSTER_INTERCONNECTS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
-  Q-RAC-GES-GCS-001: {file: queries/rac/Q-RAC-GES-GCS-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$GES_STATISTICS, GV$GCS_STATISTICS, GV$INSTANCE_CACHE_TRANSFER], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
-  Q-ASM-TOPOLOGY-001: {file: queries/asm/Q-ASM-TOPOLOGY-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$ASM_INSTANCE, V$ASM_DISKGROUP_STAT], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-RAC-GES-GCS-001: {file: queries/rac/Q-RAC-GES-GCS-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$GES_STATISTICS, GV$SYSSTAT, GV$INSTANCE_CACHE_TRANSFER], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-ASM-TOPOLOGY-001: {file: queries/asm/Q-ASM-TOPOLOGY-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [V$ASM_CLIENT, V$ASM_DISKGROUP_STAT], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-ASM-DISKS-001: {file: queries/asm/Q-ASM-DISKS-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [V$ASM_DISK], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
   Q-ASM-REBALANCE-001: {file: queries/asm/Q-ASM-REBALANCE-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$ASM_OPERATION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
 
@@ -447,7 +447,7 @@ queries:
     file: queries/oracle/dictionary/Q-DICT-VERIFY-001.md
     variants:
       - {variant_id: Q-DICT-VERIFY-001-V1, label: oracle_19c, min: "19.0", max: "19.0", container_scope: ANY_CONTAINER}
-    required_views: [DBA_TAB_COLUMNS]
+    required_views: [DBA_TAB_COLUMNS, DBA_SYNONYMS]
     role_scope: ANY
     cost_class: MEDIUM
     validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-006: generada desde views.yaml para 19c
@@ -455,7 +455,7 @@ queries:
     file: queries/oracle/dictionary/Q-DICT-VERIFY-002.md
     variants:
       - {variant_id: Q-DICT-VERIFY-002-V1, label: oracle_19c, min: "19.0", max: "19.0", container_scope: ANY_CONTAINER}
-    required_views: [DBA_TAB_COLUMNS]
+    required_views: [DBA_TAB_COLUMNS, DBA_SYNONYMS]
     role_scope: ANY
     cost_class: MEDIUM
     validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-006: generada desde views.yaml para 19c
@@ -463,7 +463,7 @@ queries:
     file: queries/oracle/dictionary/Q-DICT-VERIFY-003.md
     variants:
       - {variant_id: Q-DICT-VERIFY-003-V1, label: oracle_19c, min: "19.0", max: "19.0", container_scope: ANY_CONTAINER}
-    required_views: [DBA_TAB_COLUMNS]
+    required_views: [DBA_TAB_COLUMNS, DBA_SYNONYMS]
     role_scope: ANY
     cost_class: MEDIUM
     validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-006: generada desde views.yaml para 19c
@@ -471,7 +471,7 @@ queries:
     file: queries/oracle/dictionary/Q-DICT-VERIFY-004.md
     variants:
       - {variant_id: Q-DICT-VERIFY-004-V1, label: oracle_19c, min: "19.0", max: "19.0", container_scope: ANY_CONTAINER}
-    required_views: [DBA_TAB_COLUMNS]
+    required_views: [DBA_TAB_COLUMNS, DBA_SYNONYMS]
     role_scope: ANY
     cost_class: MEDIUM
     validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-006: generada desde views.yaml para 19c
@@ -479,7 +479,7 @@ queries:
     file: queries/oracle/dictionary/Q-DICT-VERIFY-005.md
     variants:
       - {variant_id: Q-DICT-VERIFY-005-V1, label: oracle_19c, min: "19.0", max: "19.0", container_scope: ANY_CONTAINER}
-    required_views: [DBA_TAB_COLUMNS]
+    required_views: [DBA_TAB_COLUMNS, DBA_SYNONYMS]
     role_scope: ANY
     cost_class: MEDIUM
     validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-006: generada desde views.yaml para 19c
@@ -533,7 +533,15 @@ queries:
     role_scope: ANY
     cost_class: LOW
     validation_status: COMPATIBLE
-  Q-SEC-PROXY-AUTHENTICATION-001: {file: queries/security/Q-SEC-PROXY-AUTHENTICATION-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [PROXY_USERS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-PROXY-AUTHENTICATION-001:
+    file: queries/security/Q-SEC-PROXY-AUTHENTICATION-001.md
+    variants:
+      - {variant_id: Q-SEC-PROXY-AUTHENTICATION-001-V1, label: legacy_pre112, min: "10.2", max: "11.1", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-PROXY-AUTHENTICATION-001-V2, label: flags_112plus, min: "11.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [PROXY_USERS]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-007: authorization_constraint → FLAGS (11.2+)
   Q-SEC-PASSWORD-PROFILES-001: {file: queries/security/Q-SEC-PASSWORD-PROFILES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_PROFILES], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-SEC-PASSWORD-VERIFY-SOURCE-001:
     file: queries/security/Q-SEC-PASSWORD-VERIFY-SOURCE-001.md

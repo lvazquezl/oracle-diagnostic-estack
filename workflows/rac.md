@@ -68,7 +68,7 @@ gates:
   architecture: si core/context-discovery reporta instance_mode = single, el workflow SE DETIENE aquí (no activa oracle-rac-analyst) y lo informa al DBA — éste es el ejemplo canónico del gate 'architecture'
   environment:  target debe estar en config/allowed-targets.local.yaml
   license:      ninguna capability de este workflow es LICENSE_DEPENDENT por sí sola (RAC topología no requiere Diagnostics Pack); gc waits → oracle-performance-analyst aplica su propio Licensing Gate
-  privilege:    ESTACK_DIAGNOSTIC_ROLE debe alcanzar GV$SESSION/GV$SERVICES/GV$INSTANCE/GV$CLUSTER_INTERCONNECTS/GV$GES_STATISTICS/GV$GCS_STATISTICS; identidad diagnóstica GI/OS de sólo lectura para collectors (docs/GI_READONLY_COLLECTORS.md) — INSUFFICIENT_PRIVILEGES si no está disponible, nunca escalamiento automático
+  privilege:    ESTACK_DIAGNOSTIC_ROLE debe alcanzar GV$SESSION/GV$SERVICES/GV$INSTANCE/GV$CLUSTER_INTERCONNECTS/GV$GES_STATISTICS/GV$SYSSTAT; identidad diagnóstica GI/OS de sólo lectura para collectors (docs/GI_READONLY_COLLECTORS.md) — INSUFFICIENT_PRIVILEGES si no está disponible, nunca escalamiento automático
   security:     ninguna query requerida puede tener risk_class fuera de R0; ninguna tool srvctl/crsctl de escritura existe en el catálogo (tests/test_no_crsctl_modify.sh, tests/test_no_srvctl_modify_execution.sh)
   cost:         Q-RAC-SESSION-DIST-001/Q-RAC-GES-GCS-001 son cost_class MEDIUM, max_rows proporcional al número de instancias (policies/rate-limiting-policy.md#gv-y-rac)
   evidence:     reutiliza topología ya cacheada por oracle-discovery-analyst (target_profile.rac/.gi/.asm/.network, docs/TARGET_PROFILE.md)

@@ -547,7 +547,8 @@
         "ANY"
       ],
       "min_privileges": [
-        "SELECT on DBA_TAB_COLUMNS"
+        "SELECT on DBA_TAB_COLUMNS",
+        "SELECT on DBA_SYNONYMS"
       ],
       "license": "none",
       "limits": {
@@ -583,7 +584,8 @@
         "ANY"
       ],
       "min_privileges": [
-        "SELECT on DBA_TAB_COLUMNS"
+        "SELECT on DBA_TAB_COLUMNS",
+        "SELECT on DBA_SYNONYMS"
       ],
       "license": "none",
       "limits": {
@@ -619,7 +621,8 @@
         "ANY"
       ],
       "min_privileges": [
-        "SELECT on DBA_TAB_COLUMNS"
+        "SELECT on DBA_TAB_COLUMNS",
+        "SELECT on DBA_SYNONYMS"
       ],
       "license": "none",
       "limits": {
@@ -655,7 +658,8 @@
         "ANY"
       ],
       "min_privileges": [
-        "SELECT on DBA_TAB_COLUMNS"
+        "SELECT on DBA_TAB_COLUMNS",
+        "SELECT on DBA_SYNONYMS"
       ],
       "license": "none",
       "limits": {
@@ -691,7 +695,8 @@
         "ANY"
       ],
       "min_privileges": [
-        "SELECT on DBA_TAB_COLUMNS"
+        "SELECT on DBA_TAB_COLUMNS",
+        "SELECT on DBA_SYNONYMS"
       ],
       "license": "none",
       "limits": {

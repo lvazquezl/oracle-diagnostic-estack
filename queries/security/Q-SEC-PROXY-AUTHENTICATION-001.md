@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-PROXY-AUTHENTICATION-001
-version: 1.0.0
+version: 2.0.0
 
 domain: security
 purpose: Proxy authentication awareness (CONNECT THROUGH) — nunca credenciales (# 118 del prompt de Fase 8).
@@ -29,17 +29,41 @@ license_requirements: none
 
 execution_mode: READ_ONLY
 
+# CHG-ESTACK-ORA19C-LAB-007: authorization_constraint no existe; la amplitud de roles activables está en FLAGS
+# (Reference 11.2 y 19c). FLAGS no se pudo verificar en 10.2 → variante sin FLAGS por debajo de 11.2.
+variants:
+  - variant_id: Q-SEC-PROXY-AUTHENTICATION-001-V1
+    label: legacy_pre112
+    oracle_versions: {min: "10.2", max: "11.1"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V1 (legacy_pre112)"
+  - variant_id: Q-SEC-PROXY-AUTHENTICATION-001-V2
+    label: flags_112plus
+    oracle_versions: {min: "11.2", max: "23.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V2 (flags_112plus)"
+
 tests: [tests/test_no_write_operations.sh, tests/test_security_admin_privileges.sh]
 status: active
 ---
 
-# Statement / procedure (read-only)
+# Statement / procedure (read-only) — Variant V1 (legacy_pre112)
 
 ```sql
-SELECT proxy, client, authentication, authorization_constraint
+SELECT proxy, client, authentication
 FROM   proxy_users
 ORDER  BY proxy, client;
 ```
+
+# Statement / procedure (read-only) — Variant V2 (flags_112plus)
+
+```sql
+SELECT proxy, client, authentication, flags
+FROM   proxy_users
+ORDER  BY proxy, client;
+```
+
+**2.0.0 (`CHG-ESTACK-ORA19C-LAB-007`, breaking):** `authorization_constraint` no existe en `PROXY_USERS` (Reference 11.2 y 19c; confirmado en Oracle real por `Q-DICT-VERIFY`); la versión 1.0.0 fallaba con `ORA-00904`. El dato que la skill necesita (`PROXY MAY ACTIVATE ALL CLIENT ROLES` y afines) está en `FLAGS`. Por debajo de 11.2 no se afirma que exista: V1 no la selecciona y la skill reporta la amplitud como no disponible.
 
 # Notes by version
 

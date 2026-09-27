@@ -1,7 +1,7 @@
 name: proxy-authentication
 display_name: "Proxy Authentication Awareness"
 id: security/proxy-authentication
-version: 1.0.0
+version: 1.1.0
 domain: security
 status: active
 
