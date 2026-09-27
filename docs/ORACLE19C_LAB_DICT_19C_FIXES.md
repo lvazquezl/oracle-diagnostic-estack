@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|compatibility|skill` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/dict-19c-fixes` (desde `change/dict-backup-redolog-v2`, `073efc8`, `CHG-ESTACK-ORA19C-LAB-005`, PR #15)
 **Origen:** `CHG-REQ-DICT-19C-FIXES` (hallazgos de `CHG-ESTACK-ORA19C-LAB-006` §8)
-**Estado:** propuesto. Pendiente: validación en el lab (§8) y HUMAN REVIEW. `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** aprobado por revisión humana (§11), validado en el lab (§8). Pendiente: `PROMOTE` (acción humana). `PROMOTE`, commit, merge, tag y push son acciones humanas.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 
@@ -28,7 +28,7 @@ Fuera de alcance: `V$DATAGUARD_STATS.APPLY_LAG`/`TRANSPORT_LAG` y `V$PGASTAT.PGA
 
 ## 3. GAP ANALYSIS
 
-1. **`V$GES_STATISTICS`:** la Reference 19c la documenta, pero el lab la reportó `VIEW_NOT_FOUND`. La hipótesis es que el verificador buscaba `GV_$GES_STATISTICS` y el sinónimo público apunta a otro nombre. El verificador corregido (#0) lo decide en el lab (§8). La query conserva `GV$GES_STATISTICS` hasta entonces.
+1. **`V$GES_STATISTICS`:** la Reference 19c la documenta, pero el lab la había reportado `VIEW_NOT_FOUND`. Con el verificador corregido (#0), **existe** (§8): era un falso positivo del supuesto `V$X → V_$X`. La query la conserva.
 2. **Nombres de estadística** (`gc ...`, `global lock ...`): son valores, no columnas. La verificación de diccionario no los cubre, y sin un RAC real quedan validados sólo por documentación.
 3. **Semántica de `Q-ASM-TOPOLOGY-001`:** antes pretendía listar las instancias ASM del clúster (con una vista que no existe). Ahora muestra la instancia ASM que atiende **a esta base** y sus disk groups. Un inventario de clúster requiere consultar la instancia ASM o GI (`CHG-REQ-ASM-CLUSTER-INVENTORY`).
 4. **`FLAGS` en 10.2:** no se encontró la documentación 10.2 de `PROXY_USERS` con `FLAGS`, así que no se afirma. V1 no la usa y la skill reporta `INSUFFICIENT_EVIDENCE` para la amplitud de roles.
@@ -59,12 +59,21 @@ Fuera de alcance: `V$DATAGUARD_STATS.APPLY_LAG`/`TRANSPORT_LAG` y `V$PGASTAT.PGA
 
 Local (macOS, bash 5.3.20): **966/966** (965 + `test_no_known_nonexistent_views`).
 
-## 8. Validación en el lab (pendiente)
+## 8. Validación en el lab
 
-Con esta rama en el workspace principal y el lab reconectado, las 5 partes de `Q-DICT-VERIFY` deben reportar **sólo**:
-- `STATS$SNAPSHOT`, `STATS$SYSTEM_EVENT` (esperados, sin Statspack).
-- `V$DATAGUARD_STATS.APPLY_LAG`/`TRANSPORT_LAG`, `V$PGASTAT.PGA_AGGREGATE_LIMIT_ROW` (pseudo-columnas, fuera de alcance).
-- Y, según resuelva el verificador corregido, `GV$GES_STATISTICS` o nada más.
+2026-09-27, `lab-ol8-19c` (19c RU 19.32, `CDB$ROOT`, ASM), commit `33bf6f6`. Las 5 partes corrieron `OK`/`REAL`, sin limitaciones: **487 tokens** (99 + 99 + 96 + 100 + 93).
+
+| Parte | Evidencia | Hallazgos |
+|---|---|---|
+| 001 | `EVR-22d535739068e8bffc305035` | 0 |
+| 002 | `EVR-99e71e14641b49c0146cf06b` | `STATS$SNAPSHOT`, `STATS$SYSTEM_EVENT` (esperados: sin Statspack) |
+| 003 | `EVR-e6c23b8a714cde735dff5670` | 0 |
+| 004 | `EVR-068b6708deaae2b38395970c` | `V$DATAGUARD_STATS.APPLY_LAG`/`.TRANSPORT_LAG`, `V$PGASTAT.PGA_AGGREGATE_LIMIT_ROW` (pseudo-columnas, fuera de alcance) |
+| 005 | `EVR-0756625213b58b0139340101` | 0 |
+
+- **Criterio cumplido:** sólo quedan los 5 hallazgos esperados.
+- **Confirmados en Oracle real:** `GV$GES_STATISTICS` (falso positivo del verificador anterior), `V$ASM_CLIENT` y sus columnas, `GV$SYSSTAT`, `DBA_SYNONYMS`, `PROXY_USERS.FLAGS`, `V$STANDBY_LOG.GROUP#`.
+- **No verificable aquí:** los nombres de estadística (`gc ...`, `global lock ...`, valores de `NAME`) y el comportamiento en RAC.
 
 ## 9–10. Registros relacionados
 
@@ -72,6 +81,10 @@ Con esta rama en el workspace principal y el lab reconectado, las 5 partes de `Q
 - Abre `CHG-REQ-ASM-CLUSTER-INVENTORY`.
 - Pendientes: `CHG-REQ-DICT-PSEUDO-COLUMNS` y `CHG-REQ-LAB-MULTIVERSION`.
 
-## 11. HUMAN REVIEW (pendiente)
+## 11. HUMAN REVIEW — aprobado
 
-## 12. Motor de gobernanza (pendiente, después de §8)
+`AUTH-ORA19C-LAB-007`, revisor `REV-DBAMANAGER` (distinto del proponente `REV-CLAUDEAGENT`), `2026-09-27T05:22:22Z`, contra el digest `9eb0d4e1…1c68ecbf`. El motor informa `review_status: APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el digest, no la identidad del firmante. `PROMOTE` (merge, tag) sigue siendo acción humana.
+
+## 12. Motor de gobernanza
+
+`advise --mode estack` (2026-09-27T05:15:47Z): `governance_state: PENDING_HUMAN_REVIEW`, `blockers: []`, `promote_status: HUMAN_ACTION_REQUIRED`, `content_digest: 9eb0d4e1b9e6cf8b14783add6a61cabf2351712b19857c5b1160084b1c68ecbf`. La salida queda fuera del repo, en `~/.local/share/oracle-diagnostic-estack/change-evidence/CHG-ESTACK-ORA19C-LAB-007/`.

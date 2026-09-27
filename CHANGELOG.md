@@ -4,7 +4,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change query|compatibility|skill` — CHG-ESTACK-ORA19C-LAB-007 — correcciones del diccionario y de 5 queries (19c)
 
-Rama `change/dict-19c-fixes` sobre LAB-005 (`073efc8`). Pendiente: validación en el lab y HUMAN REVIEW. Ver `docs/ORACLE19C_LAB_DICT_19C_FIXES.md`.
+Rama `change/dict-19c-fixes` sobre LAB-005 (`073efc8`). Validado en el lab (19c): 487 tokens, sólo quedan los 5 hallazgos esperados (Statspack y pseudo-columnas); `GV$GES_STATISTICS` era un falso positivo del verificador anterior. Aprobación humana registrada: `AUTH-ORA19C-LAB-007`, revisor `REV-DBAMANAGER`, `2026-09-27T05:22:22Z`, contra el digest `9eb0d4e1…1c68ecbf` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/ORACLE19C_LAB_DICT_19C_FIXES.md`.
 
 ### Fixed
 
