@@ -17,7 +17,7 @@ import secrets
 import time
 from datetime import datetime, timezone
 
-from . import bridge
+from . import bridge, field_validation
 from .adapters import AdapterRegistry, run_with_timeout
 from .catalog import COLLECTOR_ID_RE, Target, evaluate_capability
 from .common import (
@@ -127,8 +127,10 @@ class Session:
 class Gateway:
     def __init__(self, collectors: dict, targets: dict, adapters: AdapterRegistry, audit: Audit = None,
                  store: EvidenceStore = None, operation_timeout: float = DEFAULT_OPERATION_TIMEOUT_SECONDS,
-                 max_session_calls: int = None, max_rows: int = None, lab_mode: bool = False):
+                 max_session_calls: int = None, max_rows: int = None, lab_mode: bool = False, field_registry: dict = None):
         self.lab_mode = bool(lab_mode)
+        # CHG-ESTACK-VALIDATION-MATRIX-001: invalid/unreadable registry → everything DOCUMENTATION_ONLY (fail closed).
+        self.field_registry = field_registry if field_registry is not None else field_validation.load()
         self.collectors = collectors
         self.targets = targets
         self.adapters = adapters
@@ -239,6 +241,9 @@ class Gateway:
         view["adapter_status"] = {name: self.adapters.status_for(name, col.collector_id, declared) for name, declared in sorted(col.adapters.items())}
         env.update({"status": "OK", "capability_status": CapabilityStatus.SUPPORTED, "sanitization_status": "SANITIZED",
                     "evidence_refs": [], "collector": view, "capability_by_target": per_target,
+                    "field_validation": {"validated_contexts": field_validation.assess_all_contexts(self.field_registry, col),
+                                         "by_target": {a: field_validation.assess(self.field_registry, col, t)["level"]
+                                                       for a, t in sorted(self.targets.items())}},
                     "limitations": []})
         return env
 
@@ -272,7 +277,8 @@ class Gateway:
                     "provenance": {"kind": payload["provenance_kind"], "real_observation": real},
                     "sanitization_status": "SANITIZED", "evidence_refs": [ref],
                     "evidence": {"columns": payload["columns"], "rows": payload["rows"], "row_count": payload["row_count"], "digest": payload["digest"]},
-                    "query_sha256": col.query_sha256, "limitations": payload["limitations"]})
+                    "query_sha256": col.query_sha256, "limitations": payload["limitations"],
+                    "field_validation": field_validation.assess(self.field_registry, col, target)})
         return env
 
     def _tool_get_evidence(self, session, request_id, args):
@@ -288,7 +294,8 @@ class Gateway:
                     "provenance": {"kind": kind, "real_observation": kind == "REAL"},
                     "sanitization_status": "SANITIZED", "evidence_refs": [args["evidence_ref"]],
                     "evidence": {"columns": p["columns"], "rows": p["rows"], "row_count": p["row_count"], "digest": p["digest"]},
-                    "limitations": list(p["limitations"])})
+                    "limitations": list(p["limitations"]),
+                    "field_validation": field_validation.assess(self.field_registry, col, target)})
         return env
 
     def _tool_analyze_incident(self, session, request_id, args):
@@ -304,11 +311,21 @@ class Gateway:
             items.append((self.collectors[e["collector"]], ref, e["payload"]))
         analysis = bridge.analyze(target.alias, items)
         real = any(p.get("provenance_kind") == "REAL" for _c, _r, p in items)
+        # CHG-ESTACK-VALIDATION-MATRIX-001 (policies/field-validation-policy.md): evidence whose query is not field-validated
+        # for THIS target caps every conclusion at PROBABLE_CAUSE. The rca_engine statuses are not rewritten; the ceiling is
+        # explicit and the orchestrator applies it in its Result Package.
+        per_ev = [{"evidence_ref": r, "collector_id": c.collector_id, "level": field_validation.assess(self.field_registry, c, target)["level"]}
+                  for c, r, _p in items]
+        weak = [x for x in per_ev if x["level"] != "FIELD_VALIDATED"]
+        fv_block = {"per_evidence": per_ev, "all_field_validated": not weak,
+                    "confidence_ceiling": None if not weak else "PROBABLE_CAUSE"}
         env = self._base("diagnostics.analyze_incident", session, request_id, target)
         env.update({"status": "OK", "capability_status": CapabilityStatus.SUPPORTED, "collected_at_utc": None,
                     "provenance": {"kind": "REAL" if real else "FIXTURE", "real_observation": real},
                     "sanitization_status": "SANITIZED", "evidence_refs": refs, "analysis": analysis,
-                    "limitations": [("derived from sanitized REAL lab evidence" if real else "derived from sanitized fixture evidence")
+                    "field_validation": fv_block,
+                    "limitations": [f"EVIDENCE_NOT_FIELD_VALIDATED:{x['collector_id']}:{x['level']}: conclusions are at most PROBABLE_CAUSE"
+                                    for x in weak] + [("derived from sanitized REAL lab evidence" if real else "derived from sanitized fixture evidence")
                                     + "; correlation in time is not causation (rca_engine contract)",
                                     "advisory and candidate are proposals: nothing is executed, approved or published by the gateway"]})
         return env

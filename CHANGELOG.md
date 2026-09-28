@@ -2,6 +2,21 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change compatibility|documentation|security` — CHG-ESTACK-VALIDATION-MATRIX-001 — validación en campo por query y contexto
+
+Rama `change/validation-matrix` sobre `main` (`3e8f8e0`). Aprobación humana registrada: `AUTH-VALIDATION-MATRIX-001`, revisor `REV-DBAMANAGER`, `2026-09-28T19:10:11Z`, contra el digest `7252a507…d5c6201` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/FIELD_VALIDATION_MATRIX.md`.
+
+### Added
+
+- `config/field-validation-registry.json` y `mcp_gateway/field_validation.py`: niveles `FIELD_VALIDATED` / `FIELD_VALIDATED_OTHER_CONTEXT` / `DOCUMENTATION_ONLY` por query (atada a su `query_sha256`) y contexto. El contexto cubre versión con RU, contenedor, rol, RAC, ASM, Data Guard y SO. Carga inicial: 11 queries validadas en el lab 19c.
+- `field_validation` en `diagnostics.collect`, `get_evidence` y `describe_collector`. En `analyze_incident`, techo `PROBABLE_CAUSE` y limitación `EVIDENCE_NOT_FIELD_VALIDATED` por evidencia no validada en campo.
+- `policies/field-validation-policy.md`. `validation_level` en el Result Package (`docs/CONTRACTS.md`, orquestador, `CLAUDE.md`).
+- Targets: campos opcionales `os` y `release_update`.
+
+### Regression
+
+- macOS con bash 5.3: 966/966 antes y 967/967 después.
+
 ## [0.20.0] — 2026-09-27 — `v0.20.0-dictionary-19c-fixes` — CHG-ESTACK-ORA19C-LAB-005 + CHG-ESTACK-ORA19C-LAB-007
 
 El diccionario y las queries certificadas quedan coherentes con el catálogo real de 19c: la verificación en el lab reporta sólo los 5 hallazgos esperados (Statspack no instalado y 3 pseudo-columnas, `CHG-REQ-DICT-PSEUDO-COLUMNS`). Seis queries que fallaban en Oracle real quedan corregidas. Ambos cambios aprobados por revisión humana, con CI en verde en ubuntu, macos y windows antes de cada merge. Regresión local (macOS, bash 5.3): 966/966.

@@ -42,6 +42,7 @@ Este e-stack asiste a DBAs Oracle y SysAdmins en **assessment, health checks, ob
 - El modelo trabaja con `evidence/sanitized` y `evidence/derived`. `evidence/raw` no se modifica ni se envía completo al modelo.
 - Clasificación de campos: KEEP / MASK / HASH / TOKENIZE / DROP (ver [sanitizers/data-classification-policy.md](sanitizers/data-classification-policy.md)).
 - Trazabilidad obligatoria: `EVIDENCE → FINDING → RECOMMENDATION → CHANGE PROPOSAL` con IDs estables (`EVD-`, `FND-`, `REC-`, `CHG-`, `ANA-`, `INC-`).
+- Validación en campo: todo hallazgo declara `validation_level`. Si la evidencia no es `FIELD_VALIDATED` para ese ambiente, se dice "no validado en campo" y la confianza no supera `PROBABLE_CAUSE` (ver [policies/field-validation-policy.md](policies/field-validation-policy.md)).
 
 ## Operaciones prohibidas
 
@@ -68,4 +69,5 @@ Todo crecimiento del stack (agente, skill, query, workflow, policy, knowledge, c
 - Registro de skills: [skills/REGISTRY.md](skills/REGISTRY.md)
 - Catálogo de queries certificadas: [queries/REGISTRY.md](queries/REGISTRY.md)
 - Cobertura por dominio × versión: [docs/CAPABILITY_MATRIX.md](docs/CAPABILITY_MATRIX.md)
+- Validación en campo por query y contexto: [policies/field-validation-policy.md](policies/field-validation-policy.md), [config/field-validation-registry.json](config/field-validation-registry.json)
 - Costo/riesgo, degradación de capacidades, licensing, version-awareness: [policies/query-cost-policy.md](policies/query-cost-policy.md), [policies/capability-degradation-policy.md](policies/capability-degradation-policy.md), [policies/licensing-awareness-policy.md](policies/licensing-awareness-policy.md), [policies/version-awareness-policy.md](policies/version-awareness-policy.md)

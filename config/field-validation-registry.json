@@ -1,0 +1,170 @@
+{
+  "schema_version": "1.0.0",
+  "description": "CHG-ESTACK-VALIDATION-MATRIX-001. Field validation of certified queries: which exact SQL (query_sha256) ran against a REAL Oracle in which context, with evidence recorded in a change record. A query/context not listed here is DOCUMENTATION_ONLY. Evaluated by mcp_gateway/field_validation.py; policy: policies/field-validation-policy.md. Only human-run lab validations recorded in an approved change record may be added.",
+  "contexts": {
+    "LAB-OL8-19C-CDBROOT-ASM": {
+      "oracle_version": "19c",
+      "release_update": "19.32",
+      "container": "CDB_ROOT",
+      "role": "PRIMARY",
+      "architecture": {
+        "rac": false,
+        "asm": true,
+        "dataguard": false
+      },
+      "os": {
+        "family": "LINUX",
+        "distribution": "OL",
+        "version": "8.10"
+      },
+      "environment_class": "NON_PRODUCTION_LAB",
+      "target_alias": "lab-ol8-19c"
+    }
+  },
+  "validations": [
+    {
+      "query_id": "Q-DISC-IDENTITY-001",
+      "query_sha256": "d3d367f35e42a95f446993ed92df9721ed40b2380a5ef157b6fbdf52387d047f",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-23T05:47:00Z",
+      "evidence_refs": [
+        "EVR-5fb2d37951c4037aace2a67b"
+      ],
+      "request_refs": [
+        "REQ-21d837574b9e"
+      ],
+      "record": "docs/ORACLE19C_LAB_COLLECTORS.md",
+      "change_id": "CHG-ESTACK-ORA19C-LAB-002"
+    },
+    {
+      "query_id": "Q-ORA-RESOURCE-LIMITS-001",
+      "query_sha256": "02592c7f0fb99861cbb1a15608742cdbe53d45101c2397573471f47dd4072cda",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-23T05:47:00Z",
+      "evidence_refs": [
+        "EVR-a9651bd369ec76fdcf482e32"
+      ],
+      "request_refs": [
+        "REQ-392c5feb2771"
+      ],
+      "record": "docs/ORACLE19C_LAB_COLLECTORS.md",
+      "change_id": "CHG-ESTACK-ORA19C-LAB-002"
+    },
+    {
+      "query_id": "Q-CDB-TABLESPACES-001",
+      "query_sha256": "6b2aedd5a6ee7e72739ed641bfd87154158acc72f4746717696d6fde7fd853d0",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-23T17:18:00Z",
+      "evidence_refs": [
+        "EVR-037f271256101ebfe9d5df85"
+      ],
+      "request_refs": [
+        "REQ-3265abdb2ad7"
+      ],
+      "record": "docs/ORACLE19C_LAB_DOMAINS.md",
+      "change_id": "CHG-ESTACK-ORA19C-LAB-003"
+    },
+    {
+      "query_id": "Q-RMAN-FRA-USAGE-001",
+      "query_sha256": "f06f1243287f067582154ad2692576a881d211e99e5feef894dc39e26a851117",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-23T17:18:00Z",
+      "evidence_refs": [
+        "EVR-c2e2de5c6d0acb99dcc1268e"
+      ],
+      "request_refs": [
+        "REQ-db6c352a7111"
+      ],
+      "record": "docs/ORACLE19C_LAB_DOMAINS.md",
+      "change_id": "CHG-ESTACK-ORA19C-LAB-003"
+    },
+    {
+      "query_id": "Q-RMAN-JOB-SUMMARY-001",
+      "query_sha256": "120084495533e3f5fecde4cc4a174ea62a1a4cfda5b69c41cf79b53e8c8c2b7c",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-23T19:06:00Z",
+      "evidence_refs": [
+        "EVR-89669856f54e06e2790647c6"
+      ],
+      "request_refs": [
+        "REQ-0193eb825e6d"
+      ],
+      "record": "docs/ORACLE19C_LAB_RMAN.md",
+      "change_id": "CHG-ESTACK-ORA19C-LAB-004"
+    },
+    {
+      "query_id": "Q-RMAN-BACKUP-FRESHNESS-001",
+      "query_sha256": "f582764c316ef396ab089b4d69016564e79cdd27bd25d662fea31850cf9025f1",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-23T19:21:00Z",
+      "evidence_refs": [
+        "EVR-af40d671cb4744bac8ca3338"
+      ],
+      "request_refs": [
+        "REQ-63c49f29350b"
+      ],
+      "record": "docs/ORACLE19C_LAB_RMAN.md",
+      "change_id": "CHG-ESTACK-ORA19C-LAB-004"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-001",
+      "query_sha256": "9611969ad017bde81d076c9f107f2cf046d8b314dcc8ebcd5363bbc00409bab4",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-27T05:15:00Z",
+      "evidence_refs": [
+        "EVR-22d535739068e8bffc305035"
+      ],
+      "request_refs": [],
+      "record": "docs/ORACLE19C_LAB_DICT_19C_FIXES.md",
+      "change_id": "CHG-ESTACK-ORA19C-LAB-007"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-002",
+      "query_sha256": "b74c834fe7babdc507e2fcf1c9d76d9757d1d717f66968ac72efb4315e8c3142",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-27T05:15:00Z",
+      "evidence_refs": [
+        "EVR-99e71e14641b49c0146cf06b"
+      ],
+      "request_refs": [],
+      "record": "docs/ORACLE19C_LAB_DICT_19C_FIXES.md",
+      "change_id": "CHG-ESTACK-ORA19C-LAB-007"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-003",
+      "query_sha256": "fea416d8e6523de5e4333d0e40017e087a9769bd9ea7f903328e4ca21dbb4128",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-27T05:15:00Z",
+      "evidence_refs": [
+        "EVR-e6c23b8a714cde735dff5670"
+      ],
+      "request_refs": [],
+      "record": "docs/ORACLE19C_LAB_DICT_19C_FIXES.md",
+      "change_id": "CHG-ESTACK-ORA19C-LAB-007"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-004",
+      "query_sha256": "d716f466487c2d90db1e26421b9491affe35fd00ea13dd189dafbcde0270bf32",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-27T05:15:00Z",
+      "evidence_refs": [
+        "EVR-068b6708deaae2b38395970c"
+      ],
+      "request_refs": [],
+      "record": "docs/ORACLE19C_LAB_DICT_19C_FIXES.md",
+      "change_id": "CHG-ESTACK-ORA19C-LAB-007"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-005",
+      "query_sha256": "841fba87654131095127335af02bb364ae84f96a57c64034f62dc946722c480d",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-27T05:15:00Z",
+      "evidence_refs": [
+        "EVR-0756625213b58b0139340101"
+      ],
+      "request_refs": [],
+      "record": "docs/ORACLE19C_LAB_DICT_19C_FIXES.md",
+      "change_id": "CHG-ESTACK-ORA19C-LAB-007"
+    }
+  ]
+}

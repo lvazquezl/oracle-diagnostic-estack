@@ -221,13 +221,16 @@ expected_output: string
 **Result Package** (especialista → orquestador), mínimo:
 
 ```yaml
-findings: [...]
+findings: [...]                    # cada hallazgo declara validation_level (abajo)
 evidence_refs: [EVD-...]
 hypotheses: [...]
 confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|CONFIRMED_ROOT_CAUSE|UNDETERMINED
 recommendations: [...]
 next_skill_or_agent: string|null   # sólo si es necesario
+validation_level: FIELD_VALIDATED|FIELD_VALIDATED_OTHER_CONTEXT|DOCUMENTATION_ONLY   # el más débil de la evidencia usada
 ```
+
+**Validación en campo** (`CHG-ESTACK-VALIDATION-MATRIX-001`, [policies/field-validation-policy.md](../policies/field-validation-policy.md)): cada hallazgo declara el `validation_level` más débil de la evidencia en que se apoya. Distinto de `FIELD_VALIDATED` ⇒ el hallazgo dice explícitamente "no validado en campo" con las dimensiones que difieren, y `confidence` no supera `PROBABLE_CAUSE`. El gateway entrega el nivel por evidencia (`field_validation` en `diagnostics.collect`/`get_evidence`/`describe_collector`) y el techo en `diagnostics.analyze_incident`.
 
 Reglas: activación mínima de agentes; contexto mínimo; evidencia por referencia (nunca duplicada inline); sin propagación de historial completo; sin evidencia duplicada entre agentes (se reutiliza el `EVD-*` ya recolectado); preprocesamiento local antes de que cualquier evidencia entre al Task/Result Package; presupuestos de tokens/contexto declarados por agente/skill/workflow; cache de discovery y de evidencia por sesión/target; reutilización de hallazgos existentes antes de re-solicitar evidencia.
 

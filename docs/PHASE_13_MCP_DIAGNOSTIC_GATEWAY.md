@@ -79,6 +79,8 @@ Ninguna acepta SQL, comandos, rutas, URL ni parámetros de conexión; todos los 
 
 Sobre de respuesta común: `status` (`OK|DEGRADED|ERROR`), `tool_id`, `request_id` (aleatorio), `schema_version`, `collector_id`, `target_token` (`TGT-…`, por sesión), `collected_at_utc` (`null` en fixture), `capability_status`, `sanitization_status`, `evidence_refs`, `limitations`, `provenance`, `error{code,message}` fijo. `tools/call` devuelve `content` (texto JSON), `structuredContent` (igual) e `isError`.
 
+Desde `CHG-ESTACK-VALIDATION-MATRIX-001`: `diagnostics.collect` y `diagnostics.get_evidence` agregan `field_validation` (`level` `FIELD_VALIDATED`/`FIELD_VALIDATED_OTHER_CONTEXT`/`DOCUMENTATION_ONLY`, `reason`, `validated_context`, `differences`, `not_compared`, `change_ids`, `evidence_refs`) para el target consultado. `diagnostics.describe_collector` lista los contextos validados y el nivel por target. `diagnostics.analyze_incident` agrega `field_validation.per_evidence`, `confidence_ceiling` (`PROBABLE_CAUSE` si alguna evidencia no está validada en campo para ese target) y una limitación `EVIDENCE_NOT_FIELD_VALIDATED:<collector>:<nivel>` por cada una. `provenance` dice de dónde vienen los datos; `field_validation` dice si la **query** se probó en Oracle real en un contexto como éste. Ver [policies/field-validation-policy.md](../policies/field-validation-policy.md).
+
 ### 5.1 Matriz herramienta → colector → capacidad → versión → licencia → permisos → sanitizador → pruebas
 
 | Colector (`collector_id`) | Origen | Versiones (front matter) | Rol / licencia | Permisos mínimos | Campos y política | Estado adaptadores |
