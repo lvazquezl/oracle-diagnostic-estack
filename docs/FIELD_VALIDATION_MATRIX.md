@@ -2,7 +2,7 @@
 
 **Tipo:** `/change compatibility|documentation|security` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/validation-matrix` (desde `main` `3e8f8e0`, `v0.20.0-dictionary-19c-fixes`)
 **Origen:** `CHG-REQ-VALIDATION-MATRIX`
-**Estado:** aprobado por revisión humana (§11). Pendiente: `PROMOTE` (acción humana). `PROMOTE`, commit, merge, tag y push son acciones humanas.
+**Estado:** aprobado (§11) e integrado a `main` vía PR #18 (merge `72da5bb`). Release `0.21.0`, tag `v0.21.0-field-validation-matrix` (se crea sobre el merge de la rama del changelog). `PROMOTE`, commit, merge, tag y push son acciones humanas.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. No se agregan queries, collectors ni accesos.
 
