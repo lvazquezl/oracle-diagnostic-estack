@@ -211,6 +211,9 @@ class Target:
         self.role = spec.get("role", "UNKNOWN")
         self.container = spec.get("container", "UNKNOWN")
         self.architecture = spec.get("architecture", {})
+        # CHG-ESTACK-VALIDATION-MATRIX-001: optional context for field validation; undeclared → "not compared".
+        self.os = spec.get("os") if isinstance(spec.get("os"), dict) else {}
+        self.release_update = spec.get("release_update") if isinstance(spec.get("release_update"), str) else None
         self.license_status = spec.get("license_status", {})
         self.allowed_collectors = frozenset(spec.get("allowed_collectors", []))
         # Declared by an administrator: collectors whose minimum privileges the diagnostic account is known NOT to hold.

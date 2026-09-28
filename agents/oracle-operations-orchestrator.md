@@ -73,6 +73,7 @@ recommendations: [...]
 next_skill_or_agent: null       # el orquestador es el nivel más alto
 analysis_id: ANA-YYYYMMDD-NNN
 change_proposal_ids: [CHG-...]  # si aplica
+validation_level: FIELD_VALIDATED|FIELD_VALIDATED_OTHER_CONTEXT|DOCUMENTATION_ONLY   # el más débil de la evidencia; ≠ FIELD_VALIDATED ⇒ "no validado en campo" y confidence ≤ PROBABLE_CAUSE (policies/field-validation-policy.md)
 capability_statuses: [...]      # capability_status agregados de todos los especialistas (docs/CONTRACTS.md#capability-status-model), incluyendo los que el propio CAPABILITY FILTER descartó antes de activar
 filter_metrics:                 # Foundation Hardening — ver docs/CONTRACTS.md#pipeline-de-activación-foundation-hardening
   agents_skipped_by_capability: int
