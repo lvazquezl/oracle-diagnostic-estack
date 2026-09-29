@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|compatibility|security` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/disc-architecture` (desde `change/dict-pseudo-columns`, `4cca5cb`, PR #20)
 **Origen:** `CHG-REQ-LAB-DISC-STORAGE` (ampliado a RAC, Data Guard y SO)
-**Estado:** aprobado por revisión humana (§11), validado en el lab (§8). Pendiente: `PROMOTE` (acción humana).
+**Estado:** aprobado (§11), validado en el lab (§8), integrado a `main` vía PR #21 (merge `72e973c`). Release `0.22.0`, tag `v0.22.0-observed-context` (se crea sobre el merge de la rama del changelog).
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 
