@@ -4,7 +4,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change query|skill` — CHG-ESTACK-CDB-TEMP-USAGE-001 — uso de TEMP por PDB sin `JOIN` por número de archivo
 
-Rama `change/cdb-temp-usage` sobre `change/lab-revalidate-007` (`bd39a30`). Validado en el lab (19c): uso de TEMP de `PRUEBAS` no nulo desde root; `Q-CDB-TEMP-001` y las 5 `Q-DICT-VERIFY` regeneradas quedan `FIELD_VALIDATED`. Pendiente: HUMAN REVIEW. Ver `docs/CDB_TEMP_USAGE.md`.
+Rama `change/cdb-temp-usage` sobre `change/lab-revalidate-007` (`bd39a30`). Validado en el lab (19c): uso de TEMP de `PRUEBAS` no nulo desde root; `Q-CDB-TEMP-001` y las 5 `Q-DICT-VERIFY` regeneradas quedan `FIELD_VALIDATED`. Aprobación humana registrada: `AUTH-CDB-TEMP-USAGE-001`, revisor `REV-DBAMANAGER`, `2026-09-29T04:36:11Z`, contra el digest `dfc5dd3d…380f6dc6` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/CDB_TEMP_USAGE.md`.
 
 ### Fixed
 

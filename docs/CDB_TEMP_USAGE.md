@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|skill` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/cdb-temp-usage` (desde `change/lab-revalidate-007`, `bd39a30`)
 **Origen:** `CHG-REQ-QUERY-CDB-TEMP-USAGE` (`CHG-ESTACK-ORA19C-LAB-003`)
-**Estado:** propuesto. Validado en el lab (§8, intento 2). Pendiente: HUMAN REVIEW.
+**Estado:** aprobado por revisión humana (§11), validado en el lab (§8, intento 2). Pendiente: `PROMOTE` (acción humana).
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 
@@ -74,9 +74,9 @@ Registro de validación en campo: + `Q-CDB-TEMP-001`; `Q-DICT-VERIFY-001` … `-
 
 Cierra `CHG-REQ-QUERY-CDB-TEMP-USAGE`.
 
-## 11. HUMAN REVIEW (pendiente)
+## 11. HUMAN REVIEW — aprobado
 
-Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+`AUTH-CDB-TEMP-USAGE-001`, revisor `REV-DBAMANAGER` (distinto del proponente `REV-CLAUDEAGENT`), `2026-09-29T04:36:11Z`, contra el digest `dfc5dd3d…380f6dc6`. El motor informa `review_status: APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el digest, no la identidad del firmante. `PROMOTE` (merge, tag) sigue siendo acción humana.
 
 ## 12. Motor de gobernanza
 
