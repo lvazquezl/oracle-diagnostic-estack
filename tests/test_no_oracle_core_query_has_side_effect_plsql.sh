@@ -7,7 +7,7 @@ PATTERN='\bEXEC\b|\bCALL\b|DBMS_SCHEDULER\.(ENABLE|DISABLE|CREATE|DROP|RUN)|DBMS
 
 for f in $(find "$ROOT/queries/oracle" -name 'Q-*.md'); do
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")
-  if echo "$block" | grep -Eiq "$PATTERN"; then
+  if grep -Eiq "$PATTERN" <<<"$block"; then
     echo "[FAIL] $f invoca PL/SQL con posible side effect en su statement certificado"
     FAIL=1
   fi

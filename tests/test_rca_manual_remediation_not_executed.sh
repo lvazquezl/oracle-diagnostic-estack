@@ -38,7 +38,7 @@ for rec in r['recommendations']:
     assert rec['precheck'] and rec['risk'] and rec['postcheck']
 print('ENGINE_OK')
 " 2>&1)
-echo "$OUT" | grep -q "^ENGINE_OK$" || { echo "[FAIL] $OUT"; FAIL=1; }
+grep -q "^ENGINE_OK$" <<<"$OUT" || { echo "[FAIL] $OUT"; FAIL=1; }
 
 [ $FAIL -eq 0 ] && echo "[PASS] Todas las recomendaciones son NOT_EXECUTED; el motor nunca ejecuta comandos"
 exit $FAIL

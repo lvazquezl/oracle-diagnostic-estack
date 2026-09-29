@@ -11,7 +11,7 @@ MATRIX="$ROOT/config/query-compatibility-matrix.yaml"
 grep -q 'status: UNKNOWN_FUTURE' "$MANIFEST" && echo "[PASS] agents/oracle-dataguard-analyst/manifest.yaml declara una familia future -> UNKNOWN_FUTURE" || { echo "[FAIL] falta la declaración UNKNOWN_FUTURE en el manifest"; FAIL=1; }
 
 dg_section=$(awk '/Fase 5 \(Data Guard\)/{flag=1} flag{print} /^notes: >/{flag=0}' "$MATRIX")
-if echo "$dg_section" | grep -qE 'Q-DG-[A-Z-]+-001.*max: latest'; then
+if grep -qE 'Q-DG-[A-Z-]+-001.*max: latest' <<<"$dg_section"; then
   echo "[FAIL] alguna entrada Q-DG-* en config/query-compatibility-matrix.yaml todavía usa max: latest"
   FAIL=1
 else

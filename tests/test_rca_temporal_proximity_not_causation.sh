@@ -28,7 +28,7 @@ for h in r['hypotheses']:
 assert r['root_cause']['completeness'] != 'CONFIRMED'
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Un CONFIG_CHANGE cercano en el tiempo nunca se cuenta como evidencia de soporte por sí solo"
 else
   echo "[FAIL] $OUT"

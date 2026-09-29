@@ -15,6 +15,6 @@ print('OK')
 " 2>&1)
 
 echo "$OUT"
-echo "$OUT" | grep -q "^SUCCESS SUCCESS$" && echo "$OUT" | grep -q "^OK$" && echo "[PASS] parse_report_need_backup distingue vacío vs. filas reales" || { echo "[FAIL] parse_report_need_backup no se comportó como se esperaba"; FAIL=1; }
+grep -q "^SUCCESS SUCCESS$" <<<"$OUT" && grep -q "^OK$" <<<"$OUT" && echo "[PASS] parse_report_need_backup distingue vacío vs. filas reales" || { echo "[FAIL] parse_report_need_backup no se comportó como se esperaba"; FAIL=1; }
 
 exit $FAIL

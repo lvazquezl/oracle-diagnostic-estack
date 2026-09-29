@@ -11,7 +11,7 @@ with open('tests/fixtures/reports/addm-sample.txt', encoding='utf-8') as f:
     t, c = detect_report_type(f.read())
 print(t.value, c)
 ")
-if echo "$OUT" | grep -q "^ADDM_TEXT "; then
+if grep -q "^ADDM_TEXT " <<<"$OUT"; then
   echo "[PASS] addm-sample.txt detectado como ADDM_TEXT ($OUT)"
 else
   echo "[FAIL] addm-sample.txt no detectado como ADDM_TEXT (obtuvo: $OUT)"

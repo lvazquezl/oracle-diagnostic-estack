@@ -29,7 +29,7 @@ grep -q "variant_id: Q-SEC-DEFAULT-ACCOUNTS-001-V1" "$Q" \
   || { echo "[FAIL] falta Variant V1 acotada a 11.0-12.1.0.1"; FAIL=1; }
 
 v1_block=$(sql_block 1)
-if echo "$v1_block" | grep -qi 'oracle_maintained'; then
+if grep -qi 'oracle_maintained' <<<"$v1_block"; then
   echo "[FAIL] Variant V1 (legacy) selecciona oracle_maintained — columna no existe antes de 12.1.0.2"
   FAIL=1
 else
@@ -43,7 +43,7 @@ grep -q "variant_id: Q-SEC-DEFAULT-ACCOUNTS-001-V2" "$Q" \
   || { echo "[FAIL] falta Variant V2 acotada a 12.1.0.2-23.0"; FAIL=1; }
 
 v2_block=$(sql_block 2)
-if echo "$v2_block" | grep -qi 'oracle_maintained'; then
+if grep -qi 'oracle_maintained' <<<"$v2_block"; then
   echo "[PASS] Variant V2 (12.1.0.2+) selecciona oracle_maintained"
 else
   echo "[FAIL] Variant V2 (12.1.0.2+) no selecciona oracle_maintained"

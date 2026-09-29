@@ -19,7 +19,7 @@ check_file_variants() {
     i=$((i+1))
     local block
     block=$(awk -v n="$i" '/```sql/{c++} c==n && /```sql/{flag=1;next} flag && /```/{flag=0} flag' "$f")
-    if echo "$block" | grep -qiE "$PATTERN"; then
+    if grep -qiE "$PATTERN" <<<"$block"; then
       if ! version_gte "$min" "12.1"; then
         echo "[FAIL] $f — variante #$i (min declarado $min) usa FETCH FIRST/NEXT ... ROWS ONLY, que requiere 12.1+"
         FAIL=1
@@ -52,7 +52,7 @@ for f in $(grep -rL '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null)
   while [ "$i" -lt "$nblocks" ]; do
     i=$((i+1))
     block=$(awk -v n="$i" '/```sql/{c++} c==n && /```sql/{flag=1;next} flag && /```/{flag=0} flag' "$f")
-    if echo "$block" | grep -qiE "$PATTERN"; then
+    if grep -qiE "$PATTERN" <<<"$block"; then
       if ! version_gte "$min" "12.1"; then
         echo "[FAIL] $f — bloque #$i (min declarado $min) usa FETCH FIRST/NEXT ... ROWS ONLY, que requiere 12.1+"
         FAIL=1

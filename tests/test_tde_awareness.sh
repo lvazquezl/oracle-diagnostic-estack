@@ -9,7 +9,7 @@ for verb in "OPEN/CLOSE KEYSTORE" "SET KEY" "ROTATE KEY" "CREATE KEYSTORE"; do
   grep -qF "$verb" "$S" && echo "[PASS] documenta prohibición de $verb" || { echo "[FAIL] falta $verb"; FAIL=1; }
 done
 
-grep -A3 "^# Forbidden operations" "$S" | grep -qi "ADMINISTER KEY MANAGEMENT" \
+grep -A3 "^# Forbidden operations" "$S" | grep -ci "ADMINISTER KEY MANAGEMENT" >/dev/null \
   && echo "[PASS] Forbidden operations prohíbe ADMINISTER KEY MANAGEMENT" \
   || { echo "[FAIL] falta la prohibición en Forbidden operations"; FAIL=1; }
 

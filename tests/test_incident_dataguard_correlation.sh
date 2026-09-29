@@ -13,7 +13,7 @@ grep -qi 'oracle-dataguard-analyst' "$SKILL" \
   && echo "[PASS] referencia a oracle-dataguard-analyst presente" \
   || { echo "[FAIL] falta la referencia a oracle-dataguard-analyst"; FAIL=1; }
 
-tr '\n' ' ' < "$SKILL" | grep -qiE 'nunca reportar .data_loss: true. sin' \
+tr '\n' ' ' < "$SKILL" | grep -ciE 'nunca reportar .data_loss: true. sin' >/dev/null \
   && echo "[PASS] declara que nunca reporta data_loss sin evidencia directa" \
   || { echo "[FAIL] falta la regla de data_loss sin evidencia"; FAIL=1; }
 

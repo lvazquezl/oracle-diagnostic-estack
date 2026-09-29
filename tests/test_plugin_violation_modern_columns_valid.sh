@@ -22,7 +22,7 @@ sql_v2=$(awk '/```sql/{n++;next} n==2 && /```/{exit} n==2{print}' "$Q" | tr '\n'
 EXPECTED="con_id time name cause type error_number line message status action"
 n=0
 for col in $EXPECTED; do
-  if echo "$sql_v2" | grep -qiw "$col"; then
+  if grep -qiw "$col" <<<"$sql_v2"; then
     n=$((n+1))
   else
     echo "[FAIL] la variante moderna no selecciona '$col'"

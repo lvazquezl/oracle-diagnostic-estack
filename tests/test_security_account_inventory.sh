@@ -20,7 +20,7 @@ Q="$ROOT/queries/security/Q-SEC-ACCOUNT-INVENTORY-001.md"
 [ -f "$Q" ] && echo "[PASS] Q-SEC-ACCOUNT-INVENTORY-001.md existe" || { echo "[FAIL] falta Q-SEC-ACCOUNT-INVENTORY-001.md"; FAIL=1; }
 
 block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$Q" 2>/dev/null)
-if echo "$block" | grep -Eiq 'password\b|spare4'; then
+if grep -Eiq 'password\b|spare4' <<<"$block"; then
   echo "[FAIL] Q-SEC-ACCOUNT-INVENTORY-001 selecciona columna de credencial"
   FAIL=1
 else
@@ -47,14 +47,14 @@ sql_block() {
 
 v2_block=$(sql_block 2)
 for col in common oracle_maintained last_login; do
-  if echo "$v2_block" | grep -qi "$col"; then
+  if grep -qi "$col" <<<"$v2_block"; then
     echo "[FAIL] Variant V2 (12.1-12.1.0.1) selecciona $col, columna que requiere 12.1.0.2"
     FAIL=1
   else
     echo "[PASS] Variant V2 no selecciona $col"
   fi
 done
-if echo "$v2_block" | grep -qi 'authentication_type'; then
+if grep -qi 'authentication_type' <<<"$v2_block"; then
   echo "[PASS] Variant V2 selecciona authentication_type (certificada independientemente, 11.2+)"
 else
   echo "[FAIL] Variant V2 no selecciona authentication_type"
@@ -63,7 +63,7 @@ fi
 
 v3_block=$(sql_block 3)
 for col in common oracle_maintained last_login; do
-  if echo "$v3_block" | grep -qi "$col"; then
+  if grep -qi "$col" <<<"$v3_block"; then
     echo "[PASS] Variant V3 selecciona $col"
   else
     echo "[FAIL] Variant V3 (12.1.0.2+) no selecciona $col"

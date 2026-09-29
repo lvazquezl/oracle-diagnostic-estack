@@ -37,7 +37,7 @@ r2 = parse_statspack_text(text, limits=tiny_size_limits)
 assert any('truncated at' in w for w in r2.warnings), r2.warnings
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Límites de tamaño (max_wait_entries, max_report_size_bytes) se aplican con warning explícito"
 else
   echo "[FAIL] Límites de tamaño no se aplicaron correctamente: $OUT"

@@ -11,7 +11,7 @@ DOC="$ROOT/docs/CAPABILITY_MATRIX.md"
 # Alcance estricto a la línea versions: {...} (estructura), no a las notas en prosa que puedan
 # mencionar la frase al explicar que fue eliminada.
 dg_versions_line=$(awk '/id: dataguard/{flag=1} flag && /^    versions:/{print; exit}' "$CAP")
-if echo "$dg_versions_line" | grep -qE '\blatest:'; then
+if grep -qE '\blatest:' <<<"$dg_versions_line"; then
   echo "[FAIL] config/capability-matrix.yaml (fila dataguard) — versions: {...} todavía declara la clave 'latest:'"
   FAIL=1
 else
@@ -19,7 +19,7 @@ else
 fi
 
 dg_table_row=$(grep '^| Data Guard ' "$DOC")
-if echo "$dg_table_row" | grep -qE '\| SUPPORTED \|$'; then
+if grep -qE '\| SUPPORTED \|$' <<<"$dg_table_row"; then
   echo "[FAIL] docs/CAPABILITY_MATRIX.md — la última columna (latest) de la fila Data Guard sigue siendo SUPPORTED"
   FAIL=1
 else

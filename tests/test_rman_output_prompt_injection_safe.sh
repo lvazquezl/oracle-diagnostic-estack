@@ -27,6 +27,6 @@ print('NO_CRASH')
 " 2>&1)
 
 echo "$OUT"
-echo "$OUT" | grep -q "NO_CRASH" && echo "[PASS] input adversarial parseado como texto sin ejecutar ni crashear" || { echo "[FAIL] el parser falló o se comportó de forma insegura ante input adversarial"; FAIL=1; }
+grep -q "NO_CRASH" <<<"$OUT" && echo "[PASS] input adversarial parseado como texto sin ejecutar ni crashear" || { echo "[FAIL] el parser falló o se comportó de forma insegura ante input adversarial"; FAIL=1; }
 
 exit $FAIL

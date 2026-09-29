@@ -11,7 +11,7 @@ for f in $(find "$ROOT/skills/incident" "$ROOT/agents/incident-root-cause-analys
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>3?lineno-3:1)),${lineno}p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|ningun|ningún|never|prohibid|bloquead|NOT_EXECUTED'; then
+    if ! grep -qiE 'nunca|ningun|ningún|never|prohibid|bloquead|NOT_EXECUTED' <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene un patrón de restart/relocate sin contexto de prohibición"
       FAIL=1
     fi

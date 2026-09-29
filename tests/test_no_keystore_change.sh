@@ -9,7 +9,7 @@ grep -qi "ADMINISTER KEY MANAGEMENT" "$MANIFEST" && echo "[PASS] manifest prohí
 
 for f in $(find "$ROOT/queries/security" -name 'Q-*.md' 2>/dev/null); do
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")
-  if echo "$block" | grep -qiE 'ADMINISTER\s+KEY\s+MANAGEMENT'; then
+  if grep -qiE 'ADMINISTER\s+KEY\s+MANAGEMENT' <<<"$block"; then
     echo "[FAIL] $f (query certificada) contiene ADMINISTER KEY MANAGEMENT ejecutable"
     FAIL=1
   fi

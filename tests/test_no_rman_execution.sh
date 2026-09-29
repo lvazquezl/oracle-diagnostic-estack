@@ -9,7 +9,7 @@ PATTERN='^\s*(BACKUP|RESTORE|RECOVER|DELETE|CROSSCHECK|CONFIGURE|CATALOG|DUPLICA
 for f in $(find "$ROOT/skills/incident" "$ROOT/agents/incident-root-cause-analyst" -type f \( -name '*.md' -o -name '*.yaml' \) 2>/dev/null); do
   [ -f "$f" ] || continue
   block=$(awk '/```(rman|text)?$/{flag=1;next}/```/{flag=0}flag' "$f" 2>/dev/null)
-  if echo "$block" | grep -Eiq "$PATTERN"; then
+  if grep -Eiq "$PATTERN" <<<"$block"; then
     echo "[FAIL] $f contiene un comando RMAN ejecutable"
     FAIL=1
   fi

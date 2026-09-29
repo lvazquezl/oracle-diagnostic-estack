@@ -8,7 +8,7 @@ UNGUARDED=0
 while IFS=: read -r file line _; do
   [ -z "$file" ] && continue
   window=$(sed -n "$((line>3?line-3:1)),${line}p" "$file")
-  if echo "$window" | grep -qiE 'nunca|no crea|no exponer|no crear|allowlisted|genérico\)|forbidden|prohibi'; then
+  if grep -qiE 'nunca|no crea|no exponer|no crear|allowlisted|genérico\)|forbidden|prohibi' <<<"$window"; then
     continue
   fi
   echo "[FAIL] $file:$line menciona un lector de /proc/archivo genérico fuera de contexto de prohibición"

@@ -7,7 +7,7 @@ FAIL=0
 for f in filesystems inodes block-devices multipath-awareness; do
   S="$ROOT/skills/os/$f/SKILL.md"
   [ -f "$S" ] || { echo "[FAIL] falta $S"; FAIL=1; continue; }
-  if grep -A2 '# Forbidden operations' "$S" | grep -qi 'nunca'; then
+  if grep -A2 '# Forbidden operations' "$S" | grep -ci 'nunca' >/dev/null; then
     echo "[PASS] os/$f declara Forbidden operations con nunca-modifica"
   else
     echo "[FAIL] os/$f no declara una prohibición explícita de cambio"; FAIL=1

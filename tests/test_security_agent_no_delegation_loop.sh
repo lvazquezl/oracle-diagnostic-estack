@@ -10,7 +10,7 @@ grep -q "must_not_delegate_to: \[oracle-dba-analyst, oracle-discovery-analyst\]"
   && echo "[PASS] must_not_delegate_to correcto" || { echo "[FAIL] falta must_not_delegate_to correcto"; FAIL=1; }
 
 # oracle-security-analyst no debe aparecer en su propia may_delegate_to (loop trivial).
-grep "may_delegate_to:" "$COLLAB" | grep -q "oracle-security-analyst" \
+grep "may_delegate_to:" "$COLLAB" | grep -c "oracle-security-analyst" >/dev/null \
   && { echo "[FAIL] may_delegate_to se referencia a sí mismo"; FAIL=1; } \
   || echo "[PASS] may_delegate_to no se referencia a sí mismo"
 

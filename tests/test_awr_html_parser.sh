@@ -18,7 +18,7 @@ assert d['status'] in ('SUCCESS', 'PARTIAL')
 assert 'report_id' in d and 'parser_version' in d and 'evidence_refs' in d
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Parser AWR HTML extrae DB Time/DB CPU y produce el envelope común"
 else
   echo "[FAIL] Parser AWR HTML falló: $OUT"

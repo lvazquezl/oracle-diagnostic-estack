@@ -12,7 +12,7 @@ for f in "$ROOT"/queries/multitenant/Q-*.md; do
   if [ -z "$line" ]; then
     echo "[FAIL] $(basename "$f") no declara container_scope"
     FAIL=1
-  elif ! echo "$line" | grep -Eq ": ($VALID)$"; then
+  elif ! grep -Eq ": ($VALID)$" <<<"$line"; then
     echo "[FAIL] $(basename "$f") declara container_scope fuera del enum: $line"
     FAIL=1
   else

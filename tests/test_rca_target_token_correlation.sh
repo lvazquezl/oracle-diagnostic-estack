@@ -36,7 +36,7 @@ assert a != c, (a, c)               # same incident, different raw target_id -> 
 assert a != d, (a, d)               # different incident, same raw target_id -> different token (no cross-incident correlation)
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] target_id tokenization: stable within an incident, distinct across targets/incidents, raw value never leaked"
 else
   echo "[FAIL] $OUT"

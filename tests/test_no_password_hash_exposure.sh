@@ -8,7 +8,7 @@ PATTERN='\bpassword\b\s*,|spare4|password_hash'
 
 for f in $(find "$ROOT/queries/security" -name 'Q-*.md' 2>/dev/null); do
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")
-  if echo "$block" | grep -Eiq "$PATTERN"; then
+  if grep -Eiq "$PATTERN" <<<"$block"; then
     echo "[FAIL] $f parece seleccionar material de credencial"
     FAIL=1
   fi

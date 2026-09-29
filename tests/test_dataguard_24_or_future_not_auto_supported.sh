@@ -39,7 +39,7 @@ for f in $ROOT/queries/dataguard/Q-DG-*.md; do
 done
 
 # Ningún "max: latest" literal debe quedar en el bloque Data Guard de la matriz.
-if awk '/Fase 5 \(Data Guard\)/{flag=1} flag{print} /^notes: >/{flag=0}' "$ROOT/config/query-compatibility-matrix.yaml" | grep -q 'max: latest'; then
+if awk '/Fase 5 \(Data Guard\)/{flag=1} flag{print} /^notes: >/{flag=0}' "$ROOT/config/query-compatibility-matrix.yaml" | grep -c 'max: latest' >/dev/null; then
   echo "[FAIL] todavía queda un 'max: latest' literal en el bloque Data Guard de query-compatibility-matrix.yaml"
   FAIL=1
 fi

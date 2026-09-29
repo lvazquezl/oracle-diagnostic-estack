@@ -11,7 +11,7 @@ for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   if [ -z "$line" ]; then
     echo "[FAIL] $f no declara container_scope"
     FAIL=1
-  elif ! echo "$line" | grep -Eq "$VALID"; then
+  elif ! grep -Eq "$VALID" <<<"$line"; then
     echo "[FAIL] $f declara container_scope con valor fuera del enum: $line"
     FAIL=1
   fi

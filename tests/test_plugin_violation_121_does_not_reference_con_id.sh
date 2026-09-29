@@ -10,7 +10,7 @@ Q="$ROOT/queries/multitenant/Q-CDB-PLUGIN-VIOLATIONS-001.md"
 SKILL="$ROOT/skills/multitenant/plugin-violations/SKILL.md"
 
 sql_v1=$(awk '/```sql/{n++;next} n==1 && /```/{exit} n==1{print}' "$Q")
-if echo "$sql_v1" | grep -qiw 'con_id'; then
+if grep -qiw 'con_id' <<<"$sql_v1"; then
   echo "[FAIL] el bloque SQL de la variante legacy referencia con_id"
   FAIL=1
 else

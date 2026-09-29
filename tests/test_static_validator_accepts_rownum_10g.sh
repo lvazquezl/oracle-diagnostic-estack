@@ -32,12 +32,12 @@ check_syntax_features() {
   while IFS= read -r feature_id; do
     [ -z "$feature_id" ] && continue
     local fblock; fblock=$(get_feature_block "$feature_id")
-    local feat_min; feat_min=$(echo "$fblock" | grep -m1 '^    min_version:' | sed -E "s/.*min_version:[ \t]*\"?//; s/\"?[ \t]*\$//")
+    local feat_min; feat_min=$(grep -m1 '^    min_version:' <<<"$fblock" | sed -E "s/.*min_version:[ \t]*\"?//; s/\"?[ \t]*\$//")
     [ -z "$feat_min" ] && continue
     local patterns; patterns=$(echo "$fblock" | grep -E "^      - '" | sed -E "s/^      - '//; s/'[ \t]*\$//")
     while IFS= read -r pat; do
       [ -z "$pat" ] && continue
-      if echo "$flat" | grep -qiE "$pat"; then
+      if grep -qiE "$pat" <<<"$flat"; then
         if ! version_gte "$range_min" "$feat_min"; then
           echo "DETECTED: $feature_id requires $feat_min, block declares $range_min"
           HITS=$((HITS+1))
@@ -68,7 +68,7 @@ fi
 
 # Verifica además que el ORDER BY está dentro del inline view (# 30 del prompt: nunca ROWNUM antes
 # de ordenar) — chequeo estructural simple, no un parser SQL completo.
-if echo "$FIXTURE" | grep -qE 'ROWNUM.*ORDER BY'; then
+if grep -qE 'ROWNUM.*ORDER BY' <<<"$FIXTURE"; then
   echo "[FAIL] ORDER BY aparece después de ROWNUM en el fixture — violaría el ordering correcto"
   FAIL=1
 else

@@ -7,7 +7,7 @@ FAIL=0
 
 for f in $(find "$ROOT/queries/performance/sql" "$ROOT/queries/performance/plans" -name 'Q-*.md'); do
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f" | sed -E 's/--.*$//')
-  if echo "$block" | grep -Eiq 'SQL_TEXT|SQL_FULLTEXT'; then
+  if grep -Eiq 'SQL_TEXT|SQL_FULLTEXT' <<<"$block"; then
     echo "[FAIL] $f selecciona SQL_TEXT/SQL_FULLTEXT por defecto"
     FAIL=1
   fi

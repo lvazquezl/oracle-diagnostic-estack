@@ -7,7 +7,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 DOC="$ROOT/docs/GI_READONLY_COLLECTORS.md"
 
-if grep -E '\| get_[a-z_]+ \|' "$DOC" | grep -qE '\$\{|\$\(|%s'; then
+if grep -E '\| get_[a-z_]+ \|' "$DOC" | grep -cE '\$\{|\$\(|%s' >/dev/null; then
   echo "[FAIL] el catálogo de collectors contiene interpolación de comando no acotada"
   FAIL=1
 else

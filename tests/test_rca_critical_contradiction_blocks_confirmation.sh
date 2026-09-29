@@ -30,7 +30,7 @@ assert h['status'] != 'CONFIRMED'
 assert r['root_cause']['completeness'] != 'CONFIRMED', r['root_cause']
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Contradicción crítica (iostat normal) bloquea CONFIRMED pese a evidencia de soporte real"
 else
   echo "[FAIL] $OUT"

@@ -50,7 +50,7 @@ assert r2.method == 'INSUFFICIENT_HISTORY', r2.method
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine segmenta en el evento de resize, usa sólo el segmento posterior, y declara INSUFFICIENT_HISTORY cuando ese segmento es corto"
 else
   echo "[FAIL] $OUT"

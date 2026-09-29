@@ -7,7 +7,7 @@ PATTERN='(^|[^A-Za-z_])(CREATE|ALTER|DROP|TRUNCATE|GRANT|REVOKE)([^A-Za-z_]|$)'
 
 for f in $(find "$ROOT/queries/oracle" -name 'Q-*.md'); do
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")
-  if echo "$block" | grep -Eiq "$PATTERN"; then
+  if grep -Eiq "$PATTERN" <<<"$block"; then
     echo "[FAIL] $f contiene DDL"
     FAIL=1
   fi

@@ -11,7 +11,7 @@ grep -qi "habilitar Database Vault, crear/modificar realms" "$MANIFEST" \
 
 for f in $(find "$ROOT/queries/security" -name 'Q-*.md' 2>/dev/null); do
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")
-  if echo "$block" | grep -qiE 'DBMS_MACADM|CREATE_REALM|CREATE_COMMAND_RULE'; then
+  if grep -qiE 'DBMS_MACADM|CREATE_REALM|CREATE_COMMAND_RULE' <<<"$block"; then
     echo "[FAIL] $f (query certificada) contiene una llamada de escritura de Database Vault"
     FAIL=1
   fi

@@ -11,7 +11,7 @@ C="$ROOT/skills/os/cgroups/SKILL.md"
 grep -qi 'Prohibido.\?.\? cualquier lógica equivalente a .min(RLIMIT_NPROC' "$S" \
   && echo "[PASS] prohíbe min(RLIMIT_NPROC, TasksMax, pids.max, pid_max)" || { echo "[FAIL] falta la prohibición de min()"; FAIL=1; }
 BODY=$(sed '/^# Change history$/,$d' "$C")
-if echo "$BODY" | grep -qi 'el más restrictivo entre cgroup'; then
+if grep -qi 'el más restrictivo entre cgroup' <<<"$BODY"; then
   echo "[FAIL] os/cgroups todavía declara la regla incorrecta de mínimo universal como regla vigente"
   FAIL=1
 else

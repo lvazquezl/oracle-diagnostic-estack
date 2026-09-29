@@ -20,7 +20,7 @@ assert r.completeness['waits'] == 'SUPPORTED'
 assert len(r.sections['waits']) > 0
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Ruta de reporte de archivo (parser) también extrae waits"
 else
   echo "[FAIL] Ruta de reporte de archivo no extrae waits: $OUT"

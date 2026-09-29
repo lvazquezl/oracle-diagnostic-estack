@@ -7,7 +7,7 @@ PATTERN='V\$SQL_BIND_CAPTURE|V\$SQL_BIND_DATA|bind_value|VALUE_STRING.*BIND'
 
 for f in $(find "$ROOT/queries/oracle" -name 'Q-*.md'); do
   content=$(cat "$f")
-  if echo "$content" | grep -Eiq "$PATTERN"; then
+  if grep -Eiq "$PATTERN" <<<"$content"; then
     echo "[FAIL] $f referencia bind values"
     FAIL=1
   fi

@@ -13,7 +13,7 @@ for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   # legítimamente filtra por action_name IN ('GRANT', 'REVOKE', ...) como VALORES buscados en
   # evidencia histórica, nunca como verbo ejecutado por el e-stack (Fase 8, Q-SEC-UNIFIED-AUDIT-TRAIL-001).
   block_no_literals=$(echo "$block" | sed -E "s/'[^']*'//g")
-  if echo "$block_no_literals" | grep -Eiq "$PATTERN"; then
+  if grep -Eiq "$PATTERN" <<<"$block_no_literals"; then
     echo "[FAIL] $f contiene un verbo de escritura en su statement SQL"
     FAIL=1
   else

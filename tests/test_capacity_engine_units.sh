@@ -56,7 +56,7 @@ assert r_cpu['issues'][0].error_type == ValidationErrorType.UNIT_MISMATCH.value
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine.normalization distingue GB decimal/GiB binario, rechaza total<=0/NaN/inf/used negativo y detecta mezcla cores/percentage en CPU"
 else
   echo "[FAIL] $OUT"

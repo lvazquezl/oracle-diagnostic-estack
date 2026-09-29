@@ -47,7 +47,7 @@ assert r['recommendations'][0]['execution_status'] == 'NOT_EXECUTED'
 assert r['recommendations'][0]['linked_to'] == rc['rca_id']
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Fixture positivo (process-limit exhaustion) produce RCA CONFIRMED con IDs de evidencia verificables"
 else
   echo "[FAIL] $OUT"

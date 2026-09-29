@@ -37,7 +37,7 @@ valid_cols=$(get_view_columns "V\$DATABASE")
 FAKE_SQL="SELECT fake_column FROM v\$database;"
 fake_col=$(echo "$FAKE_SQL" | sed -E 's/.*SELECT //I; s/ FROM .*//I' | tr 'A-Z' 'a-z' | sed -E 's/^ *//; s/ *$//')
 
-if echo "$valid_cols" | grep -qx "$fake_col"; then
+if grep -qx "$fake_col" <<<"$valid_cols"; then
   echo "[FAIL] el fixture negativo 'fake_column' aparece como válido — el mecanismo de existencia de columna no está funcionando"
   FAIL=1
 else
@@ -46,7 +46,7 @@ fi
 
 # Control positivo: una columna real de V$DATABASE sí debe pasar con el mismo mecanismo.
 real_col="database_role"
-if echo "$valid_cols" | grep -qx "$real_col"; then
+if grep -qx "$real_col" <<<"$valid_cols"; then
   echo "[PASS] Control positivo: '$real_col' (columna real) correctamente aceptada"
 else
   echo "[FAIL] Control positivo falló — '$real_col' debería existir en V\$DATABASE"

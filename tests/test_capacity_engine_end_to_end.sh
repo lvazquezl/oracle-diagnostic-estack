@@ -63,7 +63,7 @@ assert formatted in report, (formatted, report)
 assert 'Resource | Current | 1M | 3M | 6M | Threshold Date | Risk | Confidence' in report
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine.cli ejecuta el recorrido completo fixture->motor->JSON->Markdown, con números provenientes del cálculo real (rutas relativas, portable)"
 else
   echo "[FAIL] $OUT"

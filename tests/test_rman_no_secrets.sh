@@ -12,7 +12,7 @@ for f in $(find "$ROOT/queries/rman" "$ROOT/skills/rman" "$ROOT/parsers/rman" "$
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>3?lineno-3:1)),${lineno}p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|never|sin credenciales|no expone|mask|drop|tokenize'; then
+    if ! grep -qiE 'nunca|never|sin credenciales|no expone|mask|drop|tokenize' <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene un patrón de credencial sin contexto de sanitización"
       FAIL=1
     fi

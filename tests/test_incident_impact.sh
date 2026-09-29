@@ -11,7 +11,7 @@ grep -qi 'users_affected' "$DOC" && grep -qi 'data_loss' "$DOC" \
   && echo "[PASS] campos de impacto declarados en docs/INCIDENT_IMPACT_MODEL.md" \
   || { echo "[FAIL] faltan campos de impacto en la documentación"; FAIL=1; }
 
-tr '\n' ' ' < "$DOC" | grep -qiE 'null. explícito.*nunca un valor estimado' \
+tr '\n' ' ' < "$DOC" | grep -ciE 'null. explícito.*nunca un valor estimado' >/dev/null \
   && echo "[PASS] campos sin evidencia quedan null explícito" \
   || { echo "[FAIL] falta la regla de null explícito sin evidencia"; FAIL=1; }
 

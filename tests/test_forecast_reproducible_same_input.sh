@@ -51,7 +51,7 @@ assert r3.horizons['1m']['expected'] == r1.horizons['1m']['expected']
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine produce salidas idénticas en dos ejecuciones con los mismos datos/policy/as_of (excluyendo generated_at)"
 else
   echo "[FAIL] la reproducibilidad numérica del motor falló: $OUT"

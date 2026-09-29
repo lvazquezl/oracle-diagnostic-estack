@@ -4,7 +4,7 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FAIL=0
 
-if grep -A4 'id: multitenant' "$ROOT/config/capability-matrix.yaml" | grep -q '10g: UNSUPPORTED'; then
+if grep -A4 'id: multitenant' "$ROOT/config/capability-matrix.yaml" | grep -c '10g: UNSUPPORTED' >/dev/null; then
   echo "[PASS] config/capability-matrix.yaml marca multitenant 10g como UNSUPPORTED"
 else
   echo "[FAIL] config/capability-matrix.yaml no marca multitenant 10g como UNSUPPORTED"

@@ -34,7 +34,7 @@ get_columns() {
 cols=$(get_columns "V\$PDBS")
 [ -n "$cols" ] && echo "[PASS] V\$PDBS es columns_exhaustive:true — el chequeo de existencia de columna aplica" || { echo "[FAIL] V\$PDBS no resolvió columnas exhaustivas"; FAIL=1; }
 
-if echo "$cols" | grep -qx "fake_column"; then
+if grep -qx "fake_column" <<<"$cols"; then
   echo "[FAIL] fake_column aparece registrada en V\$PDBS — el dictionary certificaría una columna inexistente"
   FAIL=1
 else

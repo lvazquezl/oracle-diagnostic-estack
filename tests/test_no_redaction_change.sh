@@ -11,7 +11,7 @@ grep -qi "crear/alterar/eliminar Data Redaction policies" "$MANIFEST" \
 
 for f in $(find "$ROOT/queries/security" -name 'Q-*.md' 2>/dev/null); do
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")
-  if echo "$block" | grep -qiE 'DBMS_REDACT\.(ADD_POLICY|ALTER_POLICY|DROP_POLICY)'; then
+  if grep -qiE 'DBMS_REDACT\.(ADD_POLICY|ALTER_POLICY|DROP_POLICY)' <<<"$block"; then
     echo "[FAIL] $f (query certificada) invoca DBMS_REDACT de escritura"
     FAIL=1
   fi

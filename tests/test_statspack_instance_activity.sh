@@ -15,7 +15,7 @@ assert 'redo entries' in names, names
 assert r.completeness['instance_activity'] == 'SUPPORTED'
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Parser Statspack extrae Instance Activity Stats"
 else
   echo "[FAIL] Extracción de Instance Activity falló: $OUT"

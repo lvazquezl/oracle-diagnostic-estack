@@ -18,7 +18,7 @@ for f in $(find "$ROOT/skills/os" "$ROOT/docs/OS_READONLY_COLLECTOR_MODEL.md" \(
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>3?lineno-3:1)),${lineno}p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|ningun|ningún|never|prohibid|forbidden|no exponer|no crea'; then
+    if ! grep -qiE 'nunca|ningun|ningún|never|prohibid|forbidden|no exponer|no crea' <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene un patrón de PowerShell arbitrario sin contexto de prohibición"
       FAIL=1
     fi

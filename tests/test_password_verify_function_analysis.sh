@@ -10,7 +10,7 @@ grep -qi "nunca ejecuta la función\|Never ejecuta" "$S" && echo "[PASS] declara
 grep -qi "nunca.*contraseñas reales\|nunca.*passwords reales" "$S" && echo "[PASS] declara que nunca usa contraseñas reales" || { echo "[FAIL] falta la declaración"; FAIL=1; }
 
 block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$Q" 2>/dev/null)
-echo "$block" | grep -qi "SELECT \* FROM.*dba_source\|WHERE owner = :" \
+grep -qi "SELECT \* FROM.*dba_source\|WHERE owner = :" <<<"$block" \
   && echo "[PASS] acota la selección al owner/name específico" \
   || echo "[PASS] SQL usa binds :function_owner/:function_name (verificado por inspección textual)"
 

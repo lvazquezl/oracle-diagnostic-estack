@@ -8,7 +8,7 @@ PATTERN='password_hash|password\b|spare4|\bhash\b.*credential|wallet.*content'
 
 for f in $(find "$ROOT/queries/oracle" -name 'Q-*.md'); do
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")
-  if echo "$block" | grep -Eiq "$PATTERN"; then
+  if grep -Eiq "$PATTERN" <<<"$block"; then
     echo "[FAIL] $f parece seleccionar material de credencial"
     FAIL=1
   fi

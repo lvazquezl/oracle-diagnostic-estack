@@ -24,7 +24,7 @@ try:
 except FileNotFoundError as e:
     print('REPRODUCED:' + str(e))
 " 2>&1)
-if echo "$REPRO" | grep -q '^REPRODUCED:'; then
+if grep -q '^REPRODUCED:' <<<"$REPRO"; then
   echo "[PASS] defecto de raíz reproducido: concatenar '\\\\' a una ruta POSIX produce un nombre de archivo inexistente ($REPRO)"
 else
   echo "[FAIL] no se pudo reproducir el defecto de raíz esperado: $REPRO"
@@ -53,7 +53,7 @@ fi
 #        cygpath para el flujo principal.
 HELPER_SRC="$ROOT/tests/lib/capacity_engine_e2e_helpers.sh"
 RUN_FN_BODY=$(awk '/^capacity_engine_run\(\)/{flag=1} flag{print} flag && /^}/{exit}' "$HELPER_SRC")
-if echo "$RUN_FN_BODY" | grep -q "cygpath"; then
+if grep -q "cygpath" <<<"$RUN_FN_BODY"; then
   echo "[FAIL] capacity_engine_run() depende de cygpath en su ruta principal — contradice la estrategia de rutas relativas"
   FAIL=1
 else

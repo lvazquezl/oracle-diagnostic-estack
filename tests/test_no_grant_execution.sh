@@ -11,7 +11,7 @@ for f in $(find "$ROOT/agents/oracle-security-analyst" "$ROOT/skills/security" -
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>3?lineno-3:1)),${lineno}p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|never|prohibid|forbidden|manual_action|MANUAL DBA ACTION'; then
+    if ! grep -qiE 'nunca|never|prohibid|forbidden|manual_action|MANUAL DBA ACTION' <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene GRANT ejecutable sin contexto de prohibición"
       FAIL=1
     fi
@@ -21,7 +21,7 @@ done
 
 for f in $(find "$ROOT/queries/security" -name 'Q-*.md' 2>/dev/null); do
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")
-  if echo "$block" | grep -qiE '^\s*GRANT\s'; then
+  if grep -qiE '^\s*GRANT\s' <<<"$block"; then
     echo "[FAIL] $f (query certificada) contiene GRANT ejecutable"
     FAIL=1
   fi

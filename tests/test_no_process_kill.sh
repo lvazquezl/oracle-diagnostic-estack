@@ -11,7 +11,7 @@ for f in $(find "$ROOT/skills/incident" "$ROOT/agents/incident-root-cause-analys
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>6?lineno-6:1)),$((lineno+3))p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|ningun|ningún|never|prohibid|forbidden|NOT_EXECUTED|forbidden_capabilities'; then
+    if ! grep -qiE 'nunca|ningun|ningún|never|prohibid|forbidden|NOT_EXECUTED|forbidden_capabilities' <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene un patrón de kill de proceso sin contexto de prohibición"
       FAIL=1
     fi

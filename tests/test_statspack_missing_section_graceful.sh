@@ -18,7 +18,7 @@ assert d['completeness']['memory'] == 'UNSUPPORTED'
 assert d['sections']['sql_by_cpu'] == []
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Reporte Statspack parcial degrada elegantemente (PARTIAL, UNSUPPORTED explícito, sin fabricar)"
 else
   echo "[FAIL] Degradación elegante falló: $OUT"

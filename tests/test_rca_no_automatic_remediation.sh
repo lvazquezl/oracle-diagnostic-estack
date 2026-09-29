@@ -36,7 +36,7 @@ for rec in r['recommendations']:
     assert rec['execution_status'] == 'NOT_EXECUTED', rec
 print('ENGINE_OK')
 " 2>&1)
-echo "$OUT" | grep -q "^ENGINE_OK$" || { echo "[FAIL] $OUT"; FAIL=1; }
+grep -q "^ENGINE_OK$" <<<"$OUT" || { echo "[FAIL] $OUT"; FAIL=1; }
 
 [ $FAIL -eq 0 ] && echo "[PASS] No automatic remediation: all recommendations NOT_EXECUTED, no execution capability added by this hardening"
 exit $FAIL

@@ -48,7 +48,7 @@ h = next(h for h in r['hypotheses'] if h['rule_id'] == 'RULE-OS-PROCESS-LIMIT-00
 assert 'EVD-1' in h['symptom_evidence_ids'] if 'symptom_evidence_ids' in h else True
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Safe signature clusters identically across sources; unsafe-shaped signature templated, never echoed"
 else
   echo "[FAIL] $OUT"

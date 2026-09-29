@@ -79,7 +79,7 @@ for f in $(grep -rl '^variants:' "$ROOT/queries" --include='Q-*.md' 2>/dev/null)
     for entry in "${RISKY_COLUMNS[@]}"; do
       col="${entry%%:*}"
       colkey="${entry##*:}"
-      if echo "$block" | grep -Eiq "$col"; then
+      if grep -Eiq "$col" <<<"$block"; then
         cols="$cols|$colkey"
       fi
     done

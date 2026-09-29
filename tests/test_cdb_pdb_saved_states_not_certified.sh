@@ -27,7 +27,7 @@ fi
 sql_hits=0
 for f in "$ROOT"/queries/multitenant/*.md; do
   block=$(awk '/```sql/{f=1;next} /```/{f=0} f' "$f")
-  if echo "$block" | grep -qi 'cdb_pdb_saved_states'; then
+  if grep -qi 'cdb_pdb_saved_states' <<<"$block"; then
     echo "[FAIL] $(basename "$f") — el bloque SQL ejecutable referencia cdb_pdb_saved_states"
     sql_hits=1
   fi

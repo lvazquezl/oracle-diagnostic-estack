@@ -15,7 +15,7 @@ grep -qE '^\s*SELECT\s+d\.' "$Q" && grep -q 'JOIN' "$Q" && echo "[PASS] Q-DG-DES
 output=$(bash "$ROOT/tests/test_sql_static_validator.sh")
 status=$?
 
-if echo "$output" | grep -q "Q-DG-DEST-001.*referencia columna"; then
+if grep -q "Q-DG-DEST-001.*referencia columna" <<<"$output"; then
   echo "[FAIL] el validador reporta un falso positivo sobre las columnas aliased de Q-DG-DEST-001:"
   echo "$output" | grep "Q-DG-DEST-001"
   FAIL=1

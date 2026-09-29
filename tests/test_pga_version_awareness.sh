@@ -8,7 +8,7 @@ F="$ROOT/queries/performance/memory/Q-PERF-PGA-001.md"
 
 [ -f "$F" ] || { echo "[FAIL] falta Q-PERF-PGA-001.md"; exit 1; }
 block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$F")
-if echo "$block" | grep -qi 'pga_aggregate_limit'; then
+if grep -qi 'pga_aggregate_limit' <<<"$block"; then
   echo "[FAIL] Q-PERF-PGA-001 referencia pga_aggregate_limit directamente en el SELECT base (debe leerse por separado vía V\$PARAMETER)"
   FAIL=1
 else

@@ -35,7 +35,7 @@ assert distinct['evidence_ids'] == ['EVD-3']
 assert events.index(merged) < events.index(distinct)
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Dedup conserva count/first_seen/last_seen/evidence_ids, orden cronológico estable"
 else
   echo "[FAIL] $OUT"

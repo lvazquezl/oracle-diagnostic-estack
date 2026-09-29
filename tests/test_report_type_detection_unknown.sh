@@ -12,7 +12,7 @@ with open('tests/fixtures/reports/unknown-report.txt', encoding='utf-8') as f:
     t, c = detect_report_type(f.read())
 print(t.value, c)
 ")
-if echo "$OUT" | grep -q "^UNKNOWN "; then
+if grep -q "^UNKNOWN " <<<"$OUT"; then
   echo "[PASS] unknown-report.txt detectado como UNKNOWN, sin adivinar un tipo ($OUT)"
 else
   echo "[FAIL] unknown-report.txt no detectado como UNKNOWN (obtuvo: $OUT)"

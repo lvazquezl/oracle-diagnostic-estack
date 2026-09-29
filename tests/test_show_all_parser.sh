@@ -18,6 +18,6 @@ print('OK')
 " 2>&1)
 
 echo "$OUT"
-echo "$OUT" | grep -q "^SUCCESS$" && echo "$OUT" | grep -q "^OK$" && echo "[PASS] parse_show_all extrae configuración y sanitiza SNAPSHOT CONTROLFILE NAME" || { echo "[FAIL] parse_show_all no se comportó como se esperaba"; FAIL=1; }
+grep -q "^SUCCESS$" <<<"$OUT" && grep -q "^OK$" <<<"$OUT" && echo "[PASS] parse_show_all extrae configuración y sanitiza SNAPSHOT CONTROLFILE NAME" || { echo "[FAIL] parse_show_all no se comportó como se esperaba"; FAIL=1; }
 
 exit $FAIL

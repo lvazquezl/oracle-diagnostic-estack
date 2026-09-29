@@ -40,7 +40,7 @@ for f in "$ROOT"/queries/rman/Q-*.md; do
 
   resolved_id=$(echo "$ids" | sed -n "${resolved_i}p")
 
-  if echo "$resolved_id" | grep -qiE -- '-V2$|modern|multitenant_aware'; then
+  if grep -qiE -- '-V2$|modern|multitenant_aware' <<<"$resolved_id"; then
     echo "[PASS] $qid — resuelve variante moderna ($resolved_id) para 12c"
   else
     echo "[FAIL] $qid — resolvió $resolved_id para 12c, esperada la variante moderna"

@@ -14,7 +14,7 @@ else
 fi
 
 v1=$(awk '/Variant V1/{f=1} f&&/```sql/{c=1;next} c&&/```/{exit} c' "$F" | sed -E 's/--.*$//')
-if echo "$v1" | grep -qi 'v\$asm_diskgroup_stat' && ! echo "$v1" | grep -qi 'v\$asm_diskgroup\b'; then
+if grep -qi 'v\$asm_diskgroup_stat' <<<"$v1" && ! grep -qi 'v\$asm_diskgroup\b' <<<"$v1"; then
   echo "[PASS] Variante default (V1, routine_stat) usa V\$ASM_DISKGROUP_STAT, no V\$ASM_DISKGROUP"
 else
   echo "[FAIL] Variante default no usa exclusivamente V\$ASM_DISKGROUP_STAT"

@@ -24,7 +24,7 @@ for fn in (
     assert r.status == 'EMPTY_REPORT', r.status
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Archivo vacío produce EMPTY_REPORT en todos los parsers y en el ingest"
 else
   echo "[FAIL] Manejo de reporte vacío falló: $OUT"

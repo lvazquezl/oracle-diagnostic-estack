@@ -37,7 +37,7 @@ assert t['estimated_date'] is None, t
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine clasifica DECREASING con slope negativo exacto y nunca produce fecha de agotamiento futura"
 else
   echo "[FAIL] $OUT"

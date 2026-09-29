@@ -62,7 +62,7 @@ except SanitizationError:
 
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Depth/size/cycle/unsupported-type guards all fail closed, never crash or silently succeed"
 else
   echo "[FAIL] $OUT"

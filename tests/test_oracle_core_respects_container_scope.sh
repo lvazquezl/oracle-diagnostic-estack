@@ -8,7 +8,7 @@ VALID='^container_scope: (NON_CDB_ONLY|CDB_ROOT_ONLY|PDB_ONLY|ANY_CONTAINER|NOT_
 
 for f in $(find "$ROOT/queries/oracle" -name 'Q-*.md'); do
   line=$(grep '^container_scope:' "$f" || true)
-  if [ -z "$line" ] || ! echo "$line" | grep -Eq "$VALID"; then
+  if [ -z "$line" ] || ! grep -Eq "$VALID" <<<"$line"; then
     echo "[FAIL] $f no declara container_scope válido"
     FAIL=1
   fi

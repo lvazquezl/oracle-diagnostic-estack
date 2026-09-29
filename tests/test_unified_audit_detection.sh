@@ -6,9 +6,9 @@ FAIL=0
 S="$ROOT/skills/security/unified-auditing/SKILL.md"
 Q="$ROOT/queries/security/Q-SEC-UNIFIED-AUDIT-POLICIES-001.md"
 
-grep -q "min_version: \"12.1\"" "$ROOT/compatibility/oracle-dictionary/views.yaml" | grep -q "AUDIT_UNIFIED_ENABLED_POLICIES" \
+grep -q "min_version: \"12.1\"" "$ROOT/compatibility/oracle-dictionary/views.yaml" | grep -c "AUDIT_UNIFIED_ENABLED_POLICIES" >/dev/null \
   || true
-grep -A2 "AUDIT_UNIFIED_ENABLED_POLICIES:" "$ROOT/compatibility/oracle-dictionary/views.yaml" | grep -q '"12.1"' \
+grep -A2 "AUDIT_UNIFIED_ENABLED_POLICIES:" "$ROOT/compatibility/oracle-dictionary/views.yaml" | grep -c '"12.1"' >/dev/null \
   && echo "[PASS] AUDIT_UNIFIED_ENABLED_POLICIES certificada 12.1+ en el dictionary" \
   || { echo "[FAIL] falta la certificación de versión"; FAIL=1; }
 

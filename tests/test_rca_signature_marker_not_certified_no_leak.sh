@@ -34,7 +34,7 @@ assert e['canonical_signature'] is None, e
 assert e['signature_token'] and e['signature_token'].startswith('SIG-'), e
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] A generic-shape-matching marker is never CERTIFIED and never echoed — classified UNRECOGNIZED_SIGNATURE with an opaque token"
 else
   echo "[FAIL] $OUT"

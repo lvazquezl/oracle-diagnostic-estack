@@ -39,7 +39,7 @@ assert any('minimum_samples' in lim or 'minimum_history_days' in lim for lim in 
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine distingue sample_count (200) de daily_aggregate_count (3) y nunca produce forecast desde historia insuficiente"
 else
   echo "[FAIL] $OUT"

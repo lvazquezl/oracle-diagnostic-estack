@@ -18,6 +18,6 @@ assert 'PATH_TOKEN' in cfg, cfg
 print('OK')
 " 2>&1)
 echo "$OUT"
-echo "$OUT" | grep -q "^OK$" && echo "[PASS] parse_show_all tokeniza PARMS de canal SBT, nunca expone el valor crudo" || { echo "[FAIL] PARMS de canal SBT expuesto crudo"; FAIL=1; }
+grep -q "^OK$" <<<"$OUT" && echo "[PASS] parse_show_all tokeniza PARMS de canal SBT, nunca expone el valor crudo" || { echo "[FAIL] PARMS de canal SBT expuesto crudo"; FAIL=1; }
 
 exit $FAIL

@@ -17,7 +17,7 @@ assert r.completeness['latch'] == 'SUPPORTED'
 assert r.completeness['enqueue'] == 'SUPPORTED'
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Parser Statspack extrae Latch Activity y Enqueue activity por separado"
 else
   echo "[FAIL] Extracción de Latch/Enqueue falló: $OUT"

@@ -46,7 +46,7 @@ tm1 = json.load(open('tokenmap1.json')); tm2 = json.load(open('tokenmap2.json'))
 assert tm1 == tm2, 'token map not stable across identical re-runs'
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Idempotent: identical sanitized output and token map across two runs of the same fixture"
 else
   echo "[FAIL] $OUT"

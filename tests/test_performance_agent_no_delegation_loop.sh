@@ -28,13 +28,13 @@ may_delegate=$(awk '/^may_delegate_to:/{f=1;next} /^[a-zA-Z_]+:/{f=0} f' "$C" \
 [ -n "$forbidden" ] && echo "[PASS] must_not_delegate_to no está vacío: $forbidden" || { echo "[FAIL] must_not_delegate_to está vacío"; FAIL=1; }
 
 for agent in $forbidden; do
-  if echo "$delegated" | grep -qx "$agent"; then
+  if grep -qx "$agent" <<<"$delegated"; then
     echo "[FAIL] $agent está en delegates_to (routing.yaml) pese a estar en must_not_delegate_to — ciclo posible"
     FAIL=1
   else
     echo "[PASS] $agent no está en delegates_to"
   fi
-  if echo "$may_delegate" | grep -qx "$agent"; then
+  if grep -qx "$agent" <<<"$may_delegate"; then
     echo "[FAIL] $agent está en may_delegate_to (collaboration.yaml) pese a estar en must_not_delegate_to"
     FAIL=1
   else
@@ -43,7 +43,7 @@ for agent in $forbidden; do
 done
 
 for must_forbid in oracle-dba-analyst oracle-discovery-analyst; do
-  if echo "$forbidden" | grep -qx "$must_forbid"; then
+  if grep -qx "$must_forbid" <<<"$forbidden"; then
     echo "[PASS] $must_forbid está en must_not_delegate_to"
   else
     echo "[FAIL] $must_forbid no está en must_not_delegate_to"

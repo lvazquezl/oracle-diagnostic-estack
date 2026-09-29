@@ -13,7 +13,7 @@ for f in $(find "$ROOT/parsers" "$ROOT/mcp" "$ROOT/collectors" "$ROOT/docs/GI_RE
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>3?lineno-3:1)),${lineno}p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|ningun|ningún|never|prohibid|forbidden|not exposed|no expone'; then
+    if ! grep -qiE 'nunca|ningun|ningún|never|prohibid|forbidden|not exposed|no expone' <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene un patrón de shell arbitrario sin contexto de prohibición"
       FAIL=1
     fi

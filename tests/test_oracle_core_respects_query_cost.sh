@@ -7,10 +7,10 @@ VALID='^cost_class: (LOW|MEDIUM|HIGH|BLOCKED)$'
 
 for f in $(find "$ROOT/queries/oracle" -name 'Q-*.md'); do
   line=$(grep '^cost_class:' "$f" || true)
-  if [ -z "$line" ] || ! echo "$line" | grep -Eq "$VALID"; then
+  if [ -z "$line" ] || ! grep -Eq "$VALID" <<<"$line"; then
     echo "[FAIL] $f no declara cost_class válido"
     FAIL=1
-  elif echo "$line" | grep -q 'BLOCKED'; then
+  elif grep -q 'BLOCKED' <<<"$line"; then
     echo "[FAIL] $f está certificada con cost_class BLOCKED"
     FAIL=1
   fi

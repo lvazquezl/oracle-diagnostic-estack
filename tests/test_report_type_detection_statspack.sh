@@ -11,7 +11,7 @@ with open('tests/fixtures/reports/statspack-11g.txt', encoding='utf-8') as f:
     t, c = detect_report_type(f.read())
 print(t.value, c)
 ")
-if echo "$OUT" | grep -q "^STATSPACK_TEXT "; then
+if grep -q "^STATSPACK_TEXT " <<<"$OUT"; then
   echo "[PASS] statspack-11g.txt detectado como STATSPACK_TEXT ($OUT)"
 else
   echo "[FAIL] statspack-11g.txt no detectado como STATSPACK_TEXT (obtuvo: $OUT)"

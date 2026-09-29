@@ -18,7 +18,7 @@ assert d['completeness']['load_profile'] == 'SUPPORTED'
 assert 'library_cache' in d['sections_missing']
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Reporte con secciones ausentes produce PARTIAL con completeness explícita, sin fabricar datos"
 else
   echo "[FAIL] Manejo de secciones ausentes falló: $OUT"

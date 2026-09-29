@@ -55,17 +55,17 @@ check_match() {
     *.yaml|*.yml)
       local section
       section=$(classify_yaml_section "$f" "$lineno")
-      if echo "$section" | grep -qiE "$FORBIDDEN_SECTION_KEYS"; then
+      if grep -qiE "$FORBIDDEN_SECTION_KEYS" <<<"$section"; then
         echo "PASS"; return
       fi
-      if echo "$section" | grep -qiE "$ALLOWED_SECTION_KEYS"; then
+      if grep -qiE "$ALLOWED_SECTION_KEYS" <<<"$section"; then
         echo "FAIL"; return
       fi
       ;;
   esac
   local window
   window=$(sed -n "$((lineno>3?lineno-3:1)),${lineno}p" "$f")
-  if echo "$window" | grep -qiE "$PROHIBITION_WORDS"; then
+  if grep -qiE "$PROHIBITION_WORDS" <<<"$window"; then
     echo "PASS"
   else
     echo "FAIL"

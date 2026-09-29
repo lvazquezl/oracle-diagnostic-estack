@@ -23,7 +23,7 @@ for fn in get_view_min_version get_view_column_min_versions resolve_view_min_ver
   grep -q "^${fn}()" "$VALIDATOR" && echo "[PASS] test_sql_static_validator.sh declara $fn (chequeo 3, version-aware)" || { echo "[FAIL] falta $fn en test_sql_static_validator.sh"; FAIL=1; }
 done
 
-grep -q 'check_columns_exist() {' "$VALIDATOR" && grep -A1 'check_columns_exist() {' "$VALIDATOR" | grep -q 'range_min' && echo "[PASS] check_columns_exist recibe range_min (chequeo view/column-level)" || { echo "[FAIL] check_columns_exist no recibe range_min"; FAIL=1; }
+grep -q 'check_columns_exist() {' "$VALIDATOR" && grep -A1 'check_columns_exist() {' "$VALIDATOR" | grep -c 'range_min' >/dev/null && echo "[PASS] check_columns_exist recibe range_min (chequeo view/column-level)" || { echo "[FAIL] check_columns_exist no recibe range_min"; FAIL=1; }
 
 # Ejemplo concreto: CON_ID de PDB_PLUG_IN_VIOLATIONS es INVALID en 12.1 (min real 12.2), VALID en 12.2+.
 con_id_min=$(awk '

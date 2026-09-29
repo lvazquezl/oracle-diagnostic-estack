@@ -37,7 +37,7 @@ assert all(n.startswith('OBJECT_TOKEN_') for n in names), names
 assert 'ORDERS' not in str(pd['sections'])
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Sanitización tokeniza hostnames/db names/object names de forma consistente"
 else
   echo "[FAIL] Sanitización falló: $OUT"

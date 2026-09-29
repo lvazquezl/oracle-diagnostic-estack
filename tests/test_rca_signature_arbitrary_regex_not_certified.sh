@@ -43,7 +43,7 @@ assert status == SignatureStatus.CERTIFIED and canonical == 'ORA-12537', (status
 
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] 9 arbitrary regex-valid strings all correctly rejected as CERTIFIED; genuine certified code/template still accepted"
 else
   echo "[FAIL] $OUT"

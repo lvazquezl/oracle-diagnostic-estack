@@ -7,14 +7,14 @@ FAIL=0
 for f in $(find "$ROOT/queries/dataguard" -name 'Q-*.md' 2>/dev/null) "$ROOT"/parsers/dataguard/*.py "$ROOT/mcp/tool-manifest.md"; do
   [ -f "$f" ] || continue
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f" 2>/dev/null)
-  if echo "$block" | grep -Eiq '\bFAILOVER\b'; then
+  if grep -Eiq '\bFAILOVER\b' <<<"$block"; then
     echo "[FAIL] $f contiene FAILOVER ejecutable en un bloque SQL"
     FAIL=1
   fi
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>3?lineno-3:1)),${lineno}p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|ningun|ningún|never|prohibid|bloquead|NOT_EXECUTED'; then
+    if ! grep -qiE 'nunca|ningun|ningún|never|prohibid|bloquead|NOT_EXECUTED' <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene FAILOVER TO sin contexto de prohibición"
       FAIL=1
     fi

@@ -17,7 +17,7 @@ assert d['completeness']['waits'] == 'SUPPORTED'
 assert d['status'] in ('SUCCESS', 'PARTIAL')
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Parser Statspack procesa reporte 10g real con metadata de versión correcta"
 else
   echo "[FAIL] Parser Statspack 10g falló: $OUT"

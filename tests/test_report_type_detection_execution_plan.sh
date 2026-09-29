@@ -11,7 +11,7 @@ with open('tests/fixtures/reports/execution-plan-sample.txt', encoding='utf-8') 
     t, c = detect_report_type(f.read())
 print(t.value, c)
 ")
-if echo "$OUT" | grep -q "^EXECUTION_PLAN_TEXT "; then
+if grep -q "^EXECUTION_PLAN_TEXT " <<<"$OUT"; then
   echo "[PASS] execution-plan-sample.txt detectado como EXECUTION_PLAN_TEXT ($OUT)"
 else
   echo "[FAIL] execution-plan-sample.txt no detectado como EXECUTION_PLAN_TEXT (obtuvo: $OUT)"

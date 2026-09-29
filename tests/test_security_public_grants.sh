@@ -9,7 +9,7 @@ SCHEMA="$ROOT/agents/oracle-security-analyst/output-schema.yaml"
 
 grep -qi "dependency analysis" "$S" && echo "[PASS] public-grants exige dependency analysis antes de revoke" || { echo "[FAIL] falta la exigencia de dependency analysis"; FAIL=1; }
 
-grep -A2 "revoke_recommended:" "$SCHEMA" | grep -qi "nunca.*true\|siempre false" \
+grep -A2 "revoke_recommended:" "$SCHEMA" | grep -ci "nunca.*true\|siempre false" >/dev/null \
   && echo "[PASS] output-schema documenta revoke_recommended nunca true por defecto" \
   || echo "[PASS] revoke_recommended: bool declarado (verificación textual laxa, ver SKILL.md)"
 

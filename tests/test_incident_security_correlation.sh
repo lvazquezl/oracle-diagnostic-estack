@@ -13,7 +13,7 @@ grep -qi 'oracle-security-analyst' "$SKILL" \
   && echo "[PASS] referencia a oracle-security-analyst presente" \
   || { echo "[FAIL] falta la referencia a oracle-security-analyst"; FAIL=1; }
 
-tr '\n' ' ' < "$SKILL" | grep -qiE 'Nunca desbloquea cuentas ni[[:space:]]*modifica' \
+tr '\n' ' ' < "$SKILL" | grep -ciE 'Nunca desbloquea cuentas ni[[:space:]]*modifica' >/dev/null \
   && echo "[PASS] declara que nunca desbloquea cuentas ni modifica políticas" \
   || { echo "[FAIL] falta la prohibición de desbloqueo/modificación"; FAIL=1; }
 

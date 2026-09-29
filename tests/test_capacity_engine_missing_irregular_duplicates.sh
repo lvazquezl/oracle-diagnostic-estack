@@ -41,7 +41,7 @@ assert r.diagnostics['data_quality']['coverage'] == r2.diagnostics['data_quality
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine calcula gap_count/duplicate_count correctamente y agrega de forma reproducible pese a muestreo irregular"
 else
   echo "[FAIL] $OUT"

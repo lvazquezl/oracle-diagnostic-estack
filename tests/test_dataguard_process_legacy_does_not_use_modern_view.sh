@@ -7,13 +7,13 @@ Q="$ROOT/queries/dataguard/Q-DG-MANAGED-PROCESS-001.md"
 
 block=$(awk '/^# .*Variant V1 \(legacy_managed_standby/{flag=1} flag && /```sql/{c++} flag && c==1 && /```sql/{f2=1;next} f2 && /```/{f2=0} f2' "$Q")
 
-if echo "$block" | grep -qi 'v\$dataguard_process'; then
+if grep -qi 'v\$dataguard_process' <<<"$block"; then
   echo "[FAIL] la variante legacy (V1) referencia V\$DATAGUARD_PROCESS — no debería, es la vista de la variante moderna"
   FAIL=1
 else
   echo "[PASS] la variante legacy (V1) no referencia V\$DATAGUARD_PROCESS"
 fi
 
-echo "$block" | grep -qi 'v\$managed_standby' && echo "[PASS] la variante legacy sigue usando exclusivamente V\$MANAGED_STANDBY" || { echo "[FAIL] la variante legacy no usa V\$MANAGED_STANDBY"; FAIL=1; }
+grep -qi 'v\$managed_standby' <<<"$block" && echo "[PASS] la variante legacy sigue usando exclusivamente V\$MANAGED_STANDBY" || { echo "[FAIL] la variante legacy no usa V\$MANAGED_STANDBY"; FAIL=1; }
 
 exit $FAIL

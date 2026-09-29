@@ -52,7 +52,7 @@ assert old_style_would_accept is True, 'the old pattern must genuinely have matc
 assert status == SignatureStatus.UNRECOGNIZED_SIGNATURE, 'real classify_signature() must diverge from the old defective behavior'
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Functional mutation control confirms classify_signature() is sensitive to the historical generic-shape-accept defect"
 else
   echo "[FAIL] $OUT"

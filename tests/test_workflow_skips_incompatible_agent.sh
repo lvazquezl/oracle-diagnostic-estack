@@ -7,7 +7,7 @@ FAIL=0
 for f in "$ROOT"/workflows/*.md; do
   base=$(basename "$f")
   [ "$base" = "_WORKFLOW_CONTRACT_TEMPLATE.md" ] && continue
-  if grep -q '^# Gates' "$f" && grep -A10 '^# Gates' "$f" | grep -q 'gates:'; then
+  if grep -q '^# Gates' "$f" && grep -A10 '^# Gates' "$f" | grep -c 'gates:' >/dev/null; then
     echo "[PASS] $f declara bloque # Gates"
   else
     echo "[FAIL] $f no declara bloque # Gates"

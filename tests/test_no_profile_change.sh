@@ -9,7 +9,7 @@ grep -qi "CREATE / ALTER / DROP PROFILE" "$MANIFEST" && echo "[PASS] manifest pr
 
 for f in $(find "$ROOT/queries/security" -name 'Q-*.md' 2>/dev/null); do
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")
-  if echo "$block" | grep -qiE '^\s*ALTER\s+PROFILE\s'; then
+  if grep -qiE '^\s*ALTER\s+PROFILE\s' <<<"$block"; then
     echo "[FAIL] $f (query certificada) contiene ALTER PROFILE ejecutable"
     FAIL=1
   fi

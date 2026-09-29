@@ -11,7 +11,7 @@ for f in $(find "$ROOT/agents/oracle-security-analyst" "$ROOT/skills/security" "
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>3?lineno-3:1)),${lineno}p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|never|prohibid|forbidden'; then
+    if ! grep -qiE 'nunca|never|prohibid|forbidden' <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene ALTER USER ejecutable sin contexto de prohibición"
       FAIL=1
     fi

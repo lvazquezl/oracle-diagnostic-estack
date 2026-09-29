@@ -35,7 +35,7 @@ for d in r['cross_domain_domains_involved']:
     assert d in report, f'domain {d} missing from cross-domain section of report'
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] JSON y Markdown concuerdan en causa, hipótesis, contradicciones y dominios involucrados"
 else
   echo "[FAIL] $OUT"

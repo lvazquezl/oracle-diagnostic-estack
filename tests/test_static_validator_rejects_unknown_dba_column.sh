@@ -34,7 +34,7 @@ valid_cols=$(get_view_columns "DBA_USERS")
 # 19. NEGATIVE FIXTURE — UNKNOWN DBA COLUMN: "SELECT fake_security_column FROM dba_users;"
 FAKE_SQL="SELECT fake_security_column FROM dba_users;"
 fake_col=$(echo "$FAKE_SQL" | sed -E 's/.*SELECT //I; s/ FROM .*//I' | tr 'A-Z' 'a-z' | sed -E 's/^ *//; s/ *$//')
-if echo "$valid_cols" | grep -qx "$fake_col"; then
+if grep -qx "$fake_col" <<<"$valid_cols"; then
   echo "[FAIL] el fixture negativo '$fake_col' aparece como válido en DBA_USERS — NOT_CERTIFIED esperado"
   FAIL=1
 else
@@ -43,7 +43,7 @@ fi
 
 # 20. POSITIVE FIXTURE — VALID DBA COLUMN: "SELECT username, account_status FROM dba_users;"
 for real_col in username account_status; do
-  if echo "$valid_cols" | grep -qx "$real_col"; then
+  if grep -qx "$real_col" <<<"$valid_cols"; then
     echo "[PASS] CERTIFIED: '$real_col' (columna real) correctamente aceptada sobre DBA_USERS"
   else
     echo "[FAIL] Control positivo falló — '$real_col' debería existir en DBA_USERS"

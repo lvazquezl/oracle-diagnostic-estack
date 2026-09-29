@@ -16,7 +16,7 @@ assert lp['Redo size']['per_transaction'] == '578.23'
 assert 'Hard parses' in lp
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Parser Statspack extrae Load Profile (per second / per transaction)"
 else
   echo "[FAIL] Extracción de Load Profile falló: $OUT"

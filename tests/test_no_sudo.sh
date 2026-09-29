@@ -9,7 +9,7 @@ for f in "$ROOT/docs/GI_READONLY_COLLECTORS.md" "$ROOT"/parsers/rac/*.py; do
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     line=$(sed -n "${lineno}p" "$f")
-    if ! echo "$line" | grep -qiE 'sin .{0,20}sudo|nunca|ningun|prohibid'; then
+    if ! grep -qiE 'sin .{0,20}sudo|nunca|ningun|prohibid' <<<"$line"; then
       echo "[FAIL] $f:$lineno menciona sudo sin contexto de prohibición"
       FAIL=1
     fi

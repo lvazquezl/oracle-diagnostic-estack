@@ -16,8 +16,8 @@ view_min=$(awk '
 
 qmin=$(grep -A1 'Q-CDB-RESOURCE-USAGE-001:' "$QCM" | grep -oE 'min: "[0-9.]+"' | head -1 | tr -d '"min: ')
 qmin_line=$(grep 'Q-CDB-RESOURCE-USAGE-001:' "$QCM")
-echo "$qmin_line" | grep -q 'min: "12.2"' && echo "[PASS] query-compatibility-matrix.yaml declara Q-CDB-RESOURCE-USAGE-001 min: 12.2" || { echo "[FAIL] query-compatibility-matrix.yaml no declara min: 12.2 para Q-CDB-RESOURCE-USAGE-001"; FAIL=1; }
+grep -q 'min: "12.2"' <<<"$qmin_line" && echo "[PASS] query-compatibility-matrix.yaml declara Q-CDB-RESOURCE-USAGE-001 min: 12.2" || { echo "[FAIL] query-compatibility-matrix.yaml no declara min: 12.2 para Q-CDB-RESOURCE-USAGE-001"; FAIL=1; }
 
-echo "$qmin_line" | grep -q 'min: "12.1"' && { echo "[FAIL] query-compatibility-matrix.yaml todavía declara min: 12.1 para Q-CDB-RESOURCE-USAGE-001"; FAIL=1; }
+grep -q 'min: "12.1"' <<<"$qmin_line" && { echo "[FAIL] query-compatibility-matrix.yaml todavía declara min: 12.1 para Q-CDB-RESOURCE-USAGE-001"; FAIL=1; }
 
 exit $FAIL

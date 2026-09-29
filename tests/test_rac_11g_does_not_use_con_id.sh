@@ -3,7 +3,7 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 F="$ROOT/queries/oracle/discovery/Q-DISC-RAC-001.md"
 v1=$(awk '/^# Statement \/ procedure \(read-only\).*Variant V1/{f=1} f&&/```sql/{c=1;next} c&&/```/{exit} c' "$F" | sed -E 's/--.*$//')
-if echo "$v1" | grep -qi 'con_id'; then
+if grep -qi 'con_id' <<<"$v1"; then
   echo "[FAIL] Variant V1 (11.2, pre-multitenant) usa con_id"
   exit 1
 fi
