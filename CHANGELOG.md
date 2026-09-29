@@ -4,7 +4,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change compatibility|documentation` — CHG-ESTACK-DICT-PSEUDO-COLUMNS-001 — valores de fila en lugar de pseudo-columnas
 
-Rama `change/dict-pseudo-columns` sobre `main` (`ca8a26b`). Validado en el lab (19c): la verificación del diccionario sólo reporta Statspack (no instalado). `Q-DICT-VERIFY-*` revalidadas en campo con su SQL nuevo. Pendiente: HUMAN REVIEW. Ver `docs/DICT_PSEUDO_COLUMNS.md`.
+Rama `change/dict-pseudo-columns` sobre `main` (`ca8a26b`). Validado en el lab (19c): la verificación del diccionario sólo reporta Statspack (no instalado). `Q-DICT-VERIFY-*` revalidadas en campo con su SQL nuevo. Aprobación humana registrada: `AUTH-DICT-PSEUDO-COLUMNS-001`, revisor `REV-DBAMANAGER`, `2026-09-29T00:37:12Z`, contra el digest `6560fd0c…799e5ac` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/DICT_PSEUDO_COLUMNS.md`.
 
 ### Fixed
 

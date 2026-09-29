@@ -2,7 +2,7 @@
 
 **Tipo:** `/change compatibility|documentation` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/dict-pseudo-columns` (desde `main` `ca8a26b`, `v0.21.0-field-validation-matrix`)
 **Origen:** `CHG-REQ-DICT-PSEUDO-COLUMNS` (3 hallazgos restantes de la verificación del diccionario, `CHG-ESTACK-ORA19C-LAB-007` §8)
-**Estado:** propuesto. Validado en el lab (§8). Pendiente: HUMAN REVIEW.
+**Estado:** aprobado por revisión humana (§11), validado en el lab (§8). Pendiente: `PROMOTE` (acción humana).
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 
@@ -73,9 +73,9 @@ macOS (bash 5.3.20): antes 967/967. Después **968/968**, con la revalidación r
 
 Cierra `CHG-REQ-DICT-PSEUDO-COLUMNS`.
 
-## 11. HUMAN REVIEW (pendiente)
+## 11. HUMAN REVIEW — aprobado
 
-Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+`AUTH-DICT-PSEUDO-COLUMNS-001`, revisor `REV-DBAMANAGER` (distinto del proponente `REV-CLAUDEAGENT`), `2026-09-29T00:37:12Z`, contra el digest `6560fd0c…799e5ac`. El motor informa `review_status: APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el digest, no la identidad del firmante. `PROMOTE` (merge, tag) sigue siendo acción humana.
 
 ## 12. Motor de gobernanza
 
