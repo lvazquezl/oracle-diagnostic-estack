@@ -7,6 +7,7 @@ reported (DECLARED_ARCHITECTURE_MISMATCH), never silently corrected in the targe
 """
 
 COLLECTOR_ID = "Q-DISC-ARCHITECTURE-001"
+IDENTITY_COLLECTOR_ID = "Q-DISC-IDENTITY-001"          # CHG-ESTACK-VALIDATION-RU-001: source of the observed RU
 # The database reduces PLATFORM_NAME to a family (Q-DISC-ARCHITECTURE-001); 'OTHER' means "not classified".
 _FAMILIES = ("AIX", "HPUX", "LINUX", "MACOS", "SOLARIS", "WINDOWS")
 
@@ -52,6 +53,17 @@ def compare(observed: dict, target) -> list:
     return out
 
 
+def release_update_from_identity(rows):
+    """Observed Release Update ('19.32') from Q-DISC-IDENTITY-001 `version` ('19.32.0.0.0'). Only 18c+ encodes the RU in
+    the version (YY.RU.x.x.x); for 12.2 and older ('12.2.0.1.0') the RU is not in the version → None (not compared)."""
+    r = rows[0] if isinstance(rows, list) and len(rows) == 1 and isinstance(rows[0], dict) else {}
+    v = r.get("version")
+    parts = v.split(".") if isinstance(v, str) else []
+    if len(parts) < 2 or not all(p.isdigit() for p in parts[:2]) or int(parts[0]) < 18:
+        return None
+    return f"{int(parts[0])}.{int(parts[1])}"
+
+
 class ObservedTarget:
     """A view of a Target where observed dimensions replace declared ones (for field validation only)."""
 
@@ -67,6 +79,8 @@ class ObservedTarget:
         if observed.get("os_family") and tos.get("family") != observed["os_family"]:
             tos = {"family": observed["os_family"]}          # distribution/version of a different family is meaningless
         self.os = tos
+        if observed.get("release_update"):
+            self.release_update = observed["release_update"]
 
     def __getattr__(self, name):
         return getattr(self._t, name)

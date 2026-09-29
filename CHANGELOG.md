@@ -2,6 +2,14 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change compatibility|documentation` — CHG-ESTACK-VALIDATION-RU-001 — Release Update observado para la validación en campo
+
+Rama `change/validation-ru` sobre `change/disc-architecture` (`c2d8a36`). Pendiente: validación en el lab y HUMAN REVIEW. Ver `docs/VALIDATION_RU.md`.
+
+### Added
+
+- `release_update_check` en el `collect` de `Q-DISC-IDENTITY-001`: el RU observado (18c+) reemplaza al declarado para la validación en campo de la sesión, y la diferencia se reporta con `DECLARED_RELEASE_UPDATE_MISMATCH`.
+
 ## [Unreleased] — `/change query|compatibility|security` — CHG-ESTACK-DISC-ARCHITECTURE-001 — arquitectura observada frente a la declarada
 
 Rama `change/disc-architecture` sobre `change/dict-pseudo-columns` (`4cca5cb`). Validado en el lab (19c): la arquitectura observada coincide con la declarada (ASM, sin RAC ni Data Guard, PRIMARY, LINUX). El primer intento mostró que los nombres de plataforma no se pueden listar de antemano, así que la familia de SO se calcula en la base. Aprobación humana registrada: `AUTH-DISC-ARCHITECTURE-001`, revisor `REV-DBAMANAGER`, `2026-09-29T02:06:54Z`, contra el digest `fadf6bf3…4f199a1e` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/DISC_ARCHITECTURE.md`.
