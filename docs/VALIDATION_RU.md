@@ -2,7 +2,7 @@
 
 **Tipo:** `/change compatibility|documentation` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/validation-ru` (desde `change/disc-architecture`, `c2d8a36`, PR #21)
 **Origen:** `CHG-REQ-VALIDATION-RU`
-**Estado:** propuesto. Pendiente: validación en el lab (§8) y HUMAN REVIEW.
+**Estado:** propuesto. Validado en el lab (§8). Pendiente: HUMAN REVIEW.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. Sin queries ni accesos nuevos.
 
@@ -46,11 +46,15 @@ Sin datos nuevos: la versión ya se devolvía. Veredicto: **PASS**.
 
 ## 7. REGRESSION VALIDATION
 
-macOS (bash 5.3.20): ver §12.
+macOS (bash 5.3.20): **968/968**.
 
-## 8. Validación en el lab (pendiente)
+## 8. Validación en el lab
 
-Con esta rama en el workspace principal y el lab reconectado, `Q-DISC-IDENTITY-001` debe reportar `release_update_check: {observed: "19.32", declared: "19.32", mismatch: false}` y seguir `FIELD_VALIDATED`.
+2026-09-29T03:06Z, `lab-ol8-19c`, commit `f3835af`:
+- `Q-DISC-IDENTITY-001` (`REQ-9f1cdbb61a89`, `EVR-8d22ad01b9862962bdaa8137`): `release_update_check` observado `19.32`, declarado `19.32`, sin diferencia, `applies_to_field_validation: true`. `field_validation`: `FIELD_VALIDATED`, sin `not_compared`.
+- `Q-DISC-ARCHITECTURE-001`, recogida después (`REQ-5b9a07d1b933`, `EVR-44b30c0dc3c1015d1c9515aa`): `FIELD_VALIDATED`, sin diferencias ni `not_compared`. El RU observado se conservó al combinar el estado de la sesión.
+
+No se agregan entradas al registro de validación en campo: no hay queries nuevas ni SQL cambiado.
 
 ## 9–10. Registros relacionados
 
@@ -58,4 +62,8 @@ Cierra `CHG-REQ-VALIDATION-RU`.
 
 ## 11. HUMAN REVIEW (pendiente)
 
-## 12. Motor de gobernanza (pendiente, después de §8)
+Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+
+## 12. Motor de gobernanza
+
+`advise --mode estack` (2026-09-29T03:06:57Z): `governance_state: PENDING_HUMAN_REVIEW`, `blockers: []`, `promote_status: HUMAN_ACTION_REQUIRED`, `content_digest: 14b4f97904c0b56bfb3274f874ad2fe03940d7b798e6f9e7a35d0ed9e1dab6ec`. La salida queda fuera del repo, en `~/.local/share/oracle-diagnostic-estack/change-evidence/CHG-ESTACK-VALIDATION-RU-001/`.
