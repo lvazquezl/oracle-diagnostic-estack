@@ -41,7 +41,7 @@ assert r.horizons['6m']['date'] == '2026-07-31', r.horizons['6m']['date']
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine.stats.add_calendar_months y los horizontes 1/3/6m manejan fin de mes, años bisiestos y cruce de año correctamente"
 else
   echo "[FAIL] $OUT"

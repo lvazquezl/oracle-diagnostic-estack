@@ -11,7 +11,7 @@ for f in $(find "$ROOT/agents/oracle-backup-recovery-analyst" "$ROOT/skills/rman
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>3?lineno-3:1)),${lineno}p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|never|prohibid|forbidden|blocked|# 14|ANALYTICAL_PREVIEW'; then
+    if ! grep -qiE 'nunca|never|prohibid|forbidden|blocked|# 14|ANALYTICAL_PREVIEW' <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene RESTORE ejecutable sin contexto de prohibición"
       FAIL=1
     fi

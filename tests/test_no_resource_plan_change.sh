@@ -10,7 +10,7 @@ grep -qi "RESOURCE_MANAGER_PLAN" "$MANIFEST" && echo "[PASS] manifest prohíbe e
 for f in $(find "$ROOT/queries/multitenant" "$ROOT/skills/multitenant" -type f); do
   if grep -Eiq 'ALTER SYSTEM SET RESOURCE_MANAGER_PLAN' "$f"; then
     window=$(grep -B3 -Ei 'ALTER SYSTEM SET RESOURCE_MANAGER_PLAN' "$f")
-    if ! echo "$window" | grep -qiE 'nunca|never|prohibid'; then
+    if ! grep -qiE 'nunca|never|prohibid' <<<"$window"; then
       echo "[FAIL] $f contiene un cambio de resource plan sin contexto de prohibición"
       FAIL=1
     fi

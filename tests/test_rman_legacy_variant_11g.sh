@@ -29,14 +29,14 @@ for f in "$ROOT"/queries/rman/Q-*.md; do
   resolved_id=$(echo "$ids" | sed -n "${resolved_i}p")
   block=$(awk -v n="$resolved_i" '/```sql/{c++} c==n && /```sql/{flag=1;next} flag && /```/{flag=0} flag' "$f")
 
-  if echo "$resolved_id" | grep -qiE -- '-V1$|legacy'; then
+  if grep -qiE -- '-V1$|legacy' <<<"$resolved_id"; then
     echo "[PASS] $qid — resuelve variante legacy ($resolved_id) para 11g"
   else
     echo "[FAIL] $qid — resolvió $resolved_id para 11g, esperada la variante legacy"
     FAIL=1
   fi
 
-  if echo "$block" | grep -qiE 'FETCH[[:space:]]+(FIRST|NEXT)|OFFSET[[:space:]]+[0-9]'; then
+  if grep -qiE 'FETCH[[:space:]]+(FIRST|NEXT)|OFFSET[[:space:]]+[0-9]' <<<"$block"; then
     echo "[FAIL] $qid — variante resuelta para 11g ($resolved_id) usa FETCH FIRST/OFFSET, incompatible con 11g"
     FAIL=1
   fi

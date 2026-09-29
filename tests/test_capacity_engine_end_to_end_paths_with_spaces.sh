@@ -41,7 +41,7 @@ result = json.load(open('result.json'))
 assert abs(result['method_parameters']['slope'] - 4.0) < 1e-6, result['method_parameters']['slope']
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] el resultado numérico es correcto pese al espacio en la ruta del workdir"
 else
   echo "[FAIL] $OUT"

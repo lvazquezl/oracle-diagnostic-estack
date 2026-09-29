@@ -7,7 +7,7 @@ FAIL=0
 DICT="$ROOT/compatibility/oracle-dictionary/views.yaml"
 F="$ROOT/queries/oracle/temp/Q-ORA-TEMP-001.md"
 
-if grep -A1 '^  DBA_TEMP_FREE_SPACE:' "$DICT" | grep -q 'min_version: all'; then
+if grep -A1 '^  DBA_TEMP_FREE_SPACE:' "$DICT" | grep -c 'min_version: all' >/dev/null; then
   echo "[PASS] DBA_TEMP_FREE_SPACE registrada como disponible desde 10g (min_version: all) en el dictionary"
 else
   echo "[FAIL] DBA_TEMP_FREE_SPACE no está registrada como 'all' en el dictionary — Q-ORA-TEMP-001 debería tener variantes"

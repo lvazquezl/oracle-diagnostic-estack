@@ -18,7 +18,7 @@ raw = json.dumps(d['sections']['sql'])
 assert 'SELECT' not in raw.upper() or 'sql_id' in raw
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Parser AWR TEXT extrae DB Time/Load Profile/SQL sin SQL text"
 else
   echo "[FAIL] Parser AWR TEXT falló: $OUT"

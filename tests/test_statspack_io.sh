@@ -15,7 +15,7 @@ assert any(n.startswith('+DATA') for n in names), names
 assert r.completeness['io'] == 'SUPPORTED'
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Parser Statspack extrae File/Tablespace IO Stats, incluyendo rutas ASM"
 else
   echo "[FAIL] Extracción de I/O falló: $OUT"

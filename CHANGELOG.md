@@ -2,6 +2,26 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change documentation|compatibility` — CHG-ESTACK-TEST-SIGPIPE-001 — tests sin tuberías hacia `grep -q`
+
+Rama `change/test-sigpipe` sobre `change/cdb-temp-usage` (`d565237`). Pendiente: CI y HUMAN REVIEW. Ver `docs/TEST_SIGPIPE.md`.
+
+### Fixed
+
+- Fallos aleatorios por SIGPIPE bajo `pipefail` (`echo: write error: Broken pipe` en la CI de macOS): 396 tuberías hacia `grep -q` reescritas en 296 tests (here-string o `grep -c >/dev/null`), con las 4943 líneas de verificación idénticas antes y después.
+
+### Added
+
+- `tests/test_no_pipe_into_early_exit_grep.sh`.
+
+## [Unreleased] — `/change query|skill` — CHG-ESTACK-CDB-TEMP-USAGE-001 — uso de TEMP por PDB sin `JOIN` por número de archivo
+
+Rama `change/cdb-temp-usage` sobre `change/lab-revalidate-007` (`bd39a30`). Validado en el lab (19c): uso de TEMP de `PRUEBAS` no nulo desde root; `Q-CDB-TEMP-001` y las 5 `Q-DICT-VERIFY` regeneradas quedan `FIELD_VALIDATED`. Aprobación humana registrada: `AUTH-CDB-TEMP-USAGE-001`, revisor `REV-DBAMANAGER`, `2026-09-29T04:36:11Z`, contra el digest `dfc5dd3d…380f6dc6` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/CDB_TEMP_USAGE.md`.
+
+### Fixed
+
+- `Q-CDB-TEMP-001` 2.0.0 (breaking): uso de TEMP por PDB y tablespace desde `GV$SORT_SEGMENT`. `V$TEMP_SPACE_HEADER`, consultada desde root, sólo expone el root (confirmado en el lab), y por eso la 1.0.0 devolvía uso nulo. Diccionario: + `V$SORT_SEGMENT`/`GV$SORT_SEGMENT`. Skill `multitenant/pdb-temp` 1.1.0; collector habilitado en el lab (`mcp_gateway_lab` 0.8.0).
+
 ## [Unreleased] — `/change query|security` — CHG-ESTACK-LAB-REVALIDATE-007 — revalidación en el lab de las queries corregidas en LAB-007
 
 Rama `change/lab-revalidate-007` sobre `change/validation-ru` (`1c41e31`). Validado en el lab (19c): las 3 queries corregidas en LAB-007 pasan a `FIELD_VALIDATED`. Aprobación humana registrada: `AUTH-LAB-REVALIDATE-007`, revisor `REV-DBAMANAGER`, `2026-09-29T03:53:33Z`, contra el digest `7cc271f8…41ce37ca` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/LAB_REVALIDATE_007.md`.

@@ -37,7 +37,7 @@ assert isinstance(rec['summary'], str)
 assert rec['manual_execution_required'] is True
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Contenido tipo prompt-injection vuelve como string inerte, clasificación/estado sin alterar"
 else
   echo "[FAIL] Manejo de contenido tipo prompt-injection falló: $OUT"

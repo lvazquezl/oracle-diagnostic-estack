@@ -9,7 +9,7 @@ Q="$ROOT/queries/dataguard/Q-DG-DEST-001.md"
 grep -q 'V\$ARCHIVE_DEST' "$Q" && grep -q 'V\$ARCHIVE_DEST_STATUS' "$Q" && echo "[PASS] Q-DG-DEST-001 usa ambas vistas" || { echo "[FAIL] falta una de las vistas"; FAIL=1; }
 block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$Q")
 for col in target transmit_mode affirm valid_for; do
-  echo "$block" | grep -qi "$col" && echo "[PASS] Q-DG-DEST-001 selecciona $col" || { echo "[FAIL] falta columna $col"; FAIL=1; }
+  grep -qi "$col" <<<"$block" && echo "[PASS] Q-DG-DEST-001 selecciona $col" || { echo "[FAIL] falta columna $col"; FAIL=1; }
 done
 
 exit $FAIL

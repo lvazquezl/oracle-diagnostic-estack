@@ -15,7 +15,7 @@ assert 'Redo size' in rc, rc
 assert r.completeness['redo_commit'] == 'SUPPORTED'
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Parser Statspack deriva redo/commit de Load Profile + Instance Activity"
 else
   echo "[FAIL] Derivación de redo/commit falló: $OUT"

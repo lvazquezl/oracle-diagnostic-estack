@@ -33,7 +33,7 @@ assert by_evd['EVD-1'] == by_evd['EVD-2'], by_evd   # same raw signature, differ
 assert by_evd['EVD-3'] != by_evd['EVD-1'], by_evd   # genuinely different raw signature -> different token, no collision
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Same unknown signature correlates via identical token across sources; distinct signatures never collide"
 else
   echo "[FAIL] $OUT"

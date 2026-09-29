@@ -28,7 +28,7 @@ n=0
 while IFS= read -r c; do
   [ -z "$c" ] && continue
   n=$((n+1))
-  if echo "$dict_cols" | grep -qx "$c"; then
+  if grep -qx "$c" <<<"$dict_cols"; then
     echo "[PASS] columna '$c' existe en V\$RSRCPDBMETRIC"
   else
     echo "[FAIL] columna '$c' no existe en V\$RSRCPDBMETRIC"

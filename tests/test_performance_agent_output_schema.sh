@@ -22,7 +22,7 @@ done
 # CONFIRMED_ROOT_CAUSE puede mencionarse en un comentario explicando la prohibición — el chequeo
 # real es que no aparezca como valor dentro de la enumeración quoteada de "confidence".
 confidence_line=$(grep -A1 '^  confidence:' "$O" | head -1)
-if echo "$confidence_line" | grep -q 'CONFIRMED_ROOT_CAUSE'; then
+if grep -q 'CONFIRMED_ROOT_CAUSE' <<<"$confidence_line"; then
   echo "[FAIL] output-schema.yaml permite CONFIRMED_ROOT_CAUSE como valor de confidence"
   FAIL=1
 else

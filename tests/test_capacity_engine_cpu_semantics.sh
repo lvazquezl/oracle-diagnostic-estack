@@ -45,7 +45,7 @@ assert any('exhaustion' in lim.lower() or 'conditional' in lim.lower() or 'utili
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine calcula threshold crossing condicional para CPU y nunca expone un campo de exhaustion/saturation date"
 else
   echo "[FAIL] $OUT"

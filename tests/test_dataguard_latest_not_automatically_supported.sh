@@ -12,15 +12,15 @@ MANIFEST="$ROOT/agents/oracle-dataguard-analyst/manifest.yaml"
 
 dg_row=$(awk '/id: dataguard/{flag=1} flag{print} flag && /^  - id:/ && !/id: dataguard/{exit}' "$CAP")
 
-if echo "$dg_row" | grep -qE 'versions: \{[^}]*latest:'; then
+if grep -qE 'versions: \{[^}]*latest:' <<<"$dg_row"; then
   echo "[FAIL] la fila dataguard todavía declara 'latest:' dentro de versions: {...}"
   FAIL=1
 else
   echo "[PASS] la fila dataguard ya no declara 'latest:' dentro de versions: {...} — eliminado, no reinterpretado"
 fi
 
-echo "$dg_row" | grep -q 'future_status: COMPATIBILITY_VALIDATION_REQUIRED' && echo "[PASS] la fila dataguard declara future_status: COMPATIBILITY_VALIDATION_REQUIRED explícitamente" || { echo "[FAIL] falta future_status: COMPATIBILITY_VALIDATION_REQUIRED en la fila dataguard"; FAIL=1; }
-echo "$dg_row" | grep -qi 'UNKNOWN_FUTURE' && echo "[PASS] config/capability-matrix.yaml (fila dataguard) referencia UNKNOWN_FUTURE explícitamente, sin contradicción con el agente" || { echo "[FAIL] la fila dataguard de capability-matrix.yaml no reconcilia con UNKNOWN_FUTURE"; FAIL=1; }
+grep -q 'future_status: COMPATIBILITY_VALIDATION_REQUIRED' <<<"$dg_row" && echo "[PASS] la fila dataguard declara future_status: COMPATIBILITY_VALIDATION_REQUIRED explícitamente" || { echo "[FAIL] falta future_status: COMPATIBILITY_VALIDATION_REQUIRED en la fila dataguard"; FAIL=1; }
+grep -qi 'UNKNOWN_FUTURE' <<<"$dg_row" && echo "[PASS] config/capability-matrix.yaml (fila dataguard) referencia UNKNOWN_FUTURE explícitamente, sin contradicción con el agente" || { echo "[FAIL] la fila dataguard de capability-matrix.yaml no reconcilia con UNKNOWN_FUTURE"; FAIL=1; }
 
 grep -qi 'COMPATIBILITY_VALIDATION_REQUIRED' "$DOC" && echo "[PASS] docs/CAPABILITY_MATRIX.md documenta COMPATIBILITY_VALIDATION_REQUIRED para Data Guard" || { echo "[FAIL] falta COMPATIBILITY_VALIDATION_REQUIRED en docs/CAPABILITY_MATRIX.md"; FAIL=1; }
 

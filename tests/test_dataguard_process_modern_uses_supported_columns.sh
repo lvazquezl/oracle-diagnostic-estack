@@ -27,23 +27,23 @@ valid_cols=$(awk '
 ' "$DICT")
 
 [ -n "$valid_cols" ] && echo "[PASS] V\$DATAGUARD_PROCESS registrada como columns_exhaustive en el dictionary" || { echo "[FAIL] V\$DATAGUARD_PROCESS no está registrada como columns_exhaustive"; FAIL=1; }
-echo "$valid_cols" | grep -qx 'thread#' && echo "[PASS] thread# está registrada como columna real de V\$DATAGUARD_PROCESS (corrección respecto al hardening anterior)" || { echo "[FAIL] thread# debería estar registrada"; FAIL=1; }
-echo "$valid_cols" | grep -qx 'status' && { echo "[FAIL] 'status' está registrada — no es columna real de V\$DATAGUARD_PROCESS"; FAIL=1; } || echo "[PASS] 'status' correctamente ausente (no es columna de V\$DATAGUARD_PROCESS, pertenece a V\$MANAGED_STANDBY)"
-echo "$valid_cols" | grep -qx 'client_process' && { echo "[FAIL] 'client_process' está registrada — no es columna real de V\$DATAGUARD_PROCESS"; FAIL=1; } || echo "[PASS] 'client_process' correctamente ausente (no es columna de V\$DATAGUARD_PROCESS, pertenece a V\$MANAGED_STANDBY)"
+grep -qx 'thread#' <<<"$valid_cols" && echo "[PASS] thread# está registrada como columna real de V\$DATAGUARD_PROCESS (corrección respecto al hardening anterior)" || { echo "[FAIL] thread# debería estar registrada"; FAIL=1; }
+grep -qx 'status' <<<"$valid_cols" && { echo "[FAIL] 'status' está registrada — no es columna real de V\$DATAGUARD_PROCESS"; FAIL=1; } || echo "[PASS] 'status' correctamente ausente (no es columna de V\$DATAGUARD_PROCESS, pertenece a V\$MANAGED_STANDBY)"
+grep -qx 'client_process' <<<"$valid_cols" && { echo "[FAIL] 'client_process' está registrada — no es columna real de V\$DATAGUARD_PROCESS"; FAIL=1; } || echo "[PASS] 'client_process' correctamente ausente (no es columna de V\$DATAGUARD_PROCESS, pertenece a V\$MANAGED_STANDBY)"
 
 block=$(awk '/^# .*Variant V2 \(modern_dataguard_process/{flag=1} flag && /```sql/{c++} flag && c==1 && /```sql/{f2=1;next} f2 && /```/{f2=0} f2' "$Q" | sed -E 's/--.*$//')
 selected=$(echo "$block" | tr '\n' ' ' | sed -E 's/.*SELECT //I; s/ FROM .*//I' | tr ',' '\n' | sed -E 's/ +AS +[A-Za-z_][A-Za-z0-9_]*$//I; s/^ *//; s/ *$//' | tr 'A-Z' 'a-z')
 
 while IFS= read -r col; do
   [ -z "$col" ] && continue
-  if ! echo "$valid_cols" | grep -qx "$col"; then
+  if ! grep -qx "$col" <<<"$valid_cols"; then
     echo "[FAIL] la variante moderna selecciona '$col' — no registrada como columna real de V\$DATAGUARD_PROCESS"
     FAIL=1
   fi
 done <<< "$selected"
 
 for should_have in name pid type role action client_pid client_role thread# sequence# block# block_count; do
-  if ! echo "$block" | grep -qi "$should_have"; then
+  if ! grep -qi "$should_have" <<<"$block"; then
     echo "[FAIL] la variante moderna no selecciona '$should_have' — se esperaba (# 4 del prompt: mínimo de columnas a validar)"
     FAIL=1
   fi

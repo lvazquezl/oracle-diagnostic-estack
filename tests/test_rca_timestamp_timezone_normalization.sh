@@ -28,7 +28,7 @@ assert r['timeline']['degraded'] is False, r['timeline']
 assert timestamps == sorted(timestamps)
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Timestamps con offset explícito (Z/-06:00/+02:00) se normalizan correctamente a UTC"
 else
   echo "[FAIL] $OUT"

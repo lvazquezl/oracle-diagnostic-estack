@@ -9,7 +9,7 @@ F="$ROOT/queries/performance/sql/Q-PERF-TOPSQL-CURRENT-001.md"
 grep -q 'v\$sqlstats' "$F" && echo "[PASS] usa V\$SQLSTATS" || { echo "[FAIL] no usa V\$SQLSTATS"; FAIL=1; }
 grep -q 'license_requirements: none' "$F" && echo "[PASS] sin licencia" || { echo "[FAIL] declara licencia"; FAIL=1; }
 block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$F")
-if echo "$block" | grep -Eiq 'SQL_TEXT|SQL_FULLTEXT'; then
+if grep -Eiq 'SQL_TEXT|SQL_FULLTEXT' <<<"$block"; then
   echo "[FAIL] selecciona SQL_TEXT"
   FAIL=1
 else

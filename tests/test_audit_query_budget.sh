@@ -14,7 +14,7 @@ for Q in "$Q1" "$Q2"; do
 done
 
 block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$Q1")
-echo "$block" | grep -qi "^\s*SELECT \* FROM\s*unified_audit_trail\s*;" \
+grep -qi "^\s*SELECT \* FROM\s*unified_audit_trail\s*;" <<<"$block" \
   && { echo "[FAIL] Q-SEC-UNIFIED-AUDIT-TRAIL-001 selecciona la tabla completa sin filtro"; FAIL=1; } \
   || echo "[PASS] Q-SEC-UNIFIED-AUDIT-TRAIL-001 no selecciona la tabla completa sin filtro"
 

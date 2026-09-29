@@ -32,7 +32,7 @@ assert h['independent_source_count'] == 1, h['independent_source_count']
 assert h['status'] != 'CONFIRMED', h['status']
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Suspicious string on a typed causal field fails closed: dropped, not echoed, not CONFIRMED"
 else
   echo "[FAIL] $OUT"

@@ -17,7 +17,7 @@ fi
 
 while IFS= read -r qid; do
   [ -z "$qid" ] && continue
-  if grep -A2 "^  $qid:" "$MATRIX" | grep -q 'variants:'; then
+  if grep -A2 "^  $qid:" "$MATRIX" | grep -c 'variants:' >/dev/null; then
     :  # explicit or implicit_full_range, both contain "variants:"
   else
     echo "[FAIL] $qid no declara 'variants:' en config/query-compatibility-matrix.yaml"

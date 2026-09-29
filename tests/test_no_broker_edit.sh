@@ -9,7 +9,7 @@ for f in "$ROOT"/parsers/dataguard/*.py "$ROOT/docs/DATAGUARD_BROKER_READONLY_CO
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>15?lineno-15:1)),${lineno}p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|ningun|ningún|never|prohibid|bloquead'; then
+    if ! grep -qiE 'nunca|ningun|ningún|never|prohibid|bloquead' <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene EDIT DATABASE/CONFIGURATION sin contexto de prohibición"
       FAIL=1
     fi

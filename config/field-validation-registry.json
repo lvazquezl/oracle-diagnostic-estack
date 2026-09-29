@@ -122,73 +122,73 @@
     },
     {
       "query_id": "Q-DICT-VERIFY-001",
-      "query_sha256": "9611969ad017bde81d076c9f107f2cf046d8b314dcc8ebcd5363bbc00409bab4",
+      "query_sha256": "679b643fe6fd0498a7c6c810258b83e18711f8e19371893835cbda324e6bb824",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T01:34:00Z",
+      "validated_at_utc": "2026-09-29T04:27:00Z",
       "evidence_refs": [
-        "EVR-2854f2a67a410c5e5d806f57"
+        "EVR-9f725abe8e626420c1efb83c"
       ],
       "request_refs": [
-        "REQ-bab7cbd8b98c"
+        "REQ-d882ec78ead7"
       ],
-      "record": "docs/DISC_ARCHITECTURE.md",
-      "change_id": "CHG-ESTACK-DISC-ARCHITECTURE-001"
+      "record": "docs/CDB_TEMP_USAGE.md",
+      "change_id": "CHG-ESTACK-CDB-TEMP-USAGE-001"
     },
     {
       "query_id": "Q-DICT-VERIFY-002",
-      "query_sha256": "20db6b79881617b4bcb59c276e9f567e8969390c910deac6a4c4fcc4f9b900c3",
+      "query_sha256": "df66d9bdb98e1eb9cba8861f089b967f1fb63c921e896a4dcf2afae40ce5a620",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T01:34:00Z",
+      "validated_at_utc": "2026-09-29T04:27:00Z",
       "evidence_refs": [
-        "EVR-8bd80491c9b4bb1739c782c7"
+        "EVR-ab3c278f504a471f0bc64ab5"
       ],
       "request_refs": [
-        "REQ-499f23884fda"
+        "REQ-61906b0d9a92"
       ],
-      "record": "docs/DISC_ARCHITECTURE.md",
-      "change_id": "CHG-ESTACK-DISC-ARCHITECTURE-001"
+      "record": "docs/CDB_TEMP_USAGE.md",
+      "change_id": "CHG-ESTACK-CDB-TEMP-USAGE-001"
     },
     {
       "query_id": "Q-DICT-VERIFY-003",
-      "query_sha256": "b494c890f90e9d6722f2fad99289c7615f86677a55fde551ac9f0c39c30d389b",
+      "query_sha256": "6cb8c2b857c9457cc1ce01efa3aab18303ad5ea967ff06340671989391ea4adf",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T01:34:00Z",
+      "validated_at_utc": "2026-09-29T04:27:00Z",
       "evidence_refs": [
-        "EVR-20c3cbcf3aa29733a748e847"
+        "EVR-e35657f9bf93676ba9142c36"
       ],
       "request_refs": [
-        "REQ-e29dd53ebaaf"
+        "REQ-1cad56bf1cc7"
       ],
-      "record": "docs/DISC_ARCHITECTURE.md",
-      "change_id": "CHG-ESTACK-DISC-ARCHITECTURE-001"
+      "record": "docs/CDB_TEMP_USAGE.md",
+      "change_id": "CHG-ESTACK-CDB-TEMP-USAGE-001"
     },
     {
       "query_id": "Q-DICT-VERIFY-004",
-      "query_sha256": "62772eff02efbb62d90ee8dddc4c06f995df7f8ac774d8d84224bd786ea2110c",
+      "query_sha256": "f52584cd7e79099823f5ef5b4460ad17b022b917eaef5fd2086a20854f7d2297",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T01:34:00Z",
+      "validated_at_utc": "2026-09-29T04:27:00Z",
       "evidence_refs": [
-        "EVR-58f984a51b9cdc605313c9a7"
+        "EVR-3301561a0b533d0c47a58013"
       ],
       "request_refs": [
-        "REQ-82da98693372"
+        "REQ-f61a3a082d57"
       ],
-      "record": "docs/DISC_ARCHITECTURE.md",
-      "change_id": "CHG-ESTACK-DISC-ARCHITECTURE-001"
+      "record": "docs/CDB_TEMP_USAGE.md",
+      "change_id": "CHG-ESTACK-CDB-TEMP-USAGE-001"
     },
     {
       "query_id": "Q-DICT-VERIFY-005",
-      "query_sha256": "2f57ece7e94b33e78b6c3131916a5f634e3da1f874f5a39123b7568c694e50a4",
+      "query_sha256": "5fafa79da952d8204de890933b71aa7f776ef1c966ee48e1cc429f5cebf38802",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T01:34:00Z",
+      "validated_at_utc": "2026-09-29T04:27:00Z",
       "evidence_refs": [
-        "EVR-a893c21e979fb986549663d9"
+        "EVR-e919aa93c04c08214d386fe4"
       ],
       "request_refs": [
-        "REQ-5a4c0b2e3c6b"
+        "REQ-85040b199206"
       ],
-      "record": "docs/DISC_ARCHITECTURE.md",
-      "change_id": "CHG-ESTACK-DISC-ARCHITECTURE-001"
+      "record": "docs/CDB_TEMP_USAGE.md",
+      "change_id": "CHG-ESTACK-CDB-TEMP-USAGE-001"
     },
     {
       "query_id": "Q-RMAN-BACKUP-DEVICE-001",
@@ -231,6 +231,20 @@
       ],
       "record": "docs/LAB_REVALIDATE_007.md",
       "change_id": "CHG-ESTACK-LAB-REVALIDATE-007"
+    },
+    {
+      "query_id": "Q-CDB-TEMP-001",
+      "query_sha256": "3cb779271c59314abbf1190eac41205278c40e8e8c6677ae847aa624e3f296e9",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-29T04:27:00Z",
+      "evidence_refs": [
+        "EVR-912a01cdccf3ab5fb4b1aeb8"
+      ],
+      "request_refs": [
+        "REQ-6796e3dd3e3e"
+      ],
+      "record": "docs/CDB_TEMP_USAGE.md",
+      "change_id": "CHG-ESTACK-CDB-TEMP-USAGE-001"
     }
   ]
 }

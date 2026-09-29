@@ -8,7 +8,7 @@ for q in Q-SEC-SYSTEM-PRIVILEGES-001 Q-SEC-ROLE-SYSTEM-PRIVILEGES-001; do
   Q="$ROOT/queries/security/$q.md"
   [ -f "$Q" ] && echo "[PASS] $q.md existe" || { echo "[FAIL] falta $q.md"; FAIL=1; continue; }
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$Q" 2>/dev/null)
-  echo "$block" | grep -Eiq 'password|spare4' && { echo "[FAIL] $q selecciona credencial"; FAIL=1; } || echo "[PASS] $q no selecciona credencial"
+  grep -Eiq 'password|spare4' <<<"$block" && { echo "[FAIL] $q selecciona credencial"; FAIL=1; } || echo "[PASS] $q no selecciona credencial"
 done
 
 grep -q "grantee != 'PUBLIC'" "$ROOT/queries/security/Q-SEC-SYSTEM-PRIVILEGES-001.md" \

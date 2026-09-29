@@ -20,7 +20,7 @@ latest_bad=0
 while IFS=: read -r lineno _; do
   [ -z "$lineno" ] && continue
   window=$(sed -n "${lineno}p" "$FEATURES")
-  if ! echo "$window" | grep -qiE 'nunca|never|prohibid|no marcar'; then
+  if ! grep -qiE 'nunca|never|prohibid|no marcar' <<<"$window"; then
     echo "[FAIL] $FEATURES:$lineno menciona 'latest' sin contexto de prohibición"
     latest_bad=1
   fi

@@ -15,7 +15,7 @@ for f in $(find "$ROOT/agents/oracle-security-analyst" "$ROOT/skills/security" "
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>3?lineno-3:1)),${lineno}p" "$f")
-    if ! echo "$window" | grep -qiE "$PROHIBITION_WORDS"; then
+    if ! grep -qiE "$PROHIBITION_WORDS" <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene un patrón de password cracking sin contexto de prohibición"
       FAIL=1
     fi

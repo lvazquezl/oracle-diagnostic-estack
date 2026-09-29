@@ -8,7 +8,7 @@ UNGUARDED=0
 while IFS=: read -r file line _; do
   [ -z "$file" ] && continue
   window=$(sed -n "$((line>3?line-3:1)),${line}p" "$file")
-  if echo "$window" | grep -qiE 'nunca|no crea|no exponer|no crear|allowlisted|prohibi|genérico\)|forbidden'; then
+  if grep -qiE 'nunca|no crea|no exponer|no crear|allowlisted|prohibi|genérico\)|forbidden' <<<"$window"; then
     continue
   fi
   echo "[FAIL] $file:$line menciona un lector de archivo PAM genérico fuera de contexto de prohibición"

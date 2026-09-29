@@ -27,11 +27,11 @@ valid_cols=$(awk '
   }
 ' "$DICT")
 
-echo "$valid_cols" | grep -qx "db_unique_name" && echo "[PASS] compatibility/oracle-dictionary/views.yaml registra V\$DATABASE como columns_exhaustive con db_unique_name" || { echo "[FAIL] V\$DATABASE no está registrada como columns_exhaustive:true con db_unique_name"; FAIL=1; }
+grep -qx "db_unique_name" <<<"$valid_cols" && echo "[PASS] compatibility/oracle-dictionary/views.yaml registra V\$DATABASE como columns_exhaustive con db_unique_name" || { echo "[FAIL] V\$DATABASE no está registrada como columns_exhaustive:true con db_unique_name"; FAIL=1; }
 
 while IFS= read -r col; do
   [ -z "$col" ] && continue
-  if ! echo "$valid_cols" | grep -qx "$col"; then
+  if ! grep -qx "$col" <<<"$valid_cols"; then
     echo "[FAIL] Q-DG-ROLE-001 selecciona '$col' — no está registrada como columna real de V\$DATABASE"
     FAIL=1
   fi

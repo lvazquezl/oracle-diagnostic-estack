@@ -17,7 +17,7 @@ supported = [k for k, v in d['completeness'].items() if v == 'SUPPORTED']
 assert len(supported) >= 12, supported
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Parser Statspack procesa reporte 11g real con cobertura completa (>=12 secciones SUPPORTED)"
 else
   echo "[FAIL] Parser Statspack 11g falló: $OUT"

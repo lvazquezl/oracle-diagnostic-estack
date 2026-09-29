@@ -72,7 +72,7 @@ assert constant_engine_would_fail, 'la prueba de mutación no discrimina un moto
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine refleja el dato de entrada real (pendientes/forecasts distintos para series distintas); confirmado que un motor 'siempre-igual' fallaría esta misma prueba"
 else
   echo "[FAIL] $OUT"

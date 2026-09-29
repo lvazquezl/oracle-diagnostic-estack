@@ -17,7 +17,7 @@ assert d['sections']['operations'][0]['operation'] == 'SELECT STATEMENT'
 assert '2' in d['sections']['predicates']
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Parser de plan de ejecución extrae plan_hash_value/operaciones/predicados"
 else
   echo "[FAIL] Parser de plan de ejecución falló: $OUT"

@@ -50,7 +50,7 @@ assert h1['expected'] > 100.0 + 2.0*89, 'el forecast a 1m debe superar el ultimo
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine calcula slope=2.0, intercept=100.0 y fechas de horizonte correctas sobre una serie sintética used=100+2*dias"
 else
   echo "[FAIL] ejecución numérica del motor no produjo el resultado esperado: $OUT"

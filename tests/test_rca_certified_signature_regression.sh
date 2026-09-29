@@ -38,7 +38,7 @@ h_storage = next(h for h in r['hypotheses'] if h['rule_id'] == 'RULE-STORAGE-LAT
 assert set(h_storage['supporting_evidence_ids']) == {'EVD-5', 'EVD-6'}, h_storage
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Certified numeric + template signatures preserve classification/causality/traceability (2 independent CONFIRMED root causes)"
 else
   echo "[FAIL] $OUT"

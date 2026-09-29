@@ -26,7 +26,7 @@ output=$(bash "$ROOT/tests/test_sql_static_validator.sh")
 status=$?
 
 for q in Q-SEC-DEFAULT-ACCOUNTS-001 Q-SEC-ACCOUNT-INVENTORY-001 Q-SEC-PASSWORD-PROFILES-001 Q-SEC-SYSTEM-PRIVILEGES-001; do
-  if echo "$output" | grep -q "$q.*referencia\|$q.*selecciona"; then
+  if grep -q "$q.*referencia\|$q.*selecciona" <<<"$output"; then
     echo "[FAIL] el validador reporta un hallazgo inesperado sobre $q (columnas DBA_* deberían ser válidas):"
     echo "$output" | grep "$q"
     FAIL=1

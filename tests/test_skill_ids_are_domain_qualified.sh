@@ -9,7 +9,7 @@ QUALIFIED='^[a-z0-9_-]+/[a-z0-9_*/-]+$'
 ids=$(grep -oE '^\| `[a-z0-9_-]+/[a-z0-9_*/-]+`' "$ROOT/skills/REGISTRY.md" | grep -oE '`[a-z0-9_-]+/[a-z0-9_*/-]+`' | tr -d '`')
 while IFS= read -r id; do
   [ -z "$id" ] && continue
-  if ! echo "$id" | grep -Eq "$QUALIFIED"; then
+  if ! grep -Eq "$QUALIFIED" <<<"$id"; then
     echo "[FAIL] '$id' en skills/REGISTRY.md no está domain-qualified"
     FAIL=1
   fi
@@ -21,7 +21,7 @@ for f in $(grep -rl 'status: active' "$ROOT/skills" --include='*.md'); do
   base=$(basename "$f")
   [ "$base" = "_SKILL_CONTRACT_TEMPLATE.md" ] && continue
   id=$(awk -F': ' '/^id: /{print $2; exit}' "$f")
-  if ! echo "$id" | grep -Eq "$QUALIFIED"; then
+  if ! grep -Eq "$QUALIFIED" <<<"$id"; then
     echo "[FAIL] $f declara id '$id' que no está domain-qualified"
     FAIL2=1
   fi

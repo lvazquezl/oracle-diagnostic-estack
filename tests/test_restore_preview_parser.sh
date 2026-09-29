@@ -19,7 +19,7 @@ print('OK')
 " 2>&1)
 
 echo "$OUT"
-echo "$OUT" | grep -q "^SUCCESS$" && echo "$OUT" | grep -q "^OK$" && echo "[PASS] parse_restore_preview extrae datafiles/piezas sin ejecutar nada" || { echo "[FAIL] parse_restore_preview no se comportó como se esperaba"; FAIL=1; }
+grep -q "^SUCCESS$" <<<"$OUT" && grep -q "^OK$" <<<"$OUT" && echo "[PASS] parse_restore_preview extrae datafiles/piezas sin ejecutar nada" || { echo "[FAIL] parse_restore_preview no se comportó como se esperaba"; FAIL=1; }
 
 echo "$ROOT" > /dev/null
 grep -rqi 'nunca ejecuta\|nunca se ejecuta\|nunca invocado\|never execut' "$ROOT/parsers/rman/restore_preview_parser.py" && echo "[PASS] el parser documenta que RESTORE PREVIEW nunca se ejecuta" || { echo "[FAIL] falta la prohibición explícita en el parser"; FAIL=1; }

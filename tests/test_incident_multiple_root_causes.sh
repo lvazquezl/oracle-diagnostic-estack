@@ -10,7 +10,7 @@ grep -qi 'Múltiples causas raíz' "$DOC" \
   && echo "[PASS] sección de múltiples causas raíz presente" \
   || { echo "[FAIL] falta la sección de múltiples causas raíz"; FAIL=1; }
 
-tr '\n' ' ' < "$DOC" | grep -qi 'nunca se fuerza una única causa' \
+tr '\n' ' ' < "$DOC" | grep -ci 'nunca se fuerza una única causa' >/dev/null \
   && echo "[PASS] regla de no forzar una única causa presente" \
   || { echo "[FAIL] falta la regla de no forzar una única causa"; FAIL=1; }
 

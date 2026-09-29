@@ -8,6 +8,6 @@ Q="$ROOT/queries/performance/plans/Q-PERF-PLAN-HIST-001.md"
 
 [ -f "$Q" ] || { echo "[FAIL] falta Q-PERF-PLAN-HIST-001.md"; exit 1; }
 block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$Q")
-echo "$block" | grep -qi 'GROUP.*BY.*plan_hash_value\|plan_hash_value' && echo "[PASS] agrupa por plan_hash_value" || { echo "[FAIL] no agrupa por plan_hash_value"; FAIL=1; }
+grep -qi 'GROUP.*BY.*plan_hash_value\|plan_hash_value' <<<"$block" && echo "[PASS] agrupa por plan_hash_value" || { echo "[FAIL] no agrupa por plan_hash_value"; FAIL=1; }
 
 exit $FAIL

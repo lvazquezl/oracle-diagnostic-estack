@@ -17,7 +17,7 @@ assert len(d['sections']['recommendations']) == 2
 assert all(r_['manual_execution_required'] is True for r_ in d['sections']['recommendations'])
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Parser ADDM extrae findings/recommendations, siempre EVIDENCE_SOURCE"
 else
   echo "[FAIL] Parser ADDM falló: $OUT"

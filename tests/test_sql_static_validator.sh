@@ -99,7 +99,7 @@ check_block() {
   for entry in "${RISKY_COLUMNS[@]}"; do
     local col="${entry%%:*}"
     local col_min="${entry##*:}"
-    if echo "$block_content" | grep -Eiq "$col"; then
+    if grep -Eiq "$col" <<<"$block_content"; then
       if ! version_gte "$range_min" "$col_min"; then
         echo "[FAIL] $file — bloque '$range_label' (min declarado $range_min) usa columna gated a $col_min sin guardia"
         FAIL=1
@@ -361,12 +361,12 @@ check_columns_exist() {
   # Salida rápida (rendimiento): si el bloque no menciona ninguna de las vistas registradas como
   # columns_exhaustive:true, no hay nada que verificar — evita el costo de extracción/tokenizado
   # completo sobre el resto del catálogo (decenas de queries fuera de Data Guard).
-  if ! echo "$block" | grep -qiFf "$EXHAUSTIVE_VIEWS_FILE"; then
+  if ! grep -qiFf "$EXHAUSTIVE_VIEWS_FILE" <<<"$block"; then
     return 0
   fi
 
   # Abstenerse ante subqueries anidadas en el SELECT — no es un parser SQL completo (# 8).
-  if echo "$block" | grep -qi '(SELECT'; then
+  if grep -qi '(SELECT' <<<"$block"; then
     return 0
   fi
 
@@ -398,7 +398,7 @@ check_columns_exist() {
       local vw
       vw=$(echo "$pair" | cut -d: -f2)
       [ -z "$vw" ] && continue
-      echo "$seen_views" | grep -qx "$vw" && continue
+      grep -qx "$vw" <<<"$seen_views" && continue
       seen_views="$seen_views
 $vw"
       local view_min
@@ -453,7 +453,7 @@ $vw"
       valid_cols=$(resolve_columns_for_view "$target_view")
       [ -z "$valid_cols" ] && continue
 
-      if ! echo "$valid_cols" | grep -qx "$col_name_l"; then
+      if ! grep -qx "$col_name_l" <<<"$valid_cols"; then
         echo "[FAIL] $file — bloque '$label' referencia columna '$col_name_l' que no existe en '$target_view' (compatibility/oracle-dictionary/views.yaml)"
         FAIL=1
       elif [ -n "$range_min" ]; then
@@ -513,7 +513,7 @@ check_syntax_features() {
     local fblock
     fblock=$(get_feature_block "$feature_id")
     local feat_min
-    feat_min=$(echo "$fblock" | grep -m1 '^    min_version:' | sed -E "s/.*min_version:[ \t]*\"?//; s/\"?[ \t]*\$//")
+    feat_min=$(grep -m1 '^    min_version:' <<<"$fblock" | sed -E "s/.*min_version:[ \t]*\"?//; s/\"?[ \t]*\$//")
     [ -z "$feat_min" ] && continue
 
     local patterns
@@ -521,7 +521,7 @@ check_syntax_features() {
 
     while IFS= read -r pat; do
       [ -z "$pat" ] && continue
-      if echo "$flat" | grep -qiE "$pat"; then
+      if grep -qiE "$pat" <<<"$flat"; then
         if ! version_gte "$range_min" "$feat_min"; then
           echo "[FAIL] $file — bloque '$label' (min declarado $range_min) usa sintaxis '$feature_id', que requiere min_version $feat_min (compatibility/oracle-sql-syntax/features.yaml)"
           FAIL=1

@@ -11,7 +11,7 @@ for f in $(find "$ROOT/agents/os-platform-analyst" "$ROOT/skills/os" "$ROOT/docs
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>3?lineno-3:1)),${lineno}p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|ningun|ningún|never|prohibid|forbidden|no crea|no expone|lector de archivo genérico'; then
+    if ! grep -qiE 'nunca|ningun|ningún|never|prohibid|forbidden|no crea|no expone|lector de archivo genérico' <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene un patrón de lectura de archivo arbitraria sin contexto de prohibición"
       FAIL=1
     fi

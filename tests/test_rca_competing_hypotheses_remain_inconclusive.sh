@@ -30,7 +30,7 @@ assert rc['confirmed_hypothesis_ids'] == []
 assert r['recommendations'] == []
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Dos hipótesis igualmente soportadas producen INCONCLUSIVE, sin ganador forzado"
 else
   echo "[FAIL] $OUT"

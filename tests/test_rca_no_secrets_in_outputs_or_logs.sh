@@ -32,7 +32,7 @@ assert '[REDACTED]' in (r['incident']['symptom_description'] if 'incident' in r 
 # the raw secret substrings (already asserted above via grep).
 print('ENGINE_OK')
 " 2>&1)
-echo "$OUT" | grep -q "^ENGINE_OK$" || { echo "[FAIL] $OUT"; FAIL=1; }
+grep -q "^ENGINE_OK$" <<<"$OUT" || { echo "[FAIL] $OUT"; FAIL=1; }
 
 [ $FAIL -eq 0 ] && echo "[PASS] Ningún canario sintético de secreto aparece en JSON, Markdown o stderr"
 exit $FAIL

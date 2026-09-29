@@ -50,7 +50,7 @@ assert result2['reconciled_days'] == 20, result2
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine.reconciliation detecta SOURCE_CONFLICT entre dos fuentes discrepantes sin promediar jamás, y reconcilia cuando están dentro de tolerancia"
 else
   echo "[FAIL] $OUT"

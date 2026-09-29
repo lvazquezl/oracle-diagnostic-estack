@@ -14,6 +14,6 @@ grep -qi 'IDENTITY_MISMATCH' "$Q" && echo "[PASS] Q-CDB-PLUGIN-VIOLATIONS-001.md
 grep -qi 'nunca se oculta la inconsistencia\|nunca oculta la discrepancia' "$SKILL" && echo "[PASS] SKILL.md declara explícitamente que la inconsistencia nunca se oculta" || { echo "[FAIL] falta la declaración de no ocultar inconsistencias"; FAIL=1; }
 
 sql_v2=$(awk '/```sql/{n++;next} n==2 && /```/{exit} n==2{print}' "$Q")
-echo "$sql_v2" | grep -qiw 'con_id' && echo "$sql_v2" | grep -qiw 'name' && echo "[PASS] la variante moderna selecciona con_id y name simultáneamente" || { echo "[FAIL] la variante moderna no selecciona ambas columnas"; FAIL=1; }
+grep -qiw 'con_id' <<<"$sql_v2" && grep -qiw 'name' <<<"$sql_v2" && echo "[PASS] la variante moderna selecciona con_id y name simultáneamente" || { echo "[FAIL] la variante moderna no selecciona ambas columnas"; FAIL=1; }
 
 exit $FAIL

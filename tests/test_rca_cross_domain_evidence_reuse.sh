@@ -24,7 +24,7 @@ assert h['status'] == 'CONFIRMED', h['status']
 assert r['root_cause']['completeness'] == 'CONFIRMED'
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] La salida enumera los 3 dominios (rac/os/network) y sus referencias reales de evidencia"
 else
   echo "[FAIL] $OUT"

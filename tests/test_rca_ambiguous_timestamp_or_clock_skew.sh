@@ -30,7 +30,7 @@ assert found_naive
 assert 'timeline_confidence degraded' in ' '.join(r['limitations']).lower()
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Timestamp naive y clock skew confirmado degradan explícitamente la confianza del timeline"
 else
   echo "[FAIL] $OUT"

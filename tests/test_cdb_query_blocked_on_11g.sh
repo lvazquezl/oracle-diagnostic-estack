@@ -9,7 +9,7 @@ for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   scope=$(grep -m1 '^container_scope:' "$f" | awk '{print $2}')
   [ "$scope" != "CDB_ROOT" ] && continue
   versions=$(grep -m1 '^supported_oracle_versions:' "$f" || true)
-  if echo "$versions" | grep -qE '\b(10g|11g)\b'; then
+  if grep -qE '\b(10g|11g)\b' <<<"$versions"; then
     echo "[FAIL] $f — container_scope: CDB_ROOT pero declara soporte para 10g/11g (Multitenant no existe)"
     FAIL=1
   fi

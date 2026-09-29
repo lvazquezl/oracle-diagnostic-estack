@@ -12,7 +12,7 @@ else
   FAIL=1
 fi
 
-if grep -q 'gates:' "$ROOT/workflows/rac.md" && grep -A10 '^# Gates' "$ROOT/workflows/rac.md" | grep -qi 'instance_mode'; then
+if grep -q 'gates:' "$ROOT/workflows/rac.md" && grep -A10 '^# Gates' "$ROOT/workflows/rac.md" | grep -ci 'instance_mode' >/dev/null; then
   echo "[PASS] workflows/rac.md declara el gate 'architecture' evaluando instance_mode antes de activar el agente"
 else
   echo "[FAIL] workflows/rac.md no declara un gate explícito de arquitectura/instance_mode"

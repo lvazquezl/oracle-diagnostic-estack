@@ -43,7 +43,7 @@ assert out['temp_autoextend_exhausted'] is True, out
 assert out['storage_latency_normal'] is False, out
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Numeric (int)/boolean causal fields preserved typed, correct causal outcome (CONFIRMED)"
 else
   echo "[FAIL] $OUT"

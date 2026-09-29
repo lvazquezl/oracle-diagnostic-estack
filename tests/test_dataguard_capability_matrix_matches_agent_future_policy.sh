@@ -19,17 +19,17 @@ grep -q 'status: UNKNOWN_FUTURE' "$MANIFEST" && echo "[PASS] Agent Contract decl
 # Alcance estricto a la línea versions: {...} (estructura), no a notas en prosa.
 dg_row=$(awk '/id: dataguard/{flag=1} flag{print} flag && /^  - id:/ && !/id: dataguard/{exit}' "$CAP")
 dg_versions_line=$(awk '/id: dataguard/{flag=1} flag && /^    versions:/{print; exit}' "$CAP")
-if echo "$dg_versions_line" | grep -qE '\blatest:'; then
+if grep -qE '\blatest:' <<<"$dg_versions_line"; then
   echo "[FAIL] CONTRADICCIÓN: Agent declara UNKNOWN_FUTURE pero Capability Matrix versions:{...} declara la clave 'latest:' para dataguard"
   FAIL=1
 else
   echo "[PASS] Capability Matrix no contradice al Agent Contract — versions:{...} sin la clave 'latest:' en dataguard"
 fi
-echo "$dg_row" | grep -q 'future_status: COMPATIBILITY_VALIDATION_REQUIRED' && echo "[PASS] Capability Matrix declara future_status: COMPATIBILITY_VALIDATION_REQUIRED, consistente con UNKNOWN_FUTURE del agente" || { echo "[FAIL] falta future_status: COMPATIBILITY_VALIDATION_REQUIRED"; FAIL=1; }
+grep -q 'future_status: COMPATIBILITY_VALIDATION_REQUIRED' <<<"$dg_row" && echo "[PASS] Capability Matrix declara future_status: COMPATIBILITY_VALIDATION_REQUIRED, consistente con UNKNOWN_FUTURE del agente" || { echo "[FAIL] falta future_status: COMPATIBILITY_VALIDATION_REQUIRED"; FAIL=1; }
 
 # 3) Query Compatibility Matrix: ninguna entrada Q-DG-* debe usar 'max: latest'.
 dg_queries=$(awk '/Fase 5 \(Data Guard\)/{flag=1} flag{print} /^notes: >/{flag=0}' "$MATRIX")
-if echo "$dg_queries" | grep -q 'max: latest'; then
+if grep -q 'max: latest' <<<"$dg_queries"; then
   echo "[FAIL] config/query-compatibility-matrix.yaml todavía usa max: latest en alguna query Data Guard"
   FAIL=1
 else

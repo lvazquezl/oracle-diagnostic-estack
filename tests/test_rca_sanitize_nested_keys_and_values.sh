@@ -52,7 +52,7 @@ assert example_credential_key not in json.dumps(credential_shaped)  # example sy
 assert credential_shaped == {'safe_key': 'safe_value'}, credential_shaped
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] NO_LEAK for nested values/lists/unicode (deep_sanitize) and precisely credential-shaped keys (dropped); key-name-marker redaction for unknown attribute keys is guaranteed by sanitize_attributes()'s allowlist, verified via the CLI pipeline above"
 else
   echo "[FAIL] $OUT"

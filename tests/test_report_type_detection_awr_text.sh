@@ -11,7 +11,7 @@ with open('tests/fixtures/reports/awr-sample.txt', encoding='utf-8') as f:
     t, c = detect_report_type(f.read())
 print(t.value, c)
 ")
-if echo "$OUT" | grep -q "^AWR_TEXT "; then
+if grep -q "^AWR_TEXT " <<<"$OUT"; then
   echo "[PASS] awr-sample.txt detectado como AWR_TEXT ($OUT)"
 else
   echo "[FAIL] awr-sample.txt no detectado como AWR_TEXT (obtuvo: $OUT)"

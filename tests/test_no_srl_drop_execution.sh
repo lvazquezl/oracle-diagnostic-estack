@@ -6,7 +6,7 @@ FAIL=0
 
 for f in $(find "$ROOT/queries/dataguard" -name 'Q-*.md' 2>/dev/null); do
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")
-  if echo "$block" | grep -Eiq 'DROP STANDBY LOGFILE'; then
+  if grep -Eiq 'DROP STANDBY LOGFILE' <<<"$block"; then
     echo "[FAIL] $f contiene DROP STANDBY LOGFILE ejecutable"
     FAIL=1
   fi

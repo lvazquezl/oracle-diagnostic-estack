@@ -14,7 +14,7 @@ grep -qi 'nunca.*ejecutar la versión más cercana\|nunca.*closest version' "$F"
 # comportarse como no-match, ya validado por test_query_variant_resolver_10g.sh; aqui sólo
 # confirmamos que el caso exista en el catálogo (no es un ejemplo teórico).
 resolver_10g_output=$(bash "$ROOT/tests/test_query_variant_resolver_10g.sh")
-if echo "$resolver_10g_output" | grep -q 'Q-DISC-RAC-001 — sin variante'; then
+if grep -q 'Q-DISC-RAC-001 — sin variante' <<<"$resolver_10g_output"; then
   echo "[PASS] Existe un caso real de no-match en el catálogo (Q-DISC-RAC-001 sobre 10g)"
 else
   echo "[FAIL] No se encontró un caso real de no-match para validar el comportamiento"

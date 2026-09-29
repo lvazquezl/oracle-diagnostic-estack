@@ -8,7 +8,7 @@ VALID='^database_role_scope: (PRIMARY|STANDBY|ANY|NOT_APPLICABLE)$'
 
 for f in $(find "$ROOT/queries/oracle" -name 'Q-*.md'); do
   line=$(grep '^database_role_scope:' "$f" || true)
-  if [ -z "$line" ] || ! echo "$line" | grep -Eq "$VALID"; then
+  if [ -z "$line" ] || ! grep -Eq "$VALID" <<<"$line"; then
     echo "[FAIL] $f no declara database_role_scope válido"
     FAIL=1
   fi

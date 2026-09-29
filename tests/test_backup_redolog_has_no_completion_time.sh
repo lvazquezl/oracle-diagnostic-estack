@@ -8,7 +8,7 @@ FAIL=0
 DICT="$ROOT/compatibility/oracle-dictionary/views.yaml"
 
 block=$(awk '/^  V\$BACKUP_REDOLOG:/{f=1;next} f&&/^  [A-Z]/{exit} f' "$DICT")
-if echo "$block" | grep -Eq '^ +completion_time:'; then
+if grep -Eq '^ +completion_time:' <<<"$block"; then
   echo "[FAIL] el diccionario declara V\$BACKUP_REDOLOG.completion_time, que no existe"
   FAIL=1
 else
@@ -29,11 +29,11 @@ for f in $(grep -rl --include='Q-*.md' -i 'v\$backup_redolog' "$ROOT/queries"); 
     # Cada sentencia separada por UNION se evalúa por separado: sólo importa si ESE tramo lee v$backup_redolog.
     # awk (portable BSD/GNU): une el bloque en una línea y la parte en tramos por UNION [ALL], siempre con \n final.
     echo "$sql" | awk '{printf "%s ", $0} END {print ""}' | awk '{gsub(/[Uu][Nn][Ii][Oo][Nn]( [Aa][Ll][Ll])?/, "\n"); print}' | while IFS= read -r part; do
-      if echo "$part" | grep -qi 'v\$backup_redolog' && echo "$part" | grep -qi 'completion_time'; then
+      if grep -qi 'v\$backup_redolog' <<<"$part" && grep -qi 'completion_time' <<<"$part"; then
         echo "[FAIL] $(basename "$f") bloque #$i usa completion_time en una sentencia sobre v\$backup_redolog" >&2
         echo X
       fi
-    done | grep -q X && FAIL=1
+    done | grep -c X >/dev/null && FAIL=1
     found=1
   done
 done

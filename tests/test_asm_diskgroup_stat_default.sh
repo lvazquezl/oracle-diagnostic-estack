@@ -6,7 +6,7 @@ FAIL=0
 Q="$ROOT/queries/asm/Q-ASM-TOPOLOGY-001.md"
 
 block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$Q")
-echo "$block" | grep -qi 'v\$asm_diskgroup_stat' && echo "[PASS] Q-ASM-TOPOLOGY-001 usa V\$ASM_DISKGROUP_STAT" || { echo "[FAIL] no usa V\$ASM_DISKGROUP_STAT"; FAIL=1; }
-echo "$block" | grep -qi '\bv\$asm_diskgroup\b' && { echo "[FAIL] Q-ASM-TOPOLOGY-001 usa V\$ASM_DISKGROUP (costoso) en el SELECT base"; FAIL=1; } || echo "[PASS] no usa V\$ASM_DISKGROUP en el SELECT base"
+grep -qi 'v\$asm_diskgroup_stat' <<<"$block" && echo "[PASS] Q-ASM-TOPOLOGY-001 usa V\$ASM_DISKGROUP_STAT" || { echo "[FAIL] no usa V\$ASM_DISKGROUP_STAT"; FAIL=1; }
+grep -qi '\bv\$asm_diskgroup\b' <<<"$block" && { echo "[FAIL] Q-ASM-TOPOLOGY-001 usa V\$ASM_DISKGROUP (costoso) en el SELECT base"; FAIL=1; } || echo "[PASS] no usa V\$ASM_DISKGROUP en el SELECT base"
 
 exit $FAIL

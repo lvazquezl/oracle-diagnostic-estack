@@ -12,7 +12,7 @@ grep -qi 'TIMELINE_CONFIDENCE_DEGRADED' "$DOC" \
   && echo "[PASS] Incident Timeline Model declara TIMELINE_CONFIDENCE_DEGRADED" \
   || { echo "[FAIL] falta TIMELINE_CONFIDENCE_DEGRADED en docs/INCIDENT_TIMELINE_MODEL.md"; FAIL=1; }
 
-tr '\n' ' ' < "$DOC" | grep -qi 'nunca[^.]*corregid' \
+tr '\n' ' ' < "$DOC" | grep -ci 'nunca[^.]*corregid' >/dev/null \
   && echo "[PASS] clock skew nunca se corrige silenciosamente" \
   || { echo "[FAIL] falta la declaración de no corregir silenciosamente el clock skew"; FAIL=1; }
 

@@ -25,7 +25,7 @@ assert h['status'] == 'INSUFFICIENT_EVIDENCE', h['status']
 assert r['root_cause']['completeness'] == 'INSUFFICIENT_EVIDENCE', r['root_cause']
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Un síntoma aislado nunca se eleva más allá de INSUFFICIENT_EVIDENCE"
 else
   echo "[FAIL] $OUT"

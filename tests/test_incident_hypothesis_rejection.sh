@@ -7,7 +7,7 @@ FAIL=0
 DOC="$ROOT/docs/INCIDENT_HYPOTHESIS_MODEL.md"
 RCA_SKILL="$ROOT/skills/incident/rca-report/SKILL.md"
 
-tr '\n' ' ' < "$DOC" | grep -qi 'nunca[^.]*ocultados del reporte final' \
+tr '\n' ' ' < "$DOC" | grep -ci 'nunca[^.]*ocultados del reporte final' >/dev/null \
   && echo "[PASS] REJECTED/WEAKENED nunca se ocultan del reporte final" \
   || { echo "[FAIL] falta la declaración de no ocultar hipótesis rechazadas"; FAIL=1; }
 

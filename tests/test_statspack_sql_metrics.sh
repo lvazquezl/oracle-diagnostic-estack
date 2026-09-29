@@ -13,7 +13,7 @@ grep -qi 'sql_metrics' "$S" && echo "[PASS] statspack-analysis documenta sql_met
 grep -qi 'Fuera de alcance' "$S" && echo "[PASS] statspack-analysis declara alcance explícito" || { echo "[FAIL] falta sección de alcance"; FAIL=1; }
 
 block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$ROOT/queries/performance/waits/Q-PERF-WAIT-STATSPACK-001.md" 2>/dev/null)
-if echo "$block" | grep -q 'STATS\$SQL_SUMMARY'; then
+if grep -q 'STATS\$SQL_SUMMARY' <<<"$block"; then
   echo "[FAIL] Q-PERF-WAIT-STATSPACK-001 consulta STATS\$SQL_SUMMARY (fuera del alcance de esta query específica — SQL metrics viene del parser, no de esta query)"
   FAIL=1
 else
@@ -30,7 +30,7 @@ assert r.completeness['sql_by_elapsed'] == 'SUPPORTED'
 assert len(r.sections['sql']) > 0
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Ruta de reporte de archivo SÍ extrae SQL metrics (ya no es un gap)"
 else
   echo "[FAIL] Ruta de reporte de archivo no extrae SQL metrics: $OUT"

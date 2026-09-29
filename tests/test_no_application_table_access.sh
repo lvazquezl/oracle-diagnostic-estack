@@ -10,7 +10,7 @@ for f in $(find "$ROOT/queries/oracle" -name 'Q-*.md'); do
   items=$(echo "$objs" | sed -E 's/objects_accessed: *\[(.*)\]/\1/' | tr ',' '\n' | sed -E 's/^ *//; s/ *$//')
   while IFS= read -r item; do
     [ -z "$item" ] && continue
-    if ! echo "$item" | grep -Eq "$ALLOWED"; then
+    if ! grep -Eq "$ALLOWED" <<<"$item"; then
       echo "[FAIL] $f referencia un objeto fuera de diccionario certificado: $item"
       FAIL=1
     fi

@@ -13,7 +13,7 @@ for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   bad=0
   while IFS= read -r item; do
     [ -z "$item" ] && continue
-    if ! echo "$item" | grep -Eq "$ALLOWED"; then
+    if ! grep -Eq "$ALLOWED" <<<"$item"; then
       echo "[FAIL] $f referencia un objeto fuera de diccionario/V\$/OS certificado: $item"
       bad=1
     fi

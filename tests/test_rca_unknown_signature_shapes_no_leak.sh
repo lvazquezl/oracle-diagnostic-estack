@@ -34,7 +34,7 @@ for e in r['timeline']['events']:
     assert len(e['signature_token']) == len('SIG-') + 16, e   # fixed-length token regardless of input length/shape
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] 8 differently-shaped unknown signatures (mixed case/Unicode/spaces/newline/quotes/backslash/very-long) all classified UNRECOGNIZED_SIGNATURE with fixed-length opaque tokens, never echoed"
 else
   echo "[FAIL] $OUT"

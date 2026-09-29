@@ -67,7 +67,7 @@ for forbidden in ('password', 'secret', 'api_key', 'private_key'):
 
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] método, versión de algoritmo, horizontes 1/3/6m, consistencia JSON<->Markdown, trazabilidad de evidencia y ausencia de secretos verificados"
 else
   echo "[FAIL] $OUT"

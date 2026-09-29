@@ -31,7 +31,7 @@ for h in r['hypotheses']:
 assert r['recommendations'] == [], 'no recommendation without a CONFIRMED root cause'
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Symptom + proximidad temporal sin mecanismo nunca produce CONFIRMED"
 else
   echo "[FAIL] $OUT"

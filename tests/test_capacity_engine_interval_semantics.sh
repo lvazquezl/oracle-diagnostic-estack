@@ -59,7 +59,7 @@ assert not isinstance(r.confidence, (int, float))
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine produce intervalos lower<=expected<=upper, crecientes con el horizonte, documentados como aproximación normal, con fallback explícito cuando no son estimables"
 else
   echo "[FAIL] $OUT"

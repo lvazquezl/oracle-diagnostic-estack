@@ -8,14 +8,14 @@ for f in $(find "$ROOT/queries/dataguard" -name 'Q-*.md' 2>/dev/null) "$ROOT"/pa
   [ -f "$f" ] || continue
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f" 2>/dev/null)
   # \bSWITCHOVER\b (no seguido de "_") excluye SWITCHOVER_STATUS, columna legítima de V$DATABASE.
-  if echo "$block" | grep -Eiq '\bSWITCHOVER\b'; then
+  if grep -Eiq '\bSWITCHOVER\b' <<<"$block"; then
     echo "[FAIL] $f contiene SWITCHOVER ejecutable en un bloque SQL"
     FAIL=1
   fi
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>3?lineno-3:1)),${lineno}p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|ningun|ningún|never|prohibid|bloquead|NOT_EXECUTED'; then
+    if ! grep -qiE 'nunca|ningun|ningún|never|prohibid|bloquead|NOT_EXECUTED' <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene SWITCHOVER TO sin contexto de prohibición"
       FAIL=1
     fi

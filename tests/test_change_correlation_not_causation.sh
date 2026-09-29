@@ -9,7 +9,7 @@ FIXTURE="$ROOT/tests/fixtures/incident/capacity/resize-followed-by-stabilization
 
 [ -f "$FIXTURE" ] || { echo "[FAIL] falta el fixture $FIXTURE"; FAIL=1; }
 
-tr '\n' ' ' < "$SKILL" | grep -qiE 'nunca se promueve a .CHANGE_CAUSED' \
+tr '\n' ' ' < "$SKILL" | grep -ciE 'nunca se promueve a .CHANGE_CAUSED' >/dev/null \
   && echo "[PASS] CHANGE_CORRELATED nunca se promueve automáticamente a CHANGE_CAUSED" \
   || { echo "[FAIL] falta la regla de no promover CHANGE_CORRELATED a CHANGE_CAUSED"; FAIL=1; }
 

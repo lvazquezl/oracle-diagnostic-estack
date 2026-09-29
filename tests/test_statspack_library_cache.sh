@@ -14,7 +14,7 @@ assert 'SQL AREA' in names, names
 assert r.completeness['library_cache'] == 'SUPPORTED'
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Parser Statspack extrae Library Cache Activity por namespace"
 else
   echo "[FAIL] Extracción de Library Cache falló: $OUT"

@@ -17,7 +17,7 @@ assert float(p['Soft Parse %']) < 30, p
 assert r.completeness['parsing'] == 'SUPPORTED'
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Parser Statspack deriva parsing (Hard parses/Soft Parse %) correctamente"
 else
   echo "[FAIL] Derivación de parsing falló: $OUT"

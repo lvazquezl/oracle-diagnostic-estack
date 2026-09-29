@@ -59,7 +59,7 @@ assert not hasattr(capacity_engine, 'sum_forecast_results')
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine respeta el denominador entregado (USABLE_FILE_MB/maxsize) sin reimplementarlo, y nunca suma capas de storage entre sí"
 else
   echo "[FAIL] $OUT"

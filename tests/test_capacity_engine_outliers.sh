@@ -47,7 +47,7 @@ assert abs(fit_naive['slope'] - 2.0) > abs(slope_with_exclusion - 2.0), (fit_nai
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine detecta, excluye y traza el outlier, mejorando el ajuste respecto a un fit ingenuo que lo incluye"
 else
   echo "[FAIL] $OUT"

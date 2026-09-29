@@ -33,7 +33,7 @@ restricted"
 
 while IFS= read -r c; do
   [ -z "$c" ] && continue
-  if echo "$dict_cols" | grep -qx "$c"; then
+  if grep -qx "$c" <<<"$dict_cols"; then
     echo "[PASS] columna seleccionada '$c' existe en DBA_PDB_SAVED_STATES"
   else
     echo "[FAIL] columna seleccionada '$c' no existe en DBA_PDB_SAVED_STATES"

@@ -14,7 +14,7 @@ for f in $(find "$ROOT/queries/security" "$ROOT/skills/security" "$ROOT/agents/o
     # Ventana hacia atrás Y hacia adelante — un manual_action largo suele envolver el comando en
     # una línea y la cláusula "siempre NOT_EXECUTED" en la línea siguiente (# 73/74 del prompt).
     window=$(sed -n "$((lineno>3?lineno-3:1)),$((lineno+2))p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|never|sin credenciales|no expone|mask|drop|tokenize|ningún|ningun|no solicita|NOT_EXECUTED'; then
+    if ! grep -qiE 'nunca|never|sin credenciales|no expone|mask|drop|tokenize|ningún|ningun|no solicita|NOT_EXECUTED' <<<"$window"; then
       echo "[FAIL] $f:$lineno contiene un patrón de credencial sin contexto de sanitización"
       FAIL=1
     fi

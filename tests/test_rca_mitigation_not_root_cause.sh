@@ -39,7 +39,7 @@ for e in r['timeline']['events']:
 assert 'EVD-2' in timeline_ids, 'RECOVERY event must still be reported in the timeline'
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Un evento RECOVERY nunca satisface una condición causal, pese a declarar atributos coincidentes"
 else
   echo "[FAIL] $OUT"

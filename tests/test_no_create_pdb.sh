@@ -11,7 +11,7 @@ for f in $(find "$ROOT/queries/multitenant" "$ROOT/skills/multitenant" "$ROOT/ag
   while IFS=: read -r lineno _; do
     [ -z "$lineno" ] && continue
     window=$(sed -n "$((lineno>15?lineno-15:1)),${lineno}p" "$f")
-    if ! echo "$window" | grep -qiE 'nunca|never|prohibid|forbidden|no debe'; then
+    if ! grep -qiE 'nunca|never|prohibid|forbidden|no debe' <<<"$window"; then
       echo "[FAIL] $f:$lineno menciona CREATE PLUGGABLE DATABASE sin contexto de prohibición"
       FAIL=1
     fi

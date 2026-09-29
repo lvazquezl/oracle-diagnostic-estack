@@ -67,16 +67,16 @@ done
 [ "$N" -eq 18 ] && ok "18 skills de Fase 12 verificados" || bad "conteo de skills $N != 18"
 
 # 5) workflow y comando /knowledge (sólo si no existían) y contrato de workflow
-[ -f "$ROOT/workflows/knowledge.md" ] && grep -q '^# Gates' "$ROOT/workflows/knowledge.md" && grep -A10 '^# Gates' "$ROOT/workflows/knowledge.md" | grep -q 'gates:' && ok "workflows/knowledge.md con bloque # Gates" || bad "workflows/knowledge.md sin contrato de gates"
+[ -f "$ROOT/workflows/knowledge.md" ] && grep -q '^# Gates' "$ROOT/workflows/knowledge.md" && grep -A10 '^# Gates' "$ROOT/workflows/knowledge.md" | grep -c 'gates:' >/dev/null && ok "workflows/knowledge.md con bloque # Gates" || bad "workflows/knowledge.md sin contrato de gates"
 [ -f "$ROOT/.claude/commands/knowledge.md" ] && ok ".claude/commands/knowledge.md existe" || bad "falta .claude/commands/knowledge.md"
 for c in change document incident rca recommend; do [ -f "$ROOT/.claude/commands/$c.md" ] && ok "comando /$c conservado" || bad "comando /$c eliminado"; done
 grep -qi 'PROMOTE' "$ROOT/workflows/change.md" && grep -q 'PENDING_HUMAN_REVIEW' "$ROOT/workflows/change.md" && ok "workflows/change.md documenta los dos planos y PENDING_HUMAN_REVIEW" || bad "workflows/change.md sin sección de Fase 12"
 
 # 6) sin ciclos de delegación (grafo acíclico)
 d() { awk '/^delegates_to:/{f=1;next} /^[a-z_]+:/{f=0} f && /agent:/{sub(/.*agent: */,""); print}' "$ROOT/agents/$1/routing.yaml" | tr -d '"'; }
-d change-advisor | grep -qx 'incident-root-cause-analyst' && bad "change-advisor delega de vuelta a incident-root-cause-analyst (ciclo)" || ok "change-advisor no delega hacia atrás"
-d technical-documentation-manager | grep -qE 'change-advisor|incident-root-cause-analyst' && bad "technical-documentation-manager delega hacia atrás" || ok "technical-documentation-manager no delega hacia atrás"
-d knowledge-curator | grep -qE 'change-advisor|technical-documentation-manager|incident-root-cause-analyst' && bad "knowledge-curator delega hacia atrás" || ok "knowledge-curator no delega hacia atrás"
+d change-advisor | grep -cx 'incident-root-cause-analyst' >/dev/null && bad "change-advisor delega de vuelta a incident-root-cause-analyst (ciclo)" || ok "change-advisor no delega hacia atrás"
+d technical-documentation-manager | grep -cE 'change-advisor|incident-root-cause-analyst' >/dev/null && bad "technical-documentation-manager delega hacia atrás" || ok "technical-documentation-manager no delega hacia atrás"
+d knowledge-curator | grep -cE 'change-advisor|technical-documentation-manager|incident-root-cause-analyst' >/dev/null && bad "knowledge-curator delega hacia atrás" || ok "knowledge-curator no delega hacia atrás"
 
 # 7) documentación, CLI y contratos
 [ -f "$ROOT/docs/PHASE_12_CHANGE_ADVISORY_DOCUMENTATION_KNOWLEDGE_LIFECYCLE.md" ] && ok "documento de fase presente" || bad "falta docs/PHASE_12_*.md"

@@ -14,7 +14,7 @@ grep -qi 'confidence_score' "$DOC" && grep -qi 'confidence_explanation' "$DOC" \
   && echo "[PASS] confidence_score siempre acompañado de confidence_explanation" \
   || { echo "[FAIL] falta confidence_score/confidence_explanation"; FAIL=1; }
 
-tr '\n' ' ' < "$DOC" | grep -qi 'nunca un número sin justificación\|siempre acompañado de explanation' \
+tr '\n' ' ' < "$DOC" | grep -ci 'nunca un número sin justificación\|siempre acompañado de explanation' >/dev/null \
   && echo "[PASS] regla de nunca-score-sin-explicación presente" \
   || { echo "[FAIL] falta la regla de no dar score sin explicación"; FAIL=1; }
 

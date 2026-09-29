@@ -24,7 +24,7 @@ for row in r.sections['sql']:
     assert len(row['sql_id']) == 13
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Filas SQL contienen únicamente sql_id + metrics, nunca texto de SQL"
 else
   echo "[FAIL] Verificación de filas SQL falló: $OUT"

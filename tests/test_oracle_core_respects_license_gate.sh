@@ -7,14 +7,14 @@ FAIL=0
 
 for f in $(find "$ROOT/queries/oracle" -name 'Q-*.md'); do
   line=$(grep '^license_requirements:' "$f" || true)
-  if ! echo "$line" | grep -q 'none'; then
+  if ! grep -q 'none' <<<"$line"; then
     echo "[FAIL] $f declara license_requirements distinto de 'none' — Oracle Core (Fase 2) no debe depender de packs opcionales"
     FAIL=1
   fi
 done
 [ $FAIL -eq 0 ] && echo "[PASS] Ninguna query Oracle Core depende de licenciamiento adicional (AWR/ASH/ADDM quedan fuera de Fase 2)"
 
-if grep -qi 'AWR' "$ROOT/agents/oracle-dba-analyst/AGENT.md" | grep -qi 'Fase 3'; then :; fi
+if grep -qi 'AWR' "$ROOT/agents/oracle-dba-analyst/AGENT.md" | grep -ci 'Fase 3' >/dev/null; then :; fi
 if grep -q 'AWR/ASH/ADDM/SQL tuning' "$ROOT/agents/oracle-dba-analyst/AGENT.md" 2>/dev/null || grep -qi 'No hace deep-dive de performance (AWR/ASH/ADDM/SQL tuning)' "$ROOT/agents/oracle-dba-analyst/AGENT.md"; then
   echo "[PASS] oracle-dba-analyst declara explícitamente que AWR/ASH/ADDM/SQL tuning quedan fuera de Fase 2"
 else

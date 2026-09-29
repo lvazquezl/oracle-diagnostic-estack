@@ -46,7 +46,7 @@ for path in pathlib.Path('capacity_engine').glob('*.py'):
 assert not bad, bad
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine sólo importa la librería estándar de Python (sin dependencias externas)"
 else
   echo "[FAIL] import no permitido detectado: $OUT"

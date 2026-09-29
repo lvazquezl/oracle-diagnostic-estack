@@ -14,7 +14,7 @@ grep -qi 'dedup' "$ROOT/docs/INCIDENT_TIMELINE_MODEL.md" \
   && echo "[PASS] docs/INCIDENT_TIMELINE_MODEL.md declara deduplicación" \
   || { echo "[FAIL] falta la deduplicación en docs/INCIDENT_TIMELINE_MODEL.md"; FAIL=1; }
 
-tr '\n' ' ' < "$ROOT/docs/INCIDENT_TIMELINE_MODEL.md" | grep -qi 'sin perder la referencia a cada[[:space:]]*fuente' \
+tr '\n' ' ' < "$ROOT/docs/INCIDENT_TIMELINE_MODEL.md" | grep -ci 'sin perder la referencia a cada[[:space:]]*fuente' >/dev/null \
   && echo "[PASS] deduplicación preserva referencia a cada fuente original" \
   || { echo "[FAIL] falta la preservación de referencias de fuente en dedup"; FAIL=1; }
 

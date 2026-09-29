@@ -192,7 +192,7 @@ views:
 
   V$TEMP_SPACE_HEADER:
     min_version: all
-    notes: "No usado por el catálogo actual; registrado por completitud del inventario (sección 15 del prompt de hardening)."
+    notes: "No usada por el catálogo. Desde CDB$ROOT sólo expone el root (confirmado en el lab 19c, CHG-ESTACK-CDB-TEMP-USAGE-001): no sirve para el uso de TEMP de las PDB."
 
   V$UNDOSTAT:
     min_version: all
@@ -679,7 +679,7 @@ views:
 
   GV$TEMP_SPACE_HEADER:
     min_version: "12.1"
-    notes: "Fase 6. Variante multi-instancia/multitenant de V$TEMP_SPACE_HEADER (ya registrada) con con_id. Usada por Q-CDB-TEMP-001."
+    notes: "Fase 6. Variante multi-instancia/multitenant de V$TEMP_SPACE_HEADER (ya registrada) con con_id. Q-CDB-TEMP-001 la usó hasta 1.0.0; desde root sólo expone el root, por lo que 2.0.0 usa GV$SORT_SEGMENT (CHG-ESTACK-CDB-TEMP-USAGE-001)."
 
   GV$SYSTEM_PARAMETER:
     min_version: "12.1"
@@ -1417,3 +1417,24 @@ views:
     notes: >
       CHG-ESTACK-ORA19C-LAB-007. Usada SÓLO por Q-DICT-VERIFY-00N para resolver el objeto real de cada sinónimo
       público (V$X → SYS.V_$X u otro nombre); destino acotado a owner IN ('SYS', 'AUDSYS', 'PERFSTAT').
+
+  V$SORT_SEGMENT:
+    min_version: all
+    columns:
+      tablespace_name: {min_version: all}
+      total_blocks:     {min_version: all}
+      used_blocks:       {min_version: all}
+      con_id:             {min_version: "12.1"}
+    notes: >
+      CHG-ESTACK-CDB-TEMP-USAGE-001. Segmento de ordenamiento por tablespace TEMP. Desde CDB$ROOT expone también las PDB
+      (CON_ID), a diferencia de V$TEMP_SPACE_HEADER (sólo root; confirmado por el DBA en el lab 19c). Sin uso de TEMP
+      desde el arranque no hay fila.
+
+  GV$SORT_SEGMENT:
+    min_version: all
+    columns:
+      inst_id:          {min_version: all}
+      tablespace_name:   {min_version: all}
+      used_blocks:        {min_version: all}
+      con_id:              {min_version: "12.1"}
+    notes: "Variante multi-instancia de V$SORT_SEGMENT: en RAC cada instancia tiene su propio segmento; Q-CDB-TEMP-001 2.0.0 suma USED_BLOCKS."

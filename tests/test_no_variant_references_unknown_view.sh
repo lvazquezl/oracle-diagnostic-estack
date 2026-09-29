@@ -13,7 +13,7 @@ for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   while IFS= read -r obj; do
     [ -z "$obj" ] && continue
     case "$obj" in alert.log|*"("*) continue ;; esac  # archivos y notas parentéticas, no vistas SQL
-    if echo "$known_views" | grep -qFx "$obj"; then
+    if grep -qFx "$obj" <<<"$known_views"; then
       :
     else
       echo "[FAIL] $f declara objects_accessed '$obj' no registrada en compatibility/oracle-dictionary/views.yaml"

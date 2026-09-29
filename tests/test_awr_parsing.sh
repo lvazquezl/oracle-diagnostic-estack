@@ -29,7 +29,7 @@ for key in ('db_time_cpu', 'load_profile', 'waits', 'sql', 'rac', 'memory', 'io'
     assert key in r.sections, key
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] parsers/performance/awr_parser.py produce exactamente las secciones documentadas"
 else
   echo "[FAIL] Secciones del parser AWR no coinciden con lo documentado: $OUT"

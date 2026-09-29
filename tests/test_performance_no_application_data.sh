@@ -11,7 +11,7 @@ for f in $(find "$ROOT/queries/performance" -name 'Q-*.md'); do
   for item in "${items[@]}"; do
     item=$(echo "$item" | sed -E 's/^ *//; s/ *$//')
     [ -z "$item" ] && continue
-    if ! echo "$item" | grep -Eq '^(V\$|GV\$|DBA_|STATS\$)'; then
+    if ! grep -Eq '^(V\$|GV\$|DBA_|STATS\$)' <<<"$item"; then
       echo "[FAIL] $f declara objects_accessed '$item' fuera de V\$/GV\$/DBA_/STATS\$"
       FAIL=1
     fi

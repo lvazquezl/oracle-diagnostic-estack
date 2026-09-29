@@ -12,7 +12,7 @@ with open('tests/fixtures/reports/awr-sample.html', encoding='utf-8') as f:
     t, c = detect_report_type(f.read())
 print(t.value, c)
 ")
-if echo "$OUT" | grep -q "^AWR_HTML "; then
+if grep -q "^AWR_HTML " <<<"$OUT"; then
   echo "[PASS] awr-sample.html detectado como AWR_HTML ($OUT)"
 else
   echo "[FAIL] awr-sample.html no detectado como AWR_HTML (obtuvo: $OUT)"

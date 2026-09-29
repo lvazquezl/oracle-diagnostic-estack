@@ -15,7 +15,7 @@ for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
     continue
   fi
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")
-  if echo "$block" | grep -qiE "v\\\$s?parameter" && echo "$block" | grep -qi 'sqlnet\.'; then
+  if grep -qiE "v\\\$s?parameter" <<<"$block" && grep -qi 'sqlnet\.' <<<"$block"; then
     echo "[FAIL] $f obtiene SQLNET.* desde V\$PARAMETER/V\$SPPARAMETER — SQLNET.* no es evidencia de parámetro de instancia"
     FAIL=1
   fi

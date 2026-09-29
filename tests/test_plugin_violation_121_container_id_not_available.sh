@@ -11,7 +11,7 @@ Q="$ROOT/queries/multitenant/Q-CDB-PLUGIN-VIOLATIONS-001.md"
 grep -q 'container_id: NOT_AVAILABLE' "$SKILL" && echo "[PASS] SKILL.md declara container_id: NOT_AVAILABLE en legacy" || { echo "[FAIL] falta container_id: NOT_AVAILABLE"; FAIL=1; }
 
 sql_v1=$(awk '/```sql/{n++;next} n==1 && /```/{exit} n==1{print}' "$Q")
-if echo "$sql_v1" | grep -qiw 'con_id'; then
+if grep -qiw 'con_id' <<<"$sql_v1"; then
   echo "[FAIL] la variante legacy todavía selecciona con_id"
   FAIL=1
 else

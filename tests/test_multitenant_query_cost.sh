@@ -10,10 +10,10 @@ for f in "$ROOT"/queries/multitenant/Q-*.md; do
   if [ -z "$line" ]; then
     echo "[FAIL] $(basename "$f") no declara cost_class"
     FAIL=1
-  elif ! echo "$line" | grep -Eq ": ($VALID)$"; then
+  elif ! grep -Eq ": ($VALID)$" <<<"$line"; then
     echo "[FAIL] $(basename "$f") declara cost_class fuera del enum: $line"
     FAIL=1
-  elif echo "$line" | grep -q "BLOCKED"; then
+  elif grep -q "BLOCKED" <<<"$line"; then
     echo "[FAIL] $(basename "$f") tiene cost_class BLOCKED — no debería estar certificada"
     FAIL=1
   else

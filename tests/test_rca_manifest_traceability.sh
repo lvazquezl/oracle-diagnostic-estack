@@ -31,7 +31,7 @@ for h in r['hypotheses']:
         assert eid in present, f'{eid} referenced by a hypothesis but not in the evidence manifest'
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] El evidence manifest separado concuerda con el JSON principal y toda referencia es trazable"
 else
   echo "[FAIL] $OUT"

@@ -9,7 +9,7 @@ grep -qi "AUDIT / NOAUDIT" "$MANIFEST" && echo "[PASS] manifest prohíbe AUDIT/N
 
 for f in $(find "$ROOT/queries/security" -name 'Q-*.md' 2>/dev/null); do
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")
-  if echo "$block" | grep -qiE '^\s*(AUDIT|NOAUDIT)\s'; then
+  if grep -qiE '^\s*(AUDIT|NOAUDIT)\s' <<<"$block"; then
     echo "[FAIL] $f (query certificada) contiene AUDIT/NOAUDIT ejecutable"
     FAIL=1
   fi

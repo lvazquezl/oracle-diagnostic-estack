@@ -26,9 +26,9 @@ while IFS= read -r v; do
     /^  [A-Za-z$#0-9_]+:[ \t]*$/{line=$0; sub(/^  /,"",line); sub(/:[ \t]*$/,"",line); inview=(tolower(line)==tolower(target))?1:0; if(inview){print; next} else {if(started) exit; next}}
     inview{started=1; print}
   ')
-  if echo "$block" | grep -q 'columns_exhaustive:[ \t]*true'; then
+  if grep -q 'columns_exhaustive:[ \t]*true' <<<"$block"; then
     n_exhaustive=$((n_exhaustive+1))
-    if echo "$block" | grep -q '^    validation:' && echo "$block" | grep -q 'source_type: ORACLE_DOCUMENTATION' && echo "$block" | grep -q 'status: DOCUMENTATION_VALIDATED' && echo "$block" | grep -q 'validated_for:'; then
+    if grep -q '^    validation:' <<<"$block" && grep -q 'source_type: ORACLE_DOCUMENTATION' <<<"$block" && grep -q 'status: DOCUMENTATION_VALIDATED' <<<"$block" && grep -q 'validated_for:' <<<"$block"; then
       echo "[PASS] $v declara validation: {source_type, status, validated_for}"
     else
       echo "[FAIL] $v es columns_exhaustive:true pero no declara un bloque validation: completo"

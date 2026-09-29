@@ -29,7 +29,7 @@ assert r['root_cause']['completeness'] != 'CONFIRMED', r['root_cause']
 assert r['root_cause']['confirmed_hypothesis_ids'] == []
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Una referencia de evidencia declarada pero faltante impide CONFIRMED"
 else
   echo "[FAIL] $OUT"

@@ -13,7 +13,7 @@ grep -qi 'storage latency' "$SKILL" \
   && echo "[PASS] incident/contradiction-analysis implementa el ejemplo de contradicción de storage" \
   || { echo "[FAIL] falta el ejemplo de contradicción de storage"; FAIL=1; }
 
-tr '\n' ' ' < "$ROOT/docs/INCIDENT_HYPOTHESIS_MODEL.md" | grep -qi 'nunca[^.]*alcanza[^.]*CONFIRMED' \
+tr '\n' ' ' < "$ROOT/docs/INCIDENT_HYPOTHESIS_MODEL.md" | grep -ci 'nunca[^.]*alcanza[^.]*CONFIRMED' >/dev/null \
   && echo "[PASS] una hipótesis con contradicción no resuelta nunca alcanza CONFIRMED" \
   || { echo "[FAIL] falta la regla de contradicción no resuelta bloqueando CONFIRMED"; FAIL=1; }
 

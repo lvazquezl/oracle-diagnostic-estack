@@ -21,7 +21,7 @@ with open('tests/fixtures/reports/statspack-malformed.txt', encoding='utf-8') as
 assert r2.status == 'UNKNOWN_REPORT_TYPE', r2.status
 print('OK')
 ")
-if echo "$OUT" | grep -q "^OK$"; then
+if grep -q "^OK$" <<<"$OUT"; then
   echo "[PASS] Reporte malformado produce MALFORMED_REPORT/UNKNOWN_REPORT_TYPE, sin excepción ni datos inventados"
 else
   echo "[FAIL] Manejo de reporte malformado falló: $OUT"

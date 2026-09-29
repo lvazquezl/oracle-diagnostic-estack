@@ -38,7 +38,7 @@ get_view_columns() {
 valid_cols=$(get_view_columns "DBA_USERS")
 
 # Negativo: u.fake_security_column no existe en DBA_USERS.
-if echo "$valid_cols" | grep -qx "fake_security_column"; then
+if grep -qx "fake_security_column" <<<"$valid_cols"; then
   echo "[FAIL] el fixture negativo 'fake_security_column' aparece como válido en DBA_USERS — el mecanismo no funciona"
   FAIL=1
 else
@@ -46,7 +46,7 @@ else
 fi
 
 # Positivo: u.oracle_maintained sí existe en DBA_USERS.
-if echo "$valid_cols" | grep -qx "oracle_maintained"; then
+if grep -qx "oracle_maintained" <<<"$valid_cols"; then
   echo "[PASS] Control positivo: 'u.oracle_maintained' (columna real, alias-qualified) correctamente aceptada"
 else
   echo "[FAIL] Control positivo falló — 'oracle_maintained' debería existir en DBA_USERS"

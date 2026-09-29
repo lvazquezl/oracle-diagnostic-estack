@@ -12,7 +12,7 @@ for f in $(find "$ROOT/queries/performance" -name 'Q-*.md'); do
     FAIL=1
   fi
   block=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$f")
-  if echo "$block" | grep -Eiq "$PATTERN"; then
+  if grep -Eiq "$PATTERN" <<<"$block"; then
     echo "[FAIL] $f contiene un verbo de escritura en su bloque SQL"
     FAIL=1
   fi

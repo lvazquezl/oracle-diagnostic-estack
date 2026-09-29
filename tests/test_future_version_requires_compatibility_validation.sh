@@ -7,11 +7,11 @@ MANIFEST="$ROOT/agents/oracle-multitenant-analyst/manifest.yaml"
 FX="$ROOT/tests/fixtures/future-unknown-major-cdb.yaml"
 MATRIX="$ROOT/config/query-compatibility-matrix.yaml"
 
-grep -A2 'family: "future' "$MANIFEST" | grep -q "status: UNKNOWN_FUTURE" && echo "[PASS] manifest declara la familia future como UNKNOWN_FUTURE" || { echo "[FAIL] falta UNKNOWN_FUTURE para future"; FAIL=1; }
+grep -A2 'family: "future' "$MANIFEST" | grep -c "status: UNKNOWN_FUTURE" >/dev/null && echo "[PASS] manifest declara la familia future como UNKNOWN_FUTURE" || { echo "[FAIL] falta UNKNOWN_FUTURE para future"; FAIL=1; }
 [ -f "$FX" ] && grep -q "COMPATIBILITY_VALIDATION_REQUIRED" "$FX" && echo "[PASS] fixture de versión futura documenta COMPATIBILITY_VALIDATION_REQUIRED" || { echo "[FAIL] falta el fixture o la clasificación COMPATIBILITY_VALIDATION_REQUIRED"; FAIL=1; }
 
 dg_section=$(awk '/Fase 6 \(Multitenant/{flag=1} flag{print} /^notes: >/{flag=0}' "$MATRIX")
-if echo "$dg_section" | grep -q 'max: latest'; then
+if grep -q 'max: latest' <<<"$dg_section"; then
   echo "[FAIL] alguna entrada Q-CDB-* en config/query-compatibility-matrix.yaml usa max: latest"
   FAIL=1
 else

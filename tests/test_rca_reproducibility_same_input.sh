@@ -25,7 +25,7 @@ r1.pop('generated_at'); r2.pop('generated_at')
 assert r1 == r2, 'two runs over the same input diverged (excluding generated_at)'
 print('ENGINE_OK')
 " 2>&1)
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] Dos ejecuciones del mismo input producen resultados idénticos (excepto generated_at)"
 else
   echo "[FAIL] $OUT"

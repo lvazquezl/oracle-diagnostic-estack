@@ -10,7 +10,7 @@ grep -q 'CORRELATION IS NOT CAUSATION' "$DOC" \
   && echo "[PASS] principio CORRELATION IS NOT CAUSATION declarado" \
   || { echo "[FAIL] falta el principio CORRELATION IS NOT CAUSATION"; FAIL=1; }
 
-tr '\n' ' ' < "$DOC" | grep -qi 'proximidad temporal sola nunca es prueba suficiente' \
+tr '\n' ' ' < "$DOC" | grep -ci 'proximidad temporal sola nunca es prueba suficiente' >/dev/null \
   && echo "[PASS] regla de proximidad temporal insuficiente declarada" \
   || { echo "[FAIL] falta la regla de proximidad temporal insuficiente"; FAIL=1; }
 

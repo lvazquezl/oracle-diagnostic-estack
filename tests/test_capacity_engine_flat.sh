@@ -38,7 +38,7 @@ assert t['estimated_date'] is None, t
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine clasifica STABLE, slope≈0, forecast constante y ningún cruce ficticio sobre una serie plana"
 else
   echo "[FAIL] $OUT"

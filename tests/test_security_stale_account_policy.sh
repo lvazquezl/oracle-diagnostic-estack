@@ -11,7 +11,7 @@ grep -qi "nunca inventa un umbral" "$S" && echo "[PASS] declara explícitamente 
 # "90 días" sólo es aceptable como ejemplo negativo explícito ("nunca inventa un umbral como
 # '90 días'") — nunca como un valor realmente usado por la lógica de decisión.
 if grep -qi "90 días" "$S"; then
-  grep -B1 -i "90 días" "$S" | grep -qiE "nunca|never|prohibid|forbidden" \
+  grep -B1 -i "90 días" "$S" | grep -ciE "nunca|never|prohibid|forbidden" >/dev/null \
     && echo "[PASS] '90 días' aparece sólo como ejemplo negativo explícito, no como umbral real" \
     || { echo "[FAIL] '90 días' aparece sin contexto de prohibición — posible umbral hardcodeado"; FAIL=1; }
 else

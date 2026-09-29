@@ -48,7 +48,7 @@ assert t3['status'] == 'INVALID_THRESHOLD', t3
 
 print('ENGINE_OK')
 ")
-if echo "$OUT" | grep -q "^ENGINE_OK$"; then
+if grep -q "^ENGINE_OK$" <<<"$OUT"; then
   echo "[PASS] capacity_engine calcula la fecha de cruce de umbral por fórmula exacta, distingue ALREADY_EXCEEDED e INVALID_THRESHOLD"
 else
   echo "[FAIL] $OUT"

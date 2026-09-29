@@ -12,7 +12,7 @@ for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
   if [ -z "$cost" ]; then
     echo "[FAIL] $f no declara cost_class"
     FAIL=1
-  elif ! echo "$cost" | grep -Eq "$VALID_COST"; then
+  elif ! grep -Eq "$VALID_COST" <<<"$cost"; then
     echo "[FAIL] $f declara cost_class con valor fuera del enum: $cost"
     FAIL=1
   fi
@@ -21,7 +21,7 @@ for f in $(find "$ROOT/queries" -name 'Q-*.md'); do
     FAIL=1
   fi
   # cost_class certificado nunca puede ser BLOCKED (ver policies/query-cost-policy.md)
-  if echo "$cost" | grep -q 'BLOCKED'; then
+  if grep -q 'BLOCKED' <<<"$cost"; then
     echo "[FAIL] $f está certificada con cost_class BLOCKED — eso es contradictorio (BLOCKED = rechazada del catálogo)"
     FAIL=1
   fi

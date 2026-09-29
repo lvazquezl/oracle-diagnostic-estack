@@ -21,7 +21,7 @@ grep -q 'future_status: COMPATIBILITY_VALIDATION_REQUIRED' "$ROOT/config/capabil
 # tocarse aquí. Sólo se inspecciona la línea `versions:` real (el YAML map), no `notes:` — ese campo
 # menciona 'latest: SUPPORTED' como prosa explicando que el campo fue ELIMINADO, no un valor vivo.
 versions_line=$(awk '/^  - id: multitenant$/{f=1} f && /^    versions:/{print; exit}' "$ROOT/config/capability-matrix.yaml")
-if echo "$versions_line" | grep -qE 'latest:\s*SUPPORTED'; then
+if grep -qE 'latest:\s*SUPPORTED' <<<"$versions_line"; then
   echo "[FAIL] la fila multitenant de config/capability-matrix.yaml introduce latest: SUPPORTED en versions:"
   FAIL=1
 else
