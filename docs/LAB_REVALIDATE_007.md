@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|security` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/lab-revalidate-007` (desde `change/validation-ru`, `1c41e31`)
 **Origen:** pendiente de `CHG-ESTACK-ORA19C-LAB-007` (5 queries corregidas, todas `DOCUMENTATION_ONLY`)
-**Estado:** propuesto. Validado en el lab (§8). Pendiente: HUMAN REVIEW.
+**Estado:** aprobado por revisión humana (§11), validado en el lab (§8). Pendiente: `PROMOTE` (acción humana).
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 
@@ -77,9 +77,9 @@ Las 3 pasan a `FIELD_VALIDATED` en el contexto `LAB-OL8-19C-CDBROOT-ASM` (`confi
 - Abre `CHG-REQ-LAB-REDACTION`.
 - Después de la validación, el DBA puede borrar los datos de prueba de proxy (rollback entregado aparte).
 
-## 11. HUMAN REVIEW (pendiente)
+## 11. HUMAN REVIEW — aprobado
 
-Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+`AUTH-LAB-REVALIDATE-007`, revisor `REV-DBAMANAGER` (distinto del proponente `REV-CLAUDEAGENT`), `2026-09-29T03:53:33Z`, contra el digest `7cc271f8…41ce37ca`. El motor informa `review_status: APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el digest, no la identidad del firmante. `PROMOTE` (merge, tag) sigue siendo acción humana.
 
 ## 12. Motor de gobernanza
 
