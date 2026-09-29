@@ -423,5 +423,25 @@ def observed_architecture_is_compared_with_the_declaration_and_then_drives_field
         assert "os" not in env2["field_validation"]["not_compared"], "observed OS family is compared"
 
 
+# --- CHG-ESTACK-VALIDATION-RU-001: the observed Release Update (identity) drives field validation ---------------
+
+@posix_test
+def the_observed_release_update_replaces_the_declared_one_and_a_mismatch_is_reported():
+    with tmpdir() as d:
+        lab = Lab(d, targets=[lab_target(release_update="19.40", allowed_collectors=[ID, "Q-DISC-ARCHITECTURE-001"])])
+        env, is_error = lab.collect(ID)
+        assert not is_error, env
+        chk = env["release_update_check"]
+        observed = chk["observed"]
+        assert observed and observed.count(".") == 1 and chk["declared"] == "19.40" and chk["mismatch"] is True, chk
+        assert "DECLARED_RELEASE_UPDATE_MISMATCH" in env["limitations"] and chk["applies_to_field_validation"]
+        assert "release_update" not in env["field_validation"]["not_compared"], env["field_validation"]
+        arch, _ = lab.collect("Q-DISC-ARCHITECTURE-001")                     # a later architecture collect keeps the observed RU
+        ru_diff = [x for x in arch["field_validation"]["differences"] if x["dimension"] == "release_update"]
+        assert ru_diff == [{"dimension": "release_update", "validated": "19.32", "target": observed}], arch["field_validation"]
+        env2, _ = lab.collect(ID)
+        assert "release_update" not in env2["field_validation"]["not_compared"], env2["field_validation"]
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

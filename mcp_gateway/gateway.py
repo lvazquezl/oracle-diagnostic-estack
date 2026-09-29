@@ -283,7 +283,7 @@ class Gateway:
             observed = architecture.derive(payload["rows"])
             mismatches = architecture.compare(observed, target)
             if real:                                              # fixture rows never override a declaration
-                session.observed_architecture[target.alias] = observed
+                session.observed_architecture.setdefault(target.alias, {}).update(observed)   # keeps an observed RU
             env["architecture_check"] = {"observed": {k: observed[k] for k in ("rac", "asm", "dataguard", "role", "os_family")},
                                          "declared": {"rac": (target.architecture or {}).get("rac"), "asm": (target.architecture or {}).get("asm"),
                                                       "dataguard": (target.architecture or {}).get("dataguard"), "role": target.role,
@@ -292,6 +292,16 @@ class Gateway:
                                          "applies_to_field_validation": bool(real)}
             if mismatches:
                 env["limitations"] = list(env["limitations"]) + [f"DECLARED_ARCHITECTURE_MISMATCH:{m['dimension']}" for m in mismatches]
+        if col.collector_id == architecture.IDENTITY_COLLECTOR_ID:
+            ru = architecture.release_update_from_identity(payload["rows"])
+            declared_ru = getattr(target, "release_update", None)
+            if real and ru:                                        # fixture rows never override a declaration
+                session.observed_architecture.setdefault(target.alias, {})["release_update"] = ru
+            env["release_update_check"] = {"observed": ru, "declared": declared_ru,
+                                           "mismatch": bool(ru and declared_ru and ru != declared_ru),
+                                           "applies_to_field_validation": bool(real and ru)}
+            if ru and declared_ru and ru != declared_ru:
+                env["limitations"] = list(env["limitations"]) + ["DECLARED_RELEASE_UPDATE_MISMATCH"]
         env["field_validation"] = field_validation.assess(self.field_registry, col, self._fv_target(session, target))
         return env
 

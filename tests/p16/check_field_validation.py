@@ -209,5 +209,36 @@ def fixture_architecture_is_reported_but_never_overrides_the_declaration():
     assert {d["dimension"] for d in fv2["differences"]} == {"container", "asm"}, fv2
 
 
+# --- CHG-ESTACK-VALIDATION-RU-001 ------------------------------------------------------------------------------
+
+@test
+def the_release_update_is_read_from_18c_plus_versions_only():
+    from mcp_gateway import architecture as ar
+    assert ar.release_update_from_identity([{"version": "19.32.0.0.0"}]) == "19.32"
+    assert ar.release_update_from_identity([{"version": "23.5.0.24.07"}]) == "23.5"
+    assert ar.release_update_from_identity([{"version": "12.2.0.1.0"}]) is None, "pre-18c versions do not encode the RU"
+    assert ar.release_update_from_identity([{}]) is None and ar.release_update_from_identity([]) is None
+
+
+@test
+def an_older_observed_ru_than_the_validated_one_is_a_difference():
+    r = _reg()
+    sha = _current_sha("Q-DISC-IDENTITY-001")
+    from mcp_gateway import architecture as ar
+    t = ar.ObservedTarget(T(release_update="19.40"), {"release_update": "19.10"})
+    a = fv.assess(r, C("Q-DISC-IDENTITY-001", sha), t)
+    assert a["level"] == "FIELD_VALIDATED_OTHER_CONTEXT" and a["differences"] == [
+        {"dimension": "release_update", "validated": "19.32", "target": "19.10"}], a
+
+
+@test
+def fixture_identity_reports_the_ru_but_never_overrides_the_declaration():
+    c = InProcClient()
+    c.initialize()
+    env, _ = c.call("diagnostics.collect", {"collector_id": "Q-DISC-IDENTITY-001", "target_alias": PRIMARY})
+    chk = env["release_update_check"]
+    assert chk["applies_to_field_validation"] is False and "release_update" in env["field_validation"]["not_compared"], (chk, env["field_validation"])
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

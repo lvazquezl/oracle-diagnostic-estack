@@ -19,13 +19,15 @@ Una query certificada **no está validada en campo** hasta que su SQL exacto (`q
 | Dimensión | Regla |
 |---|---|
 | Versión | Familia (`19c`) debe coincidir |
-| Release Update | Se registra el RU validado (`19.32`). Un target con RU **menor** al validado difiere (un RU puede agregar vistas/columnas, casi nunca quita). RU del target no declarado → `not_compared` |
+| Release Update | Se registra el RU validado (`19.32`). Un target con RU **menor** al validado difiere (un RU puede agregar vistas/columnas, casi nunca quita). El RU del target es el **observado** por `Q-DISC-IDENTITY-001` en la sesión (18c+; la versión `YY.RU.x.x.x` lo incluye), o el declarado si aún no se observó; desconocido → `not_compared`. Si el observado difiere del declarado: `DECLARED_RELEASE_UPDATE_MISMATCH` (`CHG-ESTACK-VALIDATION-RU-001`) |
 | Contenedor | `CDB_ROOT` / `PDB` / `NON_CDB` |
 | Rol | `PRIMARY` / `STANDBY` |
 | RAC, ASM, Data Guard | Booleanos de `architecture` |
 | Sistema operativo | Familia y distribución (`LINUX`/`OL`); la versión se registra |
 
 Una dimensión no declarada en el target se reporta en `not_compared` y **nunca** convierte una diferencia en coincidencia.
+
+**Observado sobre declarado** (`CHG-ESTACK-DISC-ARCHITECTURE-001`, `CHG-ESTACK-VALIDATION-RU-001`): con datos REAL, RAC/ASM/Data Guard/rol/familia de SO observados por `Q-DISC-ARCHITECTURE-001` y el RU observado por `Q-DISC-IDENTITY-001` reemplazan a lo declarado para la validación en campo en esa sesión. Toda diferencia con lo declarado se reporta; los fixtures nunca reemplazan una declaración.
 
 ## Reglas para agentes y resultados
 
