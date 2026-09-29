@@ -176,7 +176,7 @@ def the_policy_contract_and_orchestrator_state_the_ceiling():
 def architecture_facts_are_derived_conservatively_and_unknown_stays_unknown():
     from mcp_gateway import architecture as ar
     base = {"instance_count": 1, "cluster_database": "FALSE", "datafiles_total": 5, "datafiles_in_asm": 0, "asm_diskgroups": 0,
-            "database_role": "PRIMARY", "standby_destinations": 0, "platform_name": "Linux x86 64-bit"}
+            "database_role": "PRIMARY", "standby_destinations": 0, "os_family": "LINUX"}
     o = ar.derive([base])
     assert (o["rac"], o["asm"], o["dataguard"], o["role"], o["os_family"]) == (False, False, False, "PRIMARY", "LINUX")
     assert ar.derive([dict(base, instance_count=2)])["rac"] is True and ar.derive([dict(base, cluster_database="TRUE")])["rac"] is True
@@ -184,7 +184,8 @@ def architecture_facts_are_derived_conservatively_and_unknown_stays_unknown():
     assert ar.derive([dict(base, standby_destinations=1)])["dataguard"] is True
     s = ar.derive([dict(base, database_role="PHYSICAL STANDBY")])
     assert s["role"] == "STANDBY" and s["dataguard"] is True
-    assert ar.derive([dict(base, platform_name="AIX-Based Systems (64-bit)")])["os_family"] == "AIX"
+    assert ar.derive([dict(base, os_family="AIX")])["os_family"] == "AIX"
+    assert ar.derive([dict(base, os_family="OTHER")])["os_family"] is None, "OTHER is not a comparable family"
     u = ar.derive([{}])
     assert all(u[k] is None for k in ("rac", "asm", "dataguard", "role", "os_family")), "dropped facts never become False"
     assert ar.derive([]) ["asm"] is None and ar.derive([base, base])["asm"] is None

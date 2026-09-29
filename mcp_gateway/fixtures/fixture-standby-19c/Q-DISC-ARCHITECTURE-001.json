@@ -9,7 +9,7 @@
       "asm_diskgroups": 0,
       "database_role": "PHYSICAL STANDBY",
       "standby_destinations": 0,
-      "platform_name": "Linux x86 64-bit"
+      "os_family": "LINUX"
     }
   ]
 }

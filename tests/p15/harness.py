@@ -162,7 +162,7 @@ class Scenario:
         # CHG-ESTACK-DISC-ARCHITECTURE-001: one row of aggregated facts (ASM in use, single instance, primary, Linux).
         self.architecture = [{"instance_count": 1, "cluster_database": "FALSE", "datafiles_total": 7, "datafiles_in_asm": 7,
                               "asm_diskgroups": 2, "database_role": "PRIMARY", "standby_destinations": 0,
-                              "platform_name": "Linux x86 64-bit"}]
+                              "os_family": "LINUX"}]
         self.jobs = [
             {"input_type": "DB FULL", "jobs_total": 2, "last_status": "COMPLETED", "hours_since_last_start": 181.0,
              "hours_since_last_success": 180.5, "failed_last_7d": 0, "last_elapsed_seconds": 612},

@@ -213,7 +213,7 @@
         "asm_diskgroups": {"type": "integer", "min": 0, "max": 100000, "policy": "KEEP"},
         "database_role": {"type": "enum", "values": ["FAR SYNC", "LOGICAL STANDBY", "PHYSICAL STANDBY", "PRIMARY", "SNAPSHOT STANDBY"], "policy": "KEEP"},
         "standby_destinations": {"type": "integer", "min": 0, "max": 1000, "policy": "KEEP"},
-        "platform_name": {"type": "enum", "values": ["AIX-Based Systems (64-bit)", "Apple Mac OS", "Apple Mac OS (x86-64)", "HP IA Open VMS", "HP Open VMS", "HP Tru64 UNIX", "HP-UX (64-bit)", "HP-UX IA (64-bit)", "IBM Power Based Linux", "IBM zSeries Based Linux", "Linux IA (32-bit)", "Linux IA (64-bit)", "Linux OS (S64)", "Linux x86 64-bit", "Microsoft Windows IA (32-bit)", "Microsoft Windows IA (64-bit)", "Microsoft Windows x86 64-bit", "Solaris Operating System (x86)", "Solaris Operating System (x86-64)", "Solaris[tm] OE (32-bit)", "Solaris[tm] OE (64-bit)"], "policy": "KEEP"}
+        "os_family": {"type": "enum", "values": ["AIX", "HPUX", "LINUX", "MACOS", "OTHER", "SOLARIS", "WINDOWS"], "policy": "KEEP"}
       },
       "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_sql": "DISABLED"}
     },

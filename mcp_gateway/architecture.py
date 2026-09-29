@@ -7,16 +7,8 @@ reported (DECLARED_ARCHITECTURE_MISMATCH), never silently corrected in the targe
 """
 
 COLLECTOR_ID = "Q-DISC-ARCHITECTURE-001"
-_OS_FAMILIES = (("linux", "LINUX"), ("aix", "AIX"), ("solaris", "SOLARIS"), ("hp-ux", "HPUX"), ("hp ", "HPUX"),
-                ("windows", "WINDOWS"), ("mac os", "MACOS"), ("vms", "OPENVMS"))
-
-
-def _os_family(platform_name):
-    low = (platform_name or "").lower()
-    for key, fam in _OS_FAMILIES:
-        if key in low:
-            return fam
-    return None
+# The database reduces PLATFORM_NAME to a family (Q-DISC-ARCHITECTURE-001); 'OTHER' means "not classified".
+_FAMILIES = ("AIX", "HPUX", "LINUX", "MACOS", "SOLARIS", "WINDOWS")
 
 
 def derive(rows) -> dict:
@@ -38,10 +30,10 @@ def derive(rows) -> dict:
     dataguard = None
     if role is not None:
         dataguard = role == "STANDBY" or bool(dests and dests > 0)
-    fam = _os_family(r.get("platform_name"))
+    fam = r.get("os_family") if r.get("os_family") in _FAMILIES else None     # OTHER/unknown → not compared
     return {"rac": rac, "asm": asm, "dataguard": dataguard, "role": role, "os_family": fam,
             "facts": {k: r.get(k) for k in ("instance_count", "cluster_database", "datafiles_total", "datafiles_in_asm",
-                                             "asm_diskgroups", "database_role", "standby_destinations", "platform_name")}}
+                                             "asm_diskgroups", "database_role", "standby_destinations", "os_family")}}
 
 
 def compare(observed: dict, target) -> list:

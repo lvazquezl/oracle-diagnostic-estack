@@ -3,7 +3,7 @@ query_id: Q-DISC-ARCHITECTURE-001
 version: 1.0.0
 
 domain: oracle
-purpose: Hechos agregados de arquitectura (RAC, ASM, rol/Data Guard, plataforma) para comparar lo observado contra lo declarado en el target — sin nombres de instancias, archivos, disk groups ni destinos
+purpose: Hechos agregados de arquitectura (RAC, ASM, rol/Data Guard, familia de SO) para comparar lo observado contra lo declarado en el target — sin nombres de instancias, archivos, disk groups ni destinos
 
 supported_oracle_versions: [11g, 12c, 18c, 19c, 21c, 23ai]
 supported_os: [todas]
@@ -52,7 +52,14 @@ SELECT (SELECT COUNT(*) FROM gv$instance) AS instance_count,
        (SELECT COUNT(*) FROM v$asm_diskgroup_stat) AS asm_diskgroups,
        (SELECT database_role FROM v$database) AS database_role,
        (SELECT COUNT(*) FROM v$archive_dest WHERE target = 'STANDBY' AND status = 'VALID') AS standby_destinations,
-       (SELECT platform_name FROM v$database) AS platform_name
+       (SELECT CASE WHEN UPPER(platform_name) LIKE '%LINUX%' THEN 'LINUX'
+                    WHEN UPPER(platform_name) LIKE '%AIX%' THEN 'AIX'
+                    WHEN UPPER(platform_name) LIKE '%SOLARIS%' THEN 'SOLARIS'
+                    WHEN UPPER(platform_name) LIKE '%HP-UX%' THEN 'HPUX'
+                    WHEN UPPER(platform_name) LIKE '%WINDOWS%' THEN 'WINDOWS'
+                    WHEN UPPER(platform_name) LIKE '%MAC OS%' THEN 'MACOS'
+                    ELSE 'OTHER' END
+        FROM v$database) AS os_family
 FROM   dual;
 ```
 
@@ -61,7 +68,7 @@ Siempre una fila. Deducción que hace el gateway (`mcp_gateway/architecture.py`)
 - `asm` = `datafiles_in_asm > 0`
 - `dataguard` = rol distinto de `PRIMARY` o `standby_destinations > 0`
 - `role` = `PRIMARY` o `STANDBY`
-- familia de SO a partir de `platform_name`
+- `os_family`, calculada **en la base** a partir de `PLATFORM_NAME` (el nombre completo de plataforma no sale)
 
 `V$DATAFILE.NAME` sólo se usa dentro de la base para contar los que empiezan con `+`: ninguna ruta sale.
 
@@ -71,7 +78,7 @@ Todas las vistas y columnas existen desde 10g/11g; piso 11.2 por coherencia con 
 
 # Notes by platform
 
-`platform_name` usa los nombres de plataforma de Oracle (`V$TRANSPORTABLE_PLATFORM`), p. ej. `Linux x86 64-bit`; la distribución (OL/RHEL/SLES) no es observable desde SQL.
+La base reduce `PLATFORM_NAME` a una familia (`LINUX`, `AIX`, `SOLARIS`, `HPUX`, `WINDOWS`, `MACOS`, `OTHER`). Así no depende de conocer cada nombre de plataforma ni la arquitectura de CPU: la primera validación en el lab mostró un nombre fuera de la lista original, descartado por el enum. La distribución (OL/RHEL/SLES) no es observable desde SQL.
 
 # Container / role scope notes
 
@@ -87,7 +94,7 @@ Ninguna.
 
 # Sanitization notes
 
-Conteos → KEEP. `cluster_database`, `database_role` y `platform_name` → enums con los valores de Oracle, KEEP; cualquier otro valor se descarta.
+Conteos → KEEP. `cluster_database`, `database_role` y `os_family` → enums cerrados, KEEP; cualquier otro valor se descarta.
 
 # Limitations
 

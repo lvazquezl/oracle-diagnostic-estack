@@ -14,11 +14,11 @@ La arquitectura del target (RAC, ASM, Data Guard, rol, SO) sólo se **declaraba*
 
 | Artefacto | Cambio |
 |---|---|
-| `queries/oracle/discovery/Q-DISC-ARCHITECTURE-001.md` (nueva) | Una fila de hechos agregados: `instance_count`, `cluster_database`, `datafiles_total`/`datafiles_in_asm` (sólo conteo), `asm_diskgroups`, `database_role`, `standby_destinations`, `platform_name`. 11.2–23.0 |
+| `queries/oracle/discovery/Q-DISC-ARCHITECTURE-001.md` (nueva) | Una fila de hechos agregados: `instance_count`, `cluster_database`, `datafiles_total`/`datafiles_in_asm` (sólo conteo), `asm_diskgroups`, `database_role`, `standby_destinations`, `os_family` (calculada en la base a partir de `PLATFORM_NAME`). 11.2–23.0 |
 | `mcp_gateway/architecture.py` (nuevo) | Deduce `rac`/`asm`/`dataguard`/`role`/`os_family`. Un hecho descartado queda desconocido, nunca `false` |
 | `mcp_gateway/gateway.py` | Al recoger la query, agrega `architecture_check` (observado, declarado, diferencias) y la limitación `DECLARED_ARCHITECTURE_MISMATCH:<dim>`. Con datos **REAL**, lo observado reemplaza a lo declarado **para la validación en campo** en esa sesión. Los fixtures nunca reemplazan nada |
 | Diccionario | `V$DATABASE.PLATFORM_NAME`, `V$DATAFILE.NAME`, `GV$INSTANCE.INST_ID` declaradas (las verifica `Q-DICT-VERIFY`, regeneradas: 490 tokens) |
-| Catálogo, fixtures, registros | Collector con enums (`cluster_database`, `database_role`, `platform_name` con los nombres de plataforma de Oracle); fixtures `fixture-primary-19c`/`fixture-standby-19c`; matriz, `queries/REGISTRY.md`, readiness (86 componentes), docs |
+| Catálogo, fixtures, registros | Collector con enums cerrados (`cluster_database`, `database_role`, `os_family`); fixtures `fixture-primary-19c`/`fixture-standby-19c`; matriz, `queries/REGISTRY.md`, readiness (86 componentes), docs |
 | `mcp_gateway_lab` 0.6.0 | Collector habilitable en el lab |
 | Tests | P15 +1 (flujo real con driver falso), P16 +2; enrutamiento del driver falso corregido (la identidad capturaba sentencias que mencionan `v$instance`); `test_query_variant_resolver_10g`: 10g sin variante |
 
@@ -59,6 +59,9 @@ Una fila de conteos y enums; ningún identificador ni ruta sale de la base. `SEL
 macOS (bash 5.3.20): 967/968. El único fallo es `test_field_validation`, que exige revalidar en el lab las `Q-DICT-VERIFY` regeneradas (§8).
 
 ## 8. Validación en el lab (pendiente)
+
+**Intento 1** (2026-09-29T01:34Z, commit `faf67e5`, `REQ-8bed90e4cb1b`, `EVR-50b00c558b1a39b2d0106c46`): `DEGRADED`, `INVALID_VALUES_DROPPED:1`. `platform_name` no estaba en la lista cerrada de nombres de plataforma, así que el enum lo descartó y nunca salió. Probablemente es la plataforma ARM (aarch64) de la VM del lab, no incluida en la lista. El resto coincidió con lo declarado: RAC no, ASM sí (8/8 datafiles, 1 disk group), PRIMARY, Data Guard no. **Corrección:** la base reduce `PLATFORM_NAME` a una familia (`CASE ... LIKE`) y sale sólo `os_family`, un enum cerrado de 7 valores. Así el resultado no depende de conocer cada nombre de plataforma. Las 5 `Q-DICT-VERIFY` del mismo intento sólo reportaron Statspack (490 tokens).
+
 
 Con esta rama en el workspace principal, el collector agregado al targets file privado y el lab reconectado:
 1. `Q-DISC-ARCHITECTURE-001` debe observar `asm: true`, `rac: false`, `dataguard: false`, `role: PRIMARY`, `os_family: LINUX`, sin diferencias con lo declarado (declaración corregida el 2026-09-25).
