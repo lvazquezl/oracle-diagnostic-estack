@@ -17,7 +17,7 @@ import secrets
 import time
 from datetime import datetime, timezone
 
-from . import bridge, field_validation
+from . import architecture, bridge, field_validation
 from .adapters import AdapterRegistry, run_with_timeout
 from .catalog import COLLECTOR_ID_RE, Target, evaluate_capability
 from .common import (
@@ -122,6 +122,7 @@ class Session:
         self.calls = 0
         self.target_calls = {}
         self.target_rows = {}
+        self.observed_architecture = {}      # alias -> derived dims (CHG-ESTACK-DISC-ARCHITECTURE-001)
 
 
 class Gateway:
@@ -277,9 +278,27 @@ class Gateway:
                     "provenance": {"kind": payload["provenance_kind"], "real_observation": real},
                     "sanitization_status": "SANITIZED", "evidence_refs": [ref],
                     "evidence": {"columns": payload["columns"], "rows": payload["rows"], "row_count": payload["row_count"], "digest": payload["digest"]},
-                    "query_sha256": col.query_sha256, "limitations": payload["limitations"],
-                    "field_validation": field_validation.assess(self.field_registry, col, target)})
+                    "query_sha256": col.query_sha256, "limitations": payload["limitations"]})
+        if col.collector_id == architecture.COLLECTOR_ID:
+            observed = architecture.derive(payload["rows"])
+            mismatches = architecture.compare(observed, target)
+            if real:                                              # fixture rows never override a declaration
+                session.observed_architecture[target.alias] = observed
+            env["architecture_check"] = {"observed": {k: observed[k] for k in ("rac", "asm", "dataguard", "role", "os_family")},
+                                         "declared": {"rac": (target.architecture or {}).get("rac"), "asm": (target.architecture or {}).get("asm"),
+                                                      "dataguard": (target.architecture or {}).get("dataguard"), "role": target.role,
+                                                      "os_family": (getattr(target, "os", None) or {}).get("family")},
+                                         "mismatches": mismatches,
+                                         "applies_to_field_validation": bool(real)}
+            if mismatches:
+                env["limitations"] = list(env["limitations"]) + [f"DECLARED_ARCHITECTURE_MISMATCH:{m['dimension']}" for m in mismatches]
+        env["field_validation"] = field_validation.assess(self.field_registry, col, self._fv_target(session, target))
         return env
+
+    def _fv_target(self, session, target):
+        """Target used for field validation: observed architecture (REAL, this session) replaces the declaration."""
+        observed = session.observed_architecture.get(target.alias)
+        return architecture.ObservedTarget(target, observed) if observed else target
 
     def _tool_get_evidence(self, session, request_id, args):
         target = self._target(args["target_alias"])
@@ -295,7 +314,7 @@ class Gateway:
                     "sanitization_status": "SANITIZED", "evidence_refs": [args["evidence_ref"]],
                     "evidence": {"columns": p["columns"], "rows": p["rows"], "row_count": p["row_count"], "digest": p["digest"]},
                     "limitations": list(p["limitations"]),
-                    "field_validation": field_validation.assess(self.field_registry, col, target)})
+                    "field_validation": field_validation.assess(self.field_registry, col, self._fv_target(session, target))})
         return env
 
     def _tool_analyze_incident(self, session, request_id, args):
@@ -314,7 +333,8 @@ class Gateway:
         # CHG-ESTACK-VALIDATION-MATRIX-001 (policies/field-validation-policy.md): evidence whose query is not field-validated
         # for THIS target caps every conclusion at PROBABLE_CAUSE. The rca_engine statuses are not rewritten; the ceiling is
         # explicit and the orchestrator applies it in its Result Package.
-        per_ev = [{"evidence_ref": r, "collector_id": c.collector_id, "level": field_validation.assess(self.field_registry, c, target)["level"]}
+        fv_target = self._fv_target(session, target)
+        per_ev = [{"evidence_ref": r, "collector_id": c.collector_id, "level": field_validation.assess(self.field_registry, c, fv_target)["level"]}
                   for c, r, _p in items]
         weak = [x for x in per_ev if x["level"] != "FIELD_VALIDATED"]
         fv_block = {"per_evidence": per_ev, "all_field_validated": not weak,

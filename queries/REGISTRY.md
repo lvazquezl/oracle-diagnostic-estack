@@ -58,6 +58,7 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | id | purpose | versions | platform | architecture | container_scope | database_role_scope |
 |---|---|---|---|---|---|---|
 | `Q-DISC-IDENTITY-001` | Identidad de versión/edición/rol | 10g–23ai | todas | todas | ANY_CONTAINER | ANY |
+| `Q-DISC-ARCHITECTURE-001` | Hechos agregados de arquitectura (RAC, ASM, rol/Data Guard, plataforma) — CHG-ESTACK-DISC-ARCHITECTURE-001 | 11g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-DISC-INSTANCE-001` | Estado de instancia y modo | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-DISC-RAC-001` | Topología RAC | 11gR2–23ai | Linux/RHEL/SUSE/Solaris/AIX/Windows | RAC | NOT_APPLICABLE | ANY |
 | `Q-DISC-ASM-001` | Presencia de ASM | 11g–23ai | todas | ASM | NOT_APPLICABLE | ANY |
@@ -155,6 +156,7 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | id | objects_accessed | risk_class | cost_class | timeout_s | max_rows | sensitivity | license_requirements |
 |---|---|---|---|---|---|---|---|
 | `Q-DISC-IDENTITY-001` | `V$INSTANCE`, `V$DATABASE` | R0 | LOW | 10 | 5 | LOW | none |
+| `Q-DISC-ARCHITECTURE-001` | `GV$INSTANCE`, `V$PARAMETER`, `V$DATAFILE` (sólo conteo), `V$ASM_DISKGROUP_STAT`, `V$DATABASE`, `V$ARCHIVE_DEST` | R0 | LOW | 15 | 1 | LOW | none |
 | `Q-DISC-INSTANCE-001` | `V$INSTANCE`, `GV$INSTANCE` | R0 | LOW | 10 | 50 | LOW | none |
 | `Q-DISC-RAC-001` | `GV$INSTANCE`, `V$ACTIVE_INSTANCES` | R0 | LOW | 15 | 50 | MEDIUM (hostnames) | none |
 | `Q-DISC-ASM-001` | `V$ASM_DISKGROUP` | R0 | LOW | 10 | 20 | LOW | none |

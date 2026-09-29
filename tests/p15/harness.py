@@ -159,6 +159,10 @@ class Scenario:
             {"backup_kind": "SPFILE", "record_count": 1, "hours_since_last": 180.4}]
         # CHG-ESTACK-ORA19C-LAB-006: the database answers only discrepancies plus the CHECKED row.
         self.dictverify = [{"finding": "CHECKED", "view_name": "*", "column_name": "*", "tokens": 97}]
+        # CHG-ESTACK-DISC-ARCHITECTURE-001: one row of aggregated facts (ASM in use, single instance, primary, Linux).
+        self.architecture = [{"instance_count": 1, "cluster_database": "FALSE", "datafiles_total": 7, "datafiles_in_asm": 7,
+                              "asm_diskgroups": 2, "database_role": "PRIMARY", "standby_destinations": 0,
+                              "platform_name": "Linux x86 64-bit"}]
         self.jobs = [
             {"input_type": "DB FULL", "jobs_total": 2, "last_status": "COMPLETED", "hours_since_last_start": 181.0,
              "hours_since_last_success": 180.5, "failed_last_7d": 0, "last_elapsed_seconds": 612},
@@ -249,17 +253,20 @@ class FakeCursor:
             self._set([s.session])
         elif "session_privs" in low:
             self._set([{"privilege": p} for p in s.privileges])
-        elif "v$instance" in low:
+        elif "v$instance" in low and not any(m in low for m in ("dba_tab_columns", "datafiles_in_asm")):
+            # identity guard; statements with their own marker (generated literals, architecture facts) name v$instance too
             if s.identity_delay:
                 time.sleep(s.identity_delay)
             if s.identity_error is not None:
                 raise s.identity_error
             self._set(s.identity)
         elif any(v in low for v in ("v$resource_limit", "v$process", "cdb_tablespace_usage_metrics", "cdb_temp_files",
-                                     "v$flash_recovery_area_usage", "v$backup_datafile", "v$rman_backup_job_details", "dba_tab_columns")):
+                                     "v$flash_recovery_area_usage", "v$backup_datafile", "v$rman_backup_job_details", "dba_tab_columns",
+                                     "datafiles_in_asm")):
             if s.main_error is not None:
                 raise s.main_error
             self._set(s.dictverify if "dba_tab_columns" in low          # first: its literal names other views
+                      else s.architecture if "datafiles_in_asm" in low
                       else s.resource_limits if "v$resource_limit" in low else s.processes if "v$process" in low
                       else s.tablespaces if "cdb_tablespace_usage_metrics" in low else s.temp if "cdb_temp_files" in low
                       else s.freshness if "v$backup_datafile" in low else s.jobs if "v$rman_backup_job_details" in low

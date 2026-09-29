@@ -170,5 +170,41 @@ def the_policy_contract_and_orchestrator_state_the_ceiling():
         assert lvl in pol and lvl in con
 
 
+# --- CHG-ESTACK-DISC-ARCHITECTURE-001 --------------------------------------------------------------------------
+
+@test
+def architecture_facts_are_derived_conservatively_and_unknown_stays_unknown():
+    from mcp_gateway import architecture as ar
+    base = {"instance_count": 1, "cluster_database": "FALSE", "datafiles_total": 5, "datafiles_in_asm": 0, "asm_diskgroups": 0,
+            "database_role": "PRIMARY", "standby_destinations": 0, "platform_name": "Linux x86 64-bit"}
+    o = ar.derive([base])
+    assert (o["rac"], o["asm"], o["dataguard"], o["role"], o["os_family"]) == (False, False, False, "PRIMARY", "LINUX")
+    assert ar.derive([dict(base, instance_count=2)])["rac"] is True and ar.derive([dict(base, cluster_database="TRUE")])["rac"] is True
+    assert ar.derive([dict(base, datafiles_in_asm=3)])["asm"] is True
+    assert ar.derive([dict(base, standby_destinations=1)])["dataguard"] is True
+    s = ar.derive([dict(base, database_role="PHYSICAL STANDBY")])
+    assert s["role"] == "STANDBY" and s["dataguard"] is True
+    assert ar.derive([dict(base, platform_name="AIX-Based Systems (64-bit)")])["os_family"] == "AIX"
+    u = ar.derive([{}])
+    assert all(u[k] is None for k in ("rac", "asm", "dataguard", "role", "os_family")), "dropped facts never become False"
+    assert ar.derive([]) ["asm"] is None and ar.derive([base, base])["asm"] is None
+
+
+@test
+def fixture_architecture_is_reported_but_never_overrides_the_declaration():
+    c = InProcClient()
+    c.initialize()
+    before, _ = c.call("diagnostics.collect", {"collector_id": "Q-DISC-IDENTITY-001", "target_alias": "fixture-standby-19c"})
+    env, _ = c.call("diagnostics.collect", {"collector_id": "Q-DISC-ARCHITECTURE-001", "target_alias": "fixture-standby-19c"})
+    after, _ = c.call("diagnostics.collect", {"collector_id": "Q-DISC-IDENTITY-001", "target_alias": "fixture-standby-19c"})
+    assert before["field_validation"] == after["field_validation"], "synthetic facts must not change field validation"
+    assert "os" in after["field_validation"]["not_compared"], after["field_validation"]
+    chk = env["architecture_check"]
+    assert chk["observed"]["role"] == "STANDBY" and chk["applies_to_field_validation"] is False, chk
+    assert chk["mismatches"] == [], chk                                   # the fixture standby declares dataguard: true
+    env2, _ = c.call("diagnostics.collect", {"collector_id": "Q-DISC-ARCHITECTURE-001", "target_alias": PRIMARY})
+    assert env2["architecture_check"]["mismatches"] == [] and env2["field_validation"]["level"] == "DOCUMENTATION_ONLY"
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

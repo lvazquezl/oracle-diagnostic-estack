@@ -404,5 +404,24 @@ def dictionary_verification_runs_the_generated_block_and_returns_only_discrepanc
         assert "dba_tab_columns" in stmt.lower() and "'SYS', 'AUDSYS', 'PERFSTAT'" in stmt
 
 
+# --- CHG-ESTACK-DISC-ARCHITECTURE-001: observed architecture vs declared, used by field validation --------------
+
+@posix_test
+def observed_architecture_is_compared_with_the_declaration_and_then_drives_field_validation():
+    q = "Q-DISC-ARCHITECTURE-001"
+    with tmpdir() as d:
+        lab = Lab(d, targets=[lab_target(allowed_collectors=[ID, q])])      # declares asm: false, NON_CDB, no os
+        env, is_error = lab.collect(q)
+        assert not is_error and env["provenance"]["kind"] == "REAL", env
+        chk = env["architecture_check"]
+        assert chk["observed"] == {"rac": False, "asm": True, "dataguard": False, "role": "PRIMARY", "os_family": "LINUX"}, chk
+        assert chk["mismatches"] == [{"dimension": "asm", "declared": False, "observed": True}] and chk["applies_to_field_validation"]
+        assert "DECLARED_ARCHITECTURE_MISMATCH:asm" in env["limitations"]
+        env2, _ = lab.collect(ID)                                              # same session: observed ASM replaces the declaration
+        diffs = {x["dimension"] for x in env2["field_validation"]["differences"]}
+        assert "asm" not in diffs and "container" in diffs, env2["field_validation"]
+        assert "os" not in env2["field_validation"]["not_compared"], "observed OS family is compared"
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

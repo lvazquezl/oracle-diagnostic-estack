@@ -1,0 +1,15 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "instance_count": 1,
+      "cluster_database": "FALSE",
+      "datafiles_total": 6,
+      "datafiles_in_asm": 0,
+      "asm_diskgroups": 0,
+      "database_role": "PHYSICAL STANDBY",
+      "standby_destinations": 0,
+      "platform_name": "Linux x86 64-bit"
+    }
+  ]
+}
