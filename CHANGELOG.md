@@ -2,6 +2,19 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change query|security` — CHG-ESTACK-LAB-REVALIDATE-007 — revalidación en el lab de las queries corregidas en LAB-007
+
+Rama `change/lab-revalidate-007` sobre `change/validation-ru` (`1c41e31`). Validado en el lab (19c): las 3 queries corregidas en LAB-007 pasan a `FIELD_VALIDATED`. Aprobación humana registrada: `AUTH-LAB-REVALIDATE-007`, revisor `REV-DBAMANAGER`, `2026-09-29T03:53:33Z`, contra el digest `7cc271f8…41ce37ca` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/LAB_REVALIDATE_007.md`.
+
+### Added
+
+- Collectors `Q-RMAN-BACKUP-DEVICE-001`, `Q-SEC-PROXY-AUTHENTICATION-001` y `Q-ASM-TOPOLOGY-001` (nombres MASK), en el gateway y en el lab (`mcp_gateway_lab` 0.7.0).
+
+### Changed
+
+- Sanitizador: `identifier` admite un `+` inicial (convención de ASM).
+- `Q-ASM-TOPOLOGY-001`: familia `11g` canónica (piso 11.2 sin cambios).
+
 ## [Unreleased] — `/change compatibility|documentation` — CHG-ESTACK-VALIDATION-RU-001 — Release Update observado para la validación en campo
 
 Rama `change/validation-ru` sobre `change/disc-architecture` (`c2d8a36`). Validado en el lab (19c): RU observado 19.32 igual al declarado; la identidad y la arquitectura siguen `FIELD_VALIDATED`. Aprobación humana registrada: `AUTH-VALIDATION-RU-001`, revisor `REV-DBAMANAGER`, `2026-09-29T03:08:26Z`, contra el digest `14b4f979…e1dab6ec` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/VALIDATION_RU.md`.

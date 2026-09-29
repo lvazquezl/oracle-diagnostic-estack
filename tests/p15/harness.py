@@ -159,6 +159,13 @@ class Scenario:
             {"backup_kind": "SPFILE", "record_count": 1, "hours_since_last": 180.4}]
         # CHG-ESTACK-ORA19C-LAB-006: the database answers only discrepancies plus the CHECKED row.
         self.dictverify = [{"finding": "CHECKED", "view_name": "*", "column_name": "*", "tokens": 97}]
+        # CHG-ESTACK-LAB-REVALIDATE-007: queries corrected in LAB-007
+        self.backup_devices = [{"device_type": "DISK", "device_name": None}]
+        self.proxies = [{"proxy": "C##PX_PROXY", "client": "C##PX_CLIENT", "authentication": "NO", "flags": "PROXY MAY ACTIVATE ROLE"},
+                        {"proxy": "C##PX_PROXY", "client": "C##PX_CLIENT2", "authentication": "NO", "flags": "PROXY MAY ACTIVATE ALL CLIENT ROLES"}]
+        self.asm_topology = [{"asm_instance": "+ASM", "db_name": "LAB19C", "status": "CONNECTED", "software_version": "19.0.0.0.0",
+                              "diskgroup": "DATA", "state": "CONNECTED", "type": "EXTERN", "total_mb": 40960, "free_mb": 20480,
+                              "usable_file_mb": 20480, "required_mirror_free_mb": 0}]
         # CHG-ESTACK-DISC-ARCHITECTURE-001: one row of aggregated facts (ASM in use, single instance, primary, Linux).
         self.architecture = [{"instance_count": 1, "cluster_database": "FALSE", "datafiles_total": 7, "datafiles_in_asm": 7,
                               "asm_diskgroups": 2, "database_role": "PRIMARY", "standby_destinations": 0,
@@ -262,11 +269,13 @@ class FakeCursor:
             self._set(s.identity)
         elif any(v in low for v in ("v$resource_limit", "v$process", "cdb_tablespace_usage_metrics", "cdb_temp_files",
                                      "v$flash_recovery_area_usage", "v$backup_datafile", "v$rman_backup_job_details", "dba_tab_columns",
-                                     "datafiles_in_asm")):
+                                     "datafiles_in_asm", "v$backup_device", "proxy_users", "v$asm_client")):
             if s.main_error is not None:
                 raise s.main_error
             self._set(s.dictverify if "dba_tab_columns" in low          # first: its literal names other views
                       else s.architecture if "datafiles_in_asm" in low
+                      else s.backup_devices if "v$backup_device" in low else s.proxies if "proxy_users" in low
+                      else s.asm_topology if "v$asm_client" in low
                       else s.resource_limits if "v$resource_limit" in low else s.processes if "v$process" in low
                       else s.tablespaces if "cdb_tablespace_usage_metrics" in low else s.temp if "cdb_temp_files" in low
                       else s.freshness if "v$backup_datafile" in low else s.jobs if "v$rman_backup_job_details" in low

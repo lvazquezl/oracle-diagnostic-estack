@@ -218,6 +218,56 @@
       "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_sql": "DISABLED"}
     },
     {
+      "collector_id": "Q-RMAN-BACKUP-DEVICE-001",
+      "kind": "sql_query",
+      "domain": "rman",
+      "title": "Backup device types and names currently known to the instance (visibility only)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "device_type": {"type": "enum", "values": ["DISK", "SBT_TAPE"], "policy": "KEEP"},
+        "device_name": {"type": "identifier", "alias_prefix": "dev", "policy": "MASK"}
+      },
+      "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_sql": "DISABLED"}
+    },
+    {
+      "collector_id": "Q-SEC-PROXY-AUTHENTICATION-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Proxy authentication relationships (CONNECT THROUGH) and the breadth of client roles the proxy may activate",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "proxy": {"type": "identifier", "alias_prefix": "usr", "policy": "MASK"},
+        "client": {"type": "identifier", "alias_prefix": "usr", "policy": "MASK"},
+        "authentication": {"type": "enum", "values": ["NO", "YES"], "policy": "KEEP"},
+        "flags": {"type": "enum", "values": ["NO CLIENT ROLES MAY BE ACTIVATED", "PROXY MAY ACTIVATE ALL CLIENT ROLES", "PROXY MAY ACTIVATE ROLE", "PROXY MAY NOT ACTIVATE ROLE"], "policy": "KEEP"}
+      },
+      "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_sql": "DISABLED"}
+    },
+    {
+      "collector_id": "Q-ASM-TOPOLOGY-001",
+      "kind": "sql_query",
+      "domain": "asm",
+      "title": "ASM instance serving this database and the disk groups it uses, with capacity (no disk discovery)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "asm_instance": {"type": "identifier", "alias_prefix": "asm", "policy": "MASK"},
+        "db_name": {"type": "identifier", "alias_prefix": "db", "policy": "MASK"},
+        "status": {"type": "enum", "values": ["BROKEN", "CONNECTED", "DISCONNECTED"], "policy": "KEEP"},
+        "software_version": {"type": "version_string", "policy": "KEEP"},
+        "diskgroup": {"type": "identifier", "alias_prefix": "dg", "policy": "MASK"},
+        "state": {"type": "enum", "values": ["BROKEN", "CONNECTED", "DISMOUNTED", "MOUNTED", "QUIESCING", "RESTRICTED", "UNKNOWN"], "policy": "KEEP"},
+        "type": {"type": "enum", "values": ["EXTEND", "EXTERN", "FLEX", "HIGH", "NORMAL"], "policy": "KEEP"},
+        "total_mb": {"type": "integer", "min": 0, "max": 1000000000000, "policy": "KEEP"},
+        "free_mb": {"type": "integer", "min": 0, "max": 1000000000000, "policy": "KEEP"},
+        "usable_file_mb": {"type": "integer", "min": -1000000000000, "max": 1000000000000, "policy": "KEEP"},
+        "required_mirror_free_mb": {"type": "integer", "min": 0, "max": 1000000000000, "policy": "KEEP"}
+      },
+      "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_sql": "DISABLED"}
+    },
+    {
       "collector_id": "Q-DICT-VERIFY-001",
       "kind": "sql_query",
       "domain": "oracle",

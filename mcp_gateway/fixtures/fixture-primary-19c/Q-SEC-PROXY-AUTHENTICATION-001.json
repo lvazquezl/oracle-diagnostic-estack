@@ -1,0 +1,11 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "proxy": "APP_PROXY",
+      "client": "APP_USER",
+      "authentication": "NO",
+      "flags": "PROXY MAY ACTIVATE ROLE"
+    }
+  ]
+}

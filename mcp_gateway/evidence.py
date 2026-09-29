@@ -40,7 +40,7 @@ from .common import (
     EVIDENCE_TTL_SECONDS, MAX_EVIDENCE_ENTRIES, MAX_ROWS_HARD, SCHEMA_VERSION, GatewayError,
 )
 
-_IDENT = re.compile(r'^[A-Za-z][A-Za-z0-9_$#.-]{0,63}$')
+_IDENT = re.compile(r'^\+?[A-Za-z][A-Za-z0-9_$#.-]{0,63}$')   # optional leading '+': ASM naming (+ASM, +ASM1) — CHG-ESTACK-LAB-REVALIDATE-007
 _VERSION = re.compile(r'^\d{1,2}(\.\d{1,3}){1,5}$')
 _TS = re.compile(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?(Z|[+-]\d{2}:\d{2})$')
 _INTERVAL = re.compile(r'^[+-]\d{2} \d{2}:\d{2}:\d{2}(\.\d{1,6})?$')
