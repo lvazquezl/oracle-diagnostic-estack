@@ -4,7 +4,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change query|compatibility|security` — CHG-ESTACK-DISC-ARCHITECTURE-001 — arquitectura observada frente a la declarada
 
-Rama `change/disc-architecture` sobre `change/dict-pseudo-columns` (`4cca5cb`). Validado en el lab (19c): la arquitectura observada coincide con la declarada (ASM, sin RAC ni Data Guard, PRIMARY, LINUX). El primer intento mostró que los nombres de plataforma no se pueden listar de antemano, así que la familia de SO se calcula en la base. Pendiente: HUMAN REVIEW. Ver `docs/DISC_ARCHITECTURE.md`.
+Rama `change/disc-architecture` sobre `change/dict-pseudo-columns` (`4cca5cb`). Validado en el lab (19c): la arquitectura observada coincide con la declarada (ASM, sin RAC ni Data Guard, PRIMARY, LINUX). El primer intento mostró que los nombres de plataforma no se pueden listar de antemano, así que la familia de SO se calcula en la base. Aprobación humana registrada: `AUTH-DISC-ARCHITECTURE-001`, revisor `REV-DBAMANAGER`, `2026-09-29T02:06:54Z`, contra el digest `fadf6bf3…4f199a1e` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/DISC_ARCHITECTURE.md`.
 
 ### Added
 

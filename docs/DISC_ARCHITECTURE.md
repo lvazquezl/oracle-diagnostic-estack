@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|compatibility|security` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/disc-architecture` (desde `change/dict-pseudo-columns`, `4cca5cb`, PR #20)
 **Origen:** `CHG-REQ-LAB-DISC-STORAGE` (ampliado a RAC, Data Guard y SO)
-**Estado:** propuesto. Validado en el lab (§8). Pendiente: HUMAN REVIEW.
+**Estado:** aprobado por revisión humana (§11), validado en el lab (§8). Pendiente: `PROMOTE` (acción humana).
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 
@@ -84,9 +84,9 @@ Registro de validación en campo (`config/field-validation-registry.json`): se a
 - Cierra `CHG-REQ-LAB-DISC-STORAGE`.
 - Base para `CHG-REQ-VALIDATION-RU` (el RU observado entra por la identidad).
 
-## 11. HUMAN REVIEW (pendiente)
+## 11. HUMAN REVIEW — aprobado
 
-Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+`AUTH-DISC-ARCHITECTURE-001`, revisor `REV-DBAMANAGER` (distinto del proponente `REV-CLAUDEAGENT`), `2026-09-29T02:06:54Z`, contra el digest `fadf6bf3…4f199a1e`. El motor informa `review_status: APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el digest, no la identidad del firmante. `PROMOTE` (merge, tag) sigue siendo acción humana.
 
 ## 12. Motor de gobernanza
 
