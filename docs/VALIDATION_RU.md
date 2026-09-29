@@ -2,7 +2,7 @@
 
 **Tipo:** `/change compatibility|documentation` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/validation-ru` (desde `change/disc-architecture`, `c2d8a36`, PR #21)
 **Origen:** `CHG-REQ-VALIDATION-RU`
-**Estado:** propuesto. Validado en el lab (§8). Pendiente: HUMAN REVIEW.
+**Estado:** aprobado por revisión humana (§11), validado en el lab (§8). Pendiente: `PROMOTE` (acción humana).
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. Sin queries ni accesos nuevos.
 
@@ -60,9 +60,9 @@ No se agregan entradas al registro de validación en campo: no hay queries nueva
 
 Cierra `CHG-REQ-VALIDATION-RU`.
 
-## 11. HUMAN REVIEW (pendiente)
+## 11. HUMAN REVIEW — aprobado
 
-Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+`AUTH-VALIDATION-RU-001`, revisor `REV-DBAMANAGER` (distinto del proponente `REV-CLAUDEAGENT`), `2026-09-29T03:08:26Z`, contra el digest `14b4f979…e1dab6ec`. El motor informa `review_status: APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el digest, no la identidad del firmante. `PROMOTE` (merge, tag) sigue siendo acción humana.
 
 ## 12. Motor de gobernanza
 

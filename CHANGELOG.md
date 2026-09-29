@@ -4,7 +4,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change compatibility|documentation` — CHG-ESTACK-VALIDATION-RU-001 — Release Update observado para la validación en campo
 
-Rama `change/validation-ru` sobre `change/disc-architecture` (`c2d8a36`). Validado en el lab (19c): RU observado 19.32 igual al declarado; la identidad y la arquitectura siguen `FIELD_VALIDATED`. Pendiente: HUMAN REVIEW. Ver `docs/VALIDATION_RU.md`.
+Rama `change/validation-ru` sobre `change/disc-architecture` (`c2d8a36`). Validado en el lab (19c): RU observado 19.32 igual al declarado; la identidad y la arquitectura siguen `FIELD_VALIDATED`. Aprobación humana registrada: `AUTH-VALIDATION-RU-001`, revisor `REV-DBAMANAGER`, `2026-09-29T03:08:26Z`, contra el digest `14b4f979…e1dab6ec` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/VALIDATION_RU.md`.
 
 ### Added
 
