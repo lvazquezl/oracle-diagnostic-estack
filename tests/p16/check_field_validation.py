@@ -204,7 +204,9 @@ def fixture_architecture_is_reported_but_never_overrides_the_declaration():
     assert chk["observed"]["role"] == "STANDBY" and chk["applies_to_field_validation"] is False, chk
     assert chk["mismatches"] == [], chk                                   # the fixture standby declares dataguard: true
     env2, _ = c.call("diagnostics.collect", {"collector_id": "Q-DISC-ARCHITECTURE-001", "target_alias": PRIMARY})
-    assert env2["architecture_check"]["mismatches"] == [] and env2["field_validation"]["level"] == "DOCUMENTATION_ONLY"
+    fv2 = env2["field_validation"]                                        # validated in the lab (CDB_ROOT, ASM): not this fixture
+    assert env2["architecture_check"]["mismatches"] == [] and fv2["level"] == "FIELD_VALIDATED_OTHER_CONTEXT", fv2
+    assert {d["dimension"] for d in fv2["differences"]} == {"container", "asm"}, fv2
 
 
 if __name__ == "__main__":

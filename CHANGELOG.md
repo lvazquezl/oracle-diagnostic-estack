@@ -4,11 +4,11 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change query|compatibility|security` — CHG-ESTACK-DISC-ARCHITECTURE-001 — arquitectura observada frente a la declarada
 
-Rama `change/disc-architecture` sobre `change/dict-pseudo-columns` (`4cca5cb`). Pendiente: validación en el lab y HUMAN REVIEW. Ver `docs/DISC_ARCHITECTURE.md`.
+Rama `change/disc-architecture` sobre `change/dict-pseudo-columns` (`4cca5cb`). Validado en el lab (19c): la arquitectura observada coincide con la declarada (ASM, sin RAC ni Data Guard, PRIMARY, LINUX). El primer intento mostró que los nombres de plataforma no se pueden listar de antemano, así que la familia de SO se calcula en la base. Pendiente: HUMAN REVIEW. Ver `docs/DISC_ARCHITECTURE.md`.
 
 ### Added
 
-- `Q-DISC-ARCHITECTURE-001`: hechos agregados de RAC, ASM, rol/Data Guard y plataforma, sin nombres. `mcp_gateway/architecture.py` los deduce. `diagnostics.collect` agrega `architecture_check` y la limitación `DECLARED_ARCHITECTURE_MISMATCH`, y con datos REAL la validación en campo usa lo observado en esa sesión. `mcp_gateway_lab` 0.6.0.
+- `Q-DISC-ARCHITECTURE-001`: hechos agregados de RAC, ASM, rol/Data Guard y familia de SO (calculada en la base), sin nombres. `mcp_gateway/architecture.py` los deduce. `diagnostics.collect` agrega `architecture_check` y la limitación `DECLARED_ARCHITECTURE_MISMATCH`, y con datos REAL la validación en campo usa lo observado en esa sesión. `mcp_gateway_lab` 0.6.0.
 
 ## [Unreleased] — `/change compatibility|documentation` — CHG-ESTACK-DICT-PSEUDO-COLUMNS-001 — valores de fila en lugar de pseudo-columnas
 

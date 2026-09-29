@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|compatibility|security` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/disc-architecture` (desde `change/dict-pseudo-columns`, `4cca5cb`, PR #20)
 **Origen:** `CHG-REQ-LAB-DISC-STORAGE` (ampliado a RAC, Data Guard y SO)
-**Estado:** propuesto. Pendiente: validación en el lab (§8) y HUMAN REVIEW.
+**Estado:** propuesto. Validado en el lab (§8). Pendiente: HUMAN REVIEW.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 
@@ -56,16 +56,28 @@ Una fila de conteos y enums; ningún identificador ni ruta sale de la base. `SEL
 
 ## 7. REGRESSION VALIDATION
 
-macOS (bash 5.3.20): 967/968. El único fallo es `test_field_validation`, que exige revalidar en el lab las `Q-DICT-VERIFY` regeneradas (§8).
+macOS (bash 5.3.20): 967/967 antes; después, con la revalidación registrada (§8), ver la cifra final en §12.
 
-## 8. Validación en el lab (pendiente)
+## 8. Validación en el lab
 
-**Intento 1** (2026-09-29T01:34Z, commit `faf67e5`, `REQ-8bed90e4cb1b`, `EVR-50b00c558b1a39b2d0106c46`): `DEGRADED`, `INVALID_VALUES_DROPPED:1`. `platform_name` no estaba en la lista cerrada de nombres de plataforma, así que el enum lo descartó y nunca salió. Probablemente es la plataforma ARM (aarch64) de la VM del lab, no incluida en la lista. El resto coincidió con lo declarado: RAC no, ASM sí (8/8 datafiles, 1 disk group), PRIMARY, Data Guard no. **Corrección:** la base reduce `PLATFORM_NAME` a una familia (`CASE ... LIKE`) y sale sólo `os_family`, un enum cerrado de 7 valores. Así el resultado no depende de conocer cada nombre de plataforma. Las 5 `Q-DICT-VERIFY` del mismo intento sólo reportaron Statspack (490 tokens).
+**Intento 1** (2026-09-29T01:34Z, commit `faf67e5`, `REQ-8bed90e4cb1b`, `EVR-50b00c558b1a39b2d0106c46`): `DEGRADED`, `INVALID_VALUES_DROPPED:1`. `platform_name` no estaba en la lista cerrada de nombres de plataforma, así que el enum lo descartó y nunca salió. Probablemente es la plataforma ARM (aarch64) de la VM del lab, no incluida en la lista. El resto coincidió con lo declarado: RAC no, ASM sí (8/8 datafiles, 1 disk group), PRIMARY, Data Guard no. **Corrección:** la base reduce `PLATFORM_NAME` a una familia (`CASE ... LIKE`) y sale sólo `os_family`, un enum cerrado de 7 valores. Así el resultado no depende de conocer cada nombre de plataforma. Las 5 `Q-DICT-VERIFY` del mismo intento sólo reportaron Statspack (490 tokens):
 
+| Parte | `REQ` | `EVR` | `query_sha256` |
+|---|---|---|---|
+| 001 | `REQ-bab7cbd8b98c` | `EVR-2854f2a67a410c5e5d806f57` | `9611969a…bab4` |
+| 002 | `REQ-499f23884fda` | `EVR-8bd80491c9b4bb1739c782c7` | `20db6b79…00c3` |
+| 003 | `REQ-e29dd53ebaaf` | `EVR-20c3cbcf3aa29733a748e847` | `b494c890…389b` |
+| 004 | `REQ-82da98693372` | `EVR-58f984a51b9cdc605313c9a7` | `62772eff…110c` |
+| 005 | `REQ-5a4c0b2e3c6b` | `EVR-a893c21e979fb986549663d9` | `2f57ece7…50a4` |
 
-Con esta rama en el workspace principal, el collector agregado al targets file privado y el lab reconectado:
-1. `Q-DISC-ARCHITECTURE-001` debe observar `asm: true`, `rac: false`, `dataguard: false`, `role: PRIMARY`, `os_family: LINUX`, sin diferencias con lo declarado (declaración corregida el 2026-09-25).
-2. Las 5 `Q-DICT-VERIFY` sólo deben reportar Statspack. Después se registran sus hashes y evidencias nuevos, y la validación en campo de `Q-DISC-ARCHITECTURE-001`.
+La corrección del intento 2 no toca el diccionario, así que esos hashes siguen vigentes y se registran como validación en campo.
+
+**Intento 2** (2026-09-29T01:41Z, commit `9a876c0`, `REQ-020de303d90b`, `EVR-e8d169ad1f2b8985f7088a21`, `query_sha256` `0940541b…d365`): `OK`, sin limitaciones.
+- Observado: RAC no, ASM sí (8/8 datafiles, 1 disk group), PRIMARY, Data Guard no, `os_family: LINUX`.
+- **Sin diferencias** con lo declarado (`applies_to_field_validation: true`).
+- En la misma sesión, `Q-DISC-IDENTITY-001` (`REQ-58a71f207523`) sale `FIELD_VALIDATED` con el contexto observado.
+
+Registro de validación en campo (`config/field-validation-registry.json`): se agrega `Q-DISC-ARCHITECTURE-001` (intento 2) y se actualizan `Q-DICT-VERIFY-001` … `-005` (intento 1).
 
 ## 9–10. Registros relacionados
 
@@ -74,4 +86,8 @@ Con esta rama en el workspace principal, el collector agregado al targets file p
 
 ## 11. HUMAN REVIEW (pendiente)
 
-## 12. Motor de gobernanza (pendiente, después de §8)
+Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+
+## 12. Motor de gobernanza
+
+Regresión final (macOS, bash 5.3.20): **968/968**. `advise --mode estack` (2026-09-29T01:58:56Z): `governance_state: PENDING_HUMAN_REVIEW`, `blockers: []`, `promote_status: HUMAN_ACTION_REQUIRED`, `content_digest: fadf6bf3ff845186800e45a4c8d89f32e5521cd2501be8770b20dae44f199a1e`. La salida queda fuera del repo, en `~/.local/share/oracle-diagnostic-estack/change-evidence/CHG-ESTACK-DISC-ARCHITECTURE-001/`.

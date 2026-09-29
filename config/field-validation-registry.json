@@ -37,6 +37,20 @@
       "change_id": "CHG-ESTACK-ORA19C-LAB-002"
     },
     {
+      "query_id": "Q-DISC-ARCHITECTURE-001",
+      "query_sha256": "0940541b6eeae84681ea9778c17ff8059d93994966f2e12c0514cb343364d365",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-29T01:41:00Z",
+      "evidence_refs": [
+        "EVR-e8d169ad1f2b8985f7088a21"
+      ],
+      "request_refs": [
+        "REQ-020de303d90b"
+      ],
+      "record": "docs/DISC_ARCHITECTURE.md",
+      "change_id": "CHG-ESTACK-DISC-ARCHITECTURE-001"
+    },
+    {
       "query_id": "Q-ORA-RESOURCE-LIMITS-001",
       "query_sha256": "02592c7f0fb99861cbb1a15608742cdbe53d45101c2397573471f47dd4072cda",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
@@ -108,73 +122,73 @@
     },
     {
       "query_id": "Q-DICT-VERIFY-001",
-      "query_sha256": "498f1027215690db036428bf7c95c63fecfa7ce1897a5d736ff270bfc166ae58",
+      "query_sha256": "9611969ad017bde81d076c9f107f2cf046d8b314dcc8ebcd5363bbc00409bab4",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T00:32:00Z",
+      "validated_at_utc": "2026-09-29T01:34:00Z",
       "evidence_refs": [
-        "EVR-8b4aeb1ffcb79c9f119f1b5d"
+        "EVR-2854f2a67a410c5e5d806f57"
       ],
       "request_refs": [
-        "REQ-6011e9e3daec"
+        "REQ-bab7cbd8b98c"
       ],
-      "record": "docs/DICT_PSEUDO_COLUMNS.md",
-      "change_id": "CHG-ESTACK-DICT-PSEUDO-COLUMNS-001"
+      "record": "docs/DISC_ARCHITECTURE.md",
+      "change_id": "CHG-ESTACK-DISC-ARCHITECTURE-001"
     },
     {
       "query_id": "Q-DICT-VERIFY-002",
-      "query_sha256": "aabf25d49529df496d7925772b01873613eaa3e8abde874c0f77b3115aa8d16d",
+      "query_sha256": "20db6b79881617b4bcb59c276e9f567e8969390c910deac6a4c4fcc4f9b900c3",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T00:32:00Z",
+      "validated_at_utc": "2026-09-29T01:34:00Z",
       "evidence_refs": [
-        "EVR-069627e9f2e6dd96da350356"
+        "EVR-8bd80491c9b4bb1739c782c7"
       ],
       "request_refs": [
-        "REQ-aba58c385ae4"
+        "REQ-499f23884fda"
       ],
-      "record": "docs/DICT_PSEUDO_COLUMNS.md",
-      "change_id": "CHG-ESTACK-DICT-PSEUDO-COLUMNS-001"
+      "record": "docs/DISC_ARCHITECTURE.md",
+      "change_id": "CHG-ESTACK-DISC-ARCHITECTURE-001"
     },
     {
       "query_id": "Q-DICT-VERIFY-003",
-      "query_sha256": "b126c8a7211310f7e099620f7ce5b14646b0ecb4f47dd60ba67f4522074b6fd9",
+      "query_sha256": "b494c890f90e9d6722f2fad99289c7615f86677a55fde551ac9f0c39c30d389b",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T00:32:00Z",
+      "validated_at_utc": "2026-09-29T01:34:00Z",
       "evidence_refs": [
-        "EVR-49406bf24da63b745102b082"
+        "EVR-20c3cbcf3aa29733a748e847"
       ],
       "request_refs": [
-        "REQ-4552bb6aea4c"
+        "REQ-e29dd53ebaaf"
       ],
-      "record": "docs/DICT_PSEUDO_COLUMNS.md",
-      "change_id": "CHG-ESTACK-DICT-PSEUDO-COLUMNS-001"
+      "record": "docs/DISC_ARCHITECTURE.md",
+      "change_id": "CHG-ESTACK-DISC-ARCHITECTURE-001"
     },
     {
       "query_id": "Q-DICT-VERIFY-004",
-      "query_sha256": "9314753d7dc98613efa67de3f2ececb218edb622106cc40bb892b70cd7e42bca",
+      "query_sha256": "62772eff02efbb62d90ee8dddc4c06f995df7f8ac774d8d84224bd786ea2110c",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T00:32:00Z",
+      "validated_at_utc": "2026-09-29T01:34:00Z",
       "evidence_refs": [
-        "EVR-ef0f999aa4107bdc055635e7"
+        "EVR-58f984a51b9cdc605313c9a7"
       ],
       "request_refs": [
-        "REQ-ba9dcdfcb616"
+        "REQ-82da98693372"
       ],
-      "record": "docs/DICT_PSEUDO_COLUMNS.md",
-      "change_id": "CHG-ESTACK-DICT-PSEUDO-COLUMNS-001"
+      "record": "docs/DISC_ARCHITECTURE.md",
+      "change_id": "CHG-ESTACK-DISC-ARCHITECTURE-001"
     },
     {
       "query_id": "Q-DICT-VERIFY-005",
-      "query_sha256": "bdf25483aa85e8a43f3a2735de17c8ce76e1b2ca09b4cfa252910a067d66c3ee",
+      "query_sha256": "2f57ece7e94b33e78b6c3131916a5f634e3da1f874f5a39123b7568c694e50a4",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T00:32:00Z",
+      "validated_at_utc": "2026-09-29T01:34:00Z",
       "evidence_refs": [
-        "EVR-e2b876ad97d22987c8433abb"
+        "EVR-a893c21e979fb986549663d9"
       ],
       "request_refs": [
-        "REQ-7483a7067bd3"
+        "REQ-5a4c0b2e3c6b"
       ],
-      "record": "docs/DICT_PSEUDO_COLUMNS.md",
-      "change_id": "CHG-ESTACK-DICT-PSEUDO-COLUMNS-001"
+      "record": "docs/DISC_ARCHITECTURE.md",
+      "change_id": "CHG-ESTACK-DISC-ARCHITECTURE-001"
     }
   ]
 }
