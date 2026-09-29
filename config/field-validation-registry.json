@@ -189,6 +189,48 @@
       ],
       "record": "docs/DISC_ARCHITECTURE.md",
       "change_id": "CHG-ESTACK-DISC-ARCHITECTURE-001"
+    },
+    {
+      "query_id": "Q-RMAN-BACKUP-DEVICE-001",
+      "query_sha256": "c761741c5fe6982f2d58dc5e48773fbd3a61676babbec2c8ded1d70f0998fc9f",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-29T03:38:00Z",
+      "evidence_refs": [
+        "EVR-5a9da5b1ac341474c2864d70"
+      ],
+      "request_refs": [
+        "REQ-aa3d65b9fc0d"
+      ],
+      "record": "docs/LAB_REVALIDATE_007.md",
+      "change_id": "CHG-ESTACK-LAB-REVALIDATE-007"
+    },
+    {
+      "query_id": "Q-SEC-PROXY-AUTHENTICATION-001",
+      "query_sha256": "164b7604ca2f208b4c5986b0506492f3a14063ffe40a0f76ad8d98f3e0081b4a",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-29T03:38:00Z",
+      "evidence_refs": [
+        "EVR-5f9ca0aba28072d1431371ea"
+      ],
+      "request_refs": [
+        "REQ-091f4c1d537f"
+      ],
+      "record": "docs/LAB_REVALIDATE_007.md",
+      "change_id": "CHG-ESTACK-LAB-REVALIDATE-007"
+    },
+    {
+      "query_id": "Q-ASM-TOPOLOGY-001",
+      "query_sha256": "1355d8cdf2db879b438b10dbcaf4ba59c0fa457c4b2997ffea2dee7cd14a0eb3",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-09-29T03:38:00Z",
+      "evidence_refs": [
+        "EVR-417325d97b1297203726a9c3"
+      ],
+      "request_refs": [
+        "REQ-98c25d84c0fd"
+      ],
+      "record": "docs/LAB_REVALIDATE_007.md",
+      "change_id": "CHG-ESTACK-LAB-REVALIDATE-007"
     }
   ]
 }

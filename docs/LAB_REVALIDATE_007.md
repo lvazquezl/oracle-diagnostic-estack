@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|security` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/lab-revalidate-007` (desde `change/validation-ru`, `1c41e31`)
 **Origen:** pendiente de `CHG-ESTACK-ORA19C-LAB-007` (5 queries corregidas, todas `DOCUMENTATION_ONLY`)
-**Estado:** propuesto. Pendiente: validación en el lab (§8) y HUMAN REVIEW.
+**Estado:** propuesto. Validado en el lab (§8). Pendiente: HUMAN REVIEW.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 
@@ -58,14 +58,19 @@ Todos los nombres salen enmascarados. El `+` no amplía lo que sale: sólo evita
 
 macOS (bash 5.3.20): **968/968**.
 
-## 8. Validación en el lab (pendiente)
+## 8. Validación en el lab
 
-Se esperan `OK`/`REAL` sin limitaciones en las 3:
-- 2 filas de proxy con `FLAGS` `PROXY MAY ACTIVATE ROLE` y `PROXY MAY ACTIVATE ALL CLIENT ROLES`;
-- al menos 1 fila de dispositivo (`DISK`);
-- 1 fila de ASM con la instancia enmascarada y el disk group en uso.
+2026-09-29T03:38Z, `lab-ol8-19c` (19c RU 19.32, `CDB$ROOT`, ASM, OL 8.10), commit `5ab1e8f`. Las 3 corrieron `OK`/`REAL`, sin limitaciones.
 
-Después se registran en el registro de validación en campo.
+| Query | `REQ` | `EVR` | `query_sha256` | Resultado |
+|---|---|---|---|---|
+| `Q-RMAN-BACKUP-DEVICE-001` | `REQ-aa3d65b9fc0d` | `EVR-5a9da5b1ac341474c2864d70` | `c761741c…fc9f` | 1 fila `SBT_TAPE`, sin nombre de dispositivo |
+| `Q-SEC-PROXY-AUTHENTICATION-001` | `REQ-091f4c1d537f` | `EVR-5f9ca0aba28072d1431371ea` | `164b7604…1b4a` | 2 filas con los datos de prueba: `PROXY MAY ACTIVATE ROLE` y `PROXY MAY ACTIVATE ALL CLIENT ROLES`; usuarios enmascarados; variante V2 (`FLAGS`) |
+| `Q-ASM-TOPOLOGY-001` | `REQ-98c25d84c0fd` | `EVR-417325d97b1297203726a9c3` | `1355d8cd…a0eb3` | 2 filas: instancia ASM enmascarada, `CONNECTED`, 19.0.0.0.0, un disk group `EXTERN` (~40 GB, ~35 GB libres); la segunda fila es un cliente sin disk group asociado (el `LEFT JOIN` no encuentra grupo; `GROUP_NUMBER = 0` documentado) |
+
+Las 3 pasan a `FIELD_VALIDATED` en el contexto `LAB-OL8-19C-CDBROOT-ASM` (`config/field-validation-registry.json`). Los datos de prueba de proxy pueden retirarse con el rollback entregado.
+
+**Observación para las skills:** `Q-ASM-TOPOLOGY-001` puede devolver filas de cliente sin disk group. `asm/topology` debe tratarlas como "cliente conectado sin grupo en uso", no como falta de datos (`CHG-REQ-SKILL-ASM-CLIENT-NOGROUP`).
 
 ## 9–10. Registros relacionados
 
@@ -74,4 +79,8 @@ Después se registran en el registro de validación en campo.
 
 ## 11. HUMAN REVIEW (pendiente)
 
-## 12. Motor de gobernanza (pendiente, después de §8)
+Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+
+## 12. Motor de gobernanza
+
+Regresión final (macOS, bash 5.3.20): **968/968**. `advise --mode estack` (2026-09-29T03:42:12Z): `governance_state: PENDING_HUMAN_REVIEW`, `blockers: []`, `promote_status: HUMAN_ACTION_REQUIRED`, `content_digest: 7cc271f874b04f818e0922b705ea238d9eaca405bc589fbdead4865441ce37ca`. La salida queda fuera del repo, en `~/.local/share/oracle-diagnostic-estack/change-evidence/CHG-ESTACK-LAB-REVALIDATE-007/`.

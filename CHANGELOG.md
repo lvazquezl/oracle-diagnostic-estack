@@ -4,7 +4,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change query|security` — CHG-ESTACK-LAB-REVALIDATE-007 — revalidación en el lab de las queries corregidas en LAB-007
 
-Rama `change/lab-revalidate-007` sobre `change/validation-ru` (`1c41e31`). Pendiente: validación en el lab y HUMAN REVIEW. Ver `docs/LAB_REVALIDATE_007.md`.
+Rama `change/lab-revalidate-007` sobre `change/validation-ru` (`1c41e31`). Validado en el lab (19c): las 3 queries corregidas en LAB-007 pasan a `FIELD_VALIDATED`. Pendiente: HUMAN REVIEW. Ver `docs/LAB_REVALIDATE_007.md`.
 
 ### Added
 
