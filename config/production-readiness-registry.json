@@ -160,6 +160,51 @@
       ]
     },
     {
+      "id": "collector:Q-DISC-ARCHITECTURE-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Aggregated architecture facts (RAC, ASM, role/Data Guard, platform); the gateway compares observed against declared context and uses the observed one for field validation (CHG-ESTACK-DISC-ARCHITECTURE-001). Fixture adapter and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_field_validation.sh"
+      ],
+      "collector_id": "Q-DISC-ARCHITECTURE-001",
+      "oracle_versions": [
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on GV$INSTANCE",
+        "SELECT on V$PARAMETER",
+        "SELECT on V$DATAFILE",
+        "SELECT on V$ASM_DISKGROUP_STAT",
+        "SELECT on V$DATABASE",
+        "SELECT on V$ARCHIVE_DEST"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 1,
+        "timeout_seconds": 15
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
       "id": "collector:Q-ORA-RESOURCE-LIMITS-001",
       "kind": "collector",
       "domain": "oracle",

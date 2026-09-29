@@ -2,6 +2,14 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change query|compatibility|security` — CHG-ESTACK-DISC-ARCHITECTURE-001 — arquitectura observada frente a la declarada
+
+Rama `change/disc-architecture` sobre `change/dict-pseudo-columns` (`4cca5cb`). Validado en el lab (19c): la arquitectura observada coincide con la declarada (ASM, sin RAC ni Data Guard, PRIMARY, LINUX). El primer intento mostró que los nombres de plataforma no se pueden listar de antemano, así que la familia de SO se calcula en la base. Aprobación humana registrada: `AUTH-DISC-ARCHITECTURE-001`, revisor `REV-DBAMANAGER`, `2026-09-29T02:06:54Z`, contra el digest `fadf6bf3…4f199a1e` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/DISC_ARCHITECTURE.md`.
+
+### Added
+
+- `Q-DISC-ARCHITECTURE-001`: hechos agregados de RAC, ASM, rol/Data Guard y familia de SO (calculada en la base), sin nombres. `mcp_gateway/architecture.py` los deduce. `diagnostics.collect` agrega `architecture_check` y la limitación `DECLARED_ARCHITECTURE_MISMATCH`, y con datos REAL la validación en campo usa lo observado en esa sesión. `mcp_gateway_lab` 0.6.0.
+
 ## [Unreleased] — `/change compatibility|documentation` — CHG-ESTACK-DICT-PSEUDO-COLUMNS-001 — valores de fila en lugar de pseudo-columnas
 
 Rama `change/dict-pseudo-columns` sobre `main` (`ca8a26b`). Validado en el lab (19c): la verificación del diccionario sólo reporta Statspack (no instalado). `Q-DICT-VERIFY-*` revalidadas en campo con su SQL nuevo. Aprobación humana registrada: `AUTH-DICT-PSEUDO-COLUMNS-001`, revisor `REV-DBAMANAGER`, `2026-09-29T00:37:12Z`, contra el digest `6560fd0c…799e5ac` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/DICT_PSEUDO_COLUMNS.md`.

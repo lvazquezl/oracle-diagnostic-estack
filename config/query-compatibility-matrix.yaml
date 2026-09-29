@@ -28,6 +28,14 @@ queries:
     license_requirements: none
     validation_status: COMPATIBLE
     was: VARIANT_REQUIRED   # estado antes de este hardening
+  Q-DISC-ARCHITECTURE-001:
+    file: queries/oracle/discovery/Q-DISC-ARCHITECTURE-001.md
+    variants:
+      - {variant_id: Q-DISC-ARCHITECTURE-001-V1, label: all_11gr2_plus, min: "11.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [GV$INSTANCE, V$PARAMETER, V$DATAFILE, V$ASM_DISKGROUP_STAT, V$DATABASE, V$ARCHIVE_DEST]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE   # CHG-ESTACK-DISC-ARCHITECTURE-001
 
   Q-DISC-RAC-001:
     file: queries/oracle/discovery/Q-DISC-RAC-001.md

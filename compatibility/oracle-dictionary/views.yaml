@@ -57,6 +57,8 @@ views:
 
   GV$INSTANCE:
     min_version: all
+    columns:
+      inst_id: {min_version: all}
     notes: "Mismas columnas que V$INSTANCE, una fila por instancia visible."
 
   V$DATABASE:
@@ -65,6 +67,7 @@ views:
     columns:
       name:                {min_version: all}
       database_role:         {min_version: all}
+      platform_name:        {min_version: all}   # CHG-ESTACK-DISC-ARCHITECTURE-001
       db_unique_name:         {min_version: all}   # Fase 5 Compatibility Hardening: registrada, usada por Q-DG-ROLE-001
       open_mode:              {min_version: all}
       log_mode:                {min_version: all}
@@ -361,6 +364,8 @@ views:
 
   V$DATAFILE:
     min_version: all
+    columns:
+      name: {min_version: all}
     notes: "Usada por Q-PERF-IO-FILESTAT-001 (join con V$FILESTAT para nombre de archivo)."
 
   V$SORT_USAGE:
