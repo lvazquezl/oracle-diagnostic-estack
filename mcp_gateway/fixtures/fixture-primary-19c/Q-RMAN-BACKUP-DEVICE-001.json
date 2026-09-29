@@ -1,0 +1,13 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "device_type": "DISK",
+      "device_name": null
+    },
+    {
+      "device_type": "SBT_TAPE",
+      "device_name": "SBT_TAPE"
+    }
+  ]
+}

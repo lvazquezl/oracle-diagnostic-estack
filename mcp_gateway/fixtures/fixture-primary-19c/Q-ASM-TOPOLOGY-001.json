@@ -1,0 +1,18 @@
+{
+  "fixture_note": "SYNTHETIC data \u2014 not observed from any real system",
+  "rows": [
+    {
+      "asm_instance": "+ASM",
+      "db_name": "ORCL",
+      "status": "CONNECTED",
+      "software_version": "19.0.0.0.0",
+      "diskgroup": "DATA",
+      "state": "CONNECTED",
+      "type": "EXTERN",
+      "total_mb": 102400,
+      "free_mb": 51200,
+      "usable_file_mb": 51200,
+      "required_mirror_free_mb": 0
+    }
+  ]
+}

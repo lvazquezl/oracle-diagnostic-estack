@@ -443,5 +443,30 @@ def the_observed_release_update_replaces_the_declared_one_and_a_mismatch_is_repo
         assert "release_update" not in env2["field_validation"]["not_compared"], env2["field_validation"]
 
 
+# --- CHG-ESTACK-LAB-REVALIDATE-007: queries corrected in LAB-007, exposed for field revalidation ---------------
+
+REVAL = ["Q-RMAN-BACKUP-DEVICE-001", "Q-SEC-PROXY-AUTHENTICATION-001", "Q-ASM-TOPOLOGY-001"]
+
+
+@posix_test
+def corrected_queries_run_their_certified_blocks_and_mask_every_name():
+    from mcp_gateway import catalog
+    with tmpdir() as d:
+        lab = Lab(d, targets=[lab_target(allowed_collectors=[ID] + REVAL)])
+        for q in REVAL:
+            env, is_error = lab.collect(q)
+            assert not is_error and env["provenance"]["kind"] == "REAL" and not env["limitations"], (q, env)
+            text = json.dumps(env)
+            for raw in ("C##PX_PROXY", "C##PX_CLIENT", "+ASM", "LAB19C", '"DATA"'):
+                assert raw not in text, (q, raw)
+        env, _ = lab.collect("Q-SEC-PROXY-AUTHENTICATION-001")
+        blocks = catalog.sql_blocks(open(catalog._find_query_file("Q-SEC-PROXY-AUTHENTICATION-001"), encoding="utf-8").read())
+        assert lab.driver.statements[-1] == blocks[1].rstrip().rstrip(";").rstrip(), "19c resolves the FLAGS variant (V2)"
+        assert {r["flags"] for r in env["evidence"]["rows"]} == {"PROXY MAY ACTIVATE ROLE", "PROXY MAY ACTIVATE ALL CLIENT ROLES"}
+        env, _ = lab.collect("Q-ASM-TOPOLOGY-001")
+        row, = env["evidence"]["rows"]
+        assert row["asm_instance"].startswith("asm") and row["status"] == "CONNECTED" and row["total_mb"] == 40960, row
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

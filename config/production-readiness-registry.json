@@ -205,6 +205,129 @@
       ]
     },
     {
+      "id": "collector:Q-RMAN-BACKUP-DEVICE-001",
+      "kind": "collector",
+      "domain": "rman",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Query corrected in CHG-ESTACK-ORA19C-LAB-007, exposed for field revalidation (CHG-ESTACK-LAB-REVALIDATE-007). Fixture adapter and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-RMAN-BACKUP-DEVICE-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on V$BACKUP_DEVICE"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 100,
+        "timeout_seconds": 10
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-SEC-PROXY-AUTHENTICATION-001",
+      "kind": "collector",
+      "domain": "security",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Query corrected in CHG-ESTACK-ORA19C-LAB-007, exposed for field revalidation (CHG-ESTACK-LAB-REVALIDATE-007). Fixture adapter and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-SEC-PROXY-AUTHENTICATION-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on PROXY_USERS (o rol activo con visibilidad equivalente)"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 200,
+        "timeout_seconds": 10
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-ASM-TOPOLOGY-001",
+      "kind": "collector",
+      "domain": "asm",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Query corrected in CHG-ESTACK-ORA19C-LAB-007, exposed for field revalidation (CHG-ESTACK-LAB-REVALIDATE-007). Fixture adapter and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-ASM-TOPOLOGY-001",
+      "oracle_versions": [
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on V$ASM_CLIENT",
+        "SELECT on V$ASM_DISKGROUP_STAT"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 100,
+        "timeout_seconds": 15
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
       "id": "collector:Q-ORA-RESOURCE-LIMITS-001",
       "kind": "collector",
       "domain": "oracle",
