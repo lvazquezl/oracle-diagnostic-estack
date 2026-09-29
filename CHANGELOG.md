@@ -8,7 +8,7 @@ Rama `change/cdb-temp-usage` sobre `change/lab-revalidate-007` (`bd39a30`). Pend
 
 ### Fixed
 
-- `Q-CDB-TEMP-001` 2.0.0 (breaking): uso de TEMP por PDB y tablespace, agregando por `(CON_ID, TABLESPACE_NAME)` sobre `V$TEMP_SPACE_HEADER`. La 1.0.0 devolvía uso nulo desde root. Skill `multitenant/pdb-temp` 1.1.0; collector habilitado en el lab (`mcp_gateway_lab` 0.8.0).
+- `Q-CDB-TEMP-001` 2.0.0 (breaking): uso de TEMP por PDB y tablespace desde `GV$SORT_SEGMENT`. `V$TEMP_SPACE_HEADER`, consultada desde root, sólo expone el root (confirmado en el lab), y por eso la 1.0.0 devolvía uso nulo. Diccionario: + `V$SORT_SEGMENT`/`GV$SORT_SEGMENT`. Skill `multitenant/pdb-temp` 1.1.0; collector habilitado en el lab (`mcp_gateway_lab` 0.8.0).
 
 ## [Unreleased] — `/change query|security` — CHG-ESTACK-LAB-REVALIDATE-007 — revalidación en el lab de las queries corregidas en LAB-007
 

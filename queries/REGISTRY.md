@@ -186,7 +186,7 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-CDB-SERVICES-001` | `GV$SERVICES`, `GV$ACTIVE_SERVICES` | R0 | LOW | 15 | 200 | MEDIUM (nombres) | none |
 | `Q-CDB-SESSION-DIST-001` | `GV$SESSION` | R0 | MEDIUM | 20 | 500 | MEDIUM (nombres) | none |
 | `Q-CDB-TABLESPACES-001` | `CDB_TABLESPACE_USAGE_METRICS`, `CDB_TABLESPACES`, `CDB_DATA_FILES` | R0 | LOW | 20 | 500 | LOW | none |
-| `Q-CDB-TEMP-001` | `CDB_TEMP_FILES`, `V$TEMP_SPACE_HEADER` | R0 | LOW | 15 | 200 | LOW | none |
+| `Q-CDB-TEMP-001` | `CDB_TEMP_FILES`, `CDB_TABLESPACES`, `GV$SORT_SEGMENT` | R0 | LOW | 15 | 200 | LOW | none |
 | `Q-CDB-PARAMETERS-001` | `GV$SYSTEM_PARAMETER` | R0 | MEDIUM | 20 | 500 | MEDIUM (valores) | none |
 | `Q-CDB-USERS-001` | `CDB_USERS` | R0 | MEDIUM | 20 | 500 | HIGH | none |
 | `Q-CDB-ROLES-001` | `CDB_ROLES` | R0 | LOW | 15 | 200 | MEDIUM (nombres) | none |

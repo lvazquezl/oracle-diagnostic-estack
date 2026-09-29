@@ -553,7 +553,8 @@
       ],
       "min_privileges": [
         "SELECT on CDB_TEMP_FILES",
-        "SELECT on V$TEMP_SPACE_HEADER"
+        "SELECT on CDB_TABLESPACES",
+        "SELECT on GV$SORT_SEGMENT"
       ],
       "license": "none",
       "limits": {

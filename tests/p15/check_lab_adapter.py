@@ -471,7 +471,7 @@ def corrected_queries_run_their_certified_blocks_and_mask_every_name():
 # --- CHG-ESTACK-CDB-TEMP-USAGE-001: PDB TEMP usage aggregated by tablespace (no file-number join) --------------
 
 @posix_test
-def pdb_temp_usage_is_aggregated_by_tablespace_without_a_file_number_join():
+def pdb_temp_usage_comes_from_the_sort_segment_aggregated_by_tablespace():
     from mcp_gateway import catalog
     with tmpdir() as d:
         lab = root_lab(d, max_rows=50, max_output_bytes=16384)
@@ -483,7 +483,7 @@ def pdb_temp_usage_is_aggregated_by_tablespace_without_a_file_number_join():
         stmt = lab.driver.statements[-1].lower()
         block, = catalog.sql_blocks(open(catalog._find_query_file("Q-CDB-TEMP-001"), encoding="utf-8").read())
         assert lab.driver.statements[-1] == block.rstrip().rstrip(";").rstrip()
-        assert "v$temp_space_header" in stmt and "gv$temp_space_header" not in stmt and "file_id" not in stmt
+        assert "gv$sort_segment" in stmt and "temp_space_header" not in stmt and "file_id" not in stmt
 
 
 if __name__ == "__main__":
