@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|skill` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/cdb-temp-usage` (desde `change/lab-revalidate-007`, `bd39a30`)
 **Origen:** `CHG-REQ-QUERY-CDB-TEMP-USAGE` (`CHG-ESTACK-ORA19C-LAB-003`)
-**Estado:** aprobado por revisión humana (§11), validado en el lab (§8, intento 2). Pendiente: `PROMOTE` (acción humana).
+**Estado:** aprobado (§11), validado en el lab (§8), integrado a `main` vía PR #25 (merge `00000b4`; la PR #24 quedó cerrada como integrada). Release `0.22.0`, tag `v0.22.0-observed-context` (se crea sobre el merge de la rama del changelog).
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 

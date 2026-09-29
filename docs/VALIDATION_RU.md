@@ -2,7 +2,7 @@
 
 **Tipo:** `/change compatibility|documentation` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/validation-ru` (desde `change/disc-architecture`, `c2d8a36`, PR #21)
 **Origen:** `CHG-REQ-VALIDATION-RU`
-**Estado:** aprobado por revisión humana (§11), validado en el lab (§8). Pendiente: `PROMOTE` (acción humana).
+**Estado:** aprobado (§11), validado en el lab (§8), integrado a `main` vía PR #22 (merge `9c4ef7c`). Release `0.22.0`, tag `v0.22.0-observed-context` (se crea sobre el merge de la rama del changelog).
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. Sin queries ni accesos nuevos.
 

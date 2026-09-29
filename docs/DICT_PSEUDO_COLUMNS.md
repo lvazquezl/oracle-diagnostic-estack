@@ -2,7 +2,7 @@
 
 **Tipo:** `/change compatibility|documentation` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/dict-pseudo-columns` (desde `main` `ca8a26b`, `v0.21.0-field-validation-matrix`)
 **Origen:** `CHG-REQ-DICT-PSEUDO-COLUMNS` (3 hallazgos restantes de la verificación del diccionario, `CHG-ESTACK-ORA19C-LAB-007` §8)
-**Estado:** aprobado por revisión humana (§11), validado en el lab (§8). Pendiente: `PROMOTE` (acción humana).
+**Estado:** aprobado (§11), validado en el lab (§8), integrado a `main` vía PR #20 (merge `f5a057a`). Release `0.22.0`, tag `v0.22.0-observed-context` (se crea sobre el merge de la rama del changelog).
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 

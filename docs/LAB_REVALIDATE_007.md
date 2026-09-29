@@ -2,7 +2,7 @@
 
 **Tipo:** `/change query|security` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/lab-revalidate-007` (desde `change/validation-ru`, `1c41e31`)
 **Origen:** pendiente de `CHG-ESTACK-ORA19C-LAB-007` (5 queries corregidas, todas `DOCUMENTATION_ONLY`)
-**Estado:** aprobado por revisión humana (§11), validado en el lab (§8). Pendiente: `PROMOTE` (acción humana).
+**Estado:** aprobado (§11), validado en el lab (§8), integrado a `main` vía PR #23 (merge `69edc88`). Release `0.22.0`, tag `v0.22.0-observed-context` (se crea sobre el merge de la rama del changelog).
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 

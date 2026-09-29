@@ -2,66 +2,75 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — `/change documentation|compatibility` — CHG-ESTACK-TEST-SIGPIPE-001 — tests sin tuberías hacia `grep -q`
+## [0.22.0] — 2026-09-29 — `v0.22.0-observed-context` — 6 cambios: pseudo-columnas, arquitectura observada, RU observado, revalidación LAB-007, TEMP por PDB, SIGPIPE en tests
 
-Rama `change/test-sigpipe` sobre `change/cdb-temp-usage` (`d565237`). Pendiente: CI y HUMAN REVIEW. Ver `docs/TEST_SIGPIPE.md`.
+El contexto del ambiente pasa de declarado a **observado**:
+- la discovery detecta RAC, ASM, Data Guard, rol y familia de SO;
+- la identidad aporta el RU;
+- la validación en campo usa lo observado y reporta toda diferencia con lo declarado.
 
-### Fixed
+El diccionario coincide con el catálogo real de 19c salvo Statspack, que no está instalado. 5 queries más pasan a `FIELD_VALIDATED` en el lab. La suite queda sin fallos aleatorios por SIGPIPE. Los 6 cambios fueron aprobados por revisión humana. Regresión local (macOS, bash 5.3): 969/969; CI de `main` en verde en los tres sistemas.
 
-- Fallos aleatorios por SIGPIPE bajo `pipefail` (`echo: write error: Broken pipe` en la CI de macOS): 396 tuberías hacia `grep -q` reescritas en 296 tests (here-string o `grep -c >/dev/null`), con las 4943 líneas de verificación idénticas antes y después.
+### `/change compatibility|documentation` — CHG-ESTACK-DICT-PSEUDO-COLUMNS-001 — valores de fila en lugar de pseudo-columnas
 
-### Added
+Rama `change/dict-pseudo-columns` sobre `main` (`ca8a26b`), integrada a `main` vía PR #20 (merge `f5a057a`). Validado en el lab (19c): la verificación del diccionario sólo reporta Statspack (no instalado). `Q-DICT-VERIFY-*` revalidadas en campo con su SQL nuevo. Aprobación humana registrada: `AUTH-DICT-PSEUDO-COLUMNS-001`, revisor `REV-DBAMANAGER`, `2026-09-29T00:37:12Z`, contra el digest `6560fd0c…799e5ac` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/DICT_PSEUDO_COLUMNS.md`.
 
-- `tests/test_no_pipe_into_early_exit_grep.sh`.
+#### Fixed
 
-## [Unreleased] — `/change query|skill` — CHG-ESTACK-CDB-TEMP-USAGE-001 — uso de TEMP por PDB sin `JOIN` por número de archivo
+- Diccionario: `V$DATAGUARD_STATS.TRANSPORT_LAG`/`APPLY_LAG` y `V$PGASTAT.PGA_AGGREGATE_LIMIT_ROW` no eran columnas. Los valores que filtran las queries pasan a `row_values:`.
 
-Rama `change/cdb-temp-usage` sobre `change/lab-revalidate-007` (`bd39a30`). Validado en el lab (19c): uso de TEMP de `PRUEBAS` no nulo desde root; `Q-CDB-TEMP-001` y las 5 `Q-DICT-VERIFY` regeneradas quedan `FIELD_VALIDATED`. Aprobación humana registrada: `AUTH-CDB-TEMP-USAGE-001`, revisor `REV-DBAMANAGER`, `2026-09-29T04:36:11Z`, contra el digest `dfc5dd3d…380f6dc6` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/CDB_TEMP_USAGE.md`.
+#### Added
 
-### Fixed
+- `row_values:` en `compatibility/oracle-dictionary/views.yaml` y `tests/test_dictionary_row_values.sh`.
 
-- `Q-CDB-TEMP-001` 2.0.0 (breaking): uso de TEMP por PDB y tablespace desde `GV$SORT_SEGMENT`. `V$TEMP_SPACE_HEADER`, consultada desde root, sólo expone el root (confirmado en el lab), y por eso la 1.0.0 devolvía uso nulo. Diccionario: + `V$SORT_SEGMENT`/`GV$SORT_SEGMENT`. Skill `multitenant/pdb-temp` 1.1.0; collector habilitado en el lab (`mcp_gateway_lab` 0.8.0).
+### `/change query|compatibility|security` — CHG-ESTACK-DISC-ARCHITECTURE-001 — arquitectura observada frente a la declarada
 
-## [Unreleased] — `/change query|security` — CHG-ESTACK-LAB-REVALIDATE-007 — revalidación en el lab de las queries corregidas en LAB-007
+Rama `change/disc-architecture` sobre `change/dict-pseudo-columns` (`4cca5cb`), integrada a `main` vía PR #21 (merge `72e973c`). Validado en el lab (19c): la arquitectura observada coincide con la declarada (ASM, sin RAC ni Data Guard, PRIMARY, LINUX). El primer intento mostró que los nombres de plataforma no se pueden listar de antemano, así que la familia de SO se calcula en la base. Aprobación humana registrada: `AUTH-DISC-ARCHITECTURE-001`, revisor `REV-DBAMANAGER`, `2026-09-29T02:06:54Z`, contra el digest `fadf6bf3…4f199a1e` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/DISC_ARCHITECTURE.md`.
 
-Rama `change/lab-revalidate-007` sobre `change/validation-ru` (`1c41e31`). Validado en el lab (19c): las 3 queries corregidas en LAB-007 pasan a `FIELD_VALIDATED`. Aprobación humana registrada: `AUTH-LAB-REVALIDATE-007`, revisor `REV-DBAMANAGER`, `2026-09-29T03:53:33Z`, contra el digest `7cc271f8…41ce37ca` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/LAB_REVALIDATE_007.md`.
+#### Added
 
-### Added
+- `Q-DISC-ARCHITECTURE-001`: hechos agregados de RAC, ASM, rol/Data Guard y familia de SO (calculada en la base), sin nombres. `mcp_gateway/architecture.py` los deduce. `diagnostics.collect` agrega `architecture_check` y la limitación `DECLARED_ARCHITECTURE_MISMATCH`, y con datos REAL la validación en campo usa lo observado en esa sesión. `mcp_gateway_lab` 0.6.0.
+
+### `/change compatibility|documentation` — CHG-ESTACK-VALIDATION-RU-001 — Release Update observado para la validación en campo
+
+Rama `change/validation-ru` sobre `change/disc-architecture` (`c2d8a36`), integrada a `main` vía PR #22 (merge `9c4ef7c`). Validado en el lab (19c): RU observado 19.32 igual al declarado; la identidad y la arquitectura siguen `FIELD_VALIDATED`. Aprobación humana registrada: `AUTH-VALIDATION-RU-001`, revisor `REV-DBAMANAGER`, `2026-09-29T03:08:26Z`, contra el digest `14b4f979…e1dab6ec` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/VALIDATION_RU.md`.
+
+#### Added
+
+- `release_update_check` en el `collect` de `Q-DISC-IDENTITY-001`: el RU observado (18c+) reemplaza al declarado para la validación en campo de la sesión, y la diferencia se reporta con `DECLARED_RELEASE_UPDATE_MISMATCH`.
+
+### `/change query|security` — CHG-ESTACK-LAB-REVALIDATE-007 — revalidación en el lab de las queries corregidas en LAB-007
+
+Rama `change/lab-revalidate-007` sobre `change/validation-ru` (`1c41e31`), integrada a `main` vía PR #23 (merge `69edc88`). Validado en el lab (19c): las 3 queries corregidas en LAB-007 pasan a `FIELD_VALIDATED`. Aprobación humana registrada: `AUTH-LAB-REVALIDATE-007`, revisor `REV-DBAMANAGER`, `2026-09-29T03:53:33Z`, contra el digest `7cc271f8…41ce37ca` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/LAB_REVALIDATE_007.md`.
+
+#### Added
 
 - Collectors `Q-RMAN-BACKUP-DEVICE-001`, `Q-SEC-PROXY-AUTHENTICATION-001` y `Q-ASM-TOPOLOGY-001` (nombres MASK), en el gateway y en el lab (`mcp_gateway_lab` 0.7.0).
 
-### Changed
+#### Changed
 
 - Sanitizador: `identifier` admite un `+` inicial (convención de ASM).
 - `Q-ASM-TOPOLOGY-001`: familia `11g` canónica (piso 11.2 sin cambios).
 
-## [Unreleased] — `/change compatibility|documentation` — CHG-ESTACK-VALIDATION-RU-001 — Release Update observado para la validación en campo
+### `/change query|skill` — CHG-ESTACK-CDB-TEMP-USAGE-001 — uso de TEMP por PDB sin `JOIN` por número de archivo
 
-Rama `change/validation-ru` sobre `change/disc-architecture` (`c2d8a36`). Validado en el lab (19c): RU observado 19.32 igual al declarado; la identidad y la arquitectura siguen `FIELD_VALIDATED`. Aprobación humana registrada: `AUTH-VALIDATION-RU-001`, revisor `REV-DBAMANAGER`, `2026-09-29T03:08:26Z`, contra el digest `14b4f979…e1dab6ec` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/VALIDATION_RU.md`.
+Rama `change/cdb-temp-usage` sobre `change/lab-revalidate-007` (`bd39a30`), integrada a `main` junto con PR #25 (merge `00000b4`; la rama de #25 la contenía, y GitHub cerró la PR #24 como integrada). Validado en el lab (19c): uso de TEMP de `PRUEBAS` no nulo desde root; `Q-CDB-TEMP-001` y las 5 `Q-DICT-VERIFY` regeneradas quedan `FIELD_VALIDATED`. Aprobación humana registrada: `AUTH-CDB-TEMP-USAGE-001`, revisor `REV-DBAMANAGER`, `2026-09-29T04:36:11Z`, contra el digest `dfc5dd3d…380f6dc6` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/CDB_TEMP_USAGE.md`.
 
-### Added
+#### Fixed
 
-- `release_update_check` en el `collect` de `Q-DISC-IDENTITY-001`: el RU observado (18c+) reemplaza al declarado para la validación en campo de la sesión, y la diferencia se reporta con `DECLARED_RELEASE_UPDATE_MISMATCH`.
+- `Q-CDB-TEMP-001` 2.0.0 (breaking): uso de TEMP por PDB y tablespace desde `GV$SORT_SEGMENT`. `V$TEMP_SPACE_HEADER`, consultada desde root, sólo expone el root (confirmado en el lab), y por eso la 1.0.0 devolvía uso nulo. Diccionario: + `V$SORT_SEGMENT`/`GV$SORT_SEGMENT`. Skill `multitenant/pdb-temp` 1.1.0; collector habilitado en el lab (`mcp_gateway_lab` 0.8.0).
 
-## [Unreleased] — `/change query|compatibility|security` — CHG-ESTACK-DISC-ARCHITECTURE-001 — arquitectura observada frente a la declarada
+### `/change documentation|compatibility` — CHG-ESTACK-TEST-SIGPIPE-001 — tests sin tuberías hacia `grep -q`
 
-Rama `change/disc-architecture` sobre `change/dict-pseudo-columns` (`4cca5cb`). Validado en el lab (19c): la arquitectura observada coincide con la declarada (ASM, sin RAC ni Data Guard, PRIMARY, LINUX). El primer intento mostró que los nombres de plataforma no se pueden listar de antemano, así que la familia de SO se calcula en la base. Aprobación humana registrada: `AUTH-DISC-ARCHITECTURE-001`, revisor `REV-DBAMANAGER`, `2026-09-29T02:06:54Z`, contra el digest `fadf6bf3…4f199a1e` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/DISC_ARCHITECTURE.md`.
+Rama `change/test-sigpipe` sobre `change/cdb-temp-usage` (`d565237`), integrada a `main` vía PR #25 (merge `00000b4`). La PR se integró 5 s después de abrirse, antes de que terminara su CI; la CI de `main` sobre `00000b4` pasó en ubuntu, macos y windows. Aprobación humana registrada: `AUTH-TEST-SIGPIPE-001`, revisor `REV-DBAMANAGER`, `2026-09-29T19:54:04Z`, contra el digest `a5306538…cc7124` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/TEST_SIGPIPE.md`.
 
-### Added
+#### Fixed
 
-- `Q-DISC-ARCHITECTURE-001`: hechos agregados de RAC, ASM, rol/Data Guard y familia de SO (calculada en la base), sin nombres. `mcp_gateway/architecture.py` los deduce. `diagnostics.collect` agrega `architecture_check` y la limitación `DECLARED_ARCHITECTURE_MISMATCH`, y con datos REAL la validación en campo usa lo observado en esa sesión. `mcp_gateway_lab` 0.6.0.
+- Fallos aleatorios por SIGPIPE bajo `pipefail` (`echo: write error: Broken pipe` en la CI de macOS): 396 tuberías hacia `grep -q` reescritas en 296 tests (here-string o `grep -c >/dev/null`), con las 4943 líneas de verificación idénticas antes y después.
 
-## [Unreleased] — `/change compatibility|documentation` — CHG-ESTACK-DICT-PSEUDO-COLUMNS-001 — valores de fila en lugar de pseudo-columnas
+#### Added
 
-Rama `change/dict-pseudo-columns` sobre `main` (`ca8a26b`). Validado en el lab (19c): la verificación del diccionario sólo reporta Statspack (no instalado). `Q-DICT-VERIFY-*` revalidadas en campo con su SQL nuevo. Aprobación humana registrada: `AUTH-DICT-PSEUDO-COLUMNS-001`, revisor `REV-DBAMANAGER`, `2026-09-29T00:37:12Z`, contra el digest `6560fd0c…799e5ac` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/DICT_PSEUDO_COLUMNS.md`.
-
-### Fixed
-
-- Diccionario: `V$DATAGUARD_STATS.TRANSPORT_LAG`/`APPLY_LAG` y `V$PGASTAT.PGA_AGGREGATE_LIMIT_ROW` no eran columnas. Los valores que filtran las queries pasan a `row_values:`.
-
-### Added
-
-- `row_values:` en `compatibility/oracle-dictionary/views.yaml` y `tests/test_dictionary_row_values.sh`.
+- `tests/test_no_pipe_into_early_exit_grep.sh`.
 
 ## [0.21.0] — 2026-09-28 — `v0.21.0-field-validation-matrix` — `/change compatibility|documentation|security` — CHG-ESTACK-VALIDATION-MATRIX-001 — validación en campo por query y contexto
 

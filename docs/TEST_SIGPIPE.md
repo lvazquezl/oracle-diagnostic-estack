@@ -1,7 +1,7 @@
 # CHG-ESTACK-TEST-SIGPIPE-001 — Tests sin tuberías hacia `grep -q` (SIGPIPE bajo `pipefail`)
 
 **Tipo:** `/change documentation|compatibility` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/test-sigpipe` (desde `change/cdb-temp-usage`, `d565237`, PR #24)
-**Estado:** propuesto. Pendiente: CI en los tres sistemas y HUMAN REVIEW.
+**Estado:** aprobado (§11), integrado a `main` vía PR #25 (merge `00000b4`; integrada antes de terminar la CI de la PR, cubierta por la CI de `main` en verde en los tres sistemas). Release `0.22.0`, tag `v0.22.0-observed-context` (se crea sobre el merge de la rama del changelog).
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY. Sólo cambian tests.
 
@@ -65,9 +65,9 @@ No aplica: no cambia nada que corra contra Oracle.
 - Nace del fallo de la PR #24 (`CHG-ESTACK-CDB-TEMP-USAGE-001`), que al re-ejecutarse pasó.
 - Pendiente menor: limpiar el código muerto de `test_unified_audit_detection.sh`.
 
-## 11. HUMAN REVIEW (pendiente)
+## 11. HUMAN REVIEW — aprobado
 
-Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+`AUTH-TEST-SIGPIPE-001`, revisor `REV-DBAMANAGER` (distinto del proponente `REV-CLAUDEAGENT`), `2026-09-29T19:54:04Z`, contra el digest `a5306538…cc7124`. El motor informa `review_status: APPROVED_BY_HUMAN` con verificación `STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`: comprueba la estructura y el digest, no la identidad del firmante. `PROMOTE` (merge, tag) sigue siendo acción humana.
 
 ## 12. Motor de gobernanza
 
