@@ -56,7 +56,7 @@ No resize/agrega tempfile automáticamente (`# 18`).
 
 # Decision logic
 
-1. Calcular presión (`LOW|MEDIUM|HIGH|UNKNOWN`) a partir de `bytes_used`/`bytes_free` por PDB.
+1. Calcular presión (`LOW|MEDIUM|HIGH|UNKNOWN`) a partir de `bytes_used`/`bytes_free` por PDB y tablespace TEMP (`Q-CDB-TEMP-001` 2.0.0 agrega por tablespace, no por tempfile). Si `bytes_used`/`bytes_free` llegan nulos, la presión es `UNKNOWN`, nunca `LOW`.
 2. Si hay presión `HIGH`, delegar a `oracle-performance-analyst` para confirmar correlación con waits TEMP reales (`direct path read/write temp`) — nunca afirmar la causa sin esa evidencia.
 
 # Normal state

@@ -1,7 +1,7 @@
 name: pdb-temp
 display_name: "PDB TEMP Pressure"
 id: multitenant/pdb-temp
-version: 1.0.0
+version: 1.1.0
 domain: multitenant
 status: active
 

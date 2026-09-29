@@ -2,6 +2,14 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change query|skill` — CHG-ESTACK-CDB-TEMP-USAGE-001 — uso de TEMP por PDB sin `JOIN` por número de archivo
+
+Rama `change/cdb-temp-usage` sobre `change/lab-revalidate-007` (`bd39a30`). Pendiente: validación en el lab y HUMAN REVIEW. Ver `docs/CDB_TEMP_USAGE.md`.
+
+### Fixed
+
+- `Q-CDB-TEMP-001` 2.0.0 (breaking): uso de TEMP por PDB y tablespace, agregando por `(CON_ID, TABLESPACE_NAME)` sobre `V$TEMP_SPACE_HEADER`. La 1.0.0 devolvía uso nulo desde root. Skill `multitenant/pdb-temp` 1.1.0; collector habilitado en el lab (`mcp_gateway_lab` 0.8.0).
+
 ## [Unreleased] — `/change query|security` — CHG-ESTACK-LAB-REVALIDATE-007 — revalidación en el lab de las queries corregidas en LAB-007
 
 Rama `change/lab-revalidate-007` sobre `change/validation-ru` (`1c41e31`). Validado en el lab (19c): las 3 queries corregidas en LAB-007 pasan a `FIELD_VALIDATED`. Aprobación humana registrada: `AUTH-LAB-REVALIDATE-007`, revisor `REV-DBAMANAGER`, `2026-09-29T03:53:33Z`, contra el digest `7cc271f8…41ce37ca` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/LAB_REVALIDATE_007.md`.

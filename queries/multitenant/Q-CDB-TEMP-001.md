@@ -1,6 +1,6 @@
 ---
 query_id: Q-CDB-TEMP-001
-version: 1.0.0
+version: 2.0.0
 
 domain: multitenant
 purpose: Uso de TEMP por PDB — presión de tempfile scoped por contenedor cuando la versión lo permite
@@ -12,8 +12,8 @@ supported_architectures: [Standalone, RAC]
 container_scope: CDB_ROOT_ONLY
 database_role_scope: ANY
 
-objects_accessed: [CDB_TEMP_FILES, GV$TEMP_SPACE_HEADER]
-privileges_required: [SELECT on CDB_TEMP_FILES, SELECT on GV$TEMP_SPACE_HEADER]
+objects_accessed: [CDB_TEMP_FILES, V$TEMP_SPACE_HEADER]
+privileges_required: [SELECT on CDB_TEMP_FILES, SELECT on V$TEMP_SPACE_HEADER]
 
 risk_class: R0
 cost_class: LOW
@@ -38,21 +38,30 @@ status: active
 ```sql
 SELECT f.con_id,
        f.tablespace_name,
-       f.bytes            AS allocated_bytes,
+       f.allocated_bytes,
        h.bytes_used,
        h.bytes_free
-FROM   cdb_temp_files f
-LEFT   JOIN gv$temp_space_header h
-       ON  h.con_id = f.con_id AND h.tablespace_name = f.tablespace_name AND h.file_id = f.file_id
-WHERE  f.con_id > 1
+FROM   (SELECT con_id, tablespace_name, SUM(bytes) AS allocated_bytes
+        FROM   cdb_temp_files
+        WHERE  con_id > 1
+        GROUP  BY con_id, tablespace_name) f
+LEFT   JOIN (SELECT con_id, tablespace_name, SUM(bytes_used) AS bytes_used, SUM(bytes_free) AS bytes_free
+             FROM   v$temp_space_header
+             GROUP  BY con_id, tablespace_name) h
+       ON  h.con_id = f.con_id AND h.tablespace_name = f.tablespace_name
 ORDER  BY f.con_id, f.tablespace_name;
 ```
+
+**2.0.0 (`CHG-ESTACK-CDB-TEMP-USAGE-001`, breaking: una fila por tablespace TEMP de cada PDB, no por tempfile).**
+- **Qué falló:** la 1.0.0 unía `CDB_TEMP_FILES` y `GV$TEMP_SPACE_HEADER` por `FILE_ID`. En el lab 19c, desde `CDB$ROOT`, el uso llegó `NULL` (`CHG-ESTACK-ORA19C-LAB-003`): la numeración de archivo no coincidió entre ambas vistas.
+- **Qué cambia:** ambos lados se agregan por `(CON_ID, TABLESPACE_NAME)` y se unen por eso, sin depender del número de archivo.
+- **Por qué `V$` y no `GV$`:** `V$TEMP_SPACE_HEADER` refleja los encabezados de los tempfiles, que son compartidos. `GV$` repetiría las filas por instancia en RAC y duplicaría la suma.
 
 `GV$TEMP_SPACE_HEADER` da uso real (`bytes_used`/`bytes_free`) por tempfile; `CDB_TEMP_FILES` da la asignación (`bytes`). El skill (`multitenant/pdb-temp`) correlaciona con `oracle-performance-analyst` si hay waits TEMP asociados (`# 18` del prompt) — esta query sólo aporta el lado de capacidad, no waits.
 
 # Notes by version
 
-`CDB_TEMP_FILES` desde 12.1 (mirror de `DBA_TEMP_FILES`, ya certificada en Oracle Core). `GV$TEMP_SPACE_HEADER` con `con_id` desde 12.1.
+`CDB_TEMP_FILES` desde 12.1 (mirror de `DBA_TEMP_FILES`, ya certificada en Oracle Core). `V$TEMP_SPACE_HEADER` con `con_id` desde 12.1.
 
 # Notes by platform
 
@@ -64,7 +73,7 @@ Ninguna — SQL puro.
 
 # Cost classification rationale
 
-`LOW` — acotado al número de tempfiles por PDB, típicamente pocos por contenedor.
+`LOW` — acotado al número de tablespaces TEMP por PDB.
 
 # License notes
 

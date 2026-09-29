@@ -233,7 +233,7 @@ def collectors_the_adapter_does_not_implement_are_denied_even_if_forced():
         lab = Lab(d)
         denied(lab, "E_COLLECTOR_NOT_ALLOWED", collector="Q-ORA-RESOURCE-LIMITS-001")      # implemented but not allowed by the target
         target = lab.gateway.targets[ALIAS]
-        for cid in ("Q-ORA-PROCESSES-SUMMARY-001", "Q-CDB-TEMP-001", "Q-DG-STATS-001", "Q-ORA-DIAGNOSTICS-ALERTLOG-001", "os.get_process_limits"):
+        for cid in ("Q-ORA-PROCESSES-SUMMARY-001", "Q-DG-STATS-001", "Q-ORA-DIAGNOSTICS-ALERTLOG-001", "os.get_process_limits"):
             try:
                 lab.adapter.fetch(target, lab.gateway.collectors[cid], {})               # adapter defense in depth
                 raise AssertionError("adapter ran an unimplemented collector")
@@ -242,15 +242,12 @@ def collectors_the_adapter_does_not_implement_are_denied_even_if_forced():
         assert set(oracle_sql.SUPPORTED_COLLECTORS) == {ID, "Q-ORA-RESOURCE-LIMITS-001", "Q-CDB-TABLESPACES-001", "Q-RMAN-FRA-USAGE-001",
                                                          "Q-RMAN-BACKUP-FRESHNESS-001", "Q-RMAN-JOB-SUMMARY-001",
                                                          *("Q-DICT-VERIFY-%03d" % i for i in range(1, 6)), "Q-DISC-ARCHITECTURE-001",
-                                                         "Q-RMAN-BACKUP-DEVICE-001", "Q-SEC-PROXY-AUTHENTICATION-001", "Q-ASM-TOPOLOGY-001"}
+                                                         "Q-RMAN-BACKUP-DEVICE-001", "Q-SEC-PROXY-AUTHENTICATION-001", "Q-ASM-TOPOLOGY-001", "Q-CDB-TEMP-001"}
         assert lab.driver.connects == []
     with tmpdir() as d:                                                              # the launcher refuses such a target file
         assert refused(d, targets=[lab_target(allowed_collectors=[ID, "Q-DG-STATS-001"])])
     with tmpdir() as d:                                                              # least privilege: not implemented on purpose
         assert refused(d, targets=[lab_target(allowed_collectors=[ID, "Q-ORA-RESOURCE-LIMITS-001", "Q-ORA-PROCESSES-SUMMARY-001"])])
-    with tmpdir() as d:                                                              # lab-validated partial result: not implemented
-        assert refused(d, targets=[lab_target(container="CDB_ROOT", allowed_collectors=[ID, "Q-CDB-TEMP-001"])],
-                       profile=profile_doc(**{"expected.container": "CDB_ROOT"}))
 
 
 @posix_test

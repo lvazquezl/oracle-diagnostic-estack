@@ -468,5 +468,23 @@ def corrected_queries_run_their_certified_blocks_and_mask_every_name():
         assert row["asm_instance"].startswith("asm") and row["status"] == "CONNECTED" and row["total_mb"] == 40960, row
 
 
+# --- CHG-ESTACK-CDB-TEMP-USAGE-001: PDB TEMP usage aggregated by tablespace (no file-number join) --------------
+
+@posix_test
+def pdb_temp_usage_is_aggregated_by_tablespace_without_a_file_number_join():
+    from mcp_gateway import catalog
+    with tmpdir() as d:
+        lab = root_lab(d, max_rows=50, max_output_bytes=16384)
+        lab.gateway.targets[ALIAS].allowed_collectors = frozenset(lab.gateway.targets[ALIAS].allowed_collectors | {"Q-CDB-TEMP-001"})
+        env, is_error = lab.collect("Q-CDB-TEMP-001")
+        assert not is_error and env["provenance"]["kind"] == "REAL" and not env["limitations"], env
+        row, = env["evidence"]["rows"]
+        assert row["con_id"] == 3 and row["bytes_used"] == 2097152 and row["bytes_free"] == 34603008, row
+        stmt = lab.driver.statements[-1].lower()
+        block, = catalog.sql_blocks(open(catalog._find_query_file("Q-CDB-TEMP-001"), encoding="utf-8").read())
+        assert lab.driver.statements[-1] == block.rstrip().rstrip(";").rstrip()
+        assert "v$temp_space_header" in stmt and "gv$temp_space_header" not in stmt and "file_id" not in stmt
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

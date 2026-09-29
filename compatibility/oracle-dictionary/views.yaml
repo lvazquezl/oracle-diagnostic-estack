@@ -192,7 +192,7 @@ views:
 
   V$TEMP_SPACE_HEADER:
     min_version: all
-    notes: "No usado por el catálogo actual; registrado por completitud del inventario (sección 15 del prompt de hardening)."
+    notes: "Usada por Q-CDB-TEMP-001 2.0.0 (CHG-ESTACK-CDB-TEMP-USAGE-001): uso de TEMP agregado por (con_id, tablespace_name); V$ y no GV$ para no duplicar en RAC."
 
   V$UNDOSTAT:
     min_version: all
@@ -679,7 +679,7 @@ views:
 
   GV$TEMP_SPACE_HEADER:
     min_version: "12.1"
-    notes: "Fase 6. Variante multi-instancia/multitenant de V$TEMP_SPACE_HEADER (ya registrada) con con_id. Usada por Q-CDB-TEMP-001."
+    notes: "Fase 6. Variante multi-instancia/multitenant de V$TEMP_SPACE_HEADER (ya registrada) con con_id. Q-CDB-TEMP-001 la usó hasta 1.0.0; desde 2.0.0 usa V$TEMP_SPACE_HEADER (CHG-ESTACK-CDB-TEMP-USAGE-001)."
 
   GV$SYSTEM_PARAMETER:
     min_version: "12.1"

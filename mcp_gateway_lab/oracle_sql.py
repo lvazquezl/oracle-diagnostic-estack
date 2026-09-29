@@ -53,6 +53,7 @@ SUPPORTED_COLLECTORS = {
     "Q-RMAN-BACKUP-DEVICE-001": {},                               # CHG-ESTACK-LAB-REVALIDATE-007: LAB-007 corrected queries
     "Q-SEC-PROXY-AUTHENTICATION-001": {},
     "Q-ASM-TOPOLOGY-001": {},
+    "Q-CDB-TEMP-001": {},                                         # CHG-ESTACK-CDB-TEMP-USAGE-001: 2.0.0, usage by tablespace
     "Q-DICT-VERIFY-001": {},                                      # CHG-ESTACK-ORA19C-LAB-006: generated dictionary verification
     "Q-DICT-VERIFY-002": {},
     "Q-DICT-VERIFY-003": {},

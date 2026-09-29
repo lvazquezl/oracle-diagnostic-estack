@@ -533,7 +533,7 @@
       "kind": "collector",
       "domain": "multitenant",
       "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
-      "notes": "PDB TEMP allocation and use from CDB$ROOT (bytes). Executed through the fixture adapter (fixture-cdb-root-19c) only. NOT implemented by the lab oracle_sql adapter: a real lab run from CDB$ROOT returned allocation without usage (GV$TEMP_SPACE_HEADER join), pending a /change query (CHG-ESTACK-ORA19C-LAB-003).",
+      "notes": "PDB TEMP allocation and use from CDB$ROOT (bytes). Executed through the fixture adapter (fixture-cdb-root-19c) only. NOT implemented by the lab oracle_sql adapter: a real lab run from CDB$ROOT returned allocation without usage (GV$TEMP_SPACE_HEADER join), pending a /change query (CHG-ESTACK-ORA19C-LAB-003). CHG-ESTACK-CDB-TEMP-USAGE-001: 2.0.0 aggregates by tablespace and is enabled in the lab adapter.",
       "test_refs": [
         "tests/test_p14_integration_chain.sh"
       ],
@@ -553,7 +553,7 @@
       ],
       "min_privileges": [
         "SELECT on CDB_TEMP_FILES",
-        "SELECT on GV$TEMP_SPACE_HEADER"
+        "SELECT on V$TEMP_SPACE_HEADER"
       ],
       "license": "none",
       "limits": {

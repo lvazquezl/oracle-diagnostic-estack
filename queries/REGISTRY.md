@@ -88,7 +88,7 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-CDB-SERVICES-001` | Servicios por PDB (CLB/RLB goal, instancia activa) | 12c–23ai | ídem | CDB | CDB_ROOT_ONLY | ANY |
 | `Q-CDB-SESSION-DIST-001` | Distribución de sesiones por PDB/instancia/servicio | 12c–23ai | ídem | CDB | CDB_ROOT_ONLY | ANY |
 | `Q-CDB-TABLESPACES-001` | Uso de tablespaces por PDB | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
-| `Q-CDB-TEMP-001` | Uso de TEMP por PDB | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-TEMP-001` | Uso de TEMP por PDB y tablespace (2.0.0, CHG-ESTACK-CDB-TEMP-USAGE-001) | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
 | `Q-CDB-PARAMETERS-001` | Scope de parámetros CDB$ROOT vs. PDB | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
 | `Q-CDB-USERS-001` | Usuarios comunes vs. locales (sólo visibilidad) | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
 | `Q-CDB-ROLES-001` | Roles comunes vs. locales (sólo visibilidad) | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
@@ -186,7 +186,7 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-CDB-SERVICES-001` | `GV$SERVICES`, `GV$ACTIVE_SERVICES` | R0 | LOW | 15 | 200 | MEDIUM (nombres) | none |
 | `Q-CDB-SESSION-DIST-001` | `GV$SESSION` | R0 | MEDIUM | 20 | 500 | MEDIUM (nombres) | none |
 | `Q-CDB-TABLESPACES-001` | `CDB_TABLESPACE_USAGE_METRICS`, `CDB_TABLESPACES`, `CDB_DATA_FILES` | R0 | LOW | 20 | 500 | LOW | none |
-| `Q-CDB-TEMP-001` | `CDB_TEMP_FILES`, `GV$TEMP_SPACE_HEADER` | R0 | LOW | 15 | 200 | LOW | none |
+| `Q-CDB-TEMP-001` | `CDB_TEMP_FILES`, `V$TEMP_SPACE_HEADER` | R0 | LOW | 15 | 200 | LOW | none |
 | `Q-CDB-PARAMETERS-001` | `GV$SYSTEM_PARAMETER` | R0 | MEDIUM | 20 | 500 | MEDIUM (valores) | none |
 | `Q-CDB-USERS-001` | `CDB_USERS` | R0 | MEDIUM | 20 | 500 | HIGH | none |
 | `Q-CDB-ROLES-001` | `CDB_ROLES` | R0 | LOW | 15 | 200 | MEDIUM (nombres) | none |
