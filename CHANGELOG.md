@@ -2,6 +2,18 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change compatibility|documentation` — CHG-ESTACK-DICT-PSEUDO-COLUMNS-001 — valores de fila en lugar de pseudo-columnas
+
+Rama `change/dict-pseudo-columns` sobre `main` (`ca8a26b`). Pendiente: validación en el lab y HUMAN REVIEW. Ver `docs/DICT_PSEUDO_COLUMNS.md`.
+
+### Fixed
+
+- Diccionario: `V$DATAGUARD_STATS.TRANSPORT_LAG`/`APPLY_LAG` y `V$PGASTAT.PGA_AGGREGATE_LIMIT_ROW` no eran columnas. Los valores que filtran las queries pasan a `row_values:`.
+
+### Added
+
+- `row_values:` en `compatibility/oracle-dictionary/views.yaml` y `tests/test_dictionary_row_values.sh`.
+
 ## [0.21.0] — 2026-09-28 — `v0.21.0-field-validation-matrix` — `/change compatibility|documentation|security` — CHG-ESTACK-VALIDATION-MATRIX-001 — validación en campo por query y contexto
 
 Rama `change/validation-matrix` sobre `main` (`3e8f8e0`), commit `d290505`, integrada a `main` vía PR #18 (merge `72da5bb`); CI en verde en ubuntu, macos y windows antes del merge. Aprobación humana registrada: `AUTH-VALIDATION-MATRIX-001`, revisor `REV-DBAMANAGER`, `2026-09-28T19:10:11Z`, contra el digest `7252a507…d5c6201` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/FIELD_VALIDATION_MATRIX.md`.

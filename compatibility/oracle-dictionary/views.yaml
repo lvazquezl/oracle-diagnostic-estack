@@ -9,6 +9,11 @@
 # (comparar como tupla major.minor, nunca como string). "all" = disponible desde 10g
 # (el mínimo soportado por el catálogo) sin restricción adicional conocida.
 #
+# row_values: (CHG-ESTACK-DICT-PSEUDO-COLUMNS-001) registra VALORES de una columna que una query filtra por
+# nombre (p. ej. V$DATAGUARD_STATS.NAME = 'apply lag'), con su min_version. NO son columnas: nunca se declaran bajo
+# `columns:`. tests/test_dictionary_row_values.sh exige que toda query certificada que filtre esas vistas por
+# nombre use sólo valores registrados.
+#
 # columns_exhaustive: true (PHASE 5 — DATA GUARD COMPATIBILITY & QUERY CERTIFICATION HARDENING,
 # # 7-9 del prompt) marca que el bloque `columns:` de esa vista es una lista COMPLETA de las
 # columnas que el catálogo certificado puede seleccionar de ella — no sólo el subconjunto
@@ -322,8 +327,17 @@ views:
   V$PGASTAT:
     min_version: all
     columns:
-      pga_aggregate_limit_row: {min_version: "12.1", notes: "No existe como fila de V$PGASTAT en ninguna versión — PGA_AGGREGATE_LIMIT es un PARAMETER (12.1+), leído vía V$PARAMETER por el skill, nunca vía esta vista. Entrada documental, no una columna real de V$PGASTAT — ver Q-PERF-PGA-001."}
-    notes: "Usada por Q-PERF-PGA-001. Filtrado por columna 'name' (string), no por nombre de columna SQL — una fila ausente en una versión no produce error, sólo NULL (ver docs/QUERY_VARIANTS.md)."
+      name: {min_version: all}
+      value: {min_version: all}
+      unit: {min_version: all}
+    row_values:
+      name:
+        "aggregate PGA target parameter": {min_version: all}
+        "total PGA inuse": {min_version: all}
+        "total PGA allocated": {min_version: all}
+        "over allocation count": {min_version: all}
+        "total freeable PGA memory": {min_version: all}
+    notes: "Usada por Q-PERF-PGA-001. Filtrado por VALORES de 'name', no por nombre de columna SQL — una fila ausente en una versión no produce error, sólo NULL (ver docs/QUERY_VARIANTS.md). PGA_AGGREGATE_LIMIT (12.1+) es un PARAMETER leído vía V$PARAMETER, no una fila de esta vista. CHG-ESTACK-DICT-PSEUDO-COLUMNS-001: se retira la pseudo-columna pga_aggregate_limit_row (marcador documental, no existe)."
 
   V$SYSSTAT:
     min_version: all
@@ -436,12 +450,14 @@ views:
     min_version: all
     columns_exhaustive: true
     columns:
-      transport_lag: {min_version: "11.0"}
-      apply_lag: {min_version: "11.0"}
       name: {min_version: all}
       value: {min_version: all}
       unit: {min_version: all}
-    notes: "Vista disponible desde 10g; columnas TRANSPORT_LAG/APPLY_LAG con nombre estable desde 11g (en 10g la métrica equivalente se lee de la columna genérica NAME/VALUE). Usada por Q-DG-STATS-001 (dataguard/lag)."
+    row_values:
+      name:
+        "transport lag": {min_version: "11.0"}
+        "apply lag": {min_version: "11.0"}
+    notes: "Vista disponible desde 10g. 'transport lag'/'apply lag' son VALORES de NAME (no columnas), con ese nombre exacto desde 11g. CHG-ESTACK-DICT-PSEUDO-COLUMNS-001: antes se declaraban como columnas TRANSPORT_LAG/APPLY_LAG, que no existen (confirmado en Oracle real por Q-DICT-VERIFY). Usada por Q-DG-STATS-001 (dataguard/lag)."
 
   V$DATAGUARD_STATUS:
     min_version: all
