@@ -2,7 +2,7 @@
 
 **Tipo:** `/change compatibility|documentation` (plano B, `ESTACK_DEVELOPMENT`) · **Rama:** `change/dict-pseudo-columns` (desde `main` `ca8a26b`, `v0.21.0-field-validation-matrix`)
 **Origen:** `CHG-REQ-DICT-PSEUDO-COLUMNS` (3 hallazgos restantes de la verificación del diccionario, `CHG-ESTACK-ORA19C-LAB-007` §8)
-**Estado:** propuesto. Pendiente: validación en el lab (§8) y HUMAN REVIEW.
+**Estado:** propuesto. Validado en el lab (§8). Pendiente: HUMAN REVIEW.
 
 READ-ONLY ALWAYS · HUMAN-EXECUTED REMEDIATION ONLY.
 
@@ -52,11 +52,22 @@ Sólo metadatos del diccionario del e-stack; sin cambios de acceso. Veredicto: *
 
 ## 7. REGRESSION VALIDATION
 
-macOS (bash 5.3.20): antes 967/967. Después: 967/968, con `test_field_validation` en espera de la revalidación (§8).
+macOS (bash 5.3.20): antes 967/967. Después **968/968**, con la revalidación registrada (§8).
 
-## 8. Validación en el lab (pendiente)
+## 8. Validación en el lab
 
-Con esta rama en el workspace principal y el lab reconectado, las 5 partes deben reportar **sólo** `STATS$SNAPSHOT` y `STATS$SYSTEM_EVENT` (Statspack no instalado). Después se actualizan en el registro de validación en campo los `query_sha256`, `EVR` y la fecha de las 5 partes.
+2026-09-29T00:32Z, `lab-ol8-19c` (19c RU 19.32, `CDB$ROOT`, ASM, OL 8.10), commit `251e4e0`. Las 5 partes corrieron `OK`/`REAL`, sin limitaciones: **487 tokens** (98 + 98 + 95 + 101 + 95). Sólo quedan `STATS$SNAPSHOT` y `STATS$SYSTEM_EVENT` (Statspack no instalado, esperado). Las 3 pseudo-columnas desaparecen; `V$PGASTAT.NAME/VALUE/UNIT` existen.
+
+| Parte | `REQ` | `EVR` | `query_sha256` |
+|---|---|---|---|
+| 001 | `REQ-6011e9e3daec` | `EVR-8b4aeb1ffcb79c9f119f1b5d` | `498f1027…6ae58` |
+| 002 | `REQ-aba58c385ae4` | `EVR-069627e9f2e6dd96da350356` | `aabf25d4…a8d16d` |
+| 003 | `REQ-4552bb6aea4c` | `EVR-49406bf24da63b745102b082` | `b126c8a7…b6fd9` |
+| 004 | `REQ-ba9dcdfcb616` | `EVR-ef0f999aa4107bdc055635e7` | `9314753d…42bca` |
+| 005 | `REQ-7483a7067bd3` | `EVR-e2b876ad97d22987c8433abb` | `bdf25483…6c3ee` |
+
+- **Validación en campo** (`CHG-ESTACK-VALIDATION-MATRIX-001`): antes de registrarse, el lanzador reportó `DOCUMENTATION_ONLY` / `SQL_CHANGED_SINCE_FIELD_VALIDATION` en las 5 partes, el comportamiento diseñado. Las 5 entradas de `config/field-validation-registry.json` se actualizaron con estos hashes, evidencias y este registro.
+- **Alcance para Data Guard:** las 12 vistas de las 7 queries de `dataguard` y sus 64 columnas existen en el catálogo 19c. Los valores de fila (`'transport lag'`, `'apply lag'`) y el comportamiento en un standby **no** se validan en este lab (primary): las 7 queries siguen `DOCUMENTATION_ONLY` (`CHG-REQ-LAB-MULTIVERSION`, ampliado a Data Guard).
 
 ## 9–10. Registros relacionados
 
@@ -64,4 +75,8 @@ Cierra `CHG-REQ-DICT-PSEUDO-COLUMNS`.
 
 ## 11. HUMAN REVIEW (pendiente)
 
-## 12. Motor de gobernanza (pendiente, después de §8)
+Revisor distinto del proponente, contra el `content_digest` del motor (§12).
+
+## 12. Motor de gobernanza
+
+`advise --mode estack` (2026-09-29T00:35:42Z): `governance_state: PENDING_HUMAN_REVIEW`, `blockers: []`, `promote_status: HUMAN_ACTION_REQUIRED`, `content_digest: 6560fd0cd7f4ba5fbc66a376682a43809c28c351a5ac8c69b59ba70c0799e5ac`. La salida queda fuera del repo, en `~/.local/share/oracle-diagnostic-estack/change-evidence/CHG-ESTACK-DICT-PSEUDO-COLUMNS-001/`.
