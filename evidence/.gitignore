@@ -5,3 +5,7 @@ derived/*
 !raw/.gitkeep
 !sanitized/.gitkeep
 !derived/.gitkeep
+requests/*
+inbox/*
+!requests/.gitkeep
+!inbox/.gitkeep

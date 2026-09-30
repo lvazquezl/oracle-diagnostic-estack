@@ -13,6 +13,9 @@ Una query certificada **no está validada en campo** hasta que su SQL exacto (`q
 | `FIELD_VALIDATED` | El mismo SQL corrió en un contexto que coincide con el target en todas las dimensiones comparables |
 | `FIELD_VALIDATED_OTHER_CONTEXT` | El mismo SQL corrió en real, pero alguna dimensión difiere. Las diferencias se listan, nunca se ocultan |
 | `DOCUMENTATION_ONLY` | Nunca corrió en real para ese SQL, o el SQL cambió desde que corrió (`SQL_CHANGED_SINCE_FIELD_VALIDATION`) |
+| `HUMAN_REPORTED` | El DBA ejecutó a mano el SQL certificado (`python -m human_evidence`, `CHG-ESTACK-HUMAN-EVIDENCE-001`) y entregó el CSV, que se saneó localmente. Es una observación real, pero **el e-stack no la observó**: no se pudo verificar el target, el usuario ni que el SQL fuera exactamente el entregado. Nivel propio de la evidencia `EVD-HR-*`, independiente de la validación en campo de la query |
+
+Orden de "más débil" para combinar evidencias: `FIELD_VALIDATED` > `FIELD_VALIDATED_OTHER_CONTEXT` > `HUMAN_REPORTED` > `DOCUMENTATION_ONLY`.
 
 ## Dimensiones del contexto
 
@@ -35,6 +38,7 @@ Una dimensión no declarada en el target se reporta en `not_compared` y **nunca*
 2. Un hallazgo con `validation_level` distinto de `FIELD_VALIDATED` debe decir explícitamente **"no validado en campo"**, e indicar las dimensiones que difieren (p. ej. "validado en 19c single-instance; el target es RAC").
 3. **Tope de confianza:** con evidencia que no es `FIELD_VALIDATED`, `confidence` no puede superar `PROBABLE_CAUSE`. Nunca `CONFIRMED_ROOT_CAUSE`. `diagnostics.analyze_incident` lo expone como `field_validation.confidence_ceiling`, y el orquestador lo aplica.
 4. Un recurso sin validación en campo sigue siendo utilizable: orienta el análisis, y el DBA confirma.
+5. **Evidencia reportada por humano** (`EVD-HR-*`): el hallazgo la cita como "reportada por `<reporter_id>` (ejecución manual de `<query_id>`)", con techo `PROBABLE_CAUSE`. Sus columnas `DROP` y los valores descartados (`SENSITIVE_VALUES_DROPPED`, `COLUMNS_DROPPED`) son limitaciones que el hallazgo declara. Ver [docs/HUMAN_EVIDENCE.md](../docs/HUMAN_EVIDENCE.md).
 
 ## Cómo se agrega una validación
 

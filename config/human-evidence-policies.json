@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0.0",
+  "description": "CHG-ESTACK-HUMAN-EVIDENCE-001. Per-query column policy overrides for python -m human_evidence ingest (KEEP/MASK/HASH/TOKENIZE/DROP), used only for queries WITHOUT a gateway collector spec \u2014 when mcp_gateway/catalog/collectors.json has the query, its output_fields policies are authoritative and any column outside them is dropped. An override never un-drops a sensitive-named column (password, secret, token, wallet, key, bind, sql_text...) and never disables the per-value checks (secret-shaped values dropped, paths/IPs/hosts masked inside KEEP). Adding an override is a /change (security) \u2014 human review required.",
+  "queries": {
+    "Q-ORA-PARAMETERS-RAC-DIFF-001": {
+      "name": "KEEP"
+    }
+  }
+}
