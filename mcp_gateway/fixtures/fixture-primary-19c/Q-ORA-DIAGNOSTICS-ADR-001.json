@@ -1,0 +1,10 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
+  "rows": [
+    {
+      "message_type": "Warning",
+      "message_level": 5,
+      "hours_since_created": 6.5
+    }
+  ]
+}

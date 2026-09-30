@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
+  "rows": [
+    {
+      "owner": "SYNTH_APP",
+      "job_name": "SYNTH_NIGHTLY",
+      "state": "SCHEDULED",
+      "failure_count": 3,
+      "hours_since_last_start": 6.5
+    }
+  ]
+}

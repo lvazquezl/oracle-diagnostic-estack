@@ -1,6 +1,6 @@
 ---
 query_id: Q-ORA-SPFILE-001
-version: 1.0.0
+version: 1.1.0
 domain: oracle
 purpose: Existencia de SPFILE y parámetros modificados en memoria sin persistir
 
@@ -32,7 +32,11 @@ status: active
 
 ```sql
 SELECT (SELECT COUNT(*) FROM v$spparameter WHERE value IS NOT NULL) AS spfile_params_count,
-       p.name, p.value, p.ismodified
+       p.name, p.ismodified,
+       CASE WHEN REGEXP_LIKE(p.value, '^[0-9]{1,15}$') THEN TO_NUMBER(p.value) END AS value_number,
+       CASE WHEN UPPER(p.value) IN ('TRUE', 'FALSE') THEN UPPER(p.value) END AS value_flag,
+       CASE WHEN REGEXP_LIKE(p.value, '^[0-9]{1,2}(\.[0-9]{1,3}){1,4}$') THEN p.value END AS value_version,
+       CASE WHEN UPPER(p.value) IN ('ADAPTIVE', 'ALL', 'ALL_ROWS', 'ASYNCH', 'AUTO', 'BASIC', 'BOTH', 'DB', 'DB, EXTENDED', 'DEDICATED', 'DEFAULT', 'DIRECTIO', 'DISABLE', 'DISABLED', 'ENABLE', 'ENABLED', 'EXACT', 'EXCLUSIVE', 'EXTENDED', 'FIRST_ROWS', 'FORCE', 'FULL', 'HIGH', 'INSTANCE', 'INTERPRETED', 'LOCAL', 'LOW', 'MANUAL', 'MEDIUM', 'MEMORY', 'NATIVE', 'NO', 'NONE', 'OFF', 'ON', 'OS', 'PARTIAL', 'SESSION', 'SETALL', 'SHARED', 'SIMILAR', 'SPFILE', 'TYPICAL', 'XML', 'XML, EXTENDED', 'YES') THEN UPPER(p.value) END AS value_keyword
 FROM   v$parameter p
 WHERE  p.ismodified = 'MODIFIED';
 ```
@@ -62,5 +66,7 @@ Ninguna.
 # Sanitization notes
 
 `value` → condicional según el parámetro modificado.
+
+CHG-ESTACK-COLLECTOR-FACTORY-B1 — `value_number`/`value_flag`/`value_version`/`value_keyword` (1.1.0): mismas formas que `Q-ORA-PARAMETERS-001`, que **sustituyen** a `value` (ya no se selecciona).
 
 # Evolution via `/change query`

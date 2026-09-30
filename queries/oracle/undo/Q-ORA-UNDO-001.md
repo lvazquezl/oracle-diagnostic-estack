@@ -1,6 +1,6 @@
 ---
 query_id: Q-ORA-UNDO-001
-version: 1.0.0
+version: 1.0.1
 domain: oracle
 purpose: Configuración y uso del tablespace UNDO activo
 
@@ -34,7 +34,8 @@ status: active
 SELECT (SELECT value FROM v$parameter WHERE name='undo_tablespace') AS undo_tablespace,
        (SELECT value FROM v$parameter WHERE name='undo_retention') AS undo_retention,
        (SELECT MAX(tuned_undoretention) FROM v$undostat
-        WHERE begin_time >= SYSDATE - 1/24) AS tuned_undoretention_last_hour;
+        WHERE begin_time >= SYSDATE - 1/24) AS tuned_undoretention_last_hour
+FROM   dual;
 ```
 
 # Notes by version
@@ -60,5 +61,7 @@ Ninguna.
 # Sanitization notes
 
 Todos los campos → KEEP.
+
+CHG-ESTACK-COLLECTOR-FACTORY-B1 — 1.0.1: se agrega `FROM dual`. Sin él la sentencia no es válida (ORA-00923); lo detectó la primera ejecución real en el lab.
 
 # Evolution via `/change query`

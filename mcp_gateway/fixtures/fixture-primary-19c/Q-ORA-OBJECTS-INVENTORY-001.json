@@ -1,0 +1,11 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
+  "rows": [
+    {
+      "owner": "SYNTH_APP",
+      "object_type": "PACKAGE BODY",
+      "status": "VALID",
+      "object_count": 57
+    }
+  ]
+}

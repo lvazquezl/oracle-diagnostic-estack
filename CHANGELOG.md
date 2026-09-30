@@ -2,6 +2,32 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change query|security|documentation` — CHG-ESTACK-COLLECTOR-FACTORY-B1 — fábrica de collectors, lote B1 (Oracle Core y tablespaces)
+
+Rama `change/collector-factory-b1` sobre `main` (`9ba2a17`). Validado en el lab: los 18 collectors corren con datos reales y quedan `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Pendiente: CI y HUMAN REVIEW. Ver `docs/COLLECTOR_FACTORY.md`.
+
+### Added
+
+- `python3 -m scripts.collector_factory.generate [--check|--write]`:
+  - genera collectors del gateway desde queries certificadas, a partir de una base de conocimiento de columnas y de lotes;
+  - incluye un control de deriva.
+- Lote B1: 18 collectors para `/healthcheck` Oracle Core y tablespaces, que llevan el catálogo a 39.
+  - Los carga `mcp_gateway/catalog/collectors.factory.json` con las mismas reglas de default-deny.
+  - Los implementa el adaptador `oracle_sql` del lab, con alias de columna.
+- Tipo de campo `parameter_name`: se puede conservar (`KEEP`) sólo en un campo con ese nombre y con forma de nombre de parámetro Oracle.
+- `tests/test_collector_factory.sh` (P18, 12 casos, 9 mutaciones detectadas).
+
+### Changed
+
+- Las queries de collectors seleccionan sólo lo que exponen: columnas calculadas en la base **sustituyen** a fechas crudas, rutas y texto libre.
+  - Edades en horas en `Q-DISC-INSTANCE-001`, `Q-ORA-INSTANCE-STATE-001`, `Q-ORA-JOBS-SUMMARY-001`, `Q-ORA-DIAGNOSTICS-ADR-001` y `Q-ORA-ARCHIVE-001`.
+  - `Q-ORA-ARCHIVE-001` agrega además el tipo de destino y el indicador de error.
+  - `Q-ORA-PARAMETERS-001` y `Q-ORA-SPFILE-001` descomponen el valor en número, flag, versión o palabra clave.
+
+### Fixed
+
+- `Q-ORA-UNDO-001` 1.0.1: faltaba `FROM dual` (ORA-00923), detectado en la primera ejecución real en el lab.
+
 ## [0.22.0] — 2026-09-29 — `v0.22.0-observed-context` — 6 cambios: pseudo-columnas, arquitectura observada, RU observado, revalidación LAB-007, TEMP por PDB, SIGPIPE en tests
 
 El contexto del ambiente pasa de declarado a **observado**:

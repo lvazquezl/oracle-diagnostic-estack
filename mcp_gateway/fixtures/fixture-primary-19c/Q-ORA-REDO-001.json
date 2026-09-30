@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
+  "rows": [
+    {
+      "thread_no": 1,
+      "group_no": 1,
+      "bytes": 209715200,
+      "status": "CURRENT",
+      "member_count": 2
+    }
+  ]
+}

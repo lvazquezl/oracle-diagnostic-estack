@@ -1,6 +1,6 @@
 ---
 query_id: Q-ORA-ARCHIVE-001
-version: 1.1.0
+version: 1.2.0
 domain: oracle
 purpose: Configuración y estado de destinos de archivado
 
@@ -31,8 +31,13 @@ status: active
 # Statement / procedure (read-only)
 
 ```sql
-SELECT d.dest_id, d.destination, s.status, s.error,
-       (SELECT MAX(completion_time) FROM v$archived_log a WHERE a.dest_id = d.dest_id) AS last_archived
+SELECT d.dest_id, s.status,
+       ROUND((SYSDATE - (SELECT MAX(completion_time) FROM v$archived_log a WHERE a.dest_id = d.dest_id)) * 24, 2) AS hours_since_last_archived,
+       CASE WHEN d.destination IS NULL THEN 'NONE'
+            WHEN UPPER(d.destination) = 'USE_DB_RECOVERY_FILE_DEST' THEN 'FRA'
+            WHEN d.destination LIKE '/%' OR d.destination LIKE '+%' OR d.destination LIKE '_:%' THEN 'LOCAL'
+            ELSE 'SERVICE' END AS dest_kind,
+       CASE WHEN s.error IS NULL THEN 'NO' ELSE 'YES' END AS has_error
 FROM   v$archive_dest d, v$archive_dest_status s
 WHERE  d.dest_id = s.dest_id AND d.status != 'INACTIVE';
 ```
@@ -60,5 +65,7 @@ Ninguna.
 # Sanitization notes
 
 `destination` → MASK por defecto (puede revelar hostname/ruta remota).
+
+CHG-ESTACK-COLLECTOR-FACTORY-B1 — (1.2.0) `hours_since_last_archived`, `dest_kind` (`FRA`/`LOCAL`/`SERVICE`/`NONE`) y `has_error` **sustituyen** a `last_archived`, `destination` y `error`: calculados en la base de datos, sin ruta, servicio, texto de error ni fecha cruda.
 
 # Evolution via `/change query`

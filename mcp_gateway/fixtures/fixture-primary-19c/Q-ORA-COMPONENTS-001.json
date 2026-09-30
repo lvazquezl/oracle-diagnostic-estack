@@ -1,0 +1,10 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
+  "rows": [
+    {
+      "comp_id": "CATALOG",
+      "version": "19.0.0.0.0",
+      "status": "VALID"
+    }
+  ]
+}
