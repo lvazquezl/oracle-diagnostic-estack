@@ -1,0 +1,11 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
+  "rows": [
+    {
+      "copies": 2,
+      "record_type": "ARCHIVED LOG",
+      "records_used": 120,
+      "records_total": 448
+    }
+  ]
+}

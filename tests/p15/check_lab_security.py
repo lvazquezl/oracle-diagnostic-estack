@@ -242,7 +242,8 @@ def collectors_the_adapter_does_not_implement_are_denied_even_if_forced():
         assert set(oracle_sql.SUPPORTED_COLLECTORS) == {ID, "Q-ORA-RESOURCE-LIMITS-001", "Q-CDB-TABLESPACES-001", "Q-RMAN-FRA-USAGE-001",
                                                          "Q-RMAN-BACKUP-FRESHNESS-001", "Q-RMAN-JOB-SUMMARY-001",
                                                          *("Q-DICT-VERIFY-%03d" % i for i in range(1, 6)), "Q-DISC-ARCHITECTURE-001",
-                                                         "Q-RMAN-BACKUP-DEVICE-001", "Q-SEC-PROXY-AUTHENTICATION-001", "Q-ASM-TOPOLOGY-001", "Q-CDB-TEMP-001"}
+                                                         "Q-RMAN-BACKUP-DEVICE-001", "Q-SEC-PROXY-AUTHENTICATION-001", "Q-ASM-TOPOLOGY-001", "Q-CDB-TEMP-001",
+                                                         *oracle_sql._factory_collectors()}          # CHG-ESTACK-COLLECTOR-FACTORY-B1
         assert lab.driver.connects == []
     with tmpdir() as d:                                                              # the launcher refuses such a target file
         assert refused(d, targets=[lab_target(allowed_collectors=[ID, "Q-DG-STATS-001"])])

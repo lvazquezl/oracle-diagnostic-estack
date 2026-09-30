@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
+  "rows": [
+    {
+      "dest_id": 1,
+      "status": "VALID",
+      "dest_kind": "FRA",
+      "has_error": "NO",
+      "hours_since_last_archived": 6.5
+    }
+  ]
+}

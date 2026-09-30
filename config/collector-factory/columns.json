@@ -1,0 +1,685 @@
+{
+ "_doc": "CHG-ESTACK-COLLECTOR-FACTORY-B1. Column knowledge base of the collector factory: one gateway field definition per output field name (after the lab alias). A lot may narrow a definition per collector (lots/*.json 'overrides'), never widen its policy. 'example' feeds the synthetic fixtures only. Identity-like columns are MASK (identifier), free text is never declared. Changing this file is a /change security.",
+ "fields": {
+  "inst_id": {
+   "type": "integer",
+   "min": 1,
+   "max": 1000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "instance_number": {
+   "type": "integer",
+   "min": 1,
+   "max": 1000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "instance_name": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "inst",
+   "example": "SYNTH1"
+  },
+  "host_name": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "host",
+   "example": "synthhost01"
+  },
+  "status": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [],
+   "example": null
+  },
+  "database_status": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "ACTIVE",
+    "INSTANCE RECOVERY",
+    "SUSPENDED"
+   ],
+   "example": "ACTIVE"
+  },
+  "active_state": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NORMAL",
+    "QUIESCED",
+    "QUIESCING"
+   ],
+   "example": "NORMAL"
+  },
+  "shutdown_pending": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "NO"
+  },
+  "instance_role": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "PRIMARY_INSTANCE",
+    "SECONDARY_INSTANCE",
+    "UNKNOWN"
+   ],
+   "example": "PRIMARY_INSTANCE"
+  },
+  "uptime_hours": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 412.25
+  },
+  "flashback_on": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "RESTORE POINT ONLY",
+    "YES"
+   ],
+   "example": "NO"
+  },
+  "guard_status": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "ALL",
+    "NONE",
+    "STANDBY"
+   ],
+   "example": "NONE"
+  },
+  "protection_mode": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "MAXIMUM AVAILABILITY",
+    "MAXIMUM PERFORMANCE",
+    "MAXIMUM PROTECTION",
+    "RESYNCHRONIZATION",
+    "UNPROTECTED"
+   ],
+   "example": "MAXIMUM PERFORMANCE"
+  },
+  "protection_level": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "MAXIMUM AVAILABILITY",
+    "MAXIMUM PERFORMANCE",
+    "MAXIMUM PROTECTION",
+    "RESYNCHRONIZATION",
+    "UNPROTECTED"
+   ],
+   "example": "MAXIMUM PERFORMANCE"
+  },
+  "remote_archive": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "DISABLED",
+    "ENABLED"
+   ],
+   "example": "ENABLED"
+  },
+  "switchover_status": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FAILED DESTINATION",
+    "LOG SWITCH GAP",
+    "NOT ALLOWED",
+    "PREPARING DICTIONARY",
+    "PREPARING SWITCHOVER",
+    "RECOVERY NEEDED",
+    "RESOLVABLE GAP",
+    "SESSIONS ACTIVE",
+    "SWITCHOVER LATENT",
+    "SWITCHOVER PENDING",
+    "TO LOGICAL STANDBY",
+    "TO PRIMARY",
+    "TO STANDBY",
+    "UNRESOLVABLE GAP"
+   ],
+   "example": "NOT ALLOWED"
+  },
+  "comp_id": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "AMD",
+    "APEX",
+    "APS",
+    "CATALOG",
+    "CATJAVA",
+    "CATPROC",
+    "CONTEXT",
+    "DV",
+    "EM",
+    "EXF",
+    "JAVAVM",
+    "MGW",
+    "ODM",
+    "OLS",
+    "ORDIM",
+    "OWM",
+    "RAC",
+    "RUL",
+    "SDO",
+    "WK",
+    "XDB",
+    "XML",
+    "XOQ"
+   ],
+   "example": "CATALOG"
+  },
+  "version": {
+   "type": "version_string",
+   "policy": "KEEP",
+   "example": "19.0.0.0.0"
+  },
+  "copies": {
+   "type": "integer",
+   "min": 0,
+   "max": 8,
+   "policy": "KEEP",
+   "example": 2
+  },
+  "record_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "ACM OPERATION",
+    "ARCHIVED LOG",
+    "AUXILIARY DATAFILE COPY",
+    "BACKUP CORRUPTION",
+    "BACKUP DATAFILE",
+    "BACKUP PIECE",
+    "BACKUP REDOLOG",
+    "BACKUP SET",
+    "BACKUP SPFILE",
+    "CKPT PROGRESS",
+    "COPY CORRUPTION",
+    "DATABASE",
+    "DATABASE BLOCK CORRUPTION",
+    "DATABASE INCARNATION",
+    "DATAFILE",
+    "DATAFILE COPY",
+    "DATAFILE HISTORY",
+    "DELETED OBJECT",
+    "FILENAME",
+    "FLASHBACK LOG",
+    "FOREIGN ARCHIVED LOG",
+    "GUARANTEED RESTORE POINT",
+    "INSTANCE SPACE RESERVATION",
+    "LOG HISTORY",
+    "MTTR",
+    "MULTI INSTANCE REDO APPLY",
+    "OFFLINE RANGE",
+    "PDB RECORD",
+    "PDBINC RECORD",
+    "PROXY COPY",
+    "RECOVERY DESTINATION",
+    "REDO LOG",
+    "REDO THREAD",
+    "REMOVABLE RECOVERY FILES",
+    "RESTORE POINT",
+    "RMAN CONFIGURATION",
+    "RMAN STATUS",
+    "STANDBY DATABASE MATRIX",
+    "TABLESPACE",
+    "TABLESPACE KEY HISTORY",
+    "TEMPORARY FILENAME",
+    "THREAD INSTANCE NAME MAPPING"
+   ],
+   "example": "ARCHIVED LOG"
+  },
+  "records_used": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 120
+  },
+  "records_total": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 448
+  },
+  "thread_no": {
+   "type": "integer",
+   "min": 1,
+   "max": 1000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "group_no": {
+   "type": "integer",
+   "min": 1,
+   "max": 100000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "bytes": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000000000,
+   "policy": "KEEP",
+   "example": 209715200
+  },
+  "maxbytes": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000000000,
+   "policy": "KEEP",
+   "example": 34359721984
+  },
+  "increment_by": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000,
+   "policy": "KEEP",
+   "example": 1280
+  },
+  "member_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 100,
+   "policy": "KEEP",
+   "example": 2
+  },
+  "session_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "BACKGROUND",
+    "RECURSIVE",
+    "USER"
+   ],
+   "example": "USER"
+  },
+  "session_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 42
+  },
+  "blocked_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "max_active_et": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000000000,
+   "policy": "KEEP",
+   "example": 12
+  },
+  "undo_tablespace": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "ts",
+   "example": "UNDOTBS1"
+  },
+  "undo_retention": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 900
+  },
+  "tuned_undoretention_last_hour": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000000000,
+   "policy": "KEEP",
+   "example": 1800
+  },
+  "tablespace_name": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "ts",
+   "example": "SYNTH_DATA"
+  },
+  "used_percent": {
+   "type": "number",
+   "min": 0,
+   "max": 100,
+   "policy": "KEEP",
+   "example": 41.7
+  },
+  "used_space": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000000000000,
+   "policy": "KEEP",
+   "example": 52000
+  },
+  "tablespace_size": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000000000,
+   "policy": "KEEP",
+   "example": 125000
+  },
+  "free_space": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000000000,
+   "policy": "KEEP",
+   "example": 100000000
+  },
+  "autoextensible": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "YES"
+  },
+  "owner": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "own",
+   "example": "SYNTH_APP"
+  },
+  "object_name": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "obj",
+   "example": "SYNTH_PKG"
+  },
+  "object_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "ANALYTIC VIEW",
+    "ATTRIBUTE DIMENSION",
+    "CHAIN",
+    "CLUSTER",
+    "CONSUMER GROUP",
+    "CONTAINER",
+    "CONTEXT",
+    "CREDENTIAL",
+    "DATABASE LINK",
+    "DESTINATION",
+    "DIMENSION",
+    "DIRECTORY",
+    "EDITION",
+    "EVALUATION CONTEXT",
+    "FUNCTION",
+    "HIERARCHY",
+    "INDEX",
+    "INDEX PARTITION",
+    "INDEX SUBPARTITION",
+    "INDEXTYPE",
+    "JAVA CLASS",
+    "JAVA DATA",
+    "JAVA RESOURCE",
+    "JAVA SOURCE",
+    "JOB",
+    "JOB CLASS",
+    "LIBRARY",
+    "LOB",
+    "LOB PARTITION",
+    "LOB SUBPARTITION",
+    "LOCKDOWN PROFILE",
+    "MATERIALIZED VIEW",
+    "MINING MODEL",
+    "OPERATOR",
+    "PACKAGE",
+    "PACKAGE BODY",
+    "PROCEDURE",
+    "PROGRAM",
+    "QUEUE",
+    "RESOURCE PLAN",
+    "RULE",
+    "RULE SET",
+    "SCHEDULE",
+    "SCHEDULER GROUP",
+    "SEQUENCE",
+    "SQL TRANSLATION PROFILE",
+    "SYNONYM",
+    "TABLE",
+    "TABLE PARTITION",
+    "TABLE SUBPARTITION",
+    "TRIGGER",
+    "TYPE",
+    "TYPE BODY",
+    "UNDEFINED",
+    "UNIFIED AUDIT POLICY",
+    "VIEW",
+    "WINDOW",
+    "XML SCHEMA"
+   ],
+   "example": "PACKAGE BODY"
+  },
+  "category": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "APPLICATION",
+    "SYSTEM"
+   ],
+   "example": "APPLICATION"
+  },
+  "object_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 57
+  },
+  "job_name": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "job",
+   "example": "SYNTH_NIGHTLY"
+  },
+  "state": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "BLOCKED",
+    "BROKEN",
+    "CHAIN_STALLED",
+    "COMPLETED",
+    "DISABLED",
+    "FAILED",
+    "REMOTE",
+    "RESOURCE_UNAVAILABLE",
+    "RETRY SCHEDULED",
+    "RUNNING",
+    "SCHEDULED",
+    "SUCCEEDED"
+   ],
+   "example": "SCHEDULED"
+  },
+  "failure_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 3
+  },
+  "hours_since_last_start": {
+   "type": "number",
+   "min": -24,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 6.5
+  },
+  "hours_since_created": {
+   "type": "number",
+   "min": -24,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 6.5
+  },
+  "hours_since_last_archived": {
+   "type": "number",
+   "min": -24,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 6.5
+  },
+  "message_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "Error",
+    "Warning"
+   ],
+   "example": "Warning"
+  },
+  "dest_id": {
+   "type": "integer",
+   "min": 1,
+   "max": 31,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "dest_kind": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FRA",
+    "LOCAL",
+    "NONE",
+    "SERVICE"
+   ],
+   "example": "FRA"
+  },
+  "has_error": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "NO"
+  },
+  "parameter_name": {
+   "type": "parameter_name",
+   "policy": "KEEP",
+   "example": "processes"
+  },
+  "isdefault": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FALSE",
+    "TRUE"
+   ],
+   "example": "FALSE"
+  },
+  "ismodified": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FALSE",
+    "MODIFIED",
+    "SYSTEM_MOD"
+   ],
+   "example": "FALSE"
+  },
+  "value_number": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 320
+  },
+  "value_flag": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FALSE",
+    "TRUE"
+   ],
+   "example": "TRUE"
+  },
+  "value_version": {
+   "type": "version_string",
+   "policy": "KEEP",
+   "example": "19.0.0"
+  },
+  "value_keyword": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "ADAPTIVE",
+    "ALL",
+    "ALL_ROWS",
+    "ASYNCH",
+    "AUTO",
+    "BASIC",
+    "BOTH",
+    "DB",
+    "DB, EXTENDED",
+    "DEDICATED",
+    "DEFAULT",
+    "DIRECTIO",
+    "DISABLE",
+    "DISABLED",
+    "ENABLE",
+    "ENABLED",
+    "EXACT",
+    "EXCLUSIVE",
+    "EXTENDED",
+    "FIRST_ROWS",
+    "FORCE",
+    "FULL",
+    "HIGH",
+    "INSTANCE",
+    "INTERPRETED",
+    "LOCAL",
+    "LOW",
+    "MANUAL",
+    "MEDIUM",
+    "MEMORY",
+    "NATIVE",
+    "NO",
+    "NONE",
+    "OFF",
+    "ON",
+    "OS",
+    "PARTIAL",
+    "SESSION",
+    "SETALL",
+    "SHARED",
+    "SIMILAR",
+    "SPFILE",
+    "TYPICAL",
+    "XML",
+    "XML, EXTENDED",
+    "YES"
+   ],
+   "example": "EXCLUSIVE"
+  },
+  "spfile_params_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000,
+   "policy": "KEEP",
+   "example": 38
+  }
+ }
+}

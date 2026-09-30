@@ -1,0 +1,11 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
+  "rows": [
+    {
+      "tablespace_name": "SYNTH_DATA",
+      "used_percent": 41.7,
+      "used_space": 52000,
+      "tablespace_size": 125000
+    }
+  ]
+}

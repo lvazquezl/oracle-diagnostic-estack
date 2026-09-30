@@ -1,0 +1,350 @@
+{
+ "_doc": "CHG-ESTACK-COLLECTOR-FACTORY-B1 \u2014 lot B1: Oracle Core + tablespaces for /healthcheck. Each entry becomes one gateway collector (mcp_gateway/catalog/collectors.factory.json) and one synthetic fixture. 'aliases' maps the driver column to the field (the lab adapter uses the same map); 'fields' is the default-deny allowlist; 'overrides' may only narrow a knowledge-base definition.",
+ "lot_id": "B1",
+ "fixture_target": "fixture-primary-19c",
+ "collectors": [
+  {
+   "collector_id": "Q-DISC-INSTANCE-001",
+   "domain": "oracle",
+   "title": "Instance(s) state and uptime in hours (names masked; no absolute dates)",
+   "row_limit": 50,
+   "fields": [
+    "inst_id",
+    "instance_name",
+    "instance_number",
+    "host_name",
+    "status",
+    "database_status",
+    "active_state",
+    "shutdown_pending",
+    "uptime_hours"
+   ],
+   "overrides": {
+    "status": {
+     "values": [
+      "MOUNTED",
+      "OPEN",
+      "OPEN MIGRATE",
+      "STARTED"
+     ],
+     "example": "OPEN"
+    }
+   }
+  },
+  {
+   "collector_id": "Q-ORA-INSTANCE-STATE-001",
+   "domain": "oracle",
+   "title": "Operational state of the instance(s): status, role, shutdown pending, uptime in hours",
+   "row_limit": 50,
+   "fields": [
+    "inst_id",
+    "status",
+    "database_status",
+    "active_state",
+    "shutdown_pending",
+    "instance_role",
+    "uptime_hours"
+   ],
+   "overrides": {
+    "status": {
+     "values": [
+      "MOUNTED",
+      "OPEN",
+      "OPEN MIGRATE",
+      "STARTED"
+     ],
+     "example": "OPEN"
+    }
+   }
+  },
+  {
+   "collector_id": "Q-ORA-DB-STATE-001",
+   "domain": "oracle",
+   "title": "Database protection and flashback state (V$DATABASE, enums only)",
+   "row_limit": 1,
+   "fields": [
+    "flashback_on",
+    "guard_status",
+    "protection_mode",
+    "protection_level",
+    "remote_archive",
+    "switchover_status"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-COMPONENTS-001",
+   "domain": "oracle",
+   "title": "Registry components: id, version and status",
+   "row_limit": 100,
+   "fields": [
+    "comp_id",
+    "version",
+    "status"
+   ],
+   "overrides": {
+    "status": {
+     "values": [
+      "DOWNGRADED",
+      "DOWNGRADING",
+      "INVALID",
+      "LOADED",
+      "LOADING",
+      "NO SCRIPT",
+      "OPTION OFF",
+      "REMOVED",
+      "REMOVING",
+      "UPGRADED",
+      "UPGRADING",
+      "VALID"
+     ],
+     "example": "VALID"
+    }
+   }
+  },
+  {
+   "collector_id": "Q-ORA-CONTROLFILE-001",
+   "domain": "oracle",
+   "title": "Control file copies and record section usage",
+   "row_limit": 100,
+   "aliases": {
+    "type": "record_type"
+   },
+   "fields": [
+    "copies",
+    "record_type",
+    "records_used",
+    "records_total"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-REDO-001",
+   "domain": "oracle",
+   "title": "Online redo log groups: size, status and member count",
+   "row_limit": 100,
+   "aliases": {
+    "thread#": "thread_no",
+    "group#": "group_no"
+   },
+   "fields": [
+    "thread_no",
+    "group_no",
+    "bytes",
+    "status",
+    "member_count"
+   ],
+   "overrides": {
+    "status": {
+     "values": [
+      "ACTIVE",
+      "CLEARING",
+      "CLEARING_CURRENT",
+      "CURRENT",
+      "INACTIVE",
+      "INVALIDATED",
+      "UNUSED"
+     ],
+     "example": "CURRENT"
+    }
+   }
+  },
+  {
+   "collector_id": "Q-ORA-SESSIONS-SUMMARY-001",
+   "domain": "oracle",
+   "title": "Sessions by status and type, blocked sessions and longest active call (seconds)",
+   "row_limit": 50,
+   "aliases": {
+    "type": "session_type"
+   },
+   "fields": [
+    "status",
+    "session_type",
+    "session_count",
+    "blocked_count",
+    "max_active_et"
+   ],
+   "overrides": {
+    "status": {
+     "values": [
+      "ACTIVE",
+      "CACHED",
+      "INACTIVE",
+      "KILLED",
+      "SNIPED"
+     ],
+     "example": "ACTIVE"
+    }
+   }
+  },
+  {
+   "collector_id": "Q-ORA-UNDO-001",
+   "domain": "oracle",
+   "title": "Undo tablespace (masked), configured and tuned undo retention (seconds)",
+   "row_limit": 1,
+   "fields": [
+    "undo_tablespace",
+    "undo_retention",
+    "tuned_undoretention_last_hour"
+   ]
+  },
+  {
+   "collector_id": "Q-DBA-TBS-USAGE-001",
+   "domain": "oracle",
+   "title": "Tablespace usage percent of maximum size (names masked)",
+   "row_limit": 100,
+   "fields": [
+    "tablespace_name",
+    "used_percent",
+    "used_space",
+    "tablespace_size"
+   ]
+  },
+  {
+   "collector_id": "Q-DBA-TBS-DATAFILES-001",
+   "domain": "oracle",
+   "title": "Datafile sizing and autoextend per tablespace (file names not exposed)",
+   "row_limit": 100,
+   "fields": [
+    "tablespace_name",
+    "bytes",
+    "autoextensible",
+    "maxbytes",
+    "increment_by"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-TEMP-001",
+   "domain": "oracle",
+   "title": "Temporary files sizing and free space per temporary tablespace (file names not exposed)",
+   "row_limit": 100,
+   "fields": [
+    "tablespace_name",
+    "bytes",
+    "autoextensible",
+    "maxbytes",
+    "tablespace_size",
+    "free_space"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-INVALID-OBJECTS-001",
+   "domain": "oracle",
+   "title": "Invalid objects by owner and type (owner and object names masked)",
+   "row_limit": 100,
+   "fields": [
+    "owner",
+    "object_type",
+    "object_name",
+    "category"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-OBJECTS-INVENTORY-001",
+   "domain": "oracle",
+   "title": "Object counts by owner (masked), type and status",
+   "row_limit": 100,
+   "fields": [
+    "owner",
+    "object_type",
+    "status",
+    "object_count"
+   ],
+   "overrides": {
+    "status": {
+     "values": [
+      "INVALID",
+      "N/A",
+      "VALID"
+     ],
+     "example": "VALID"
+    }
+   }
+  },
+  {
+   "collector_id": "Q-ORA-JOBS-SUMMARY-001",
+   "domain": "oracle",
+   "title": "Scheduler jobs broken, failed or with failures (names masked; hours since last start)",
+   "row_limit": 100,
+   "fields": [
+    "owner",
+    "job_name",
+    "state",
+    "failure_count",
+    "hours_since_last_start"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-DIAGNOSTICS-ADR-001",
+   "domain": "oracle",
+   "title": "Outstanding server alerts by type and age in hours (message text not exposed)",
+   "row_limit": 100,
+   "fields": [
+    "message_type",
+    "hours_since_created"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-ARCHIVE-001",
+   "domain": "oracle",
+   "title": "Archive destinations: kind, status, error flag and hours since last archived log (paths and error text not exposed)",
+   "row_limit": 31,
+   "fields": [
+    "dest_id",
+    "status",
+    "dest_kind",
+    "has_error",
+    "hours_since_last_archived"
+   ],
+   "overrides": {
+    "status": {
+     "values": [
+      "ALTERNATE",
+      "BAD PARAM",
+      "DEFERRED",
+      "DISABLED",
+      "ERROR",
+      "FULL",
+      "INACTIVE",
+      "VALID"
+     ],
+     "example": "VALID"
+    }
+   }
+  },
+  {
+   "collector_id": "Q-ORA-PARAMETERS-001",
+   "domain": "oracle",
+   "title": "Non-default initialization parameters: name and value only as number, TRUE/FALSE, version or closed keyword",
+   "row_limit": 100,
+   "aliases": {
+    "name": "parameter_name"
+   },
+   "fields": [
+    "parameter_name",
+    "isdefault",
+    "ismodified",
+    "value_number",
+    "value_flag",
+    "value_version",
+    "value_keyword"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-SPFILE-001",
+   "domain": "oracle",
+   "title": "SPFILE parameter count and parameters modified since startup (value only as number, TRUE/FALSE, version or closed keyword)",
+   "row_limit": 100,
+   "aliases": {
+    "name": "parameter_name"
+   },
+   "fields": [
+    "spfile_params_count",
+    "parameter_name",
+    "ismodified",
+    "value_number",
+    "value_flag",
+    "value_version",
+    "value_keyword"
+   ]
+  }
+ ]
+}

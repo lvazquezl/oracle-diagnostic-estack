@@ -1,0 +1,14 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
+  "rows": [
+    {
+      "spfile_params_count": 38,
+      "parameter_name": "processes",
+      "ismodified": "FALSE",
+      "value_number": 320,
+      "value_flag": "TRUE",
+      "value_version": "19.0.0",
+      "value_keyword": "EXCLUSIVE"
+    }
+  ]
+}

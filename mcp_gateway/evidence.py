@@ -42,6 +42,7 @@ from .common import (
 
 _IDENT = re.compile(r'^\+?[A-Za-z][A-Za-z0-9_$#.-]{0,63}$')   # optional leading '+': ASM naming (+ASM, +ASM1) — CHG-ESTACK-LAB-REVALIDATE-007
 _VERSION = re.compile(r'^\d{1,2}(\.\d{1,3}){1,5}$')
+_PARAM_NAME = re.compile(r'^_{0,2}[a-z][a-z0-9_]{0,79}$')    # V$PARAMETER.NAME (lower-case, hidden ones start with _)
 _TS = re.compile(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?(Z|[+-]\d{2}:\d{2})$')
 _INTERVAL = re.compile(r'^[+-]\d{2} \d{2}:\d{2}:\d{2}(\.\d{1,6})?$')
 _SIG_RAW_MAX = 96
@@ -121,6 +122,8 @@ def _sanitize_value(spec: dict, raw, scope: SessionScope, target_alias: str):
         return (isinstance(raw, str) and bool(_VERSION.match(raw))), raw
     if t == "interval_string":
         return (isinstance(raw, str) and bool(_INTERVAL.match(raw))), raw
+    if t == "parameter_name":
+        return (isinstance(raw, str) and bool(_PARAM_NAME.match(raw))), raw
     if t == "timestamp_utc":
         if not isinstance(raw, str) or not _TS.match(raw):
             return False, None

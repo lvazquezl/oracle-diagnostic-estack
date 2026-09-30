@@ -1,6 +1,6 @@
 ---
 query_id: Q-DISC-INSTANCE-001
-version: 1.0.0
+version: 1.1.0
 
 domain: oracle
 purpose: Estado de instancia y modo (single/RAC)
@@ -37,7 +37,8 @@ status: active
 
 ```sql
 SELECT inst_id, instance_name, instance_number, host_name, status,
-       database_status, active_state, shutdown_pending, startup_time
+       database_status, active_state, shutdown_pending, startup_time,
+       ROUND((SYSDATE - startup_time) * 24, 2) AS uptime_hours
 FROM   gv$instance
 ORDER  BY inst_id;
 ```
@@ -67,5 +68,7 @@ Ninguna.
 # Sanitization notes
 
 `host_name` → MASK por defecto; `instance_name` → MASK; el resto → KEEP.
+
+CHG-ESTACK-COLLECTOR-FACTORY-B1 — `uptime_hours` (1.1.0): horas desde `startup_time`, calculadas en la base de datos — el collector del gateway expone la edad, nunca la fecha absoluta.
 
 # Evolution via `/change query`

@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
+  "rows": [
+    {
+      "status": "ACTIVE",
+      "session_type": "USER",
+      "session_count": 42,
+      "blocked_count": 0,
+      "max_active_et": 12
+    }
+  ]
+}

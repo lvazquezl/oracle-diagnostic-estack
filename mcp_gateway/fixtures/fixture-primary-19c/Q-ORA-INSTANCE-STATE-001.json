@@ -1,0 +1,14 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
+  "rows": [
+    {
+      "inst_id": 1,
+      "status": "OPEN",
+      "database_status": "ACTIVE",
+      "active_state": "NORMAL",
+      "shutdown_pending": "NO",
+      "instance_role": "PRIMARY_INSTANCE",
+      "uptime_hours": 412.25
+    }
+  ]
+}

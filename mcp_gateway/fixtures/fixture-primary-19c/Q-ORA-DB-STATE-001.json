@@ -1,0 +1,13 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
+  "rows": [
+    {
+      "flashback_on": "NO",
+      "guard_status": "NONE",
+      "protection_mode": "MAXIMUM PERFORMANCE",
+      "protection_level": "MAXIMUM PERFORMANCE",
+      "remote_archive": "ENABLED",
+      "switchover_status": "NOT ALLOWED"
+    }
+  ]
+}

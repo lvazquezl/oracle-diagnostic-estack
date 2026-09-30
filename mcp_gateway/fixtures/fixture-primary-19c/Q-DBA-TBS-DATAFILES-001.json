@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
+  "rows": [
+    {
+      "tablespace_name": "SYNTH_DATA",
+      "bytes": 209715200,
+      "autoextensible": "YES",
+      "maxbytes": 34359721984,
+      "increment_by": 1280
+    }
+  ]
+}

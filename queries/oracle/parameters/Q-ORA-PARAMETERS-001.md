@@ -1,6 +1,6 @@
 ---
 query_id: Q-ORA-PARAMETERS-001
-version: 1.0.0
+version: 1.1.0
 domain: oracle
 purpose: Parámetros de inicialización no-default
 
@@ -31,7 +31,11 @@ status: active
 # Statement / procedure (read-only)
 
 ```sql
-SELECT name, value, isdefault, ismodified
+SELECT name, value, isdefault, ismodified,
+       CASE WHEN REGEXP_LIKE(value, '^[0-9]{1,15}$') THEN TO_NUMBER(value) END AS value_number,
+       CASE WHEN UPPER(value) IN ('TRUE', 'FALSE') THEN UPPER(value) END AS value_flag,
+       CASE WHEN REGEXP_LIKE(value, '^[0-9]{1,2}(\.[0-9]{1,3}){1,4}$') THEN value END AS value_version,
+       CASE WHEN UPPER(value) IN ('ADAPTIVE', 'ALL', 'ALL_ROWS', 'ASYNCH', 'AUTO', 'BASIC', 'BOTH', 'DB', 'DB, EXTENDED', 'DEDICATED', 'DEFAULT', 'DIRECTIO', 'DISABLE', 'DISABLED', 'ENABLE', 'ENABLED', 'EXACT', 'EXCLUSIVE', 'EXTENDED', 'FIRST_ROWS', 'FORCE', 'FULL', 'HIGH', 'INSTANCE', 'INTERPRETED', 'LOCAL', 'LOW', 'MANUAL', 'MEDIUM', 'MEMORY', 'NATIVE', 'NO', 'NONE', 'OFF', 'ON', 'OS', 'PARTIAL', 'SESSION', 'SETALL', 'SHARED', 'SIMILAR', 'SPFILE', 'TYPICAL', 'XML', 'XML, EXTENDED', 'YES') THEN UPPER(value) END AS value_keyword
 FROM   v$parameter
 WHERE  isdefault = 'FALSE'
 ORDER  BY name;
@@ -62,5 +66,7 @@ Ninguna.
 # Sanitization notes
 
 `value` → condicional (`DROP` si el nombre del parámetro sugiere contenido sensible, ej. rutas de wallet); resto → KEEP.
+
+CHG-ESTACK-COLLECTOR-FACTORY-B1 — `value_number`/`value_flag`/`value_version`/`value_keyword` (1.1.0): el valor descompuesto en la base de datos. El collector expone sólo estas formas (número, TRUE/FALSE, versión, palabra clave de una lista cerrada); `value` libre (rutas, servicios, hosts) nunca sale.
 
 # Evolution via `/change query`
