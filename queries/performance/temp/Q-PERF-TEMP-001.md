@@ -1,6 +1,6 @@
 ---
 query_id: Q-PERF-TEMP-001
-version: 1.1.0
+version: 1.2.0
 
 domain: performance
 purpose: Uso activo de TEMP por sesión/SQL_ID (sorts/hashes con spill a disco), snapshot actual
@@ -50,9 +50,8 @@ status: active
 ```sql
 SELECT *
 FROM (
-  SELECT su.session_addr,
-         s.sid,
-         s.serial#,
+  SELECT s.sid,
+         s.serial#                 AS serial_no,
          s.sql_id,
          su.tablespace,
          su.contents,
@@ -68,9 +67,8 @@ WHERE  ROWNUM <= 50;
 # Statement / procedure (read-only) — Variant V2 (modern_12plus, 12.1+)
 
 ```sql
-SELECT su.session_addr,
-       s.sid,
-       s.serial#,
+SELECT s.sid,
+       s.serial#                 AS serial_no,
        s.sql_id,
        su.tablespace,
        su.contents,
@@ -105,6 +103,8 @@ Ninguna.
 # Sanitization notes
 
 `sql_id` → KEEP (no es SQL text); `sid`/`serial#` → KEEP (no identifican usuario final); `tablespace` → KEEP.
+
+CHG-ESTACK-COLLECTOR-FACTORY-B2 — 1.2.0: se retira `session_addr` (dirección `RAW` de memoria, sin valor diagnóstico y rechazada por el adaptador real) y `serial#` sale como `serial_no`.
 
 # Evolution via `/change query`
 

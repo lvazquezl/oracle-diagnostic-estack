@@ -1275,6 +1275,835 @@
           "name": "parameter_name"
         }
       }
+    },
+    {
+      "collector_id": "Q-PERF-WAIT-SYSTEM-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Top 25 non-idle wait events since startup: waits, timeouts, time and average wait (no license)",
+      "row_limit": 25,
+      "params": {},
+      "output_fields": {
+        "event": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "wait_class": {
+          "type": "enum",
+          "values": [
+            "Administrative",
+            "Application",
+            "Cluster",
+            "Commit",
+            "Concurrency",
+            "Configuration",
+            "Idle",
+            "Network",
+            "Other",
+            "Queueing",
+            "Scheduler",
+            "System I/O",
+            "User I/O"
+          ],
+          "policy": "KEEP"
+        },
+        "total_waits": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "total_timeouts": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "time_waited_sec": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        },
+        "avg_wait_ms": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-WAIT-CLASS-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Non-idle wait time by wait class since startup (no license)",
+      "row_limit": 20,
+      "params": {},
+      "output_fields": {
+        "wait_class": {
+          "type": "enum",
+          "values": [
+            "Administrative",
+            "Application",
+            "Cluster",
+            "Commit",
+            "Concurrency",
+            "Configuration",
+            "Idle",
+            "Network",
+            "Other",
+            "Queueing",
+            "Scheduler",
+            "System I/O",
+            "User I/O"
+          ],
+          "policy": "KEEP"
+        },
+        "total_waits": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "time_waited_sec": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-DBTIME-CURRENT-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "DB time and DB CPU in seconds since startup, and uptime (no license)",
+      "row_limit": 1,
+      "params": {},
+      "output_fields": {
+        "db_time_sec_since_startup": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        },
+        "db_cpu_sec_since_startup": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        },
+        "uptime_sec": {
+          "type": "number",
+          "min": 0,
+          "max": 10000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-IO-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Dominant I/O and commit wait events since startup",
+      "row_limit": 20,
+      "params": {},
+      "output_fields": {
+        "event": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "total_waits": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "total_wait_time_sec": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-IO-FILESTAT-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Datafile read/write counts and average latency in ms (file paths not exposed, tablespace masked)",
+      "row_limit": 50,
+      "params": {},
+      "output_fields": {
+        "file_id": {
+          "type": "integer",
+          "min": 1,
+          "max": 100000,
+          "policy": "KEEP"
+        },
+        "tablespace_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "ts"
+        },
+        "phyrds": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "phywrts": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "avg_read_latency_ms": {
+          "type": "number",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "avg_write_latency_ms": {
+          "type": "number",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-LIBCACHE-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Library cache hit ratios, reloads and invalidations by namespace",
+      "row_limit": 30,
+      "params": {},
+      "output_fields": {
+        "namespace": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "gets": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "gethits": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "gethitratio": {
+          "type": "number",
+          "min": 0,
+          "max": 1,
+          "policy": "KEEP"
+        },
+        "pins": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "pinhits": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "pinhitratio": {
+          "type": "number",
+          "min": 0,
+          "max": 1,
+          "policy": "KEEP"
+        },
+        "reloads": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        },
+        "invalidations": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-PGA-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "PGA target, in use, allocated, freeable and over-allocation count",
+      "row_limit": 1,
+      "params": {},
+      "output_fields": {
+        "pga_aggregate_target": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "total_pga_inuse": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "total_pga_allocated": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "over_allocation_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        },
+        "freeable_pga": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-SGA-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "SGA size, maximum, free and main pools in bytes",
+      "row_limit": 1,
+      "params": {},
+      "output_fields": {
+        "sga_total_bytes": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "sga_max_bytes": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "sga_free_bytes": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "shared_pool_bytes": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "buffer_cache_bytes": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "large_pool_bytes": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "java_pool_bytes": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-SHAREDPOOL-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Shared pool free and total bytes and dictionary cache hit ratio",
+      "row_limit": 1,
+      "params": {},
+      "output_fields": {
+        "shared_pool_free_bytes": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "shared_pool_total_bytes": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "rowcache_gets": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "rowcache_getmisses": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "rowcache_hit_ratio": {
+          "type": "number",
+          "min": 0,
+          "max": 1,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-REDO-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Redo size, redo entries, commits and rollbacks since startup",
+      "row_limit": 1,
+      "params": {},
+      "output_fields": {
+        "redo_size_bytes": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000000000000,
+          "policy": "KEEP"
+        },
+        "redo_entries": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "user_commits": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "user_rollbacks": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-HARDPARSE-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Total and hard parse counts and session cursor cache hits since startup",
+      "row_limit": 1,
+      "params": {},
+      "output_fields": {
+        "parse_count_total": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "parse_count_hard": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "session_cursor_cache_hits": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-TOPSQL-CURRENT-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Top 20 SQL by elapsed time from the shared pool: sql_id and metrics only, never SQL text (no license)",
+      "row_limit": 20,
+      "params": {},
+      "output_fields": {
+        "sql_id": {
+          "type": "sql_id",
+          "policy": "KEEP"
+        },
+        "plan_hash_value": {
+          "type": "integer",
+          "min": 0,
+          "max": 4294967295,
+          "policy": "KEEP"
+        },
+        "executions": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "elapsed_sec": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        },
+        "cpu_sec": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        },
+        "buffer_gets": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000000000000,
+          "policy": "KEEP"
+        },
+        "disk_reads": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000000000000,
+          "policy": "KEEP"
+        },
+        "rows_processed": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-BLOCKING-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Blocked sessions: waiter and blocker session ids, event, wait class, seconds waiting and waiter sql_id",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "waiter_sid": {
+          "type": "integer",
+          "min": 1,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "waiter_serial": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "blocker_sid": {
+          "type": "integer",
+          "min": 1,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "blocker_serial": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "event": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "wait_class": {
+          "type": "enum",
+          "values": [
+            "Administrative",
+            "Application",
+            "Cluster",
+            "Commit",
+            "Concurrency",
+            "Configuration",
+            "Idle",
+            "Network",
+            "Other",
+            "Queueing",
+            "Scheduler",
+            "System I/O",
+            "User I/O"
+          ],
+          "policy": "KEEP"
+        },
+        "seconds_in_wait": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        },
+        "waiter_sql_id": {
+          "type": "sql_id",
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-TEMP-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Top 50 temporary segment consumers: session, sql_id, tablespace (masked), contents and bytes",
+      "row_limit": 50,
+      "params": {},
+      "output_fields": {
+        "sid": {
+          "type": "integer",
+          "min": 1,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "serial_no": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "sql_id": {
+          "type": "sql_id",
+          "policy": "KEEP"
+        },
+        "tablespace": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "ts"
+        },
+        "contents": {
+          "type": "enum",
+          "values": [
+            "PERMANENT",
+            "TEMPORARY"
+          ],
+          "policy": "KEEP"
+        },
+        "bytes_used": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-PERF-PARALLEL-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Active parallel execution servers per query coordinator: group, set, server number and degree",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "qcsid": {
+          "type": "integer",
+          "min": 1,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "sid": {
+          "type": "integer",
+          "min": 1,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "server_group": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "server_set": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "server_no": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "degree": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000,
+          "policy": "KEEP"
+        },
+        "req_degree": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-ORA-REDO-SWITCH-24H-001",
+      "kind": "sql_query",
+      "domain": "oracle",
+      "title": "Log switches per thread in the last 24 hours by hour back (no dates)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "thread_no": {
+          "type": "integer",
+          "min": 1,
+          "max": 1000,
+          "policy": "KEEP"
+        },
+        "hours_ago": {
+          "type": "integer",
+          "min": 0,
+          "max": 24,
+          "policy": "KEEP"
+        },
+        "switch_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B2",
+        "lab_aliases": {}
+      }
     }
   ]
 }

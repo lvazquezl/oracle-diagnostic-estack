@@ -1,6 +1,6 @@
 ---
 query_id: Q-PERF-IO-FILESTAT-001
-version: 1.1.0
+version: 1.2.0
 
 domain: performance
 purpose: Latencia de lectura/escritura por datafile, snapshot actual acumulado desde el arranque de la instancia
@@ -50,13 +50,15 @@ status: active
 ```sql
 SELECT *
 FROM (
-  SELECT d.name                                              AS file_name,
+  SELECT d.file#                                             AS file_id,
+         t.name                                              AS tablespace_name,
          f.phyrds,
          f.phywrts,
-         ROUND(f.readtim  / NULLIF(f.phyrds, 0), 2)           AS avg_read_latency_ms,
-         ROUND(f.writetim / NULLIF(f.phywrts, 0), 2)          AS avg_write_latency_ms
+         ROUND(f.readtim * 10 / NULLIF(f.phyrds, 0), 2)           AS avg_read_latency_ms,
+         ROUND(f.writetim * 10 / NULLIF(f.phywrts, 0), 2)          AS avg_write_latency_ms
   FROM   v$filestat f
   JOIN   v$datafile d ON d.file# = f.file#
+  JOIN   v$tablespace t ON t.ts# = d.ts#
   ORDER  BY avg_read_latency_ms DESC NULLS LAST
 )
 WHERE  ROWNUM <= 50;
@@ -65,13 +67,15 @@ WHERE  ROWNUM <= 50;
 # Statement / procedure (read-only) — Variant V2 (modern_12plus, 12.1+)
 
 ```sql
-SELECT d.name                                              AS file_name,
+SELECT d.file#                                             AS file_id,
+       t.name                                              AS tablespace_name,
        f.phyrds,
        f.phywrts,
-       ROUND(f.readtim  / NULLIF(f.phyrds, 0), 2)           AS avg_read_latency_ms,
-       ROUND(f.writetim / NULLIF(f.phywrts, 0), 2)          AS avg_write_latency_ms
+       ROUND(f.readtim * 10 / NULLIF(f.phyrds, 0), 2)           AS avg_read_latency_ms,
+       ROUND(f.writetim * 10 / NULLIF(f.phywrts, 0), 2)          AS avg_write_latency_ms
 FROM   v$filestat f
 JOIN   v$datafile d ON d.file# = f.file#
+JOIN   v$tablespace t ON t.ts# = d.ts#
 ORDER  BY avg_read_latency_ms DESC NULLS LAST
 FETCH  FIRST 50 ROWS ONLY;
 ```
@@ -99,6 +103,8 @@ Ninguna.
 # Sanitization notes
 
 `file_name` → MASK por defecto (puede revelar ruta/hostname de storage); métricas numéricas → KEEP.
+
+CHG-ESTACK-COLLECTOR-FACTORY-B2 — 1.2.0: la ruta del archivo (`V$DATAFILE.NAME`) se sustituye por `file_id` y el nombre del tablespace (enmascarado por el collector); la latencia por archivo no necesita la ruta. Además, `READTIM`/`WRITETIM` están en centésimas de segundo: se multiplican por 10 para que `avg_*_latency_ms` sea realmente milisegundos (antes reportaba centésimas con etiqueta de ms).
 
 # Evolution via `/change query`
 

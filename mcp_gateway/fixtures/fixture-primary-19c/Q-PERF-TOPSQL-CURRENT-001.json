@@ -1,0 +1,15 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "sql_id": "7ztv2z24kw0s0",
+      "plan_hash_value": 1388734953,
+      "executions": 42,
+      "elapsed_sec": 12.5,
+      "cpu_sec": 8.25,
+      "buffer_gets": 100000,
+      "disk_reads": 2000,
+      "rows_processed": 420
+    }
+  ]
+}

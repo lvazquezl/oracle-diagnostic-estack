@@ -2,6 +2,25 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change query|security|documentation` — CHG-ESTACK-COLLECTOR-FACTORY-B2 — lote B2 de rendimiento
+
+Rama `change/collector-factory-b2` sobre `main` (`5c6e2d3`). Pendiente: validación en el lab, CI y HUMAN REVIEW. Ver `docs/COLLECTOR_FACTORY_B2.md`.
+
+### Added
+
+- Lote B2: 16 collectors de rendimiento sin Diagnostics Pack. El catálogo pasa de 39 a 55. Cubren esperas por evento y por clase, DB time, I/O por archivo, library cache, PGA, SGA, shared pool, redo, parses, top SQL por `sql_id`, bloqueos, TEMP, paralelo y log switches en 24 h.
+- Queries nuevas: `Q-PERF-WAIT-SYSTEM-001`, `Q-PERF-WAIT-CLASS-001` y `Q-ORA-REDO-SWITCH-24H-001`.
+- Tipos de campo `oracle_term` (`event`, `namespace`) y `sql_id` (`sql_id`, `waiter_sql_id`), que se pueden conservar sólo en esos campos.
+
+### Fixed
+
+- `Q-PERF-HARDPARSE-001` 1.1.0: nunca se resolvía, porque el guard veta la palabra `execute` en `execute count`.
+- `Q-PERF-PARALLEL-001` 1.1.0: referenciaba `SERVER_NAME` y `SQL_ID`, que `V$PX_SESSION` no tiene.
+- `Q-PERF-IO-FILESTAT-001` 1.2.0: sin ruta de archivo, y la latencia ahora sí está en ms (antes, centésimas de segundo).
+- `Q-PERF-TEMP-001` 1.2.0: sin la dirección `RAW` `session_addr`.
+- `Q-ORA-SPFILE-001` 1.2.0: siempre devuelve el conteo, aunque no haya parámetros modificados.
+- Saneador: los identificadores Oracle legibles de 20 caracteres o más (por ejemplo, owners) se enmascaran en lugar de descartarse.
+
 ## [0.23.0] — 2026-09-30 — `v0.23.0-collector-factory` — 2 cambios: fábrica de collectors (lote B1) y evidencia reportada por humano
 
 El stack **obtiene la evidencia por sí mismo**: el gateway ejecuta el SELECT certificado con el usuario de diagnóstico de sólo lectura, sanea localmente y entrega `EVD-*`. El DBA sólo crea ese usuario y registra el target, una vez por base.

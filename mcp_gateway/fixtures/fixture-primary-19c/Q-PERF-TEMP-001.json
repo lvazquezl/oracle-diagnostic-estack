@@ -1,0 +1,13 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "sid": 101,
+      "serial_no": 4321,
+      "sql_id": "7ztv2z24kw0s0",
+      "tablespace": "TEMP",
+      "contents": "TEMPORARY",
+      "bytes_used": 1048576
+    }
+  ]
+}

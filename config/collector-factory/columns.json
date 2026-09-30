@@ -687,6 +687,537 @@
    "max": 32,
    "policy": "KEEP",
    "example": 5
+  },
+  "event": {
+   "type": "oracle_term",
+   "policy": "KEEP",
+   "example": "db file sequential read"
+  },
+  "namespace": {
+   "type": "oracle_term",
+   "policy": "KEEP",
+   "example": "SQL AREA"
+  },
+  "wait_class": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "Administrative",
+    "Application",
+    "Cluster",
+    "Commit",
+    "Concurrency",
+    "Configuration",
+    "Idle",
+    "Network",
+    "Other",
+    "Queueing",
+    "Scheduler",
+    "System I/O",
+    "User I/O"
+   ],
+   "example": "User I/O"
+  },
+  "total_waits": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 123456
+  },
+  "total_timeouts": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 12
+  },
+  "time_waited_sec": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000000,
+   "policy": "KEEP",
+   "example": 345.67
+  },
+  "avg_wait_ms": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 0.845
+  },
+  "total_wait_time_sec": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000000,
+   "policy": "KEEP",
+   "example": 345.67
+  },
+  "db_time_sec_since_startup": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000000,
+   "policy": "KEEP",
+   "example": 5321.5
+  },
+  "db_cpu_sec_since_startup": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000000,
+   "policy": "KEEP",
+   "example": 2210.25
+  },
+  "uptime_sec": {
+   "type": "number",
+   "min": 0,
+   "max": 10000000000,
+   "policy": "KEEP",
+   "example": 86400.0
+  },
+  "file_id": {
+   "type": "integer",
+   "min": 1,
+   "max": 100000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "phyrds": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 10000
+  },
+  "phywrts": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 2500
+  },
+  "avg_read_latency_ms": {
+   "type": "number",
+   "min": 0,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 4.2
+  },
+  "avg_write_latency_ms": {
+   "type": "number",
+   "min": 0,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 1.3
+  },
+  "gets": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 90000
+  },
+  "gethits": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 88000
+  },
+  "gethitratio": {
+   "type": "number",
+   "min": 0,
+   "max": 1,
+   "policy": "KEEP",
+   "example": 0.9778
+  },
+  "pins": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 150000
+  },
+  "pinhits": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 149000
+  },
+  "pinhitratio": {
+   "type": "number",
+   "min": 0,
+   "max": 1,
+   "policy": "KEEP",
+   "example": 0.9933
+  },
+  "reloads": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000,
+   "policy": "KEEP",
+   "example": 15
+  },
+  "invalidations": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000,
+   "policy": "KEEP",
+   "example": 3
+  },
+  "pga_aggregate_target": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 918552576
+  },
+  "total_pga_inuse": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 300000000
+  },
+  "total_pga_allocated": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 400000000
+  },
+  "over_allocation_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "freeable_pga": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 50000000
+  },
+  "sga_total_bytes": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 2768240640
+  },
+  "sga_max_bytes": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 2768240640
+  },
+  "sga_free_bytes": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "shared_pool_bytes": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 600000000
+  },
+  "buffer_cache_bytes": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 1500000000
+  },
+  "large_pool_bytes": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 30000000
+  },
+  "java_pool_bytes": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 20000000
+  },
+  "shared_pool_free_bytes": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 80000000
+  },
+  "shared_pool_total_bytes": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 600000000
+  },
+  "rowcache_gets": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 500000
+  },
+  "rowcache_getmisses": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 4000
+  },
+  "rowcache_hit_ratio": {
+   "type": "number",
+   "min": 0,
+   "max": 1,
+   "policy": "KEEP",
+   "example": 0.992
+  },
+  "redo_size_bytes": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000000000000000,
+   "policy": "KEEP",
+   "example": 123456789
+  },
+  "redo_entries": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 400000
+  },
+  "user_commits": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 5000
+  },
+  "user_rollbacks": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 20
+  },
+  "parse_count_total": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 90000
+  },
+  "parse_count_hard": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 4000
+  },
+  "session_cursor_cache_hits": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 70000
+  },
+  "sql_id": {
+   "type": "sql_id",
+   "policy": "KEEP",
+   "example": "7ztv2z24kw0s0"
+  },
+  "waiter_sql_id": {
+   "type": "sql_id",
+   "policy": "KEEP",
+   "example": "7ztv2z24kw0s0"
+  },
+  "plan_hash_value": {
+   "type": "integer",
+   "min": 0,
+   "max": 4294967295,
+   "policy": "KEEP",
+   "example": 1388734953
+  },
+  "executions": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 42
+  },
+  "elapsed_sec": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000000,
+   "policy": "KEEP",
+   "example": 12.5
+  },
+  "cpu_sec": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000000,
+   "policy": "KEEP",
+   "example": 8.25
+  },
+  "buffer_gets": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000000000000000,
+   "policy": "KEEP",
+   "example": 100000
+  },
+  "disk_reads": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000000000000000,
+   "policy": "KEEP",
+   "example": 2000
+  },
+  "rows_processed": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000000000000000,
+   "policy": "KEEP",
+   "example": 420
+  },
+  "waiter_sid": {
+   "type": "integer",
+   "min": 1,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 101
+  },
+  "waiter_serial": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 4321
+  },
+  "blocker_sid": {
+   "type": "integer",
+   "min": 1,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 77
+  },
+  "blocker_serial": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 1234
+  },
+  "seconds_in_wait": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 35
+  },
+  "sid": {
+   "type": "integer",
+   "min": 1,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 101
+  },
+  "serial_no": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 4321
+  },
+  "tablespace": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "ts",
+   "example": "TEMP"
+  },
+  "contents": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "PERMANENT",
+    "TEMPORARY"
+   ],
+   "example": "TEMPORARY"
+  },
+  "bytes_used": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000000000,
+   "policy": "KEEP",
+   "example": 1048576
+  },
+  "qcsid": {
+   "type": "integer",
+   "min": 1,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 101
+  },
+  "server_group": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "server_set": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "server_no": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "degree": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000,
+   "policy": "KEEP",
+   "example": 4
+  },
+  "req_degree": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000,
+   "policy": "KEEP",
+   "example": 4
+  },
+  "hours_ago": {
+   "type": "integer",
+   "min": 0,
+   "max": 24,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "switch_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 3
   }
  }
 }

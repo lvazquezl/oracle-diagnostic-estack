@@ -1,0 +1,14 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "sga_total_bytes": 2768240640,
+      "sga_max_bytes": 2768240640,
+      "sga_free_bytes": 0,
+      "shared_pool_bytes": 600000000,
+      "buffer_cache_bytes": 1500000000,
+      "large_pool_bytes": 30000000,
+      "java_pool_bytes": 20000000
+    }
+  ]
+}

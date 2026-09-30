@@ -1,0 +1,10 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "parse_count_total": 90000,
+      "parse_count_hard": 4000,
+      "session_cursor_cache_hits": 70000
+    }
+  ]
+}

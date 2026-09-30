@@ -1,0 +1,15 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "waiter_sid": 101,
+      "waiter_serial": 4321,
+      "blocker_sid": 77,
+      "blocker_serial": 1234,
+      "event": "db file sequential read",
+      "wait_class": "User I/O",
+      "seconds_in_wait": 35,
+      "waiter_sql_id": "7ztv2z24kw0s0"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "shared_pool_free_bytes": 80000000,
+      "shared_pool_total_bytes": 600000000,
+      "rowcache_gets": 500000,
+      "rowcache_getmisses": 4000,
+      "rowcache_hit_ratio": 0.992
+    }
+  ]
+}

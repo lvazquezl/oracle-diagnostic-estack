@@ -1,0 +1,13 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "file_id": 1,
+      "tablespace_name": "SYNTH_DATA",
+      "phyrds": 10000,
+      "phywrts": 2500,
+      "avg_read_latency_ms": 4.2,
+      "avg_write_latency_ms": 1.3
+    }
+  ]
+}

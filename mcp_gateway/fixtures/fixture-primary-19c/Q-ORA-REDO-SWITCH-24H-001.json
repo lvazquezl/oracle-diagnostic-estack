@@ -1,0 +1,10 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "thread_no": 1,
+      "hours_ago": 0,
+      "switch_count": 3
+    }
+  ]
+}

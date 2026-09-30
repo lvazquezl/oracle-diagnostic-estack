@@ -196,5 +196,99 @@ def the_modified_queries_compute_ages_and_value_shapes_in_the_database():
             assert re.search(r"\bAS " + col + r"\b", sql), (qid, v)
 
 
+# --- lot B2 (performance) -----------------------------------------------------------------------------------
+
+@test
+def lot_b2_exposes_the_performance_collectors_without_diagnostics_pack_views():
+    cols = catalog.load_collectors()
+    b2 = [c["collector_id"] for c in json.load(open(FACTORY, encoding="utf-8"))["collectors"] if c["factory"]["lot"] == "B2"]
+    must = {"Q-PERF-WAIT-SYSTEM-001", "Q-PERF-WAIT-CLASS-001", "Q-PERF-DBTIME-CURRENT-001", "Q-PERF-TOPSQL-CURRENT-001",
+            "Q-PERF-BLOCKING-001", "Q-PERF-IO-FILESTAT-001", "Q-PERF-HARDPARSE-001", "Q-ORA-REDO-SWITCH-24H-001"}
+    assert must <= set(b2), sorted(must - set(b2))
+    for cid in b2:
+        assert cols[cid].license_requirements in ("none", None, []), (cid, cols[cid].license_requirements)
+
+
+@test
+def oracle_term_and_sql_id_are_keepable_only_in_their_named_fields():
+    with tmpdir() as d:
+        for fields in ({"owner": {"type": "oracle_term", "policy": "KEEP"}},
+                       {"event": {"type": "identifier", "policy": "MASK"}},
+                       {"event": {"type": "oracle_term", "policy": "MASK"}},
+                       {"host_name": {"type": "sql_id", "policy": "KEEP"}},
+                       {"sql_id": {"type": "identifier", "policy": "MASK"}}):
+            spec = json.load(open(catalog.DEFAULT_COLLECTORS_FILE, encoding="utf-8"))
+            spec["collectors"][0]["output_fields"] = fields
+            p = os.path.join(d, "c.json")
+            json.dump(spec, open(p, "w", encoding="utf-8"))
+            assert "default-deny" in _raises(catalog.load_collectors, p), fields
+
+
+@test
+def oracle_terms_and_sql_ids_keep_only_their_shape():
+    s = SessionScope()
+    term = {"type": "oracle_term", "policy": "KEEP"}
+    for ok in ("db file sequential read", "enq: TX - row lock contention", "SQL*Net message from client", "TABLE/PROCEDURE"):
+        assert _sanitize_value(term, ok, s, PRIMARY) == (True, ok), ok
+    for bad in ("/u01/app/oracle", "sys/oracle@db", "x" * 80, "password=Tiger123", "Xk9fQ2pLm7Rt4Wz8Yb3Nc", 7, None):
+        assert _sanitize_value(term, bad, s, PRIMARY) == (False, None), bad
+    sid = {"type": "sql_id", "policy": "KEEP"}
+    assert _sanitize_value(sid, "7ztv2z24kw0s0", s, PRIMARY) == (True, "7ztv2z24kw0s0")
+    for bad in ("SELECT * FROM t", "7ZTV2Z24KW0S0", "7ztv2z24kw0s", "7ztv2z24kw0s0x", 42):
+        assert _sanitize_value(sid, bad, s, PRIMARY)[0] is False, bad
+
+
+@test
+def long_readable_oracle_identifiers_are_masked_not_dropped_but_token_shapes_still_are():
+    s = SessionScope()
+    f = {"type": "identifier", "policy": "MASK", "alias_prefix": "own"}
+    for ok in ("REMOTE_SCHEDULER_AGENT", "GSMADMIN_INTERNAL", "gsmcatuser_internal_x"):
+        kept, v = _sanitize_value(f, ok, s, PRIMARY)
+        assert kept and v.startswith("own-") and ok not in v, (ok, v)
+    for bad in ("Xk9fQ2pLm7Rt4Wz8Yb3Nc", "ABCDEFGHIJ0123456789ABCD", "f" * 40):
+        assert _sanitize_value(f, bad, s, PRIMARY) == (False, None), bad
+
+
+@test
+def b2_collectors_never_expose_sql_text_file_paths_or_memory_addresses():
+    cols = catalog.load_collectors()
+    s = SessionScope()
+    raw = {
+        "Q-PERF-TOPSQL-CURRENT-001": {"sql_id": "7ztv2z24kw0s0", "sql_text": "SELECT card_no FROM payments", "plan_hash_value": 1,
+                                      "executions": 2, "elapsed_sec": 1.5, "cpu_sec": 1.0, "buffer_gets": 3, "disk_reads": 0, "rows_processed": 1},
+        "Q-PERF-IO-FILESTAT-001": {"file_id": 7, "file_name": "/u02/oradata/LAB/app_data01.dbf", "tablespace_name": "APP_DATA",
+                                   "phyrds": 10, "phywrts": 2, "avg_read_latency_ms": 4.1, "avg_write_latency_ms": 1.0},
+        "Q-PERF-TEMP-001": {"session_addr": "00000000DEADBEEF", "sid": 12, "serial_no": 34, "sql_id": "7ztv2z24kw0s0",
+                            "tablespace": "TEMP_APP", "contents": "TEMPORARY", "bytes_used": 1048576},
+    }
+    for cid, row in raw.items():
+        out = json.dumps(sanitize_rows(cols[cid], oracle_sql.OracleSqlAdapter._minimize([row], cols[cid]), s, PRIMARY, 10))
+        for leak in ("card_no", "payments", "/u02", "app_data01", "APP_DATA", "DEADBEEF", "TEMP_APP"):
+            assert leak not in out, (cid, leak)
+        assert "7ztv2z24kw0s0" in out or cid == "Q-PERF-IO-FILESTAT-001", out
+
+
+@test
+def the_b2_query_fixes_are_in_the_certified_sql():
+    from mcp_gateway_lab import sqlsource
+    import hashlib
+
+    def sql(qid, v="19.0"):
+        class Q:
+            pass
+        q = Q()
+        p = catalog._find_query_file(qid)
+        b = catalog.sql_blocks(open(p, encoding="utf-8").read())
+        q.collector_id, q.kind, q.query_sha256 = qid, "sql_query", hashlib.sha256("\n".join(b).encode()).hexdigest()
+        return sqlsource.resolve(q, v).sql
+    assert "readtim * 10" in sql("Q-PERF-IO-FILESTAT-001") and "file_name" not in sql("Q-PERF-IO-FILESTAT-001")
+    assert "session_addr," not in sql("Q-PERF-TEMP-001") and "session_addr," not in sql("Q-PERF-TEMP-001", "11.2")
+    assert "server_name" not in sql("Q-PERF-PARALLEL-001") and "sql_id" not in sql("Q-PERF-PARALLEL-001")
+    assert ":window" not in sql("Q-ORA-REDO-SWITCH-24H-001")
+    assert "FROM   dual\nLEFT   JOIN v$parameter" in sql("Q-ORA-SPFILE-001")
+    for v in ("10.2", "11.2", "19.0", "23.0"):
+        assert sql("Q-PERF-HARDPARSE-001", v) and sql("Q-PERF-WAIT-SYSTEM-001", v) and sql("Q-PERF-WAIT-CLASS-001", v)
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())
