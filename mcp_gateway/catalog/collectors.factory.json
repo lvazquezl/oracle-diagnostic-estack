@@ -960,7 +960,7 @@
       "collector_id": "Q-ORA-DIAGNOSTICS-ADR-001",
       "kind": "sql_query",
       "domain": "oracle",
-      "title": "Outstanding server alerts by type and age in hours (message text not exposed)",
+      "title": "Outstanding server alerts by type, level and age in hours (message text not exposed)",
       "row_limit": 100,
       "params": {},
       "output_fields": {
@@ -970,6 +970,12 @@
             "Error",
             "Warning"
           ],
+          "policy": "KEEP"
+        },
+        "message_level": {
+          "type": "integer",
+          "min": 1,
+          "max": 32,
           "policy": "KEEP"
         },
         "hours_since_created": {

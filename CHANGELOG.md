@@ -19,9 +19,14 @@ Rama `change/collector-factory-b1` sobre `main` (`9ba2a17`). Pendiente: validaci
 
 ### Changed
 
-- Columnas calculadas aditivas: edades en horas en `Q-DISC-INSTANCE-001`, `Q-ORA-INSTANCE-STATE-001`, `Q-ORA-JOBS-SUMMARY-001`, `Q-ORA-DIAGNOSTICS-ADR-001` y `Q-ORA-ARCHIVE-001`.
+- Las queries de collectors seleccionan sólo lo que exponen: columnas calculadas en la base **sustituyen** a fechas crudas, rutas y texto libre.
+  - Edades en horas en `Q-DISC-INSTANCE-001`, `Q-ORA-INSTANCE-STATE-001`, `Q-ORA-JOBS-SUMMARY-001`, `Q-ORA-DIAGNOSTICS-ADR-001` y `Q-ORA-ARCHIVE-001`.
   - `Q-ORA-ARCHIVE-001` agrega además el tipo de destino y el indicador de error.
-  - `Q-ORA-PARAMETERS-001` y `Q-ORA-SPFILE-001` agregan el valor descompuesto en número, flag, versión o palabra clave.
+  - `Q-ORA-PARAMETERS-001` y `Q-ORA-SPFILE-001` descomponen el valor en número, flag, versión o palabra clave.
+
+### Fixed
+
+- `Q-ORA-UNDO-001` 1.0.1: faltaba `FROM dual` (ORA-00923), detectado en la primera ejecución real en el lab.
 
 ## [0.22.0] — 2026-09-29 — `v0.22.0-observed-context` — 6 cambios: pseudo-columnas, arquitectura observada, RU observado, revalidación LAB-007, TEMP por PDB, SIGPIPE en tests
 

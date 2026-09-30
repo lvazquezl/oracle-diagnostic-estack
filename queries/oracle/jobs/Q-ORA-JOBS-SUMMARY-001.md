@@ -36,7 +36,7 @@ status: active
 # Statement / procedure (read-only)
 
 ```sql
-SELECT j.owner, j.job_name, j.state, j.last_start_date, j.failure_count,
+SELECT j.owner, j.job_name, j.state, j.failure_count,
        ROUND((CAST(SYS_EXTRACT_UTC(SYSTIMESTAMP) AS DATE) - CAST(SYS_EXTRACT_UTC(j.last_start_date) AS DATE)) * 24, 2) AS hours_since_last_start
 FROM   dba_scheduler_jobs j
 WHERE  j.state IN ('BROKEN','FAILED') OR j.failure_count > 0
@@ -69,6 +69,6 @@ Ninguna.
 
 `job_name`/`owner` → MASK por defecto (puede revelar lógica de negocio).
 
-CHG-ESTACK-COLLECTOR-FACTORY-B1 — `hours_since_last_start` (1.1.0): horas desde el último inicio, en UTC y calculadas en la base de datos (`LAST_START_DATE` es `TIMESTAMP WITH TIME ZONE`).
+CHG-ESTACK-COLLECTOR-FACTORY-B1 — `hours_since_last_start` (1.1.0) **sustituye** a `last_start_date`: horas desde el último inicio, en UTC y calculadas en la base de datos (`TIMESTAMP WITH TIME ZONE`; el adaptador real rechaza fechas crudas).
 
 # Evolution via `/change query`

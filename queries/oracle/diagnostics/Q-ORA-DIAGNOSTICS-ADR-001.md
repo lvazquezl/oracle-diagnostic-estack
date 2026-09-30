@@ -31,7 +31,7 @@ status: active
 # Statement / procedure (read-only)
 
 ```sql
-SELECT a.reason, a.message_type, a.suggested_action, a.creation_time,
+SELECT a.message_type, a.message_level,
        ROUND((CAST(SYS_EXTRACT_UTC(SYSTIMESTAMP) AS DATE) - CAST(SYS_EXTRACT_UTC(a.creation_time) AS DATE)) * 24, 2) AS hours_since_created
 FROM   dba_outstanding_alerts a
 WHERE  a.message_type IN ('Error','Warning')
@@ -64,6 +64,6 @@ Ninguna.
 
 `reason`/`suggested_action` → condicional (pueden contener nombres de schema/objeto en el mensaje) — sanitización aplicada antes de llegar al modelo.
 
-CHG-ESTACK-COLLECTOR-FACTORY-B1 — `hours_since_created` (1.1.0): antigüedad de la alerta en horas, calculada en la base de datos. El collector del gateway no expone `reason` ni `suggested_action` (texto libre).
+CHG-ESTACK-COLLECTOR-FACTORY-B1 — (1.1.0) `hours_since_created` **sustituye** a `creation_time`; `reason` y `suggested_action` (texto libre de hasta 4000 caracteres, que el adaptador real rechaza) se retiran y se agrega `message_level`.
 
 # Evolution via `/change query`

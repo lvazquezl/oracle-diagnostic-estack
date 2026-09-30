@@ -45,7 +45,7 @@ status: active
 # Statement / procedure (read-only) — Variant V1 (legacy_10g, 10.2)
 
 ```sql
-SELECT inst_id, status, database_status, active_state, shutdown_pending, startup_time,
+SELECT inst_id, status, database_status, active_state, shutdown_pending,
        ROUND((SYSDATE - startup_time) * 24, 2) AS uptime_hours
 FROM   gv$instance
 ORDER  BY inst_id;
@@ -56,7 +56,7 @@ Sin `instance_role` — no disponible en `GV$INSTANCE` en 10g (columna introduci
 # Statement / procedure (read-only) — Variant V2 (modern_11plus, 11.0+)
 
 ```sql
-SELECT inst_id, status, database_status, active_state, shutdown_pending, startup_time, instance_role,
+SELECT inst_id, status, database_status, active_state, shutdown_pending, instance_role,
        ROUND((SYSDATE - startup_time) * 24, 2) AS uptime_hours
 FROM   gv$instance
 ORDER  BY inst_id;
@@ -88,7 +88,7 @@ Ninguna en ninguna variante.
 
 Todos los campos → KEEP en ambas variantes.
 
-CHG-ESTACK-COLLECTOR-FACTORY-B1 — `uptime_hours` (2.1.0, ambas variantes): horas desde `startup_time`, calculadas en la base de datos; el collector expone la edad, nunca la fecha absoluta.
+CHG-ESTACK-COLLECTOR-FACTORY-B1 — `uptime_hours` (2.1.0, ambas variantes) **sustituye** a `startup_time`: horas desde el arranque calculadas en la base de datos (el adaptador real rechaza fechas crudas).
 
 # Evolution via `/change query`
 

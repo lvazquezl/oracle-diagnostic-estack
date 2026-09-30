@@ -275,10 +275,11 @@
   {
    "collector_id": "Q-ORA-DIAGNOSTICS-ADR-001",
    "domain": "oracle",
-   "title": "Outstanding server alerts by type and age in hours (message text not exposed)",
+   "title": "Outstanding server alerts by type, level and age in hours (message text not exposed)",
    "row_limit": 100,
    "fields": [
     "message_type",
+    "message_level",
     "hours_since_created"
    ]
   },

@@ -31,7 +31,7 @@ status: active
 # Statement / procedure (read-only)
 
 ```sql
-SELECT name, value, isdefault, ismodified,
+SELECT name, isdefault, ismodified,
        CASE WHEN REGEXP_LIKE(value, '^[0-9]{1,15}$') THEN TO_NUMBER(value) END AS value_number,
        CASE WHEN UPPER(value) IN ('TRUE', 'FALSE') THEN UPPER(value) END AS value_flag,
        CASE WHEN REGEXP_LIKE(value, '^[0-9]{1,2}(\.[0-9]{1,3}){1,4}$') THEN value END AS value_version,
@@ -67,6 +67,6 @@ Ninguna.
 
 `value` → condicional (`DROP` si el nombre del parámetro sugiere contenido sensible, ej. rutas de wallet); resto → KEEP.
 
-CHG-ESTACK-COLLECTOR-FACTORY-B1 — `value_number`/`value_flag`/`value_version`/`value_keyword` (1.1.0): el valor descompuesto en la base de datos. El collector expone sólo estas formas (número, TRUE/FALSE, versión, palabra clave de una lista cerrada); `value` libre (rutas, servicios, hosts) nunca sale.
+CHG-ESTACK-COLLECTOR-FACTORY-B1 — `value_number`/`value_flag`/`value_version`/`value_keyword` (1.1.0): el valor descompuesto en la base de datos **sustituye** a `value`: sólo número, TRUE/FALSE, versión o palabra clave de una lista cerrada. `value` libre (rutas, servicios, hosts; hasta 4000 caracteres) ya no se selecciona.
 
 # Evolution via `/change query`

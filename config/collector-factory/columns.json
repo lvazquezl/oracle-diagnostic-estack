@@ -680,6 +680,13 @@
    "max": 100000,
    "policy": "KEEP",
    "example": 38
+  },
+  "message_level": {
+   "type": "integer",
+   "min": 1,
+   "max": 32,
+   "policy": "KEEP",
+   "example": 5
   }
  }
 }

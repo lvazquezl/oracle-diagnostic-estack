@@ -3,6 +3,7 @@
   "rows": [
     {
       "message_type": "Warning",
+      "message_level": 5,
       "hours_since_created": 6.5
     }
   ]

@@ -27,18 +27,19 @@ Reglas que la fábrica y el catálogo hacen cumplir, y que el catálogo vuelve a
 - Los identificadores (owner, objeto, tablespace, job, instancia, host) nunca son `KEEP`. El texto libre nunca se declara. No se exponen fechas absolutas: las edades se calculan en la base.
 - Un `collector_id` presente en el catálogo manual y en el generado se rechaza.
 
-## Cambios en las queries (aditivos)
+## Cambios en las queries
 
-Se agregan columnas calculadas en la base; ninguna columna existente se quita ni cambia:
+**La query de un collector selecciona sólo lo que expone.** El adaptador real rechaza toda la respuesta si llega una fecha cruda, un LOB o un texto de más de 256 caracteres. Por eso las columnas calculadas en la base **sustituyen** a las crudas. La primera ejecución en el lab lo confirmó: el enfoque aditivo inicial fue rechazado con `E_RESULT_INVALID`.
 
-| Query | Versión | Columnas nuevas |
+| Query | Versión | Cambio |
 |---|---|---|
-| `Q-DISC-INSTANCE-001` | 1.1.0 | `uptime_hours` |
-| `Q-ORA-INSTANCE-STATE-001` | 2.1.0 (V1 y V2) | `uptime_hours` |
-| `Q-ORA-JOBS-SUMMARY-001` | 1.1.0 | `hours_since_last_start` (UTC, `TIMESTAMP WITH TIME ZONE`) |
-| `Q-ORA-DIAGNOSTICS-ADR-001` | 1.1.0 | `hours_since_created` |
-| `Q-ORA-ARCHIVE-001` | 1.2.0 | `hours_since_last_archived`, `dest_kind` (`FRA`/`LOCAL`/`SERVICE`/`NONE`), `has_error` |
-| `Q-ORA-PARAMETERS-001`, `Q-ORA-SPFILE-001` | 1.1.0 | `value_number`, `value_flag`, `value_version`, `value_keyword` |
+| `Q-DISC-INSTANCE-001` | 1.1.0 | `uptime_hours` sustituye a `startup_time` |
+| `Q-ORA-INSTANCE-STATE-001` | 2.1.0 (V1 y V2) | `uptime_hours` sustituye a `startup_time` |
+| `Q-ORA-JOBS-SUMMARY-001` | 1.1.0 | `hours_since_last_start` (UTC) sustituye a `last_start_date` |
+| `Q-ORA-DIAGNOSTICS-ADR-001` | 1.1.0 | `hours_since_created` sustituye a `creation_time`; se retiran `reason` y `suggested_action` (texto libre); se agrega `message_level` |
+| `Q-ORA-ARCHIVE-001` | 1.2.0 | `hours_since_last_archived`, `dest_kind` (`FRA`/`LOCAL`/`SERVICE`/`NONE`) y `has_error` sustituyen a `last_archived`, `destination` y `error` |
+| `Q-ORA-PARAMETERS-001`, `Q-ORA-SPFILE-001` | 1.1.0 | `value_number`, `value_flag`, `value_version` y `value_keyword` sustituyen a `value` |
+| `Q-ORA-UNDO-001` | 1.0.1 | Se agrega `FROM dual`: la sentencia certificada no era válida (ORA-00923) |
 
 El valor de un parámetro sale sólo en una de cuatro formas: número, `TRUE`/`FALSE`, versión o palabra clave de una lista cerrada. El `value` libre (rutas, servicios, hosts) nunca sale.
 
@@ -84,7 +85,7 @@ Quedan fuera del lote y pasan a lotes siguientes:
 | Fase | Resultado |
 |---|---|
 | DETECT GAP | Sólo 16 collectors reales en el lab; `/healthcheck` Oracle Core dependía de queries sin collector |
-| PROPOSAL | Fábrica gobernada (base de conocimiento + lotes + control de deriva), columnas calculadas aditivas, tipo `parameter_name` |
+| PROPOSAL | Fábrica gobernada (base de conocimiento + lotes + control de deriva), columnas calculadas en la base que sustituyen a las crudas, tipo `parameter_name` |
 | IMPLEMENT | `scripts/collector_factory/`, `config/collector-factory/`, `collectors.factory.json` y fixtures generados, carga combinada en `mcp_gateway/catalog.py`, tipo en `mcp_gateway/evidence.py`, alias en `mcp_gateway_lab/oracle_sql.py`, 7 queries, registro de madurez, `targets.fixture.json` |
 | TEST | `tests/test_collector_factory.sh` (P18): 12/12 |
 | SECURITY | 9/9 mutaciones detectadas: `parameter_name` en cualquier campo, `parameter_name` sin validar, ajuste que cambia tipo, enum ampliado, catálogo generado sin cargar, id duplicado, adaptador que deja pasar columnas crudas, sin tope de filas, alias ignorados en el lab |

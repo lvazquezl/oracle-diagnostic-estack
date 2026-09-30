@@ -31,8 +31,7 @@ status: active
 # Statement / procedure (read-only)
 
 ```sql
-SELECT d.dest_id, d.destination, s.status, s.error,
-       (SELECT MAX(completion_time) FROM v$archived_log a WHERE a.dest_id = d.dest_id) AS last_archived,
+SELECT d.dest_id, s.status,
        ROUND((SYSDATE - (SELECT MAX(completion_time) FROM v$archived_log a WHERE a.dest_id = d.dest_id)) * 24, 2) AS hours_since_last_archived,
        CASE WHEN d.destination IS NULL THEN 'NONE'
             WHEN UPPER(d.destination) = 'USE_DB_RECOVERY_FILE_DEST' THEN 'FRA'
@@ -67,6 +66,6 @@ Ninguna.
 
 `destination` → MASK por defecto (puede revelar hostname/ruta remota).
 
-CHG-ESTACK-COLLECTOR-FACTORY-B1 — `hours_since_last_archived`, `dest_kind` (`FRA`/`LOCAL`/`SERVICE`/`NONE`) y `has_error` (1.2.0): calculados en la base de datos para que el collector no exponga la ruta/servicio ni el texto del error.
+CHG-ESTACK-COLLECTOR-FACTORY-B1 — (1.2.0) `hours_since_last_archived`, `dest_kind` (`FRA`/`LOCAL`/`SERVICE`/`NONE`) y `has_error` **sustituyen** a `last_archived`, `destination` y `error`: calculados en la base de datos, sin ruta, servicio, texto de error ni fecha cruda.
 
 # Evolution via `/change query`
