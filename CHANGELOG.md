@@ -4,7 +4,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change query|security|documentation` — CHG-ESTACK-COLLECTOR-FACTORY-B1 — fábrica de collectors, lote B1 (Oracle Core y tablespaces)
 
-Rama `change/collector-factory-b1` sobre `main` (`9ba2a17`). Pendiente: validación en el lab, CI y HUMAN REVIEW. Ver `docs/COLLECTOR_FACTORY.md`.
+Rama `change/collector-factory-b1` sobre `main` (`9ba2a17`). Validado en el lab: los 18 collectors corren con datos reales y quedan `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Pendiente: CI y HUMAN REVIEW. Ver `docs/COLLECTOR_FACTORY.md`.
 
 ### Added
 
