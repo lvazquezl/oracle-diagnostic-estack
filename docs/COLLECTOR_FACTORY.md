@@ -130,6 +130,6 @@ En los 18, el `query_sha256` observado coincide con el SQL versionado.
 | IMPLEMENT | `scripts/collector_factory/`, `config/collector-factory/`, `collectors.factory.json` y fixtures generados, carga combinada en `mcp_gateway/catalog.py`, tipo en `mcp_gateway/evidence.py`, alias en `mcp_gateway_lab/oracle_sql.py`, 7 queries, registro de madurez, `targets.fixture.json` |
 | TEST | `tests/test_collector_factory.sh` (P18): 12/12 |
 | SECURITY | 9/9 mutaciones detectadas: `parameter_name` en cualquier campo, `parameter_name` sin validar, ajuste que cambia tipo, enum ampliado, catálogo generado sin cargar, id duplicado, adaptador que deja pasar columnas crudas, sin tope de filas, alias ignorados en el lab |
-| REGRESSION | Suite completa (ver PR) |
+| REGRESSION | 970/970 en macOS con bash 5.3; CI de la PR #27 en verde en ubuntu, macOS y Windows |
 | LAB | 18/18 en real (dos pasadas; ver arriba), `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM` (`config/field-validation-registry.json`) |
-| HUMAN REVIEW | Pendiente |
+| HUMAN REVIEW | Aprobado: `AUTH-COLLECTOR-FACTORY-B1`, revisor `REV-DBAMANAGER`, `2026-09-30T18:01:57Z`, digest `eac464b6…fd0255b`. PROMOTE: PR #27, merge `6f09471` |

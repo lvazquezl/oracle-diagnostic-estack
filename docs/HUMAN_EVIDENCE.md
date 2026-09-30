@@ -112,8 +112,8 @@ Las filas que superan `max_rows` de la query (tope 5000) se truncan y se declara
 | IMPLEMENT | Paquete `human_evidence/` (`request`, `ingest`, clasificador), `config/human-evidence-policies.json`, `evidence/.gitignore` (`requests/*`, `inbox/*`) |
 | TEST | `tests/test_human_evidence.sh` (P17): 18/18 |
 | SECURITY | 11/11 mutaciones detectadas: sin descarte por valor, override sobre nombre sensible, sin máscara en `KEEP`, sin re-check del sha, spec del collector ignorado, exención de identificadores amplia, enum no aplicado, clave sin scope, sin tope de filas, alias del lab ignorados, tipo del spec no aplicado. El paquete no importa drivers, red, `subprocess` ni keyring |
-| REGRESSION | 970/970 en macOS con bash 5.3 (el escáner de secretos marcó un ejemplo en este documento; se reformuló y se volvió a correr) |
+| REGRESSION | 971/971 en macOS con bash 5.3, ya integrado sobre B1 (antes, el escáner de secretos marcó un ejemplo en este documento; se reformuló); CI de la PR #28 en verde en ubuntu, macOS y Windows |
 | DOCUMENT | Este documento, la política de validación en campo, `docs/CONTRACTS.md`, el orquestador y `CHANGELOG.md` |
-| HUMAN REVIEW | Pendiente |
+| HUMAN REVIEW | Aprobado: `AUTH-HUMAN-EVIDENCE-001`, revisor `REV-DBAMANAGER`, `2026-09-30T22:00:14Z`, digest `13b45f65…d008c7bf`. PROMOTE: PR #28, merge `0245579` |
 
 Relación con la fábrica de collectors (B1, ya en `main`): para las 18 queries del lote B1, la ruta humana aplica exactamente el spec generado y los mismos alias.

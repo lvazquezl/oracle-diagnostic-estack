@@ -2,11 +2,47 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — `/change security|documentation` — CHG-ESTACK-HUMAN-EVIDENCE-001 — evidencia reportada por humano
+## [0.23.0] — 2026-09-30 — `v0.23.0-collector-factory` — 2 cambios: fábrica de collectors (lote B1) y evidencia reportada por humano
 
-Rama `change/human-evidence` sobre `main` (`6f09471`, con B1). Pendiente: CI y HUMAN REVIEW. Ver `docs/HUMAN_EVIDENCE.md`.
+El stack **obtiene la evidencia por sí mismo**: el gateway ejecuta el SELECT certificado con el usuario de diagnóstico de sólo lectura, sanea localmente y entrega `EVD-*`. El DBA sólo crea ese usuario y registra el target, una vez por base.
 
-### Added
+- La fábrica de collectors genera collectors desde queries certificadas, por lotes gobernados.
+- El lote B1 cubre Oracle Core y tablespaces para `/healthcheck`: 18 collectors, `FIELD_VALIDATED` en el lab. El catálogo pasa de 21 a 39 collectors y el lab, de 16 a 34 habilitados.
+- Para una query sin collector, o una base a la que el stack no llega, queda la ruta de respaldo: el DBA ejecuta el SQL certificado y el CSV se sanea localmente como `HUMAN_REPORTED`.
+
+Los 2 cambios fueron aprobados por revisión humana. Regresión local (macOS, bash 5.3): 971/971; CI de las PR #27 y #28 en verde en los tres sistemas.
+
+### `/change query|security|documentation` — CHG-ESTACK-COLLECTOR-FACTORY-B1 — fábrica de collectors, lote B1 (Oracle Core y tablespaces)
+
+Rama `change/collector-factory-b1` sobre `main` (`9ba2a17`), integrada a `main` vía PR #27 (merge `6f09471`). Validado en el lab: los 18 collectors corren con datos reales y quedan `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. La primera pasada detectó fechas crudas rechazadas por el adaptador y un `FROM dual` faltante; se corrigieron antes de aprobar. Aprobación humana registrada: `AUTH-COLLECTOR-FACTORY-B1`, revisor `REV-DBAMANAGER`, `2026-09-30T18:01:57Z`, contra el digest `eac464b6…fd0255b` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/COLLECTOR_FACTORY.md`.
+
+#### Added
+
+- `python3 -m scripts.collector_factory.generate [--check|--write]`:
+  - genera collectors del gateway desde queries certificadas, a partir de una base de conocimiento de columnas y de lotes;
+  - incluye un control de deriva.
+- Lote B1: 18 collectors para `/healthcheck` Oracle Core y tablespaces, que llevan el catálogo a 39.
+  - Los carga `mcp_gateway/catalog/collectors.factory.json` con las mismas reglas de default-deny.
+  - Los implementa el adaptador `oracle_sql` del lab, con alias de columna.
+- Tipo de campo `parameter_name`: se puede conservar (`KEEP`) sólo en un campo con ese nombre y con forma de nombre de parámetro Oracle.
+- `tests/test_collector_factory.sh` (P18, 12 casos, 9 mutaciones detectadas).
+
+#### Changed
+
+- Las queries de collectors seleccionan sólo lo que exponen: columnas calculadas en la base **sustituyen** a fechas crudas, rutas y texto libre.
+  - Edades en horas en `Q-DISC-INSTANCE-001`, `Q-ORA-INSTANCE-STATE-001`, `Q-ORA-JOBS-SUMMARY-001`, `Q-ORA-DIAGNOSTICS-ADR-001` y `Q-ORA-ARCHIVE-001`.
+  - `Q-ORA-ARCHIVE-001` agrega además el tipo de destino y el indicador de error.
+  - `Q-ORA-PARAMETERS-001` y `Q-ORA-SPFILE-001` descomponen el valor en número, flag, versión o palabra clave.
+
+#### Fixed
+
+- `Q-ORA-UNDO-001` 1.0.1: faltaba `FROM dual` (ORA-00923), detectado en la primera ejecución real en el lab.
+
+### `/change security|documentation` — CHG-ESTACK-HUMAN-EVIDENCE-001 — evidencia reportada por humano
+
+Rama `change/human-evidence` sobre `main` (`6f09471`, con B1), integrada a `main` vía PR #28 (merge `0245579`). Es la ruta de respaldo: para queries sin collector o bases a las que el stack no puede conectarse. Aprobación humana registrada: `AUTH-HUMAN-EVIDENCE-001`, revisor `REV-DBAMANAGER`, `2026-09-30T22:00:14Z`, contra el digest `13b45f65…d008c7bf` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/HUMAN_EVIDENCE.md`.
+
+#### Added
 
 - `python -m human_evidence request|ingest`:
   - `request` genera el script SQL*Plus con el SELECT certificado exacto (116 de 129 queries en 19c).
@@ -18,32 +54,6 @@ Rama `change/human-evidence` sobre `main` (`6f09471`, con B1). Pendiente: CI y H
 - `config/human-evidence-policies.json` y `tests/test_human_evidence.sh` (P17, 18 casos, 11 mutaciones detectadas).
 - Integración con la fábrica B1: catálogo combinado, alias de columna del lab y validación de forma por tipo del spec.
 - Nivel `HUMAN_REPORTED` en la política de validación en campo, `docs/CONTRACTS.md` y el orquestador, que puede emitir solicitudes de evidencia cuando falta el collector.
-
-## [Unreleased] — `/change query|security|documentation` — CHG-ESTACK-COLLECTOR-FACTORY-B1 — fábrica de collectors, lote B1 (Oracle Core y tablespaces)
-
-Rama `change/collector-factory-b1` sobre `main` (`9ba2a17`). Validado en el lab: los 18 collectors corren con datos reales y quedan `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Pendiente: CI y HUMAN REVIEW. Ver `docs/COLLECTOR_FACTORY.md`.
-
-### Added
-
-- `python3 -m scripts.collector_factory.generate [--check|--write]`:
-  - genera collectors del gateway desde queries certificadas, a partir de una base de conocimiento de columnas y de lotes;
-  - incluye un control de deriva.
-- Lote B1: 18 collectors para `/healthcheck` Oracle Core y tablespaces, que llevan el catálogo a 39.
-  - Los carga `mcp_gateway/catalog/collectors.factory.json` con las mismas reglas de default-deny.
-  - Los implementa el adaptador `oracle_sql` del lab, con alias de columna.
-- Tipo de campo `parameter_name`: se puede conservar (`KEEP`) sólo en un campo con ese nombre y con forma de nombre de parámetro Oracle.
-- `tests/test_collector_factory.sh` (P18, 12 casos, 9 mutaciones detectadas).
-
-### Changed
-
-- Las queries de collectors seleccionan sólo lo que exponen: columnas calculadas en la base **sustituyen** a fechas crudas, rutas y texto libre.
-  - Edades en horas en `Q-DISC-INSTANCE-001`, `Q-ORA-INSTANCE-STATE-001`, `Q-ORA-JOBS-SUMMARY-001`, `Q-ORA-DIAGNOSTICS-ADR-001` y `Q-ORA-ARCHIVE-001`.
-  - `Q-ORA-ARCHIVE-001` agrega además el tipo de destino y el indicador de error.
-  - `Q-ORA-PARAMETERS-001` y `Q-ORA-SPFILE-001` descomponen el valor en número, flag, versión o palabra clave.
-
-### Fixed
-
-- `Q-ORA-UNDO-001` 1.0.1: faltaba `FROM dual` (ORA-00923), detectado en la primera ejecución real en el lab.
 
 ## [0.22.0] — 2026-09-29 — `v0.22.0-observed-context` — 6 cambios: pseudo-columnas, arquitectura observada, RU observado, revalidación LAB-007, TEMP por PDB, SIGPIPE en tests
 
