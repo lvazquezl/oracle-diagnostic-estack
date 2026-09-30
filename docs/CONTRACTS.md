@@ -227,10 +227,12 @@ hypotheses: [...]
 confidence: FACT|OBSERVATION|HYPOTHESIS|PROBABLE_CAUSE|CONFIRMED_ROOT_CAUSE|UNDETERMINED
 recommendations: [...]
 next_skill_or_agent: string|null   # sólo si es necesario
-validation_level: FIELD_VALIDATED|FIELD_VALIDATED_OTHER_CONTEXT|DOCUMENTATION_ONLY   # el más débil de la evidencia usada
+validation_level: FIELD_VALIDATED|FIELD_VALIDATED_OTHER_CONTEXT|HUMAN_REPORTED|DOCUMENTATION_ONLY   # el más débil de la evidencia usada
 ```
 
 **Validación en campo** (`CHG-ESTACK-VALIDATION-MATRIX-001`, [policies/field-validation-policy.md](../policies/field-validation-policy.md)): cada hallazgo declara el `validation_level` más débil de la evidencia en que se apoya. Distinto de `FIELD_VALIDATED` ⇒ el hallazgo dice explícitamente "no validado en campo" con las dimensiones que difieren, y `confidence` no supera `PROBABLE_CAUSE`. El gateway entrega el nivel por evidencia (`field_validation` en `diagnostics.collect`/`get_evidence`/`describe_collector`) y el techo en `diagnostics.analyze_incident`.
+
+**Evidencia reportada por humano** (`CHG-ESTACK-HUMAN-EVIDENCE-001`, [docs/HUMAN_EVIDENCE.md](HUMAN_EVIDENCE.md)): cuando el dato necesario no tiene collector habilitado para el target, el especialista devuelve `capability_status` con la query certificada que falta, y el orquestador emite una **solicitud de evidencia** (`ER-*`) con `python -m human_evidence request`. El DBA ejecuta el script generado (sólo el SELECT certificado) y el CSV se sanea localmente con `ingest` a `evidence/sanitized/EVD-HR-*.json` (`validation_level: HUMAN_REPORTED`, techo `PROBABLE_CAUSE`). El agente nunca redacta SQL propio ni recibe el CSV crudo.
 
 Reglas: activación mínima de agentes; contexto mínimo; evidencia por referencia (nunca duplicada inline); sin propagación de historial completo; sin evidencia duplicada entre agentes (se reutiliza el `EVD-*` ya recolectado); preprocesamiento local antes de que cualquier evidencia entre al Task/Result Package; presupuestos de tokens/contexto declarados por agente/skill/workflow; cache de discovery y de evidencia por sesión/target; reutilización de hallazgos existentes antes de re-solicitar evidencia.
 

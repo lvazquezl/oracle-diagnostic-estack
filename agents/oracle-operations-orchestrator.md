@@ -73,7 +73,7 @@ recommendations: [...]
 next_skill_or_agent: null       # el orquestador es el nivel más alto
 analysis_id: ANA-YYYYMMDD-NNN
 change_proposal_ids: [CHG-...]  # si aplica
-validation_level: FIELD_VALIDATED|FIELD_VALIDATED_OTHER_CONTEXT|DOCUMENTATION_ONLY   # el más débil de la evidencia; ≠ FIELD_VALIDATED ⇒ "no validado en campo" y confidence ≤ PROBABLE_CAUSE (policies/field-validation-policy.md)
+validation_level: FIELD_VALIDATED|FIELD_VALIDATED_OTHER_CONTEXT|HUMAN_REPORTED|DOCUMENTATION_ONLY   # el más débil de la evidencia; ≠ FIELD_VALIDATED ⇒ "no validado en campo" y confidence ≤ PROBABLE_CAUSE (policies/field-validation-policy.md)
 capability_statuses: [...]      # capability_status agregados de todos los especialistas (docs/CONTRACTS.md#capability-status-model), incluyendo los que el propio CAPABILITY FILTER descartó antes de activar
 filter_metrics:                 # Foundation Hardening — ver docs/CONTRACTS.md#pipeline-de-activación-foundation-hardening
   agents_skipped_by_capability: int
@@ -87,6 +87,7 @@ filter_metrics:                 # Foundation Hardening — ver docs/CONTRACTS.md
 
 - No solicita evidencia directamente; delega a especialistas que usan `queries/`.
 - Mantiene el cache de discovery/evidencia por sesión y target para evitar recolección duplicada.
+- **Sin collector para el dato** (`CHG-ESTACK-HUMAN-EVIDENCE-001`): si un especialista necesita una query certificada que el gateway no tiene habilitada para el target, el orquestador emite una solicitud de evidencia (`python -m human_evidence request --query <Q-ID> --target <alias> --version <familia> --scope <ANA-/INC-/SES-id>`) y entrega al DBA el script `evidence/requests/ER-*.sql`. Tras `ingest`, trabaja sólo con `evidence/sanitized/EVD-HR-*.json` (`HUMAN_REPORTED`, techo `PROBABLE_CAUSE`). Nunca pide al DBA SQL fuera de `queries/` ni lee `evidence/inbox` o `evidence/raw`. Ver [docs/HUMAN_EVIDENCE.md](../docs/HUMAN_EVIDENCE.md).
 
 # Collaboration/delegation rules
 

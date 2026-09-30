@@ -2,6 +2,23 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change security|documentation` — CHG-ESTACK-HUMAN-EVIDENCE-001 — evidencia reportada por humano
+
+Rama `change/human-evidence` sobre `main` (`6f09471`, con B1). Pendiente: CI y HUMAN REVIEW. Ver `docs/HUMAN_EVIDENCE.md`.
+
+### Added
+
+- `python -m human_evidence request|ingest`:
+  - `request` genera el script SQL*Plus con el SELECT certificado exacto (116 de 129 queries en 19c).
+  - `ingest` sanea localmente el CSV del DBA a `evidence/sanitized/EVD-HR-*.json`, con nivel `HUMAN_REPORTED` y techo `PROBABLE_CAUSE`.
+- Saneamiento por columna:
+  - el spec del collector del gateway es la autoridad cuando existe; si no, se aplican los overrides y después la heurística;
+  - los valores con forma de secreto se descartan y las rutas, IPs y hosts se enmascaran;
+  - los alias HMAC son estables por scope.
+- `config/human-evidence-policies.json` y `tests/test_human_evidence.sh` (P17, 18 casos, 11 mutaciones detectadas).
+- Integración con la fábrica B1: catálogo combinado, alias de columna del lab y validación de forma por tipo del spec.
+- Nivel `HUMAN_REPORTED` en la política de validación en campo, `docs/CONTRACTS.md` y el orquestador, que puede emitir solicitudes de evidencia cuando falta el collector.
+
 ## [Unreleased] — `/change query|security|documentation` — CHG-ESTACK-COLLECTOR-FACTORY-B1 — fábrica de collectors, lote B1 (Oracle Core y tablespaces)
 
 Rama `change/collector-factory-b1` sobre `main` (`9ba2a17`). Validado en el lab: los 18 collectors corren con datos reales y quedan `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Pendiente: CI y HUMAN REVIEW. Ver `docs/COLLECTOR_FACTORY.md`.
