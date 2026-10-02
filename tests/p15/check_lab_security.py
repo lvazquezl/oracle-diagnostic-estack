@@ -11,7 +11,7 @@ import os
 import time
 from datetime import datetime, timedelta, timezone
 
-from tests.p15.harness import (macos_test, posix_test, ALIAS, DELETE, ROOT, SECRET, FakeKeychain, Lab, Scenario, driver_error, lab_target, leaks, profile_doc,
+from tests.p15.harness import (macos_test, posix_mode_test, posix_test, ALIAS, DELETE, ROOT, SECRET, FakeKeychain, Lab, Scenario, driver_error, lab_target, leaks, profile_doc,
                                run_all, run_lab_cli, test, tmpdir, utc, write_private, write_targets)
 
 ID = "Q-DISC-IDENTITY-001"
@@ -55,7 +55,7 @@ def profile_with_a_secret_or_connect_string_anywhere_is_refused():
             assert refused(d, profile=doc), key
 
 
-@posix_test
+@posix_mode_test
 def profile_file_must_be_private_regular_owned_and_outside_the_repository():
     with tmpdir() as d:
         assert refused(d, mode=0o644), "group/world-readable profile accepted"
@@ -401,7 +401,9 @@ def default_gateway_still_cannot_run_oracle_sql_and_never_imports_the_lab_packag
 
 @test
 def lab_package_static_scan_no_network_eval_env_commit_or_thick_mode():
-    subprocess_users = []
+    # CHG-ESTACK-LAB-PORTABLE-001: two narrow, reviewed exceptions — ctypes only in filesec.py (Windows ACL reader) and
+    # init_oracle_client only in cli.prepare_driver (thick mode for the oracle_wallet provider). Nothing else changes.
+    subprocess_users, ctypes_users, thick_calls = [], [], []
     for path in sorted(glob.glob(os.path.join(LAB_PKG, "*.py"))):
         src = open(path, encoding="utf-8").read()
         tree = ast.parse(src)
@@ -411,7 +413,10 @@ def lab_package_static_scan_no_network_eval_env_commit_or_thick_mode():
                 mods = [a.name for a in node.names] if isinstance(node, ast.Import) else [node.module or ""]
                 for m in mods:
                     top = m.split(".")[0]
-                    assert top not in ("socket", "ssl", "http", "urllib", "requests", "pickle", "ctypes", "importlib", "asyncio", "multiprocessing"), (base, m)
+                    if top == "ctypes":
+                        ctypes_users.append(base)
+                        continue
+                    assert top not in ("socket", "ssl", "http", "urllib", "requests", "pickle", "importlib", "asyncio", "multiprocessing"), (base, m)
                     if top == "subprocess":
                         subprocess_users.append(base)
             elif isinstance(node, ast.Call):
@@ -419,13 +424,23 @@ def lab_package_static_scan_no_network_eval_env_commit_or_thick_mode():
                 if isinstance(fn, ast.Name):
                     assert fn.id not in ("eval", "exec", "compile", "__import__"), (base, fn.id)
                 elif isinstance(fn, ast.Attribute):
-                    assert fn.attr not in ("commit", "init_oracle_client", "system", "popen", "getenv", "putenv", "executemany", "callproc", "callfunc"), (base, fn.attr)
+                    if fn.attr == "init_oracle_client":
+                        thick_calls.append(base)
+                        continue
+                    assert fn.attr not in ("commit", "system", "popen", "getenv", "putenv", "executemany", "callproc", "callfunc"), (base, fn.attr)
             elif isinstance(node, ast.Attribute) and node.attr in ("environ",):
                 raise AssertionError(f"{base} reads the environment")
             elif isinstance(node, ast.Constant) and isinstance(node.value, str) and WRITE_STATEMENT.match(node.value):
                 raise AssertionError(f"{base} carries a write/PLSQL statement literal")
         assert "shell=True" not in src
     assert subprocess_users == ["credentials.py"], subprocess_users
+    assert set(ctypes_users) == {"filesec.py"}, ctypes_users
+    assert thick_calls == ["cli.py"], thick_calls
+    from mcp_gateway_lab import cli
+    import inspect
+    src = inspect.getsource(cli.prepare_driver)
+    assert "init_oracle_client" in src and 'target.provider == "oracle_wallet"' in src, "thick mode only behind the oracle_wallet provider"
+    assert "init_oracle_client" not in inspect.getsource(cli.build_lab_gateway)
 
 
 
@@ -620,20 +635,25 @@ def dictionary_verification_never_lets_a_name_outside_its_part_of_the_dictionary
 # --- CHG-ESTACK-PORTABILITY-001 (run on every platform) -------------------------------------------------------
 
 @test
-def non_posix_hosts_are_refused_with_fixed_text_instead_of_a_traceback():
+def a_host_whose_file_privacy_cannot_be_verified_is_refused_with_fixed_text():
+    # CHG-ESTACK-LAB-PORTABLE-001: Windows is supported (native ACL check); a host where neither the POSIX nor the
+    # Windows check can run still fails closed with fixed text, never a traceback.
+    import sys
     from mcp_gateway_lab import profile
-    saved = getattr(os, "getuid", None)
-    if saved is not None:
-        delattr(os, "getuid")                                   # simulate a host without POSIX owner checks
+    saved_uid, saved_platform = getattr(os, "getuid", None), sys.platform
+    if saved_uid is not None:
+        delattr(os, "getuid")
+    sys.platform = "unknown-os"
     try:
         try:
             profile.check_private_file(os.path.abspath(__file__))
-            raise AssertionError("a non-POSIX host was accepted")
+            raise AssertionError("an unverifiable host was accepted")
         except profile.ProfileError as e:
-            assert str(e) == "the lab launcher requires a POSIX host (owner-only file checks are not available here)", str(e)
+            assert str(e) == "lab profile must be private to the current user (Windows: only your user, SYSTEM and Administrators)", str(e)
     finally:
-        if saved is not None:
-            os.getuid = saved
+        sys.platform = saved_platform
+        if saved_uid is not None:
+            os.getuid = saved_uid
 
 
 @test
@@ -651,8 +671,7 @@ def the_keychain_provider_is_refused_at_startup_off_macos_when_no_test_runner_is
                 cli.build_lab_gateway(tf, prof, driver=FakeDriver())          # no credential_runner: production path
                 raise AssertionError("macos_keychain accepted off macOS")
             except profile.ProfileError as e:
-                assert str(e) in ("the macos_keychain credential provider requires macOS",
-                                  "the lab launcher requires a POSIX host (owner-only file checks are not available here)"), str(e)
+                assert str(e) == "the macos_keychain credential provider requires macOS", str(e)
         finally:
             sys.platform = saved
 

@@ -2,6 +2,25 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change security|compatibility|documentation` — CHG-ESTACK-LAB-PORTABLE-001 — recolección real en Windows, Linux y macOS (Oracle Wallet)
+
+Rama `change/lab-portable` sobre `main` (`46e14fa`, con B2). Pendiente: CI, validación (lab con llavero y LAB19S con Wallet desde Windows) y HUMAN REVIEW. Ver `docs/LAB_PORTABLE.md`.
+
+### Added
+
+- Proveedor de credencial `oracle_wallet` (SEPS): conexión por alias TNS con autenticación externa, sin contraseña en el proceso.
+  - Usa modo Thick **solo** para este proveedor (aprobado por el revisor).
+  - Valida el Wallet privado, que `sqlnet.ora` apunte a ese Wallet con `WALLET_OVERRIDE`, que exista el alias y que la configuración de red no la puedan modificar otros usuarios.
+- `mcp_gateway_lab/filesec.py`: verificación portable de privacidad de archivos (POSIX por dueño y permisos; Windows por dueño y ACL con la API nativa).
+- `tests/test_lab_portable.sh` (P19, 12 casos en los tres sistemas, 15 mutaciones detectadas).
+- CI con Python 3.13 y 3.14 en ubuntu, windows y macos.
+
+### Changed
+
+- El lanzador del lab ya no rechaza Windows. Las pruebas del lab (P15) corren en los tres sistemas.
+- `human_evidence` verifica que los archivos crudos, tokens y claves queden privados también en Windows; si no, los borra y rechaza la operación.
+- El llavero de macOS sigue igual (Thin).
+
 ## [Unreleased] — `/change query|security|documentation` — CHG-ESTACK-COLLECTOR-FACTORY-B2 — lote B2 de rendimiento
 
 Rama `change/collector-factory-b2` sobre `main` (`5c6e2d3`). Validado en el lab: los 16 collectors y `Q-ORA-SPFILE-001` quedan `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Pendiente: CI y HUMAN REVIEW. Ver `docs/COLLECTOR_FACTORY_B2.md`.
