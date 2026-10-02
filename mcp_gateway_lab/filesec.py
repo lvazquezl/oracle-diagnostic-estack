@@ -24,6 +24,9 @@ NOT_WRITABLE = "NOT_WRITABLE"
 SID_SYSTEM = "S-1-5-18"
 SID_ADMINISTRATORS = "S-1-5-32-544"
 TRUSTED_SIDS = frozenset({SID_SYSTEM, SID_ADMINISTRATORS})
+# "The owner of this object": OWNER RIGHTS (Python 3.13+ os.mkdir(path, 0o700) on Windows grants FA to it) and
+# CREATOR OWNER (an inheritance placeholder). Safe once the owner itself is the user or a trusted SID (checked first).
+OWNER_ALIAS_SIDS = frozenset({"S-1-3-4", "S-1-3-0"})
 
 ACCESS_ALLOWED_ACE_TYPE = 0
 ACCESS_DENIED_ACE_TYPE = 1
@@ -54,7 +57,7 @@ def evaluate_windows_acl(owner_sid: str, aces, user_sid: str, level: str) -> boo
             return False
         if ace_flags & INHERIT_ONLY_ACE:                  # applies to children only, not to this object
             continue
-        if sid == user_sid or sid in TRUSTED_SIDS:
+        if sid == user_sid or sid in TRUSTED_SIDS or sid in OWNER_ALIAS_SIDS:
             continue
         effective = mask & ~SYNCHRONIZE
         if level == PRIVATE and effective:

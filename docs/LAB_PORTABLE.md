@@ -165,7 +165,7 @@ Linux y macOS: lo mismo con `.venv/bin/python`. Después, `/mcp` → `oracle-est
 | TEST | `tests/test_lab_portable.sh` (P19, 12 casos, en los tres sistemas). Las pruebas del lab (P15) ahora corren también en Windows; solo la de `chmod`/symlink sigue siendo exclusiva de POSIX, y su equivalente con `icacls` está en P19 |
 | SECURITY | 15/15 mutaciones detectadas: DACL nula, lectura por otro SID, ACE desconocida, dueño ajeno, bits de grupo en POSIX, Thick con llavero, contraseña en la ruta Wallet, `WALLET_LOCATION` sin comparar, `WALLET_OVERRIDE` sin exigir, Wallet no privado, `sqlnet.ora` modificable, Thick sin inicializar, Wallet en Thin, alias sin verificar, privacidad del perfil omitida. El escaneo estático solo permite `ctypes` en `filesec.py` e `init_oracle_client` en `cli.prepare_driver` |
 | REGRESSION | Pendiente (suite completa y CI en los tres sistemas con 3.13 y 3.14) |
-| LAB | Pendiente: el lab de macOS con el llavero sin cambios, y **LAB19S desde Windows con el Wallet** (ejecución del operador) |
+| LAB | **macOS con el llavero (`cb35b48`, 2026-10-02T17:47Z): sin cambios.** `Q-DISC-IDENTITY-001` (`REQ-b9f7fa9b1752`, `EVR-ee20a89f3e0e6c3b27f9a269`), `Q-PERF-WAIT-CLASS-001` (`REQ-0a2ee951c9ca`, `EVR-f7b9b0614c2f55ae4759f5bc`) y `Q-CDB-TABLESPACES-001` (`REQ-caf0f29c82e7`, `EVR-4ea502398e0379b175e5a62b`) corren en real, en Thin, con el mismo perfil y siguen `FIELD_VALIDATED`. **Pendiente: LAB19S desde Windows con el Wallet** (ejecución del operador) |
 | HUMAN REVIEW | Pendiente |
 
 **Límites:**

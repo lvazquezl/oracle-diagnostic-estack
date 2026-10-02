@@ -87,6 +87,10 @@ def the_windows_acl_evaluation_is_the_same_on_every_os():
     assert ev(USER, mine + [(0, 0, filesec.SYNCHRONIZE, OTHER)], USER, filesec.PRIVATE), "SYNCHRONIZE alone grants nothing"
     assert ev(USER, mine + [(1, 0, 0x1F01FF, OTHER)], USER, filesec.PRIVATE), "a deny ACE only removes access"
     assert ev(USER, mine + [(0, filesec.INHERIT_ONLY_ACE, 0x1F01FF, OTHER)], USER, filesec.PRIVATE), "inherit-only ACEs do not apply"
+    # Python 3.13+ os.mkdir(path, 0o700) on Windows: D:P(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)(A;OICI;FA;;;OW)
+    py313 = [(0, 3, 0x1F01FF, filesec.SID_SYSTEM), (0, 3, 0x1F01FF, filesec.SID_ADMINISTRATORS), (0, 3, 0x1F01FF, "S-1-3-4")]
+    assert ev(USER, py313, USER, filesec.PRIVATE) and ev(filesec.SID_ADMINISTRATORS, py313, USER, filesec.PRIVATE), "OWNER RIGHTS = the owner"
+    assert not ev(OTHER, py313, USER, filesec.PRIVATE), "OWNER RIGHTS is only safe when the owner itself is trusted"
     assert not ev(USER, mine + [(5, 0, 0, "")], USER, filesec.PRIVATE), "unknown ACE types fail closed"
     assert not ev(USER, mine, "", filesec.PRIVATE) and not ev(USER, mine, USER, "WHATEVER")
 
@@ -107,7 +111,13 @@ def the_native_check_sees_real_permission_changes_on_this_os():
         open(f, "w").close()
         if not WIN:
             os.chmod(f, 0o600)
-        assert filesec.is_private(f) and filesec.is_private(f, filesec.NOT_WRITABLE), "a fresh private file"
+        diag = ""
+        if WIN and not filesec.is_private(f):                       # show the real owner/ACEs in the CI log (SIDs only)
+            try:
+                diag = repr(filesec._windows_security(f))
+            except Exception as e:
+                diag = "reader failed: " + type(e).__name__
+        assert filesec.is_private(f) and filesec.is_private(f, filesec.NOT_WRITABLE), "a fresh private file " + diag
         _open_to_others(f)
         assert not filesec.is_private(f) and filesec.is_private(f, filesec.NOT_WRITABLE), "readable by others"
         _open_to_others(f, write=True)
@@ -217,22 +227,28 @@ def the_wallet_profile_keeps_secrets_and_connect_strings_out():
 
 @test
 def client_lib_dir_is_passed_on_windows_and_macos_and_refused_on_linux():
+    from mcp_gateway_lab.profile import LabProfile
     saved = sys.platform
     try:
-        for plat, ok in (("win32", True), ("darwin", True), ("linux", False)):
-            sys.platform = plat
-            with tmpdir() as d:
-                wallet, net = _wallet_env(d)
-                lib = os.path.join(d, "instantclient")
-                os.mkdir(lib)
-                doc = _wallet_profile(wallet, net, client_lib_dir=lib)
-                if ok:
-                    sys.platform = saved                                  # build with the real platform's file checks
-                    lab = Lab(d, profile=doc)
-                    assert lab.driver.init_calls == [{"config_dir": net, "lib_dir": lib}], lab.driver.init_calls
-                else:
-                    assert "not used on Linux" in _refused(d, doc)
-            sys.platform = saved
+        # accepted and handed to init_oracle_client: on Windows as is; on a POSIX host as macOS (same file checks)
+        sys.platform = "win32" if WIN else "darwin"
+        with tmpdir() as d:
+            wallet, net = _wallet_env(d)
+            lib = os.path.join(d, "instantclient")
+            os.mkdir(lib)
+            lab = Lab(d, profile=_wallet_profile(wallet, net, client_lib_dir=lib))
+            assert lab.driver.init_calls == [{"config_dir": net, "lib_dir": lib}], lab.driver.init_calls
+        # refused on Linux, where the client is found through ldconfig / LD_LIBRARY_PATH (schema check, no file check)
+        sys.platform = "linux"
+        with tmpdir() as d:
+            wallet, net = _wallet_env(d)
+            lib = os.path.join(d, "instantclient")
+            os.mkdir(lib)
+            try:
+                LabProfile(_wallet_profile(wallet, net, client_lib_dir=lib))
+                raise AssertionError("client_lib_dir accepted on Linux")
+            except ProfileError as e:
+                assert "not used on Linux" in str(e), str(e)
     finally:
         sys.platform = saved
 
