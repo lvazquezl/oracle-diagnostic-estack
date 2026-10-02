@@ -40,6 +40,8 @@ Los dos se pueden conservar (`KEEP`) sólo en campos con nombre fijo, igual que 
 | `Q-PERF-PARALLEL-001` | 1.1.0 | `V$PX_SESSION` no tiene `SERVER_NAME` ni `SQL_ID` | Usa `SERVER_GROUP`, `SERVER_SET` y `SERVER#` |
 | `Q-PERF-IO-FILESTAT-001` | 1.2.0 | Exponía la ruta del datafile; la latencia llamada «ms» estaba en centésimas de segundo | `file_id` y tablespace (enmascarado) sustituyen a la ruta; `READTIM`/`WRITETIM` se multiplican por 10 |
 | `Q-PERF-TEMP-001` | 1.2.0 | `session_addr` es `RAW`, que el adaptador real rechaza | Se retira; `serial#` sale como `serial_no` |
+| `Q-PERF-DBTIME-CURRENT-001` | 1.1.0 | ORA-00937: subconsulta escalar junto a agregados sin `GROUP BY` (detectado en LAB19S, 19.30, desde Windows) | `V$INSTANCE` entra en el `FROM` y `uptime_sec` se agrega con `MAX` |
+| `Q-ORA-PROCESSES-SUMMARY-001` | 1.0.1 | ORA-00923: faltaba `FROM dual` (LAB19S) | `FROM dual` |
 | `Q-ORA-SPFILE-001` | 1.2.0 | Sin parámetros `MODIFIED` no devolvía el conteo (hallazgo del lab en B1) | `FROM dual LEFT JOIN v$parameter`: siempre hay al menos una fila con el conteo |
 
 `Q-ORA-REDO-SWITCH-24H-001` es la versión sin binds, con ventana fija de 24 h, de `Q-ORA-REDO-SWITCH-FREQ-001`. Esta última se conserva para ejecución humana con ventana arbitraria.
@@ -56,7 +58,7 @@ Ahora un identificador legible en una sola caja, con inicial alfabética y a lo 
 |---|---|
 | DETECT GAP | `/diagnose` de rendimiento sólo tenía las queries de AWR/ASH (Diagnostics Pack) o ninguna recolección real; 4 queries de rendimiento tenían defectos que impedían resolverlas o ejecutarlas |
 | PROPOSAL | Lote B2 de la fábrica, sin licencia; tipos `oracle_term` y `sql_id` ligados a nombres de campo; exención de identificadores legibles |
-| IMPLEMENT | 3 queries nuevas, 5 corregidas, lote `lots/B2-performance.json`, 64 definiciones nuevas en la base de conocimiento, 16 collectors y fixtures generados, `mcp_gateway/catalog.py`, `mcp_gateway/evidence.py`, matriz de compatibilidad, registro de madurez |
+| IMPLEMENT | 3 queries nuevas, 7 corregidas (2 por la ejecución en LAB19S desde Windows), lote `lots/B2-performance.json`, 64 definiciones nuevas en la base de conocimiento, 16 collectors y fixtures generados, `mcp_gateway/catalog.py`, `mcp_gateway/evidence.py`, matriz de compatibilidad, registro de madurez |
 | TEST | `tests/test_collector_factory.sh` (P18): 18/18 |
 | SECURITY | 15/15 mutaciones detectadas (9 de B1 y 6 nuevas: `oracle_term` o `sql_id` en cualquier campo, cualquiera de los dos sin validar, exención de identificadores para todo o para nada) |
 | REGRESSION | Pendiente (suite completa) |

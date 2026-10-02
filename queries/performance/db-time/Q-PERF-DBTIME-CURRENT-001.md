@@ -1,6 +1,6 @@
 ---
 query_id: Q-PERF-DBTIME-CURRENT-001
-version: 1.0.0
+version: 1.1.0
 
 domain: performance
 purpose: DB Time y DB CPU acumulados desde el arranque de la instancia — ruta estándar sin Diagnostics Pack
@@ -36,11 +36,11 @@ status: active
 # Statement / procedure (read-only)
 
 ```sql
-SELECT MAX(CASE WHEN stat_name = 'DB time' THEN value END) / 1e6 AS db_time_sec_since_startup,
-       MAX(CASE WHEN stat_name = 'DB CPU'  THEN value END) / 1e6 AS db_cpu_sec_since_startup,
-       (SELECT (SYSDATE - startup_time) * 86400 FROM v$instance)  AS uptime_sec
-FROM   v$sys_time_model
-WHERE  stat_name IN ('DB time', 'DB CPU');
+SELECT MAX(CASE WHEN t.stat_name = 'DB time' THEN t.value END) / 1e6 AS db_time_sec_since_startup,
+       MAX(CASE WHEN t.stat_name = 'DB CPU'  THEN t.value END) / 1e6 AS db_cpu_sec_since_startup,
+       MAX((SYSDATE - i.startup_time) * 86400)                       AS uptime_sec
+FROM   v$sys_time_model t, v$instance i
+WHERE  t.stat_name IN ('DB time', 'DB CPU');
 ```
 
 Sin ventana histórica — refleja el acumulado desde `STARTUP_TIME` de la instancia. Útil como snapshot puntual o para comparación before/after tomando dos lecturas manuales; no reemplaza AWR/Statspack para una ventana pasada específica. Es la base de la ruta `performance-standard-path` (sección 40 del prompt de Fase 3) cuando ni Diagnostics Pack ni Statspack están disponibles.
@@ -64,6 +64,8 @@ Ninguna — esta es explícitamente la alternativa no licenciada a `Q-PERF-DBTIM
 # Sanitization notes
 
 Todos los campos → KEEP.
+
+CHG-ESTACK-COLLECTOR-FACTORY-B2 — 1.1.0: la subconsulta escalar de `uptime_sec` junto a funciones de agregación sin `GROUP BY` daba ORA-00937 (detectado en LAB19S, 19.30, ejecución desde Windows); ahora `v$instance` entra en el `FROM` y `uptime_sec` se agrega con `MAX`.
 
 # Evolution via `/change query`
 

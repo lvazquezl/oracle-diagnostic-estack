@@ -19,6 +19,7 @@ Rama `change/collector-factory-b2` sobre `main` (`5c6e2d3`). Pendiente: validaci
 - `Q-PERF-IO-FILESTAT-001` 1.2.0: sin ruta de archivo, y la latencia ahora sí está en ms (antes, centésimas de segundo).
 - `Q-PERF-TEMP-001` 1.2.0: sin la dirección `RAW` `session_addr`.
 - `Q-ORA-SPFILE-001` 1.2.0: siempre devuelve el conteo, aunque no haya parámetros modificados.
+- `Q-PERF-DBTIME-CURRENT-001` 1.1.0 (ORA-00937) y `Q-ORA-PROCESSES-SUMMARY-001` 1.0.1 (ORA-00923, faltaba `FROM dual`): detectados en la ejecución sobre LAB19S desde Windows.
 - Saneador: los identificadores Oracle legibles de 20 caracteres o más (por ejemplo, owners) se enmascaran en lugar de descartarse.
 
 ## [0.23.0] — 2026-09-30 — `v0.23.0-collector-factory` — 2 cambios: fábrica de collectors (lote B1) y evidencia reportada por humano
