@@ -35,10 +35,14 @@ COLLECTOR_ID_RE = re.compile(r'^[A-Za-z][A-Za-z0-9_.-]{2,64}$')
 ORACLE_VERSIONS = ("10g", "11g", "12c", "18c", "19c", "21c", "23ai")
 ROLES = ("PRIMARY", "STANDBY")
 FIELD_TYPES = {"identifier", "version_string", "enum", "integer", "integer_or_unlimited", "number", "boolean",
-               "timestamp_utc", "signature", "text", "interval_string", "parameter_name"}
+               "timestamp_utc", "signature", "text", "interval_string", "parameter_name", "oracle_term", "sql_id"}
 # CHG-ESTACK-COLLECTOR-FACTORY-B1: an Oracle-defined initialization parameter name may be KEPT (it is product vocabulary,
 # not customer data), but only in a field literally named parameter_name — nobody can relabel an owner or host with it.
 PARAMETER_NAME_FIELDS = frozenset({"parameter_name"})
+# CHG-ESTACK-COLLECTOR-FACTORY-B2: Oracle vocabulary (wait events, library cache namespaces) — KEEP only in these fields.
+ORACLE_TERM_FIELDS = frozenset({"event", "namespace"})
+# ... and the SQL identifier (13 base-32 chars; identifies a cursor, never carries SQL text) — KEEP only in these fields.
+SQL_ID_FIELDS = frozenset({"sql_id", "waiter_sql_id"})
 POLICIES = {"KEEP", "MASK", "HASH", "TOKENIZE", "DROP", "SIGNATURE"}
 KINDS = {"sql_query", "alert_log_excerpt", "semantic_os"}
 # Any of these tokens inside a certified SQL block means the file is NOT read-only material for this gateway.
@@ -190,7 +194,11 @@ def load_collectors(path: str = DEFAULT_COLLECTORS_FILE, factory_path: str = Non
                         or (f['type'] == 'signature' and f['policy'] not in ('SIGNATURE', 'DROP'))
                         or (f['policy'] == 'SIGNATURE' and f['type'] != 'signature')
                         or (f['type'] == 'parameter_name' and (fname not in PARAMETER_NAME_FIELDS or f['policy'] not in ('KEEP', 'DROP')))
-                        or (fname in PARAMETER_NAME_FIELDS and f['type'] != 'parameter_name'))
+                        or (fname in PARAMETER_NAME_FIELDS and f['type'] != 'parameter_name')
+                        or (f['type'] == 'oracle_term' and (fname not in ORACLE_TERM_FIELDS or f['policy'] not in ('KEEP', 'DROP')))
+                        or (fname in ORACLE_TERM_FIELDS and f['type'] != 'oracle_term')
+                        or (f['type'] == 'sql_id' and (fname not in SQL_ID_FIELDS or f['policy'] not in ('KEEP', 'DROP')))
+                        or (fname in SQL_ID_FIELDS and f['type'] != 'sql_id'))
             if violates:
                 raise RuntimeError("field policy violates the default-deny rules")
         meta = None

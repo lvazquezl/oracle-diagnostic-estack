@@ -1,0 +1,16 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "namespace": "SQL AREA",
+      "gets": 90000,
+      "gethits": 88000,
+      "gethitratio": 0.9778,
+      "pins": 150000,
+      "pinhits": 149000,
+      "pinhitratio": 0.9933,
+      "reloads": 15,
+      "invalidations": 3
+    }
+  ]
+}

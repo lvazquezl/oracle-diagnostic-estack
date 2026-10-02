@@ -1,6 +1,6 @@
 ---
 query_id: Q-ORA-SPFILE-001
-version: 1.1.0
+version: 1.2.0
 domain: oracle
 purpose: Existencia de SPFILE y parámetros modificados en memoria sin persistir
 
@@ -37,8 +37,9 @@ SELECT (SELECT COUNT(*) FROM v$spparameter WHERE value IS NOT NULL) AS spfile_pa
        CASE WHEN UPPER(p.value) IN ('TRUE', 'FALSE') THEN UPPER(p.value) END AS value_flag,
        CASE WHEN REGEXP_LIKE(p.value, '^[0-9]{1,2}(\.[0-9]{1,3}){1,4}$') THEN p.value END AS value_version,
        CASE WHEN UPPER(p.value) IN ('ADAPTIVE', 'ALL', 'ALL_ROWS', 'ASYNCH', 'AUTO', 'BASIC', 'BOTH', 'DB', 'DB, EXTENDED', 'DEDICATED', 'DEFAULT', 'DIRECTIO', 'DISABLE', 'DISABLED', 'ENABLE', 'ENABLED', 'EXACT', 'EXCLUSIVE', 'EXTENDED', 'FIRST_ROWS', 'FORCE', 'FULL', 'HIGH', 'INSTANCE', 'INTERPRETED', 'LOCAL', 'LOW', 'MANUAL', 'MEDIUM', 'MEMORY', 'NATIVE', 'NO', 'NONE', 'OFF', 'ON', 'OS', 'PARTIAL', 'SESSION', 'SETALL', 'SHARED', 'SIMILAR', 'SPFILE', 'TYPICAL', 'XML', 'XML, EXTENDED', 'YES') THEN UPPER(p.value) END AS value_keyword
-FROM   v$parameter p
-WHERE  p.ismodified = 'MODIFIED';
+FROM   dual
+LEFT   JOIN v$parameter p
+       ON  p.ismodified = 'MODIFIED';
 ```
 
 Si `spfile_params_count = 0`, no hay SPFILE en uso (instancia arrancada con PFILE).
@@ -68,5 +69,7 @@ Ninguna.
 `value` → condicional según el parámetro modificado.
 
 CHG-ESTACK-COLLECTOR-FACTORY-B1 — `value_number`/`value_flag`/`value_version`/`value_keyword` (1.1.0): mismas formas que `Q-ORA-PARAMETERS-001`, que **sustituyen** a `value` (ya no se selecciona).
+
+CHG-ESTACK-COLLECTOR-FACTORY-B2 — 1.2.0: `FROM dual LEFT JOIN v$parameter`. Sin parámetros `MODIFIED` devuelve una fila con sólo `spfile_params_count` (antes, cero filas y sin conteo; hallazgo del lab en B1).
 
 # Evolution via `/change query`

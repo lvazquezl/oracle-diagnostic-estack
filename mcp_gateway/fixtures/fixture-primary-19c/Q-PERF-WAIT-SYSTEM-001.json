@@ -1,0 +1,13 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "event": "db file sequential read",
+      "wait_class": "User I/O",
+      "total_waits": 123456,
+      "total_timeouts": 12,
+      "time_waited_sec": 345.67,
+      "avg_wait_ms": 0.845
+    }
+  ]
+}

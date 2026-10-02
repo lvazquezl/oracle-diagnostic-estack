@@ -1,0 +1,11 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "redo_size_bytes": 123456789,
+      "redo_entries": 400000,
+      "user_commits": 5000,
+      "user_rollbacks": 20
+    }
+  ]
+}

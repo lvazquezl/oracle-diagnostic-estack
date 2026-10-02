@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "pga_aggregate_target": 918552576,
+      "total_pga_inuse": 300000000,
+      "total_pga_allocated": 400000000,
+      "over_allocation_count": 0,
+      "freeable_pga": 50000000
+    }
+  ]
+}

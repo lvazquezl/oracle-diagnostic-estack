@@ -1,6 +1,6 @@
 ---
 query_id: Q-PERF-TOPSQL-CURRENT-001
-version: 1.1.0
+version: 1.2.0
 
 domain: performance
 purpose: Top SQL por métricas acumuladas desde el parse — ruta estándar sin Diagnostics Pack
@@ -68,7 +68,8 @@ WHERE  ROWNUM <= 20;
 # Statement / procedure (read-only) — Variant V2 (modern_12plus, 12.1+)
 
 ```sql
-SELECT s.sql_id,
+SELECT s.con_id,
+       s.sql_id,
        s.plan_hash_value,
        s.executions,
        s.elapsed_time / 1e6      AS elapsed_sec,
@@ -105,6 +106,8 @@ Ninguna — esta es explícitamente la alternativa no licenciada a `Q-PERF-TOPSQ
 # Sanitization notes
 
 `sql_id`/`plan_hash_value` → KEEP. Nunca selecciona `SQL_TEXT`/`SQL_FULLTEXT` de `V$SQLSTATS` por defecto — misma política que `Q-PERF-TOPSQL-001`.
+
+CHG-ESTACK-COLLECTOR-FACTORY-B2 — 1.2.0 (V2, 12.1+): agrega `con_id`. En un CDB, `V$SQLSTATS` tiene una fila por contenedor para el mismo `sql_id`; sin el contenedor, las filas parecían duplicadas (observado en el lab).
 
 # Evolution via `/change query`
 

@@ -1,0 +1,10 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "db_time_sec_since_startup": 5321.5,
+      "db_cpu_sec_since_startup": 2210.25,
+      "uptime_sec": 86400.0
+    }
+  ]
+}

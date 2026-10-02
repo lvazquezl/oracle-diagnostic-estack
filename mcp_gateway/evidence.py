@@ -33,6 +33,7 @@ from datetime import datetime, timezone
 from change_documentation_knowledge.safety import audit_strings
 from rca_engine.engine import DEFAULT_RULES_PATH
 from rca_engine.rules import collect_certified_signatures, load_rules
+from rca_engine import sanitize as _san
 from rca_engine.sanitize import classify_signature, contains_secret_pattern
 from rca_engine.tokenization import derive_signature_token, derive_target_token
 
@@ -43,6 +44,13 @@ from .common import (
 _IDENT = re.compile(r'^\+?[A-Za-z][A-Za-z0-9_$#.-]{0,63}$')   # optional leading '+': ASM naming (+ASM, +ASM1) — CHG-ESTACK-LAB-REVALIDATE-007
 _VERSION = re.compile(r'^\d{1,2}(\.\d{1,3}){1,5}$')
 _PARAM_NAME = re.compile(r'^_{0,2}[a-z][a-z0-9_]{0,79}$')    # V$PARAMETER.NAME (lower-case, hidden ones start with _)
+# CHG-ESTACK-COLLECTOR-FACTORY-B2: Oracle vocabulary (wait event names, library cache namespaces), e.g.
+# 'enq: TX - row lock contention', 'SQL*Net message from client', 'TABLE/PROCEDURE'. KEEP only in the fields below.
+_SQL_ID = re.compile(r'^[0-9a-z]{13}$')                         # V$SQL.SQL_ID: 13 base-32 characters, never SQL text
+_ORACLE_TERM = re.compile(r'^[A-Za-z][A-Za-z0-9 :_/().,*#$&+-]{0,63}$')
+# A readable Oracle identifier (REMOTE_SCHEDULER_AGENT, gsmadmin_internal): one case, letter-led, few digits. It is
+# masked anyway; exempting it from the bare-token heuristic only stops long owner/object names being DROPPED.
+_READABLE_IDENT = re.compile(r'^([A-Z][A-Z0-9_$#]{19,63}|[a-z][a-z0-9_$#]{19,63})$')
 _TS = re.compile(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?(Z|[+-]\d{2}:\d{2})$')
 _INTERVAL = re.compile(r'^[+-]\d{2} \d{2}:\d{2}:\d{2}(\.\d{1,6})?$')
 _SIG_RAW_MAX = 96
@@ -94,6 +102,19 @@ def _clean_number(v, spec):
     return v if lo <= v <= hi else None
 
 
+def _identifier_secret_shaped(raw: str) -> bool:
+    """contains_secret_pattern() for identifiers, except that a readable one-case Oracle name of 20+ characters
+    (few digits) is not treated as a bare token. Structured secrets (key=value pairs, cloud access keys, PEM blocks, long hex) still match."""
+    text = raw.replace(".", " ").replace("$", " ")
+    if any(p.search(text) for p in _san._STRUCTURED_PATTERNS) or _san._CONNECTION_STRING_CREDENTIALS.search(text):
+        return True
+    for w in _san._BARE_TOKEN_WORD.findall(text):
+        readable = bool(_READABLE_IDENT.match(w)) and sum(c.isdigit() for c in w) * 4 <= len(w)
+        if _san._looks_like_bare_secret(w) and not readable:
+            return True
+    return False
+
+
 def _sanitize_value(spec: dict, raw, scope: SessionScope, target_alias: str):
     """Return (kept, value). kept=False means the value is dropped (counted, never echoed)."""
     t, policy = spec["type"], spec["policy"]
@@ -134,8 +155,14 @@ def _sanitize_value(spec: dict, raw, scope: SessionScope, target_alias: str):
         if dt.tzinfo is None:
             return False, None
         return True, dt.astimezone(timezone.utc).replace(microsecond=0).isoformat()
+    if t == "oracle_term":
+        ok = isinstance(raw, str) and bool(_ORACLE_TERM.match(raw)) and not _identifier_secret_shaped(raw)
+        return ok, (raw if ok else None)
+    if t == "sql_id":
+        ok = isinstance(raw, str) and bool(_SQL_ID.match(raw))
+        return ok, (raw if ok else None)
     if t == "identifier":
-        if not isinstance(raw, str) or not _IDENT.match(raw) or contains_secret_pattern(raw.replace(".", " ").replace("$", " ")):
+        if not isinstance(raw, str) or not _IDENT.match(raw) or _identifier_secret_shaped(raw):
             return False, None
         if policy == "MASK":
             return True, scope.alias(target_alias, spec.get("alias_prefix", "obj"), raw)

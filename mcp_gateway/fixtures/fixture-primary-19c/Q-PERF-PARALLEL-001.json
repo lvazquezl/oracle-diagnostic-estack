@@ -1,0 +1,14 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B2)",
+  "rows": [
+    {
+      "qcsid": 101,
+      "sid": 101,
+      "server_group": 1,
+      "server_set": 1,
+      "server_no": 1,
+      "degree": 4,
+      "req_degree": 4
+    }
+  ]
+}

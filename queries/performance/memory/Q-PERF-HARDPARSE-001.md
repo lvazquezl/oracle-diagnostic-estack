@@ -1,6 +1,6 @@
 ---
 query_id: Q-PERF-HARDPARSE-001
-version: 1.0.0
+version: 1.1.0
 
 domain: performance
 purpose: Parse count total/hard y session cursor cache hits acumulados desde el arranque de la instancia
@@ -38,10 +38,9 @@ status: active
 ```sql
 SELECT MAX(DECODE(name, 'parse count (total)', value))       AS parse_count_total,
        MAX(DECODE(name, 'parse count (hard)', value))        AS parse_count_hard,
-       MAX(DECODE(name, 'session cursor cache hits', value)) AS session_cursor_cache_hits,
-       MAX(DECODE(name, 'execute count', value))              AS execute_count
+       MAX(DECODE(name, 'session cursor cache hits', value)) AS session_cursor_cache_hits
 FROM   v$sysstat
-WHERE  name IN ('parse count (total)', 'parse count (hard)', 'session cursor cache hits', 'execute count');
+WHERE  name IN ('parse count (total)', 'parse count (hard)', 'session cursor cache hits');
 ```
 
 # Notes by version
@@ -63,6 +62,8 @@ Ninguna.
 # Sanitization notes
 
 Todos los campos → KEEP.
+
+CHG-ESTACK-COLLECTOR-FACTORY-B2 — 1.1.0: se retira el contador `execute count`. Su nombre contiene la palabra `execute`, que el guard de sólo lectura veta en cualquier parte del SQL, y la query nunca podía resolverse. La proporción parse/ejecución queda fuera; parse hard/total sigue disponible.
 
 # Evolution via `/change query`
 

@@ -1,6 +1,6 @@
 ---
 query_id: Q-ORA-PROCESSES-SUMMARY-001
-version: 1.0.0
+version: 1.0.1
 domain: oracle
 purpose: Resumen de procesos Oracle vs. límite configurado
 
@@ -32,7 +32,8 @@ status: active
 
 ```sql
 SELECT (SELECT COUNT(*) FROM v$process) AS process_count,
-       (SELECT value FROM v$parameter WHERE name='processes') AS processes_limit;
+       (SELECT value FROM v$parameter WHERE name='processes') AS processes_limit
+FROM   dual;
 ```
 
 # Notes by version
@@ -58,5 +59,7 @@ Ninguna.
 # Sanitization notes
 
 Todos los campos → KEEP.
+
+CHG-ESTACK-COLLECTOR-FACTORY-B2 — 1.0.1: faltaba `FROM dual` (ORA-00923, detectado en LAB19S, 19.30, ejecución desde Windows).
 
 # Evolution via `/change query`

@@ -1,6 +1,6 @@
 ---
 query_id: Q-PERF-PARALLEL-001
-version: 1.0.0
+version: 1.1.0
 
 domain: performance
 purpose: Sesiones/procesos paralelos activos y estadísticas acumuladas de Parallel Execution
@@ -38,12 +38,13 @@ status: active
 ```sql
 SELECT px.qcsid,
        px.sid,
-       px.server_name,
+       px.server_group,
+       px.server_set,
+       px.server#                AS server_no,
        px.degree,
-       px.req_degree,
-       px.sql_id
+       px.req_degree
 FROM   v$px_session px
-ORDER  BY px.qcsid, px.server_name;
+ORDER  BY px.qcsid, px.server_group, px.server_set, px.server#;
 ```
 
 `V$PQ_SYSSTAT` (estadísticas acumuladas: `Servers Busy`, `Servers Started`, `Servers Shutdown`, `Queries Parallelized`) se lee como segunda evidencia por el skill vía `Q-PERF-PARALLEL-STAT-001` cuando se requiere tendencia agregada en vez de sesiones activas puntuales — fuera de esta query base (mantenida acotada a una sola sentencia).
@@ -67,6 +68,8 @@ Ninguna (Parallel Execution en sí no requiere Diagnostics/Tuning Pack; la restr
 # Sanitization notes
 
 `sql_id` → KEEP (no es SQL text).
+
+CHG-ESTACK-COLLECTOR-FACTORY-B2 — 1.1.0: `V$PX_SESSION` no tiene `SERVER_NAME` ni `SQL_ID` (columnas de `V$PX_PROCESS`/`V$SESSION`); se usan `SERVER_GROUP`, `SERVER_SET` y `SERVER#`, que sí existen. Validar en el lab.
 
 # Evolution via `/change query`
 
