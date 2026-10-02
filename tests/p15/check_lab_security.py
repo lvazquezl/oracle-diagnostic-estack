@@ -665,7 +665,8 @@ def the_keychain_provider_is_refused_at_startup_off_macos_when_no_test_runner_is
     with tmpdir() as d:
         prof = write_private(d, "lab-profile.json", profile_doc())
         tf = write_targets(d, [lab_target()])
-        sys.platform = "linux"
+        if saved == "darwin":
+            sys.platform = "linux"                                    # simulate a non-macOS host; Windows/Linux already are
         try:
             try:
                 cli.build_lab_gateway(tf, prof, driver=FakeDriver())          # no credential_runner: production path
