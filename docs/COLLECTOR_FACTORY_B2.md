@@ -38,7 +38,8 @@ Los dos se pueden conservar (`KEEP`) sólo en campos con nombre fijo, igual que 
 |---|---|---|---|
 | `Q-PERF-HARDPARSE-001` | 1.1.0 | Nunca se podía resolver: el nombre de estadística `execute count` contiene la palabra `execute`, que el guard veta | Se retira ese contador. La proporción parse/ejecución queda fuera |
 | `Q-PERF-PARALLEL-001` | 1.1.0 | `V$PX_SESSION` no tiene `SERVER_NAME` ni `SQL_ID` | Usa `SERVER_GROUP`, `SERVER_SET` y `SERVER#` |
-| `Q-PERF-IO-FILESTAT-001` | 1.2.0 | Exponía la ruta del datafile; la latencia llamada «ms» estaba en centésimas de segundo | `file_id` y tablespace (enmascarado) sustituyen a la ruta; `READTIM`/`WRITETIM` se multiplican por 10 |
+| `Q-PERF-IO-FILESTAT-001` | 1.3.0 | Exponía la ruta del datafile; la latencia llamada «ms» estaba en centésimas de segundo; en un CDB cada archivo salía duplicado (el `TS#` se repite por contenedor; visto en el lab) | `file_id` y tablespace (enmascarado) sustituyen a la ruta; `READTIM`/`WRITETIM` se multiplican por 10; el join con `V$TABLESPACE` incluye `con_id` |
+| `Q-PERF-TOPSQL-CURRENT-001` | 1.2.0 | En un CDB, el mismo `sql_id` aparecía dos veces, una por contenedor (visto en el lab) | V2 agrega `con_id` |
 | `Q-PERF-TEMP-001` | 1.2.0 | `session_addr` es `RAW`, que el adaptador real rechaza | Se retira; `serial#` sale como `serial_no` |
 | `Q-PERF-DBTIME-CURRENT-001` | 1.1.0 | ORA-00937: subconsulta escalar junto a agregados sin `GROUP BY` (detectado en LAB19S, 19.30, desde Windows) | `V$INSTANCE` entra en el `FROM` y `uptime_sec` se agrega con `MAX` |
 | `Q-ORA-PROCESSES-SUMMARY-001` | 1.0.1 | ORA-00923: faltaba `FROM dual` (LAB19S) | `FROM dual` |

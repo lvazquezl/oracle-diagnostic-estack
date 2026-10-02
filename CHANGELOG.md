@@ -16,7 +16,8 @@ Rama `change/collector-factory-b2` sobre `main` (`5c6e2d3`). Pendiente: validaci
 
 - `Q-PERF-HARDPARSE-001` 1.1.0: nunca se resolvía, porque el guard veta la palabra `execute` en `execute count`.
 - `Q-PERF-PARALLEL-001` 1.1.0: referenciaba `SERVER_NAME` y `SQL_ID`, que `V$PX_SESSION` no tiene.
-- `Q-PERF-IO-FILESTAT-001` 1.2.0: sin ruta de archivo, y la latencia ahora sí está en ms (antes, centésimas de segundo).
+- `Q-PERF-IO-FILESTAT-001` 1.3.0: sin ruta de archivo; la latencia ahora sí está en ms (antes, centésimas de segundo); sin filas duplicadas en un CDB.
+- `Q-PERF-TOPSQL-CURRENT-001` 1.2.0: agrega `con_id`, porque en un CDB hay una fila por contenedor.
 - `Q-PERF-TEMP-001` 1.2.0: sin la dirección `RAW` `session_addr`.
 - `Q-ORA-SPFILE-001` 1.2.0: siempre devuelve el conteo, aunque no haya parámetros modificados.
 - `Q-PERF-DBTIME-CURRENT-001` 1.1.0 (ORA-00937) y `Q-ORA-PROCESSES-SUMMARY-001` 1.0.1 (ORA-00923, faltaba `FROM dual`): detectados en la ejecución sobre LAB19S desde Windows.

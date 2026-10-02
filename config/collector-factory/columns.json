@@ -1218,6 +1218,13 @@
    "max": 1000000,
    "policy": "KEEP",
    "example": 3
+  },
+  "con_id": {
+   "type": "integer",
+   "min": 0,
+   "max": 4098,
+   "policy": "KEEP",
+   "example": 1
   }
  }
 }
