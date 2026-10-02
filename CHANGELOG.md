@@ -4,7 +4,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change security|compatibility|documentation` — CHG-ESTACK-LAB-PORTABLE-001 — recolección real en Windows, Linux y macOS (Oracle Wallet)
 
-Rama `change/lab-portable` sobre `main` (`46e14fa`, con B2). Pendiente: CI, validación (lab con llavero y LAB19S con Wallet desde Windows) y HUMAN REVIEW. Ver `docs/LAB_PORTABLE.md`.
+Rama `change/lab-portable` sobre `main` (`46e14fa`, con B2). CI en verde en ubuntu, macOS y Windows con Python 3.13 y 3.14. Validado en real: el lab desde macOS con el llavero, sin cambios, y LAB19S desde Windows con el Wallet (`check` PASS). Pendiente: HUMAN REVIEW. Ver `docs/LAB_PORTABLE.md`.
 
 ### Added
 
