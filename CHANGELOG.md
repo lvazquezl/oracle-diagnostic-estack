@@ -4,7 +4,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ## [Unreleased] — `/change query|security|documentation` — CHG-ESTACK-COLLECTOR-FACTORY-B2 — lote B2 de rendimiento
 
-Rama `change/collector-factory-b2` sobre `main` (`5c6e2d3`). Pendiente: validación en el lab, CI y HUMAN REVIEW. Ver `docs/COLLECTOR_FACTORY_B2.md`.
+Rama `change/collector-factory-b2` sobre `main` (`5c6e2d3`). Validado en el lab: los 16 collectors y `Q-ORA-SPFILE-001` quedan `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Pendiente: CI y HUMAN REVIEW. Ver `docs/COLLECTOR_FACTORY_B2.md`.
 
 ### Added
 

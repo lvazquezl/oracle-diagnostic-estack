@@ -53,6 +53,42 @@ B1 dejó un hallazgo del lab: un owner de 20 caracteres o más, como `REMOTE_SCH
 
 Ahora un identificador legible en una sola caja, con inicial alfabética y a lo más 25 % de dígitos, no cuenta como token. Se sigue enmascarando igual. Se siguen descartando los secretos estructurados y las palabras con forma de token aleatorio. Un nombre con muchos dígitos, como `APEX_190200_PUBLIC_USR`, se sigue descartando: es el lado conservador.
 
+## Validación en el lab (`lab-ol8-19c`, contexto `LAB-OL8-19C-CDBROOT-ASM`)
+
+Ejecución real vía `oracle-estack-lab`, el 2026-10-02, después del cambio de IP del lab. La identidad observada sigue siendo la misma base: 19.32, PRIMARY, CDB.
+
+1. **Primera pasada (`16ad6cd`):**
+   - 14 de los 16 collectors funcionaron, más `Q-ORA-SPFILE-001`.
+   - `Q-PERF-IO-FILESTAT-001` duplicaba cada archivo: en un CDB, el `TS#` se repite por contenedor.
+   - `Q-PERF-TOPSQL-CURRENT-001` mostraba el mismo `sql_id` una vez por contenedor.
+   - `Q-PERF-DBTIME-CURRENT-001` estaba pendiente de la corrección de ORA-00937 (`b40b52b`).
+2. **Corrección (`59e24ba`):** se agregó `con_id` al join de `FILESTAT` y a la salida de `TOPSQL`.
+3. **Segunda pasada:** los 3 funcionaron. Los demás no cambiaron de SQL, así que vale su primera ejecución.
+
+En los 17, el `query_sha256` observado coincide con el SQL versionado. La validación anterior de `Q-ORA-SPFILE-001` (B1) se sustituye, porque su SQL cambió.
+
+| Collector | Request | Evidencia | `query_sha256` | Resultado |
+|---|---|---|---|---|
+| `Q-PERF-WAIT-SYSTEM-001` | `REQ-a4546b1a1a7e` | `EVR-5f0bc48bed154fa933dc6e16` | `4dc8ca06b413…` | 25 eventos no idle, todos los nombres y clases reconocidos |
+| `Q-PERF-WAIT-CLASS-001` | `REQ-c7858681bf0a` | `EVR-369cf39afca07fa128a4e713` | `1556f0e749f2…` | 9 clases |
+| `Q-PERF-IO-001` | `REQ-47f3849ea9e6` | `EVR-792cb4f5e8b59694c4501276` | `fbc7c98dc0db…` | 5 eventos |
+| `Q-PERF-LIBCACHE-001` | `REQ-173528c85191` | `EVR-e7ebdc8e72f187fe056cc4fc` | `1779829e0348…` | 23 namespaces, todos reconocidos por `oracle_term` |
+| `Q-PERF-PGA-001` | `REQ-b1f16ee40221` | `EVR-3b561d8595f384ba0ee24838` | `d8a59ba7d220…` | 1 fila |
+| `Q-PERF-SGA-001` | `REQ-9f0dbb3d3e37` | `EVR-c04cfbca7dbf9cb800c4fb72` | `c528f078427a…` | 1 fila; sin java pool en el lab |
+| `Q-PERF-SHAREDPOOL-001` | `REQ-50571e599c19` | `EVR-f217f59ca153b8744d631a7d` | `4540a69e6fe8…` | 1 fila |
+| `Q-PERF-REDO-001` | `REQ-2142b715fe00` | `EVR-6d235d45e7ee8108879d569f` | `ee1505471083…` | 1 fila |
+| `Q-PERF-HARDPARSE-001` | `REQ-f211bd7ed4e1` | `EVR-63ac8b78f783c3c3f9131777` | `714e1a62cc47…` | 1 fila (antes nunca se podía resolver) |
+| `Q-PERF-BLOCKING-001` | `REQ-25822068614f` | `EVR-b989ade5761b359d52c0ff5e` | `7a03da91923c…` | 0 filas (sin bloqueos) |
+| `Q-PERF-TEMP-001` | `REQ-446cab0d6c29` | `EVR-24e45dbafa67ba65a3c3e5a9` | `4af7ab292ea4…` | 0 filas (sin uso de TEMP) |
+| `Q-PERF-PARALLEL-001` | `REQ-19616c825bc1` | `EVR-ade1ddb02384ff898e43515e` | `cdacf7be1f10…` | 0 filas; corre sin ORA-00904 |
+| `Q-ORA-REDO-SWITCH-24H-001` | `REQ-6221b83d7d46` | `EVR-b6a198fd90c3b90f22954b55` | `e3be276a2424…` | 0 filas (sin switches en 24 h) |
+| `Q-ORA-SPFILE-001` | `REQ-09d02e8c7b52` | `EVR-f728fb81f36f7af863fce608` | `122f705ba6e3…` | 1 fila con `spfile_params_count` 23 (antes, 0 filas) |
+| `Q-PERF-DBTIME-CURRENT-001` | `REQ-80f1313e221e` | `EVR-bddc93035864a9586b7962fe` | `a98681aa6966…` | 1 fila, sin ORA-00937 |
+| `Q-PERF-IO-FILESTAT-001` | `REQ-d28ac3e2306e` | `EVR-33f83e3a99fe574ef5cd63f4` | `d199dba36daf…` | 8 datafiles únicos (la primera pasada duplicaba cada uno); latencias en ms |
+| `Q-PERF-TOPSQL-CURRENT-001` | `REQ-36ba18aabeaf` | `EVR-7bac31205766c410e28b189e` | `8e7fe849b694…` | 20 SQL con `con_id` (1 y 3); `sql_id` y métricas, sin texto |
+
+**Collectors con 0 filas en el lab** (bloqueos, TEMP, paralelo, switches en 24 h): se validó que el SQL corre y su forma, no los valores; el lab no tiene esa actividad.
+
 ## Registro del cambio
 
 | Fase | Resultado |
@@ -63,5 +99,5 @@ Ahora un identificador legible en una sola caja, con inicial alfabética y a lo 
 | TEST | `tests/test_collector_factory.sh` (P18): 18/18 |
 | SECURITY | 15/15 mutaciones detectadas (9 de B1 y 6 nuevas: `oracle_term` o `sql_id` en cualquier campo, cualquiera de los dos sin validar, exención de identificadores para todo o para nada) |
 | REGRESSION | Pendiente (suite completa) |
-| LAB | Pendiente: ejecución real de los 16 collectors y revalidación de `Q-ORA-SPFILE-001` |
+| LAB | 16/16 en real y `Q-ORA-SPFILE-001` revalidada (dos pasadas; ver arriba); `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM` |
 | HUMAN REVIEW | Pendiente |

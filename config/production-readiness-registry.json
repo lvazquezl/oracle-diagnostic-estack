@@ -1772,7 +1772,7 @@
         "ANY"
       ],
       "min_privileges": [
-        "SELECT on V$SYSTEM_WAIT_CLASS"
+        "SELECT on V$SYSTEM_EVENT"
       ],
       "license": "none",
       "limits": {

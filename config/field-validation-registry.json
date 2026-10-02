@@ -485,18 +485,228 @@
       "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B1"
     },
     {
-      "query_id": "Q-ORA-SPFILE-001",
-      "query_sha256": "8aba5d9fe3a4fc8f35a304c2720bb2981d64c742287511e9dcd61c8725c483ae",
+      "query_id": "Q-PERF-WAIT-SYSTEM-001",
+      "query_sha256": "4dc8ca06b4137295923d99fb69847243597e98ea75305303a077eedd4971fd8c",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-30T02:26:03Z",
+      "validated_at_utc": "2026-10-02T15:58:28Z",
       "evidence_refs": [
-        "EVR-e44cff33e813e26cc5e72a32"
+        "EVR-5f0bc48bed154fa933dc6e16"
       ],
       "request_refs": [
-        "REQ-cd4de8c684fe"
+        "REQ-a4546b1a1a7e"
       ],
-      "record": "docs/COLLECTOR_FACTORY.md",
-      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B1"
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-IO-001",
+      "query_sha256": "fbc7c98dc0db16e501c89ba9fe18ffdacdc31e1a6af88b39d8a5864c80d52bd2",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T15:58:28Z",
+      "evidence_refs": [
+        "EVR-792cb4f5e8b59694c4501276"
+      ],
+      "request_refs": [
+        "REQ-47f3849ea9e6"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-LIBCACHE-001",
+      "query_sha256": "1779829e0348991093beb407ad4b117c3773991e53e80b1dc0fca75b55f0de7a",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T15:58:29Z",
+      "evidence_refs": [
+        "EVR-e7ebdc8e72f187fe056cc4fc"
+      ],
+      "request_refs": [
+        "REQ-173528c85191"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-PGA-001",
+      "query_sha256": "d8a59ba7d2205470937d0b974eb427ecf2170bdc70bd7f26d971a124a143cd92",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T15:58:30Z",
+      "evidence_refs": [
+        "EVR-3b561d8595f384ba0ee24838"
+      ],
+      "request_refs": [
+        "REQ-b1f16ee40221"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-SGA-001",
+      "query_sha256": "c528f078427a61fab77ae2919efcbc75f968ced4fcd916ccf103a0a40a94e852",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T15:58:31Z",
+      "evidence_refs": [
+        "EVR-c04cfbca7dbf9cb800c4fb72"
+      ],
+      "request_refs": [
+        "REQ-9f0dbb3d3e37"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-SHAREDPOOL-001",
+      "query_sha256": "4540a69e6fe88a97d0746c2e78d146c9234624521357b8222d03e4e74fb78304",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T15:58:31Z",
+      "evidence_refs": [
+        "EVR-f217f59ca153b8744d631a7d"
+      ],
+      "request_refs": [
+        "REQ-50571e599c19"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-REDO-001",
+      "query_sha256": "ee15054710838045381bbc3c3ee117716f2e538c71461f8aecd0589e6bfb77ed",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T15:58:38Z",
+      "evidence_refs": [
+        "EVR-6d235d45e7ee8108879d569f"
+      ],
+      "request_refs": [
+        "REQ-2142b715fe00"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-HARDPARSE-001",
+      "query_sha256": "714e1a62cc477f533b98580de6732357e941ebcd907e80c36d2fb7dea77ab016",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T15:58:38Z",
+      "evidence_refs": [
+        "EVR-63ac8b78f783c3c3f9131777"
+      ],
+      "request_refs": [
+        "REQ-f211bd7ed4e1"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-BLOCKING-001",
+      "query_sha256": "7a03da91923c58b13179dc02c73e0af229d5a0c3354c7434ed6fec0a2cecf043",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T15:58:40Z",
+      "evidence_refs": [
+        "EVR-b989ade5761b359d52c0ff5e"
+      ],
+      "request_refs": [
+        "REQ-25822068614f"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-TEMP-001",
+      "query_sha256": "4af7ab292ea4123ad0306032080e9cf739e00a58e584c8942c551bf8ecb0e60b",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T15:58:41Z",
+      "evidence_refs": [
+        "EVR-24e45dbafa67ba65a3c3e5a9"
+      ],
+      "request_refs": [
+        "REQ-446cab0d6c29"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-PARALLEL-001",
+      "query_sha256": "cdacf7be1f109ab4e517670496c1bd0b906efe165c4dbce55ecc333221a849b9",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T15:58:41Z",
+      "evidence_refs": [
+        "EVR-ade1ddb02384ff898e43515e"
+      ],
+      "request_refs": [
+        "REQ-19616c825bc1"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-ORA-REDO-SWITCH-24H-001",
+      "query_sha256": "e3be276a24242507f43cd2d7c92fb6efde72881e92ece7718e7041ee702909ff",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T15:58:42Z",
+      "evidence_refs": [
+        "EVR-b6a198fd90c3b90f22954b55"
+      ],
+      "request_refs": [
+        "REQ-6221b83d7d46"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-ORA-SPFILE-001",
+      "query_sha256": "122f705ba6e326a075132926f952327404aebfdb2a089ef32bd6484f6738b558",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T15:58:42Z",
+      "evidence_refs": [
+        "EVR-f728fb81f36f7af863fce608"
+      ],
+      "request_refs": [
+        "REQ-09d02e8c7b52"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-DBTIME-CURRENT-001",
+      "query_sha256": "a98681aa6966f92748af5626be71c1bfb7673378f1c9c1ec15c03a2a2d1974b9",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T16:05:58Z",
+      "evidence_refs": [
+        "EVR-bddc93035864a9586b7962fe"
+      ],
+      "request_refs": [
+        "REQ-80f1313e221e"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-IO-FILESTAT-001",
+      "query_sha256": "d199dba36daf9633925c07ad7d0ba55e12152f5f200dde3cd601882d463662bf",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T16:06:00Z",
+      "evidence_refs": [
+        "EVR-33f83e3a99fe574ef5cd63f4"
+      ],
+      "request_refs": [
+        "REQ-d28ac3e2306e"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-TOPSQL-CURRENT-001",
+      "query_sha256": "8e7fe849b6946694e0ac81ffb68c933704774667db3f692c57975fc5c6ce5b15",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T16:06:00Z",
+      "evidence_refs": [
+        "EVR-7bac31205766c410e28b189e"
+      ],
+      "request_refs": [
+        "REQ-36ba18aabeaf"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
     }
   ]
 }

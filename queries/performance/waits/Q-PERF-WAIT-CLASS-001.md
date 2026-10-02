@@ -12,8 +12,8 @@ supported_architectures: [Standalone, RAC]
 container_scope: ANY_CONTAINER
 database_role_scope: ANY
 
-objects_accessed: [V$SYSTEM_WAIT_CLASS]
-privileges_required: [SELECT on V$SYSTEM_WAIT_CLASS]
+objects_accessed: [V$SYSTEM_EVENT]
+privileges_required: [SELECT on V$SYSTEM_EVENT]
 
 risk_class: R0
 cost_class: LOW
@@ -49,28 +49,32 @@ status: active
 
 ```sql
 SELECT *
-FROM  (SELECT c.wait_class, c.total_waits, ROUND(c.time_waited / 100, 2) AS time_waited_sec
-       FROM   v$system_wait_class c
-       WHERE  c.wait_class <> 'Idle'
-       ORDER  BY c.time_waited DESC)
+FROM  (SELECT e.wait_class, SUM(e.total_waits) AS total_waits,
+              ROUND(SUM(e.time_waited_micro) / 1e6, 2) AS time_waited_sec
+       FROM   v$system_event e
+       WHERE  e.wait_class <> 'Idle'
+       GROUP  BY e.wait_class
+       ORDER  BY SUM(e.time_waited_micro) DESC)
 WHERE  ROWNUM <= 20;
 ```
 
 # Statement / procedure (read-only) — Variant V2 (modern_fetch_first, 12.1+)
 
 ```sql
-SELECT c.wait_class, c.total_waits, ROUND(c.time_waited / 100, 2) AS time_waited_sec
-FROM   v$system_wait_class c
-WHERE  c.wait_class <> 'Idle'
-ORDER  BY c.time_waited DESC
+SELECT e.wait_class, SUM(e.total_waits) AS total_waits,
+       ROUND(SUM(e.time_waited_micro) / 1e6, 2) AS time_waited_sec
+FROM   v$system_event e
+WHERE  e.wait_class <> 'Idle'
+GROUP  BY e.wait_class
+ORDER  BY SUM(e.time_waited_micro) DESC
 FETCH  FIRST 20 ROWS ONLY;
 ```
 
-Distribución del tiempo de espera por clase (User I/O, Commit, Concurrency, Configuration…): primer corte para decidir qué especialista mirar. `TIME_WAITED` está en centésimas de segundo.
+Distribución del tiempo de espera por clase (User I/O, Commit, Concurrency, Configuration…): primer corte para decidir qué especialista mirar. Se agrega `V$SYSTEM_EVENT` por clase (en microsegundos), la misma vista ya registrada en el diccionario que usa `Q-PERF-WAIT-SYSTEM-001`.
 
 # Notes by version
 
-`V$SYSTEM_WAIT_CLASS` existe desde 10g con las columnas usadas. `FETCH FIRST` sólo desde 12.1 (V2).
+`V$SYSTEM_EVENT` con `WAIT_CLASS` existe desde 10g. `FETCH FIRST` sólo desde 12.1 (V2).
 
 # Notes by platform
 
@@ -86,7 +90,7 @@ Ninguna diferencia.
 
 # License notes
 
-Ninguna: `V$SYSTEM_WAIT_CLASS` no forma parte de Diagnostics Pack (a diferencia de ASH/AWR).
+Ninguna: `V$SYSTEM_EVENT` no forma parte de Diagnostics Pack (a diferencia de ASH/AWR).
 
 # Sanitization notes
 

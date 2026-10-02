@@ -142,7 +142,7 @@ queries:
     variants:
       - {variant_id: Q-PERF-WAIT-CLASS-001-V1, label: legacy_rownum, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
       - {variant_id: Q-PERF-WAIT-CLASS-001-V2, label: modern_fetch_first, min: "12.1", max: latest, container_scope: ANY_CONTAINER}
-    required_views: [V$SYSTEM_WAIT_CLASS]
+    required_views: [V$SYSTEM_EVENT]
     role_scope: ANY
     cost_class: LOW
     validation_status: COMPATIBLE
