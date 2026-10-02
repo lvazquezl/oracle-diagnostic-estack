@@ -707,6 +707,20 @@
       ],
       "record": "docs/COLLECTOR_FACTORY_B2.md",
       "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-PERF-WAIT-CLASS-001",
+      "query_sha256": "e8e667b1176b7331290d2119f38e7fedff53292429f617d48b6e45aad614867b",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-02T16:13:52Z",
+      "evidence_refs": [
+        "EVR-9a531364b7ca1c471d023d95"
+      ],
+      "request_refs": [
+        "REQ-e416d4ef28fa"
+      ],
+      "record": "docs/COLLECTOR_FACTORY_B2.md",
+      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
     }
   ]
 }

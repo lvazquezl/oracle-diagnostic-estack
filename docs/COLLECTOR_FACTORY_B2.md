@@ -64,13 +64,14 @@ Ejecución real vía `oracle-estack-lab`, el 2026-10-02, después del cambio de 
    - `Q-PERF-DBTIME-CURRENT-001` estaba pendiente de la corrección de ORA-00937 (`b40b52b`).
 2. **Corrección (`59e24ba`):** se agregó `con_id` al join de `FILESTAT` y a la salida de `TOPSQL`.
 3. **Segunda pasada:** los 3 funcionaron. Los demás no cambiaron de SQL, así que vale su primera ejecución.
+4. **Tercera pasada (`d7ded1d`):** `Q-PERF-WAIT-CLASS-001` usaba `V$SYSTEM_WAIT_CLASS`, que no está en el diccionario del e-stack (lo detectó la suite). Se reescribió sobre `V$SYSTEM_EVENT`, agregando por clase, y se volvió a correr.
 
 En los 17, el `query_sha256` observado coincide con el SQL versionado. La validación anterior de `Q-ORA-SPFILE-001` (B1) se sustituye, porque su SQL cambió.
 
 | Collector | Request | Evidencia | `query_sha256` | Resultado |
 |---|---|---|---|---|
 | `Q-PERF-WAIT-SYSTEM-001` | `REQ-a4546b1a1a7e` | `EVR-5f0bc48bed154fa933dc6e16` | `4dc8ca06b413…` | 25 eventos no idle, todos los nombres y clases reconocidos |
-| `Q-PERF-WAIT-CLASS-001` | `REQ-c7858681bf0a` | `EVR-369cf39afca07fa128a4e713` | `1556f0e749f2…` | 9 clases |
+| `Q-PERF-WAIT-CLASS-001` | `REQ-e416d4ef28fa` | `EVR-9a531364b7ca1c471d023d95` | `e8e667b1176b…` | 9 clases; tercera pasada (`d7ded1d`) tras reescribirla sobre `V$SYSTEM_EVENT`, la vista registrada en el diccionario |
 | `Q-PERF-IO-001` | `REQ-47f3849ea9e6` | `EVR-792cb4f5e8b59694c4501276` | `fbc7c98dc0db…` | 5 eventos |
 | `Q-PERF-LIBCACHE-001` | `REQ-173528c85191` | `EVR-e7ebdc8e72f187fe056cc4fc` | `1779829e0348…` | 23 namespaces, todos reconocidos por `oracle_term` |
 | `Q-PERF-PGA-001` | `REQ-b1f16ee40221` | `EVR-3b561d8595f384ba0ee24838` | `d8a59ba7d220…` | 1 fila |
@@ -98,6 +99,6 @@ En los 17, el `query_sha256` observado coincide con el SQL versionado. La valida
 | IMPLEMENT | 3 queries nuevas, 7 corregidas (2 por la ejecución en LAB19S desde Windows), lote `lots/B2-performance.json`, 64 definiciones nuevas en la base de conocimiento, 16 collectors y fixtures generados, `mcp_gateway/catalog.py`, `mcp_gateway/evidence.py`, matriz de compatibilidad, registro de madurez |
 | TEST | `tests/test_collector_factory.sh` (P18): 18/18 |
 | SECURITY | 15/15 mutaciones detectadas (9 de B1 y 6 nuevas: `oracle_term` o `sql_id` en cualquier campo, cualquiera de los dos sin validar, exención de identificadores para todo o para nada) |
-| REGRESSION | Pendiente (suite completa) |
+| REGRESSION | 971/971 en macOS con bash 5.3 (la primera corrida dio 969/971 por una vista no registrada en el diccionario; se reescribió la query y se revalidó en el lab) |
 | LAB | 16/16 en real y `Q-ORA-SPFILE-001` revalidada (dos pasadas; ver arriba); `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM` |
 | HUMAN REVIEW | Pendiente |
