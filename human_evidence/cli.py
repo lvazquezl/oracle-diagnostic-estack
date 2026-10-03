@@ -13,7 +13,7 @@ import sys
 
 from mcp_gateway import catalog
 from mcp_gateway.versions import family_of
-from mcp_gateway_lab import sqlsource
+from mcp_gateway_lab import filesec, sqlsource
 
 from .classify import classify_column, is_number, value_is_identifying, value_is_sensitive
 
@@ -50,10 +50,20 @@ def _now():
 
 
 def _write_private(path, text):
+    """0600 on POSIX. On Windows the mode is ignored and the file inherits its folder's ACL, so the result is
+    verified natively (CHG-ESTACK-LAB-PORTABLE-001): a raw CSV, token map, key or request readable by other users is
+    removed and the operation refused, with the fix in the message."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
     with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
+    if not filesec.is_private(path, filesec.PRIVATE):
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+        raise HumanEvidenceError("the evidence folder is readable by other users; keep the repository under your user "
+                                 "profile or restrict it (" + filesec.how_to_fix(filesec.PRIVATE) + ")")
 
 
 # --- request -------------------------------------------------------------------------------------------------

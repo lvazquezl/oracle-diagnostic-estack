@@ -41,12 +41,30 @@ class _Parser(argparse.ArgumentParser):
 
 def _load_driver():
     try:
-        import oracledb                                    # python-oracledb, THIN mode (init_oracle_client is never called)
+        import oracledb                                    # python-oracledb; thin unless prepare_driver enables thick
     except ImportError:
         raise ProfileError("python-oracledb is not installed in this Python environment")
-    if not oracledb.is_thin_mode():
-        raise ProfileError("python-oracledb must run in thin mode")
     return oracledb
+
+
+def prepare_driver(driver, target):
+    """CHG-ESTACK-LAB-PORTABLE-001: the driver mode follows the credential provider, once per process.
+      macos_keychain -> THIN (init_oracle_client is never called);
+      oracle_wallet  -> THICK, only so that the Oracle Client can read the SEPS wallet (config_dir = tns_admin).
+    Thick and thin cannot be mixed in one python-oracledb process; the lab launcher serves exactly one target."""
+    if target.provider == "oracle_wallet":
+        kwargs = {"config_dir": target.tns_admin}
+        if target.client_lib_dir:
+            kwargs["lib_dir"] = target.client_lib_dir
+        try:
+            driver.init_oracle_client(**kwargs)
+        except Exception:
+            raise ProfileError("the Oracle Client libraries could not be loaded (oracle_wallet needs the Oracle Client / Instant Client)")
+        if driver.is_thin_mode():
+            raise ProfileError("python-oracledb must run in thick mode for the oracle_wallet provider")
+    elif not driver.is_thin_mode():
+        raise ProfileError("python-oracledb must run in thin mode")
+    return driver
 
 
 def build_lab_gateway(targets_file: str, profile_file: str, audit_sink=None, driver=None, credential_runner=None, wallclock=None):
@@ -73,7 +91,11 @@ def build_lab_gateway(targets_file: str, profile_file: str, audit_sink=None, dri
     if t.oracle_version != spec.expected_version_family or t.role != spec.gateway_role() or t.container not in CONTAINERS \
             or t.container != spec.expected_container:
         raise ProfileError("the lab target registration does not match the lab profile")
-    adapter = OracleSqlAdapter(profile, driver if driver is not None else _load_driver(), collectors[IDENTITY_COLLECTOR],
+    if driver is None:
+        driver = prepare_driver(_load_driver(), spec)
+    elif spec.provider == "oracle_wallet":
+        driver = prepare_driver(driver, spec)              # tests inject a fake driver; the wallet path still initializes it
+    adapter = OracleSqlAdapter(profile, driver, collectors[IDENTITY_COLLECTOR],
                                credential_runner=credential_runner, wallclock=wallclock)
     registry = AdapterRegistry(catalog.DEFAULT_FIXTURES_DIR, extra={"oracle_sql": adapter})
     return Gateway(collectors, targets, registry, Audit(audit_sink), lab_mode=True), adapter

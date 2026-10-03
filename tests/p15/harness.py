@@ -19,17 +19,30 @@ from tests.p13.harness import MARKER, ROOT, Skip, run_all, test, tmpdir  # noqa:
 
 import functools
 
-# CHG-ESTACK-PORTABILITY-001: the lab launcher refuses non-POSIX hosts by design (owner-only profile checks, macOS
-# Keychain). Cases that build a lab gateway or rely on POSIX file permissions are reported as an explicit [SKIP] there,
-# never as a silent PASS; platform-agnostic cases (static scans, SQL source resolution, refusal paths) always run.
+# CHG-ESTACK-LAB-PORTABLE-001: the lab launcher runs on Windows too (native ACL checks, mcp_gateway_lab/filesec.py),
+# so cases that build a lab gateway run on every supported OS. Only the cases that exercise POSIX permission bits or
+# symlinks themselves stay POSIX-only (their Windows equivalent is tests/p19, with icacls); those are an explicit
+# [SKIP] elsewhere, never a silent PASS.
 POSIX_HOST = hasattr(os, "getuid") and os.name == "posix"
+LAB_HOST = POSIX_HOST or sys.platform == "win32"
 
 
 def posix_test(fn):
+    """A case that builds a lab gateway: runs wherever the launcher can verify file privacy (POSIX and Windows)."""
+    @functools.wraps(fn)
+    def wrapper():
+        if not LAB_HOST:
+            raise Skip("requires a host where the lab launcher can verify file privacy")
+        return fn()
+    return test(wrapper)
+
+
+def posix_mode_test(fn):
+    """A case about POSIX permission bits or symlinks themselves (chmod 644, os.symlink)."""
     @functools.wraps(fn)
     def wrapper():
         if not POSIX_HOST:
-            raise Skip("requires a POSIX host: the lab launcher refuses non-POSIX hosts by design")
+            raise Skip("exercises POSIX permission bits; the Windows equivalent is tests/p19 (icacls)")
         return fn()
     return test(wrapper)
 
@@ -204,9 +217,18 @@ class FakeDriver:
     def is_thin_mode(self):
         return self.s.thin_mode
 
+    def init_oracle_client(self, **kw):           # CHG-ESTACK-LAB-PORTABLE-001: thick mode for the oracle_wallet provider
+        self.init_calls = getattr(self, "init_calls", []) + [dict(kw)]
+        if getattr(self.s, "init_error", None) is not None:
+            raise self.s.init_error
+        if not getattr(self.s, "init_stays_thin", False):
+            self.s.thin_mode = False
+            self.s.conn_thin = False
+
     def connect(self, **kw):
         with self.lock:
             self.password_ok.append(kw.get("password") == SECRET)
+            self.password_given = getattr(self, "password_given", []) + [any(k in kw for k in ("password", "newpassword", "wallet_password"))]
             self.connects.append({k: v for k, v in kw.items() if k != "password"})
         if self.s.connect_error is not None:
             raise self.s.connect_error

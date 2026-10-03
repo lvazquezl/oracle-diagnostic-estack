@@ -1,5 +1,6 @@
 """
-mcp_gateway_lab.oracle_sql — the real, read-only `oracle_sql` adapter (python-oracledb, THIN mode only).
+mcp_gateway_lab.oracle_sql — the real, read-only `oracle_sql` adapter (python-oracledb: THIN mode with the macOS
+Keychain; THICK mode only with the oracle_wallet / SEPS provider — CHG-ESTACK-LAB-PORTABLE-001).
 
 It implements the gateway adapter interface (`name`, `status`, `fetch(target, collector, params)`) and returns
 UNTRUSTED rows that the gateway then validates and sanitizes (mcp_gateway.evidence.sanitize_rows). Per call:
@@ -10,7 +11,8 @@ UNTRUSTED rows that the gateway then validates and sanitizes (mcp_gateway.eviden
                     the lock until the driver returns (bounded by call_timeout), so calls never pile up;
   3. SQL source     certified variant re-read and hash-verified (sqlsource.resolve); guard statements below are
                     fixed constants checked by the same read-only guard; there is no other SQL;
-  4. connection     fresh THIN connection, password fetched from the approved secret store just for connect,
+  4. connection     fresh connection; keychain: THIN, password fetched from the secret store just for connect;
+                    oracle_wallet: THICK, external authentication to the TNS alias (no password in this process);
                     no retries, bounded connect timeout, call_timeout per round trip under one overall deadline;
   5. session guard  SET TRANSACTION READ ONLY; the session must not be SYSDBA-like, must be the configured
                     dedicated user (not an Oracle-maintained account) and hold no system privilege above the
@@ -100,7 +102,10 @@ _DRIVER_CATEGORIES = {"ORA-01017": "CREDENTIALS_REJECTED", "ORA-28000": "ACCOUNT
                       "ORA-12514": "SERVICE_NOT_REGISTERED", "DPY-6001": "SERVICE_NOT_REGISTERED", "ORA-12541": "NO_LISTENER",
                       "DPY-6005": "NETWORK_UNREACHABLE", "ORA-12170": "NETWORK_TIMEOUT", "DPY-3001": "NATIVE_NETWORK_ENCRYPTION_NEEDS_THICK_MODE",
                       "ORA-00942": "MISSING_OBJECT_PRIVILEGE", "ORA-00904": "INVALID_IDENTIFIER", "ORA-01031": "INSUFFICIENT_PRIVILEGES", "DPY-4024": "CALL_TIMEOUT",
-                      "DPY-4011": "CONNECTION_CLOSED", "ORA-01035": "RESTRICTED_SESSION"}
+                      "DPY-4011": "CONNECTION_CLOSED", "ORA-01035": "RESTRICTED_SESSION",
+                      # CHG-ESTACK-LAB-PORTABLE-001 (oracle_wallet / thick)
+                      "ORA-12154": "TNS_ALIAS_NOT_RESOLVED", "ORA-28759": "WALLET_NOT_READABLE", "ORA-01004": "WALLET_HAS_NO_CREDENTIAL_FOR_ALIAS",
+                      "DPI-1047": "ORACLE_CLIENT_NOT_FOUND", "ORA-12560": "NETWORK_OR_LISTENER", "ORA-12505": "SERVICE_NOT_REGISTERED"}
 
 
 class _Fail(Exception):
@@ -217,6 +222,12 @@ class OracleSqlAdapter:
         return version
 
     def _connect(self, spec):
+        if getattr(self._credentials, "external_auth", False):
+            # oracle_wallet: no password exists in this process; the Oracle Client authenticates with the SEPS wallet
+            try:
+                return self._driver.connect(dsn=spec.tns_alias, externalauth=True)
+            except Exception as e:
+                raise _Fail("E_ADAPTER_FAILED", _driver_category(e))
         try:
             password = self._credentials.get_password(spec.credential["service"], spec.credential["account"])
         except CredentialError:
@@ -281,12 +292,15 @@ class OracleSqlAdapter:
         max_rows = min(spec.limits["max_rows"], main.max_rows, collector.row_limit)
         max_bytes = min(spec.limits["max_output_bytes"], main.max_output_bytes)
         deadline = self._clock() + max(1.0, min(main.timeout_seconds, collector.timeout_seconds) - 0.5)
-        if hasattr(self._driver, "is_thin_mode") and not self._driver.is_thin_mode():
-            raise _Fail("E_ADAPTER_FAILED", "THICK_MODE_REFUSED")
+        # CHG-ESTACK-LAB-PORTABLE-001: thin for the keychain, thick only for the oracle_wallet provider (SEPS)
+        expect_thin = not getattr(self._credentials, "thick_mode", False)
+        wrong_mode = "THICK_MODE_REFUSED" if expect_thin else "THIN_MODE_CANNOT_USE_WALLET"
+        if hasattr(self._driver, "is_thin_mode") and bool(self._driver.is_thin_mode()) is not expect_thin:
+            raise _Fail("E_ADAPTER_FAILED", wrong_mode)
         conn = self._connect(spec)
         try:
-            if getattr(conn, "thin", True) is not True:
-                raise _Fail("E_ADAPTER_FAILED", "THICK_MODE_REFUSED")
+            if getattr(conn, "thin", True) is not expect_thin:
+                raise _Fail("E_ADAPTER_FAILED", wrong_mode)
             conn.autocommit = False
             conn.module = "estack-diag-lab"
             conn.action = collector.collector_id[:32]

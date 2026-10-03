@@ -18,7 +18,11 @@ import re
 import stat
 from datetime import datetime, timedelta, timezone
 
+import sys
+
 from mcp_gateway.catalog import ALIAS_RE, REPO_ROOT
+
+from . import filesec
 
 MAX_PROFILE_BYTES = 65_536
 MAX_AUTHORIZATION_DAYS = 90
@@ -26,7 +30,7 @@ ENVIRONMENT_CLASSES = ("NON_PRODUCTION",)
 TRANSPORTS = ("tcp", "tcps")
 CONTAINERS = ("NON_CDB", "CDB_ROOT", "PDB")
 DATABASE_ROLES = ("PRIMARY", "PHYSICAL STANDBY", "LOGICAL STANDBY", "SNAPSHOT STANDBY")
-CREDENTIAL_PROVIDERS = ("macos_keychain",)
+CREDENTIAL_PROVIDERS = ("macos_keychain", "oracle_wallet")       # oracle_wallet: CHG-ESTACK-LAB-PORTABLE-001
 # System privileges a diagnostic session may hold. CREATE SESSION is mandatory; SELECT ANY DICTIONARY is tolerated
 # only when the profile opts in explicitly (object grants on V_$ views are the least-privilege option).
 PRIVILEGE_CEILING = frozenset({"CREATE SESSION", "SELECT ANY DICTIONARY"})
@@ -45,6 +49,7 @@ _DBNAME = re.compile(r'^[A-Za-z][A-Za-z0-9_$#]{0,29}$')
 _KEYCHAIN = re.compile(r'^[A-Za-z0-9][A-Za-z0-9_.:/@-]{0,127}$')
 _CERT_DN = re.compile(r'^[A-Za-z0-9 =,._*@-]{1,256}$')
 _FREE_REF = re.compile(r'^[A-Za-z0-9][A-Za-z0-9 _.:/#()-]{0,127}$')
+_TNS_ALIAS = re.compile(r'^[A-Za-z][A-Za-z0-9_.-]{0,63}$')
 _TS = re.compile(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$')
 
 
@@ -71,9 +76,9 @@ def _forbidden_key_anywhere(obj) -> bool:
 
 
 def check_private_file(path: str, what: str = "lab profile") -> str:
-    """Return the real path of an owner-only regular file outside the repository, or raise ProfileError."""
-    if not hasattr(os, "getuid") or os.name != "posix":      # CHG-ESTACK-PORTABILITY-001: owner/permission checks need POSIX
-        raise ProfileError("the lab launcher requires a POSIX host (owner-only file checks are not available here)")
+    """Return the real path of a private regular file outside the repository, or raise ProfileError.
+    Private = owner-only on POSIX (uid + mode), and on Windows only the current user, SYSTEM and Administrators in
+    the DACL (CHG-ESTACK-LAB-PORTABLE-001, mcp_gateway_lab/filesec.py)."""
     if not isinstance(path, str) or not os.path.isabs(path):
         raise ProfileError(f"{what} path must be absolute")
     try:
@@ -82,10 +87,13 @@ def check_private_file(path: str, what: str = "lab profile") -> str:
         raise ProfileError(f"{what} is not readable")
     if stat.S_ISLNK(st.st_mode) or not stat.S_ISREG(st.st_mode):
         raise ProfileError(f"{what} must be a regular file, not a symlink")
-    if st.st_uid != os.getuid():
-        raise ProfileError(f"{what} must be owned by the current user")
-    if st.st_mode & 0o077:
-        raise ProfileError(f"{what} must not be accessible by group or others (chmod 600)")
+    if os.name == "posix" and hasattr(os, "getuid"):
+        if st.st_uid != os.getuid():
+            raise ProfileError(f"{what} must be owned by the current user")
+        if st.st_mode & 0o077:
+            raise ProfileError(f"{what} must not be accessible by group or others (chmod 600)")
+    if not filesec.is_private(path, filesec.PRIVATE):
+        raise ProfileError(f"{what} must be private to the current user (Windows: only your user, SYSTEM and Administrators)")
     if st.st_size > MAX_PROFILE_BYTES:
         raise ProfileError(f"{what} is too large")
     real = os.path.realpath(path)
@@ -135,7 +143,18 @@ class LabTarget:
         _require(spec["environment_class"] in ENVIRONMENT_CLASSES, "only NON_PRODUCTION targets can be used by the lab launcher")
         self.alias = alias
 
+        cr = spec["credential"]
+        _require(isinstance(cr, dict) and cr.get("provider") in CREDENTIAL_PROVIDERS, "credential.provider is not an approved secret store")
+        self.provider = cr["provider"]
         c = spec["connection"]
+        if self.provider == "oracle_wallet":
+            self._wallet(c, cr)
+        else:
+            self._keychain(c, cr)
+
+        self._expected(spec)
+
+    def _keychain(self, c, cr):
         _exact_keys(c, ("host", "port", "service_name", "transport", "username"), ("tcps",))
         _require(isinstance(c["host"], str) and (_HOST.match(c["host"]) or _IPV6.match(c["host"])), "connection.host is invalid")
         _require(isinstance(c["port"], int) and not isinstance(c["port"], bool) and 1 <= c["port"] <= 65535, "connection.port is invalid")
@@ -157,13 +176,34 @@ class LabTarget:
                 _require(isinstance(t["server_cert_dn"], str) and _CERT_DN.match(t["server_cert_dn"]), "connection.tcps.server_cert_dn is invalid")
                 self.server_cert_dn = t["server_cert_dn"]
 
-        cr = spec["credential"]
         _exact_keys(cr, ("provider", "service", "account"))
-        _require(cr["provider"] in CREDENTIAL_PROVIDERS, "credential.provider is not an approved secret store")
         _require(isinstance(cr["service"], str) and _KEYCHAIN.match(cr["service"]) and isinstance(cr["account"], str) and _KEYCHAIN.match(cr["account"]),
                  "credential reference is invalid")
         self.credential = {"provider": cr["provider"], "service": cr["service"], "account": cr["account"]}
+        self.tns_alias = self.tns_admin = self.wallet_dir = self.client_lib_dir = None
 
+    def _wallet(self, c, cr):
+        """oracle_wallet (SEPS): the connection is a TNS alias resolved by the operator's Oracle Net configuration; the
+        profile keeps only the identity the session must prove (username, service) and where that configuration is."""
+        _exact_keys(c, ("username", "service_name"))
+        _require(isinstance(c["username"], str) and _USER.match(c["username"]), "connection.username is invalid")
+        _require(isinstance(c["service_name"], str) and _SERVICE.match(c["service_name"]), "connection.service_name is invalid")
+        self.username, self.service_name = c["username"], c["service_name"]
+        self.host = self.port = self.wallet_location = self.server_cert_dn = None
+        self.transport = "tns_alias"
+        _exact_keys(cr, ("provider", "tns_alias", "tns_admin", "wallet_location"), ("client_lib_dir",))
+        _require(isinstance(cr["tns_alias"], str) and _TNS_ALIAS.match(cr["tns_alias"]), "credential.tns_alias is invalid")
+        for k in ("tns_admin", "wallet_location", "client_lib_dir"):
+            if k in cr:
+                _require(isinstance(cr[k], str) and os.path.isabs(cr[k]) and os.path.isdir(cr[k]) and not os.path.islink(cr[k]),
+                         f"credential.{k} must be an existing absolute directory")
+        _require(not ("client_lib_dir" in cr and sys.platform.startswith("linux")),
+                 "credential.client_lib_dir is not used on Linux (configure the Oracle Client with ldconfig or LD_LIBRARY_PATH)")
+        self.tns_alias, self.tns_admin, self.wallet_dir = cr["tns_alias"], cr["tns_admin"], cr["wallet_location"]
+        self.client_lib_dir = cr.get("client_lib_dir")
+        self.credential = {"provider": cr["provider"], "tns_alias": self.tns_alias}
+
+    def _expected(self, spec):
         e = spec["expected"]
         _exact_keys(e, ("oracle_version_family", "database_role", "container", "db_name"), ("con_name", "service_name"))
         _require(e["oracle_version_family"] == "19c", "expected.oracle_version_family must be 19c for this lab adapter")
@@ -218,6 +258,53 @@ class LabProfile:
         return self.target if alias == self.target.alias else None
 
 
+_SQLNET_WALLET = re.compile(r'(?is)\bWALLET_LOCATION\s*=\s*\(\s*SOURCE\s*=\s*\(\s*METHOD\s*=\s*FILE\s*\)\s*'
+                            r'\(\s*METHOD_DATA\s*=\s*\(\s*DIRECTORY\s*=\s*("[^"]+"|[^)\s]+)\s*\)')
+_SQLNET_OVERRIDE = re.compile(r'(?im)^\s*SQLNET\.WALLET_OVERRIDE\s*=\s*TRUE\s*(#.*)?$')
+MAX_NET_FILE_BYTES = 262_144
+
+
+def _same_dir(a: str, b: str) -> bool:
+    return os.path.normcase(os.path.realpath(a)) == os.path.normcase(os.path.realpath(b))
+
+
+def _inside_repo(path: str) -> bool:
+    real, repo = os.path.realpath(path), os.path.realpath(REPO_ROOT)
+    return real == repo or real.startswith(repo + os.sep)
+
+
+def check_wallet_setup(t: LabTarget) -> None:
+    """oracle_wallet (CHG-ESTACK-LAB-PORTABLE-001): the Oracle Net configuration the thick client will read must be
+    the operator's own and must point at the private wallet named in the profile. Fixed-text refusals only."""
+    if t.provider != "oracle_wallet":
+        return
+    for d in (t.wallet_dir, t.tns_admin):
+        _require(not _inside_repo(d), "the wallet and the Oracle Net configuration must live outside the repository checkout")
+    _require(filesec.is_private(t.wallet_dir, filesec.PRIVATE),
+             "credential.wallet_location must be private to the current user (" + filesec.how_to_fix(filesec.PRIVATE) + ")")
+    sso = os.path.join(t.wallet_dir, "cwallet.sso")
+    _require(os.path.isfile(sso) and not os.path.islink(sso), "the wallet has no cwallet.sso (create it with mkstore or orapki)")
+    for name in ("cwallet.sso", "ewallet.p12"):
+        f = os.path.join(t.wallet_dir, name)
+        if os.path.exists(f):
+            _require(filesec.is_private(f, filesec.PRIVATE), f"wallet file {name} must be private to the current user")
+    texts = {}
+    for name in ("sqlnet.ora", "tnsnames.ora"):
+        f = os.path.join(t.tns_admin, name)
+        _require(os.path.isfile(f) and not os.path.islink(f), f"credential.tns_admin has no {name}")
+        _require(filesec.is_private(f, filesec.NOT_WRITABLE), f"{name} must not be writable by other users")
+        _require(os.path.getsize(f) <= MAX_NET_FILE_BYTES, f"{name} is too large")
+        with open(f, encoding="utf-8", errors="replace") as fh:
+            texts[name] = fh.read()
+    m = _SQLNET_WALLET.search(texts["sqlnet.ora"])
+    _require(m is not None, "sqlnet.ora must declare WALLET_LOCATION (METHOD = FILE)")
+    _require(_same_dir(m.group(1).strip('"'), t.wallet_dir), "sqlnet.ora WALLET_LOCATION must be the wallet named in the profile")
+    _require(_SQLNET_OVERRIDE.search(texts["sqlnet.ora"]) is not None, "sqlnet.ora must set SQLNET.WALLET_OVERRIDE = TRUE")
+    alias = re.escape(t.tns_alias)
+    _require(re.search(r'(?im)^\s*' + alias + r'(\.[A-Za-z0-9_.-]+)?\s*=', texts["tnsnames.ora"]) is not None,
+             "credential.tns_alias is not defined in tnsnames.ora")
+
+
 def load_profile(path: str, now: datetime = None) -> LabProfile:
     real = check_private_file(path)
     try:
@@ -226,6 +313,7 @@ def load_profile(path: str, now: datetime = None) -> LabProfile:
     except (OSError, ValueError):
         raise ProfileError("lab profile is not valid JSON")
     prof = LabProfile(doc)
+    check_wallet_setup(prof.target)
     if not prof.target.authorization.is_current(now):
         raise ProfileError("human authorization for the lab target is missing or expired")
     return prof

@@ -1,11 +1,18 @@
 """
 mcp_gateway_lab.credentials — approved secret store lookup.
 
-Only macOS Keychain is implemented: `/usr/bin/security find-generic-password -s <service> -a <account> -w` with a
-FIXED argv (no shell, minimal environment, stdin closed, bounded time). The password:
-  * is fetched at connect time, for one connection, and dropped right after the connect call;
-  * never comes from prompts, Git, environment variables, the profile or a tool argument;
-  * never appears in an error: failures raise CredentialError with fixed text.
+Two providers (CHG-ESTACK-LAB-PORTABLE-001):
+
+  macos_keychain  `/usr/bin/security find-generic-password -s <service> -a <account> -w` with a FIXED argv (no shell,
+                  minimal environment, stdin closed, bounded time). The password is fetched at connect time, for one
+                  connection, dropped right after the connect call, never comes from prompts, Git, environment
+                  variables, the profile or a tool argument, and never appears in an error. python-oracledb THIN mode.
+  oracle_wallet   Oracle Secure External Password Store (SEPS): the e-stack never sees a password at all. It connects
+                  with external authentication to a TNS alias whose credential lives in the Oracle wallet named by the
+                  operator's sqlnet.ora. Works the same on Windows, Linux and macOS. Requires python-oracledb THICK
+                  mode (thin mode cannot use SEPS) — the only case in which thick mode is allowed.
+
+Failures raise CredentialError with fixed text.
 """
 from __future__ import annotations
 
@@ -50,7 +57,24 @@ class MacOSKeychain:
         return secret
 
 
+class OracleWallet:
+    """External authentication through an Oracle wallet: there is no secret to fetch. `get_password` exists only so
+    that a caller which forgets to branch on `external_auth` fails closed instead of connecting without credentials."""
+    provider = "oracle_wallet"
+    external_auth = True
+    thick_mode = True
+
+    def get_password(self, service: str, account: str) -> str:
+        raise CredentialError()
+
+
+MacOSKeychain.external_auth = False
+MacOSKeychain.thick_mode = False
+
+
 def provider_for(name: str, runner=None):
     if name == MacOSKeychain.provider:
         return MacOSKeychain(runner) if runner is not None else MacOSKeychain()
+    if name == OracleWallet.provider:
+        return OracleWallet()
     raise CredentialError()

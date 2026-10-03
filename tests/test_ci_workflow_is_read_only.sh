@@ -40,7 +40,10 @@ grep -qE 'bash tests/run-all\.sh' <<<"$WFB" || fail "tests.yml: no corre tests/r
 grep -qE 'brew install bash' <<<"$WFB" || fail "tests.yml: macOS necesita bash >= 4"
 grep -nE 'brew --prefix\)/bin"?[[:space:]]*>>[[:space:]]*"?\$GITHUB_PATH' <<<"$WFB" \
   && fail "tests.yml: anteponer todo el bin de Homebrew al PATH tapa el python3 de setup-python"
-grep -qE "sys\.version_info\[:2\] == \(3, 13\)" <<<"$WFB" || fail "tests.yml: debe verificar que python3 es el de setup-python (3.13)"
+# CHG-ESTACK-LAB-PORTABLE-001: Python 3.13 and 3.14 on every OS; python3 must be setup-python's for that version
+grep -qE 'python:[[:space:]]*\[[^]]*"3\.13"[^]]*"3\.14"' <<<"$WFB" || fail "tests.yml: la matriz debe incluir Python 3.13 y 3.14"
+grep -qE 'python-version:[[:space:]]*\$\{\{[[:space:]]*matrix\.python[[:space:]]*\}\}' <<<"$WFB" || fail "tests.yml: setup-python debe usar matrix.python"
+grep -qF "sys.version_info[:2] == '\${{ matrix.python }}'" <<<"$WFB" || fail "tests.yml: debe verificar que python3 es el de setup-python (matrix.python)"
 
 [ "$FAIL" -eq 0 ] && echo "[PASS] los workflows de CI son de solo lectura, sintéticos y fijados por SHA en ubuntu/windows/macos"
 exit "$FAIL"
