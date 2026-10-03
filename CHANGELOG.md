@@ -2,36 +2,30 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — `/change security|compatibility|documentation` — CHG-ESTACK-LAB-PORTABLE-001 — recolección real en Windows, Linux y macOS (Oracle Wallet)
+## [0.24.0] — 2026-10-03 — `v0.24.0-portable-performance` — 2 cambios: lote B2 de rendimiento y recolección real en Windows, Linux y macOS
 
-Rama `change/lab-portable` sobre `main` (`46e14fa`, con B2). CI en verde en ubuntu, macOS y Windows con Python 3.13 y 3.14. Validado en real: el lab desde macOS con el llavero, sin cambios, y LAB19S desde Windows con el Wallet (`check` PASS). Pendiente: HUMAN REVIEW. Ver `docs/LAB_PORTABLE.md`.
+El e-stack es **portable de punta a punta**: el adaptador real recolecta evidencia sin intervención del DBA desde Windows, Linux y macOS.
 
-### Added
+- **Oracle Wallet (SEPS) en los tres sistemas:** el e-stack nunca ve la contraseña. El modo Thick queda acotado a ese proveedor, por aprobación del revisor.
+- **Llavero de macOS:** sigue igual, en modo Thin.
+- **Privacidad de archivos:** se verifica con ACL nativas en Windows y con dueño y permisos en POSIX.
+- **Rendimiento sin licencia:** suma 16 collectors sin Diagnostics Pack (esperas, DB time, I/O, memoria, parses, top SQL por `sql_id`, bloqueos, TEMP, paralelo, redo), validados en campo. El catálogo pasa de 39 a 55 collectors.
+- **Prueba real desde Windows:** sobre LAB19S, sin contraseñas en el proceso.
+- **Correcciones del catálogo:** se arreglaron 9 queries, 4 de ellas detectadas en la corrida sobre LAB19S.
 
-- Proveedor de credencial `oracle_wallet` (SEPS): conexión por alias TNS con autenticación externa, sin contraseña en el proceso.
-  - Usa modo Thick **solo** para este proveedor (aprobado por el revisor).
-  - Valida el Wallet privado, que `sqlnet.ora` apunte a ese Wallet con `WALLET_OVERRIDE`, que exista el alias y que la configuración de red no la puedan modificar otros usuarios.
-- `mcp_gateway_lab/filesec.py`: verificación portable de privacidad de archivos (POSIX por dueño y permisos; Windows por dueño y ACL con la API nativa).
-- `tests/test_lab_portable.sh` (P19, 12 casos en los tres sistemas, 15 mutaciones detectadas).
-- CI con Python 3.13 y 3.14 en ubuntu, windows y macos.
+Los 2 cambios fueron aprobados por revisión humana. Regresión local (macOS, bash 5.3): 972/972. CI en verde en ubuntu, macOS y Windows con Python 3.13 y 3.14.
 
-### Changed
+### `/change query|security|documentation` — CHG-ESTACK-COLLECTOR-FACTORY-B2 — lote B2 de rendimiento
 
-- El lanzador del lab ya no rechaza Windows. Las pruebas del lab (P15) corren en los tres sistemas.
-- `human_evidence` verifica que los archivos crudos, tokens y claves queden privados también en Windows; si no, los borra y rechaza la operación.
-- El llavero de macOS sigue igual (Thin).
+Rama `change/collector-factory-b2` sobre `main` (`5c6e2d3`). Integrada a `main` vía PR #30 (merge `46e14fa`). Validado en el lab: los 16 collectors y `Q-ORA-SPFILE-001` quedan `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`, tras tres pasadas que corrigieron duplicados por contenedor (`FILESTAT`, `TOPSQL`) y una vista no registrada (`WAIT-CLASS`). Aprobación humana registrada: `AUTH-COLLECTOR-FACTORY-B2`, revisor `REV-DBAMANAGER`, `2026-10-02T16:57:02Z`, contra el digest `e2811fe8…3ae56a58` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/COLLECTOR_FACTORY_B2.md`.
 
-## [Unreleased] — `/change query|security|documentation` — CHG-ESTACK-COLLECTOR-FACTORY-B2 — lote B2 de rendimiento
-
-Rama `change/collector-factory-b2` sobre `main` (`5c6e2d3`). Validado en el lab: los 16 collectors y `Q-ORA-SPFILE-001` quedan `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Pendiente: CI y HUMAN REVIEW. Ver `docs/COLLECTOR_FACTORY_B2.md`.
-
-### Added
+#### Added
 
 - Lote B2: 16 collectors de rendimiento sin Diagnostics Pack. El catálogo pasa de 39 a 55. Cubren esperas por evento y por clase, DB time, I/O por archivo, library cache, PGA, SGA, shared pool, redo, parses, top SQL por `sql_id`, bloqueos, TEMP, paralelo y log switches en 24 h.
 - Queries nuevas: `Q-PERF-WAIT-SYSTEM-001`, `Q-PERF-WAIT-CLASS-001` y `Q-ORA-REDO-SWITCH-24H-001`.
 - Tipos de campo `oracle_term` (`event`, `namespace`) y `sql_id` (`sql_id`, `waiter_sql_id`), que se pueden conservar sólo en esos campos.
 
-### Fixed
+#### Fixed
 
 - `Q-PERF-HARDPARSE-001` 1.1.0: nunca se resolvía, porque el guard veta la palabra `execute` en `execute count`.
 - `Q-PERF-PARALLEL-001` 1.1.0: referenciaba `SERVER_NAME` y `SQL_ID`, que `V$PX_SESSION` no tiene.
@@ -41,6 +35,25 @@ Rama `change/collector-factory-b2` sobre `main` (`5c6e2d3`). Validado en el lab:
 - `Q-ORA-SPFILE-001` 1.2.0: siempre devuelve el conteo, aunque no haya parámetros modificados.
 - `Q-PERF-DBTIME-CURRENT-001` 1.1.0 (ORA-00937) y `Q-ORA-PROCESSES-SUMMARY-001` 1.0.1 (ORA-00923, faltaba `FROM dual`): detectados en la ejecución sobre LAB19S desde Windows.
 - Saneador: los identificadores Oracle legibles de 20 caracteres o más (por ejemplo, owners) se enmascaran en lugar de descartarse.
+
+### `/change security|compatibility|documentation` — CHG-ESTACK-LAB-PORTABLE-001 — recolección real en Windows, Linux y macOS (Oracle Wallet)
+
+Rama `change/lab-portable` sobre `main` (`46e14fa`, con B2). CI en verde en ubuntu, macOS y Windows con Python 3.13 y 3.14. Integrada a `main` vía PR #31 (merge `8b3ed0a`). Validado en real: el lab desde macOS con el llavero, sin cambios, y LAB19S desde Windows con el Wallet (`check` PASS, `FIELD_VALIDATED_OTHER_CONTEXT`). Aprobación humana registrada: `AUTH-LAB-PORTABLE-001`, revisor `REV-DBAMANAGER`, `2026-10-02T21:47:22Z`, contra el digest `190a4fe2…a97948b0` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/LAB_PORTABLE.md`.
+
+#### Added
+
+- Proveedor de credencial `oracle_wallet` (SEPS): conexión por alias TNS con autenticación externa, sin contraseña en el proceso.
+  - Usa modo Thick **solo** para este proveedor (aprobado por el revisor).
+  - Valida el Wallet privado, que `sqlnet.ora` apunte a ese Wallet con `WALLET_OVERRIDE`, que exista el alias y que la configuración de red no la puedan modificar otros usuarios.
+- `mcp_gateway_lab/filesec.py`: verificación portable de privacidad de archivos (POSIX por dueño y permisos; Windows por dueño y ACL con la API nativa).
+- `tests/test_lab_portable.sh` (P19, 12 casos en los tres sistemas, 15 mutaciones detectadas).
+- CI con Python 3.13 y 3.14 en ubuntu, windows y macos.
+
+#### Changed
+
+- El lanzador del lab ya no rechaza Windows. Las pruebas del lab (P15) corren en los tres sistemas.
+- `human_evidence` verifica que los archivos crudos, tokens y claves queden privados también en Windows; si no, los borra y rechaza la operación.
+- El llavero de macOS sigue igual (Thin).
 
 ## [0.23.0] — 2026-09-30 — `v0.23.0-collector-factory` — 2 cambios: fábrica de collectors (lote B1) y evidencia reportada por humano
 
