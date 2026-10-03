@@ -101,4 +101,4 @@ En los 17, el `query_sha256` observado coincide con el SQL versionado. La valida
 | SECURITY | 15/15 mutaciones detectadas (9 de B1 y 6 nuevas: `oracle_term` o `sql_id` en cualquier campo, cualquiera de los dos sin validar, exención de identificadores para todo o para nada) |
 | REGRESSION | 971/971 en macOS con bash 5.3 (la primera corrida dio 969/971 por una vista no registrada en el diccionario; se reescribió la query y se revalidó en el lab) |
 | LAB | 16/16 en real y `Q-ORA-SPFILE-001` revalidada (dos pasadas; ver arriba); `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM` |
-| HUMAN REVIEW | Pendiente |
+| HUMAN REVIEW | Aprobado: `AUTH-COLLECTOR-FACTORY-B2`, revisor `REV-DBAMANAGER`, `2026-10-02T16:57:02Z`, digest `e2811fe8…3ae56a58`. PROMOTE: PR #30, merge `46e14fa` |
