@@ -76,13 +76,14 @@ FROM  (SELECT e.event_name, e.wait_class,
               ON  s.dbid = e.dbid AND s.snap_id = e.snap_id AND s.instance_number = e.instance_number
        WHERE  s.end_interval_time >= SYSTIMESTAMP - INTERVAL '1' DAY
          AND  e.wait_class <> 'Idle'
+         AND  e.con_dbid = e.dbid
        GROUP  BY e.dbid, e.instance_number, s.startup_time, e.event_name, e.wait_class)
 GROUP  BY event_name, wait_class
 ORDER  BY SUM(waited) DESC
 FETCH  FIRST 20 ROWS ONLY;
 ```
 
-`TOTAL_WAITS` y `TIME_WAITED_MICRO` de `DBA_HIST_SYSTEM_EVENT` son **acumulados** desde el arranque: la espera de la ventana es `MAX - MIN` por instancia y por arranque (`startup_time`), sumada después. Sumar los valores tal cual (como hace `Q-PERF-WAIT-AWR-001`) cuenta varias veces la misma espera.
+`TOTAL_WAITS` y `TIME_WAITED_MICRO` de `DBA_HIST_SYSTEM_EVENT` son **acumulados** desde el arranque: la espera de la ventana es `MAX - MIN` por instancia y por arranque (`startup_time`), sumada después. Sumar los valores tal cual (como hace `Q-PERF-WAIT-AWR-001`) cuenta varias veces la misma espera. V2 (12.1+) filtra `con_dbid = dbid` para no mezclar filas por contenedor en un CDB.
 
 # Notes by version
 

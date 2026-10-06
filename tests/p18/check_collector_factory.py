@@ -395,6 +395,16 @@ def awr_queries_use_deltas_not_cumulative_sums():
     text = open(catalog._find_query_file("Q-PERF-AWR-DBTIME-24H-001"), encoding="utf-8").read()
     sql = "\n".join(catalog.sql_blocks(text)).lower()
     assert "lag(db_time)" in sql and "partition by dbid, instance_number, startup_time" in sql
+    # 12.1+: AWR keeps per-container rows in a CDB; mixing them gave DB CPU > DB time in the lab
+    from mcp_gateway_lab import sqlsource
+    import hashlib
+    for qid, col in (("Q-PERF-AWR-DBTIME-24H-001", "t.con_dbid = t.dbid"), ("Q-PERF-AWR-WAITS-24H-001", "e.con_dbid = e.dbid")):
+        class Q:
+            pass
+        q = Q()
+        b = catalog.sql_blocks(open(catalog._find_query_file(qid), encoding="utf-8").read())
+        q.collector_id, q.kind, q.query_sha256 = qid, "sql_query", hashlib.sha256("\n".join(b).encode()).hexdigest()
+        assert col in sqlsource.resolve(q, "19.0").sql and col not in sqlsource.resolve(q, "11.2").sql, qid
 
 
 if __name__ == "__main__":

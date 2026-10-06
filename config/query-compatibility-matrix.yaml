@@ -147,7 +147,16 @@ queries:
     cost_class: LOW
     validation_status: COMPATIBLE
     license_requirements: none
-  Q-PERF-AWR-DBTIME-24H-001: {file: queries/performance/awr/Q-PERF-AWR-DBTIME-24H-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_HIST_SYS_TIME_MODEL, DBA_HIST_SNAPSHOT], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE, license_requirements: [Diagnostics Pack]}
+  Q-PERF-AWR-DBTIME-24H-001:
+    file: queries/performance/awr/Q-PERF-AWR-DBTIME-24H-001.md
+    variants:
+      - {variant_id: Q-PERF-AWR-DBTIME-24H-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-PERF-AWR-DBTIME-24H-001-V2, label: multitenant_aware, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_HIST_SYS_TIME_MODEL, DBA_HIST_SNAPSHOT]
+    role_scope: PRIMARY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    license_requirements: [Diagnostics Pack]
   Q-PERF-AWR-TOPSQL-24H-001:
     file: queries/performance/awr/Q-PERF-AWR-TOPSQL-24H-001.md
     variants:
