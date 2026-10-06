@@ -2110,6 +2110,251 @@
         "lot": "B2",
         "lab_aliases": {}
       }
+    },
+    {
+      "collector_id": "Q-SEC-ROLE-SYSTEM-PRIVILEGES-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "System privileges granted to every role of the database (role names masked; Oracle-maintained flag)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "role": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "rol"
+        },
+        "oracle_maintained": {
+          "type": "enum",
+          "values": [
+            "N",
+            "Y"
+          ],
+          "policy": "KEEP"
+        },
+        "privilege": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "admin_option": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B3",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-SEC-NESTED-ROLE-GRANTS-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Roles granted to roles across the database (names masked; Oracle-maintained flag)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "role": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "rol"
+        },
+        "oracle_maintained": {
+          "type": "enum",
+          "values": [
+            "N",
+            "Y"
+          ],
+          "policy": "KEEP"
+        },
+        "granted_role": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "rol"
+        },
+        "admin_option": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B3",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-SEC-UNIFIED-AUDIT-TRAIL-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Unified audit summary of the last 7 days by action and return code (counts only)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "action_name": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "return_code": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000,
+          "policy": "KEEP"
+        },
+        "event_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        },
+        "user_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B3",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-SEC-TRADITIONAL-AUDIT-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Traditional session audit summary of the last 7 days by action and return code (counts only)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "action_name": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "return_code": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000,
+          "policy": "KEEP"
+        },
+        "event_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        },
+        "user_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B3",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-SEC-DIRECTORIES-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Directory objects and their grants (names and grantees masked; server paths not exposed)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "directory_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "dir"
+        },
+        "grantee": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "grt"
+        },
+        "privilege": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B3",
+        "lab_aliases": {}
+      }
+    },
+    {
+      "collector_id": "Q-SEC-DEFAULT-ACCOUNTS-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Accounts that still have their default credentials: masked username, account status and Oracle-maintained flag",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "username": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "use"
+        },
+        "account_status": {
+          "type": "enum",
+          "values": [
+            "EXPIRED",
+            "EXPIRED & LOCKED",
+            "EXPIRED & LOCKED(TIMED)",
+            "EXPIRED(GRACE)",
+            "EXPIRED(GRACE) & LOCKED",
+            "EXPIRED(GRACE) & LOCKED(TIMED)",
+            "LOCKED",
+            "LOCKED(TIMED)",
+            "OPEN"
+          ],
+          "policy": "KEEP"
+        },
+        "oracle_maintained": {
+          "type": "enum",
+          "values": [
+            "N",
+            "Y"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B3",
+        "lab_aliases": {}
+      }
     }
   ]
 }

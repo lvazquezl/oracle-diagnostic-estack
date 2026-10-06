@@ -44,7 +44,7 @@ Cualquier falla detiene el arranque con un mensaje fijo, sin rutas ni valores.
 
 ### 1. Usuario de diagnóstico en la base (DBA)
 
-Usa `ESTACK_DIAG` (o `C##ESTACK_DIAG` en un CDB) con `CREATE SESSION` + `SELECT_CATALOG_ROLE`, más `CONTAINER_DATA` si es CDB. Para el assessment de seguridad agrega `GRANT SELECT ON SYS.DBA_USERS_WITH_DEFPWD`. El DDL está en [ORACLE19C_LAB_ADAPTER.md](ORACLE19C_LAB_ADAPTER.md#4-aprovisionamiento-del-usuario-diagnóstico-ejecución-humana-del-dba).
+Usa `ESTACK_DIAG` (o `C##ESTACK_DIAG` en un CDB) con `CREATE SESSION` + `SELECT_CATALOG_ROLE`, más `CONTAINER_DATA` si es CDB. Para el assessment de seguridad agrega `GRANT SELECT ON SYS.DBA_USERS_WITH_DEFPWD` y el rol `AUDIT_VIEWER` (ver [SEC_QUERIES.md](SEC_QUERIES.md#privilegios-de-la-cuenta-de-diagnóstico)). El DDL está en [ORACLE19C_LAB_ADAPTER.md](ORACLE19C_LAB_ADAPTER.md#4-aprovisionamiento-del-usuario-diagnóstico-ejecución-humana-del-dba).
 
 ### 2. Oracle Client y Python
 

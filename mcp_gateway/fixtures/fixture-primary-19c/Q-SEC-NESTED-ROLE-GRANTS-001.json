@@ -1,0 +1,11 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B3)",
+  "rows": [
+    {
+      "role": "SYNTH_APP_ROLE",
+      "oracle_maintained": "N",
+      "granted_role": "SYNTH_READ_ROLE",
+      "admin_option": "NO"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-DATABASE-VAULT-STATUS-001
-version: 1.0.0
+version: 2.0.0
 
 domain: security
 purpose: >
@@ -14,8 +14,8 @@ supported_architectures: [Standalone, RAC]
 container_scope: ANY_CONTAINER
 database_role_scope: ANY
 
-objects_accessed: [V$OPTION, DBA_DV_STATUS]
-privileges_required: [SELECT on V$OPTION, SELECT on DBA_DV_STATUS si está instalado]
+objects_accessed: [V$OPTION, DBA_REGISTRY]
+privileges_required: [SELECT on V$OPTION, SELECT on DBA_REGISTRY]
 
 risk_class: R0
 cost_class: LOW
@@ -38,22 +38,12 @@ status: active
 # Statement / procedure (read-only)
 
 ```sql
-SELECT value
-FROM   v$option
-WHERE  parameter = 'Oracle Database Vault';
+SELECT (SELECT value  FROM v$option    WHERE parameter = 'Oracle Database Vault') AS dv_option,
+       (SELECT status FROM dba_registry WHERE comp_id   = 'DV')                    AS dv_registry_status
+FROM   dual;
 ```
 
-Sólo si el resultado es `TRUE`, `security/database-vault-awareness` intenta opcionalmente:
-
-```sql
-SELECT status
-FROM   dba_dv_status
-WHERE  ROWNUM = 1;
-```
-
-`DBA_DV_STATUS` sólo existe cuando Database Vault está instalado — nunca se consulta sin
-confirmar primero `V$OPTION`. `PARAMETER = 'Oracle Database Vault'` es el string exacto
-verificado (case-sensitive, WebSearch).
+`dv_option` = `TRUE` cuando Database Vault está habilitado; `dv_registry_status` dice si el componente está instalado y en qué estado (`VALID`, `INVALID`…; nulo si no está instalado). Ya no consulta `DBA_DV_STATUS`, que sólo existe con Database Vault instalado y exige roles de DV: la 1.0.0 tenía dos sentencias y no resolvía.
 
 # Notes by version
 
@@ -82,5 +72,7 @@ confirmación explícita del DBA en el Target Profile (`licensing_profile`).
 Ninguna — sólo booleanos/enums de configuración.
 
 # Evolution via `/change query`
+
+CHG-ESTACK-SEC-QUERIES-001 — 2.0.0: una sola sentencia sobre `V$OPTION` y `DBA_REGISTRY`, válida con o sin Database Vault instalado.
 
 N/A.

@@ -1,9 +1,9 @@
 ---
 query_id: Q-SEC-NESTED-ROLE-GRANTS-001
-version: 1.0.0
+version: 2.0.0
 
 domain: security
-purpose: Nested roles (roles otorgados a roles) — evita análisis superficial de sólo grants directos (# 10 del prompt de Fase 8).
+purpose: Nested roles de TODA la base (roles otorgados a roles) — evita análisis superficial de sólo grants directos (# 10 del prompt de Fase 8).
 
 supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
 supported_os: [todas]
@@ -12,8 +12,8 @@ supported_architectures: [Standalone, RAC]
 container_scope: ANY_CONTAINER
 database_role_scope: ANY
 
-objects_accessed: [ROLE_ROLE_PRIVS]
-privileges_required: [SELECT on ROLE_ROLE_PRIVS (o rol activo con visibilidad equivalente)]
+objects_accessed: [DBA_ROLE_PRIVS, DBA_ROLES]
+privileges_required: [SELECT on DBA_ROLE_PRIVS, SELECT on DBA_ROLES]
 
 risk_class: R0
 cost_class: MEDIUM
@@ -29,21 +29,41 @@ license_requirements: none
 
 execution_mode: READ_ONLY
 
+variants:
+  - variant_id: Q-SEC-NESTED-ROLE-GRANTS-001-V1
+    label: legacy_10g_11g
+    oracle_versions: {min: "10.2", max: "11.2"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V1 (legacy_10g_11g)"
+  - variant_id: Q-SEC-NESTED-ROLE-GRANTS-001-V2
+    label: modern_12plus
+    oracle_versions: {min: "12.1", max: "23.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V2 (modern_12plus)"
+
 tests: [tests/test_no_write_operations.sh, tests/test_security_roles.sh]
 status: active
 ---
 
-# Statement / procedure (read-only)
+# Statement / procedure (read-only) — Variant V1 (legacy_10g_11g)
 
 ```sql
-SELECT role, granted_role, admin_option
-FROM   role_role_privs
-ORDER  BY role, granted_role;
+SELECT rp.grantee AS role, rp.granted_role, rp.admin_option
+FROM   dba_role_privs rp
+JOIN   dba_roles r ON r.role = rp.grantee
+ORDER  BY rp.grantee, rp.granted_role;
 ```
 
-`ROLE_ROLE_PRIVS` muestra los roles otorgados a los roles disponibles para la sesión actual —
-usada junto con `Q-SEC-ROLE-GRANTS-001` para construir la cadena de role chain completa
-(`grant_path: VIA_ROLE`) sin asumir sólo grants directos.
+# Statement / procedure (read-only) — Variant V2 (modern_12plus)
+
+```sql
+SELECT rp.grantee AS role, r.oracle_maintained, rp.granted_role, rp.admin_option
+FROM   dba_role_privs rp
+JOIN   dba_roles r ON r.role = rp.grantee
+ORDER  BY rp.grantee, rp.granted_role;
+```
+
+Construye la cadena de roles completa (`grant_path: VIA_ROLE`) para todos los roles de la base. `ROLE_ROLE_PRIVS` (1.0.0) sólo veía los roles habilitados en la sesión (LAB19S: 1 fila con la cuenta de diagnóstico, 29 con una cuenta amplia).
 
 # Notes by version
 
@@ -70,5 +90,7 @@ Ninguna.
 `role`/`granted_role` → KEEP/MASK según convención de nombrado del cliente.
 
 # Evolution via `/change query`
+
+CHG-ESTACK-SEC-QUERIES-001 — 2.0.0: `DBA_ROLE_PRIVS` ⋈ `DBA_ROLES` en lugar de `ROLE_ROLE_PRIVS`. V2 agrega `oracle_maintained` (12.1+).
 
 N/A.

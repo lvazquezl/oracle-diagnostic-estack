@@ -1,9 +1,9 @@
 ---
 query_id: Q-SEC-TRADITIONAL-AUDIT-001
-version: 1.0.0
+version: 2.0.0
 
 domain: security
-purpose: >
+purpose: Resumen de la auditoría tradicional de sesiones de los últimos 7 días por acción y código de retorno (conteos, sin filas crudas).
   Traditional Auditing (AUDIT_TRAIL parameter + evidencia de sesión) — para versiones legacy o
   cuando Unified Auditing no cubre lo requerido (# 28 del prompt de Fase 8).
 
@@ -14,8 +14,8 @@ supported_architectures: [Standalone, RAC]
 container_scope: ANY_CONTAINER
 database_role_scope: ANY
 
-objects_accessed: [V$PARAMETER, DBA_AUDIT_SESSION]
-privileges_required: [SELECT on V$PARAMETER, SELECT on DBA_AUDIT_SESSION]
+objects_accessed: [DBA_AUDIT_SESSION]
+privileges_required: [SELECT on DBA_AUDIT_SESSION]
 
 risk_class: R0
 cost_class: MEDIUM
@@ -47,43 +47,32 @@ tests: [tests/test_no_write_operations.sh, tests/test_audit_query_budget.sh, tes
 status: active
 ---
 
-# Statement / procedure (read-only) — común a ambas variantes
-
-```sql
-SELECT name, value
-FROM   v$parameter
-WHERE  name = 'audit_trail';
-```
-
-Determina si `AUDIT_TRAIL` está en `NONE|OS|DB|DB_EXTENDED|XML|XML_EXTENDED` — parámetro único,
-sin Top-N, sin necesidad de variante por versión.
-
 # Statement / procedure (read-only) — Variant V1 (legacy_10g_11g, 10g-11g)
 
 ```sql
-SELECT username, timestamp, action_name, returncode
-FROM   (SELECT username, timestamp, action_name, returncode
-        FROM   dba_audit_session
-        WHERE  timestamp >= SYSDATE - :time_window_days
-        ORDER  BY timestamp DESC)
-WHERE  ROWNUM <= :max_rows;
+SELECT *
+FROM  (SELECT action_name, returncode AS return_code,
+              COUNT(*) AS event_count, COUNT(DISTINCT username) AS user_count
+       FROM   dba_audit_session
+       WHERE  timestamp >= SYSDATE - 7
+       GROUP  BY action_name, returncode
+       ORDER  BY COUNT(*) DESC)
+WHERE  ROWNUM <= 100;
 ```
 
 # Statement / procedure (read-only) — Variant V2 (modern_12plus, 12.1+)
 
 ```sql
-SELECT username, timestamp, action_name, returncode
+SELECT action_name, returncode AS return_code,
+       COUNT(*) AS event_count, COUNT(DISTINCT username) AS user_count
 FROM   dba_audit_session
-WHERE  timestamp >= SYSDATE - :time_window_days
-ORDER  BY timestamp DESC
-FETCH FIRST :max_rows ROWS ONLY;
+WHERE  timestamp >= SYSDATE - 7
+GROUP  BY action_name, returncode
+ORDER  BY COUNT(*) DESC
+FETCH  FIRST 100 ROWS ONLY;
 ```
 
-`FETCH FIRST` requiere 12.1+ (`compatibility/oracle-sql-syntax/features.yaml`,
-`FETCH_FIRST.min_version: "12.1"`) — Variant V1 usa `ROWNUM` sobre un inline view ya ordenado
-(`ORDER BY` dentro del subquery, antes de aplicar `ROWNUM`, para semántica correcta de Top-N).
-`:time_window_days`/`:max_rows` son binds obligatorios en ambas variantes — nunca se consulta
-sin filtro de tiempo (`# 61` del prompt: "usar filtros").
+Ventana fija de 7 días y agregación en la base (logons y logoffs por código de retorno; `return_code` distinto de 0 = intento fallido, p. ej. 1017). El valor de `AUDIT_TRAIL` ya lo entrega `Q-ORA-PARAMETERS-001` (`value_keyword`). La 1.0.0 dependía de binds (`:time_window_days`, `:max_rows`) y fallaba con SP2-0552 en ejecución humana (LAB19S).
 
 # Notes by version
 
@@ -112,5 +101,7 @@ Ninguna.
 `username` → MASK por defecto salvo cuenta Oracle-maintained conocida.
 
 # Evolution via `/change query`
+
+CHG-ESTACK-SEC-QUERIES-001 — 2.0.0: resumen agregado de 7 días sin binds; se retira el bloque común de `AUDIT_TRAIL` (cubierto por `Q-ORA-PARAMETERS-001`).
 
 N/A.

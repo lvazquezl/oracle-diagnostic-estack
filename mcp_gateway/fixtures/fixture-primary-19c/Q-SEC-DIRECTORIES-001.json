@@ -1,0 +1,10 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B3)",
+  "rows": [
+    {
+      "directory_name": "SYNTH_DIR",
+      "grantee": "SYNTH_USER",
+      "privilege": "CREATE SESSION"
+    }
+  ]
+}

@@ -15,6 +15,7 @@ from mcp_gateway import catalog
 from mcp_gateway.versions import family_of
 from mcp_gateway_lab import filesec, sqlsource
 
+from . import params as qparams
 from .classify import classify_column, is_number, value_is_identifying, value_is_sensitive
 
 ROOT = catalog.REPO_ROOT
@@ -68,7 +69,8 @@ def _write_private(path, text):
 
 # --- request -------------------------------------------------------------------------------------------------
 
-def make_request(query_id: str, target_alias: str, oracle_version: str, scope: str) -> dict:
+def make_request(query_id: str, target_alias: str, oracle_version: str, scope: str, params: dict = None) -> dict:
+    """`params`: typed values for the query's bind variables (config/query-parameters.json), never SQL."""
     if not _ALIAS_RE.match(target_alias or "") or not _SCOPE_RE.match(scope or ""):
         raise HumanEvidenceError("invalid target alias or scope")
     fam = family_of(oracle_version)
@@ -84,20 +86,28 @@ def make_request(query_id: str, target_alias: str, oracle_version: str, scope: s
         cert = sqlsource.resolve(_Q(query_id), _FAMILY_TO_VERSION[fam])      # same guard + variant resolution as the lab
     except sqlsource.SqlSourceError:
         raise HumanEvidenceError("no certified read-only variant for this query and version")
+    try:
+        rendered = qparams.render(cert.sql, params)        # binds → typed literals; guard re-checked
+    except (qparams.ParameterError, RuntimeError) as e:
+        raise HumanEvidenceError(str(e) if isinstance(e, qparams.ParameterError) else "rendered SQL refused by the read-only guard")
     now = _now()
     req_id = f"ER-{now:%Y%m%d-%H%M%S}-{secrets.token_hex(3)}"
     doc = {"schema_version": "1.0.0", "request_id": req_id, "created_at_utc": now.isoformat().replace("+00:00", "Z"),
            "scope": scope, "target_alias": target_alias, "oracle_version": fam, "query_id": query_id,
            "variant_id": cert.variant_id, "sql_sha256": cert.sql_sha256, "max_rows": min(int(cert.max_rows), MAX_ROWS),
-           "csv_file": os.path.join(EVIDENCE, "inbox", req_id + ".csv")}
+           "csv_file": os.path.join(EVIDENCE, "inbox", req_id + ".csv"),
+           "parameters": dict(params or {}),
+           "rendered_sql_sha256": hashlib.sha256(rendered.encode("utf-8")).hexdigest()}
     _write_private(os.path.join(REQUESTS, req_id + ".json"), json.dumps(doc, indent=2) + "\n")
-    _write_private(os.path.join(REQUESTS, req_id + ".sql"), sqlplus_script(doc, cert.sql))
+    _write_private(os.path.join(REQUESTS, req_id + ".sql"), sqlplus_script(doc, rendered))
     return doc
 
 
 def sqlplus_script(doc: dict, sql: str) -> str:
     return (f"-- {doc['request_id']} — {doc['query_id']} ({doc['variant_id']}), sha256 {doc['sql_sha256']}\n"
             f"-- READ-ONLY certified SQL from queries/. Run it as the diagnostic user on target {doc['target_alias']}.\n"
+            + (f"-- parameters (typed, rendered as literals): {json.dumps(doc['parameters'], sort_keys=True)}\n" if doc.get("parameters") else "")
+            +
             "SET MARKUP CSV ON QUOTE ON\nSET FEEDBACK OFF\nSET TERMOUT OFF\nSET PAGESIZE 50000\nSET LINESIZE 32767\n"
             f"SPOOL {doc['csv_file']}\n{sql};\nSPOOL OFF\nSET TERMOUT ON\n")
 
@@ -157,6 +167,12 @@ def ingest(request_id: str, csv_path: str, reporter: str) -> dict:
         raise HumanEvidenceError("the certified query can no longer be resolved")
     if cert.sql_sha256 != req["sql_sha256"]:
         raise HumanEvidenceError("certified SQL changed since the request: issue a new request")
+    try:
+        rendered = qparams.render(cert.sql, req.get("parameters") or {})
+    except (qparams.ParameterError, RuntimeError):
+        raise HumanEvidenceError("the request parameters are no longer valid: issue a new request")
+    if req.get("rendered_sql_sha256") and hashlib.sha256(rendered.encode("utf-8")).hexdigest() != req["rendered_sql_sha256"]:
+        raise HumanEvidenceError("the SQL the DBA ran is not the one this request rendered: issue a new request")
     if not os.path.isfile(csv_path) or os.path.getsize(csv_path) > MAX_FILE_BYTES:
         raise HumanEvidenceError("CSV missing or too large")
     text = open(csv_path, encoding="utf-8", errors="replace").read()
@@ -266,6 +282,8 @@ def main(argv=None):
     r.add_argument("--target", required=True)
     r.add_argument("--version", required=True, help="Oracle family, e.g. 19c")
     r.add_argument("--scope", required=True, help="ANA-*/INC-*/SES-* (masking aliases are stable within a scope)")
+    r.add_argument("--param", action="append", default=[], metavar="NAME=VALUE",
+                   help="typed value for a bind variable of the query (config/query-parameters.json); repeatable")
     g = sub.add_parser("ingest", help="sanitize the DBA's CSV into evidence/sanitized")
     g.add_argument("--request", required=True)
     g.add_argument("--file", required=True)
@@ -273,8 +291,15 @@ def main(argv=None):
     a = ap.parse_args(argv)
     try:
         if a.cmd == "request":
-            doc = make_request(a.query, a.target, a.version, a.scope)
+            params = {}
+            for item in a.param:
+                name, sep, value = item.partition("=")
+                if not sep or not name or name in params:
+                    raise HumanEvidenceError("--param must be NAME=VALUE, once per name")
+                params[name] = value
+            doc = make_request(a.query, a.target, a.version, a.scope, params)
             print(json.dumps({"request_id": doc["request_id"], "query_id": doc["query_id"], "variant_id": doc["variant_id"],
+                              "parameters": doc["parameters"],
                               "sql_script": os.path.join(REQUESTS, doc["request_id"] + ".sql"), "csv_file": doc["csv_file"]}, indent=2))
         else:
             doc = ingest(a.request, a.file, a.reporter)

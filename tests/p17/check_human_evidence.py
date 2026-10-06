@@ -111,7 +111,92 @@ def requests_are_refused_for_unknown_inactive_or_unresolvable_queries_and_bad_id
 @test
 def a_request_never_takes_sql_from_the_caller():
     import inspect
-    assert list(inspect.signature(cli.make_request).parameters) == ["query_id", "target_alias", "oracle_version", "scope"]
+    assert list(inspect.signature(cli.make_request).parameters) == ["query_id", "target_alias", "oracle_version", "scope", "params"]
+    # params are typed values for bind variables, never SQL: see the bind-parameter cases below
+
+
+# --- typed bind parameters (CHG-ESTACK-SEC-QUERIES-001) ------------------------------------------------------
+
+BIND_Q = "Q-ORA-REDO-SWITCH-FREQ-001"          # :window_start / :window_end
+WINDOW = {"window_start": "2026-10-01T00:00:00", "window_end": "2026-10-02T00:00:00"}
+
+
+@test
+def a_query_with_binds_is_refused_without_its_parameters_and_says_which():
+    with tmpdir() as d, _Env(d):
+        msg = _refused(cli.make_request, BIND_Q, "lab-ol8-19c", "19c", "SES-test-001")
+        assert "requires parameters" in msg and "window_start" in msg and "YYYY-MM-DD" in msg, msg
+        assert not os.path.isdir(os.path.join(d, "requests")) or not os.listdir(os.path.join(d, "requests"))
+
+
+@test
+def parameters_are_rendered_as_typed_literals_and_the_rendered_sql_is_recorded():
+    import hashlib
+    with tmpdir() as d, _Env(d):
+        req = cli.make_request(BIND_Q, "lab-ol8-19c", "19c", "SES-test-001", dict(WINDOW))
+        script = open(os.path.join(d, "requests", req["request_id"] + ".sql"), encoding="utf-8").read()
+        assert ":window_start" not in script and "TO_DATE('2026-10-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')" in script, script
+        assert req["parameters"] == WINDOW and len(req["rendered_sql_sha256"]) == 64
+        sql = script[script.index("SELECT"):script.index("SPOOL OFF")].rstrip().rstrip(";")
+        assert hashlib.sha256(sql.encode()).hexdigest() == req["rendered_sql_sha256"]
+
+
+@test
+def parameter_values_cannot_carry_sql():
+    with tmpdir() as d, _Env(d):
+        for bad in ({"window_start": "2026-10-01T00:00:00' OR '1'='1", "window_end": WINDOW["window_end"]},
+                    {"window_start": "2026-10-01T00:00:00", "window_end": "2026-10-02T00:00:00; DROP TABLE x"},
+                    {"window_start": "2026-13-45T99:00:00", "window_end": WINDOW["window_end"]},
+                    {"window_start": "2026-1-1T0:0:0", "window_end": WINDOW["window_end"]},
+                    {"window_start": WINDOW["window_end"], "window_end": WINDOW["window_start"]},
+                    dict(WINDOW, max_rows="10")):
+            msg = _refused(cli.make_request, BIND_Q, "lab-ol8-19c", "19c", "SES-test-001", bad)
+            assert "invalid value" in msg or "before" in msg or "does not take" in msg, (bad, msg)
+        from human_evidence import params as qp
+        for name, value in (("max_rows", "1e9"), ("max_rows", "0"), ("sql_id", "abc' --"), ("function_name", "dbms_x;")):
+            try:
+                qp._literal(name, value, qp._types()[name])
+                raise AssertionError(f"{name}={value} accepted")
+            except qp.ParameterError:
+                pass
+
+
+@test
+def binds_inside_literals_and_comments_are_not_parameters():
+    from human_evidence import params as qp
+    sql = "SELECT TO_CHAR(SYSDATE, 'HH24:MI:SS') AS t, ':not_a_bind' AS s -- :nor_this\nFROM dual WHERE x = :real /* :nope */"
+    assert qp.binds_of(sql) == ["real"], qp.binds_of(sql)
+    out = qp.render(sql.replace(":real", ":max_rows"), {"max_rows": "5"})
+    assert "'HH24:MI:SS'" in out and "':not_a_bind'" in out and "x = 5" in out, out
+
+
+@test
+def ingest_refuses_a_request_whose_rendered_sql_no_longer_matches():
+    with tmpdir() as d, _Env(d):
+        req = cli.make_request(BIND_Q, "lab-ol8-19c", "19c", "SES-test-001", dict(WINDOW))
+        p = os.path.join(d, "f.csv")
+        _csv(p, ["THREAD#", "HOUR_BUCKET", "SWITCH_COUNT"], [["1", "01-OCT-26", "4"]])
+        rp = os.path.join(d, "requests", req["request_id"] + ".json")
+        open(rp, "w", encoding="utf-8").write(json.dumps(dict(req, parameters=dict(WINDOW, window_end="2026-10-03T00:00:00"))))
+        assert "not the one this request rendered" in _refused(cli.ingest, req["request_id"], p, "REV-DBA01")
+        open(rp, "w", encoding="utf-8").write(json.dumps(req))
+        assert cli.ingest(req["request_id"], p, "REV-DBA01")["row_count"] == 1
+
+
+@test
+def the_cli_takes_repeatable_typed_params():
+    with tmpdir() as d, _Env(d):
+        import contextlib, io as _io
+        out = _io.StringIO()
+        with contextlib.redirect_stdout(out):
+            rc = cli.main(["request", "--query", BIND_Q, "--target", "lab-ol8-19c", "--version", "19c", "--scope", "SES-test-001",
+                           "--param", "window_start=2026-10-01T00:00:00", "--param", "window_end=2026-10-02T00:00:00"])
+        assert rc == 0 and json.loads(out.getvalue())["parameters"] == WINDOW
+        err = _io.StringIO()
+        with contextlib.redirect_stderr(err):
+            rc = cli.main(["request", "--query", BIND_Q, "--target", "lab-ol8-19c", "--version", "19c", "--scope", "SES-test-001",
+                           "--param", "window_start"])
+        assert rc == 2 and "NAME=VALUE" in err.getvalue()
 
 
 # --- ingest --------------------------------------------------------------------------------------------------
