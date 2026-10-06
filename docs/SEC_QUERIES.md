@@ -95,4 +95,4 @@ El DBA otorgó `AUDIT_VIEWER` y `SELECT ON DBA_USERS_WITH_DEFPWD`. La identidad 
 | SECURITY | 8/8 mutaciones detectadas: binds sin renderizar, rango entero ignorado, timestamp sin validar, literales no saltados, parámetros faltantes tolerados, SQL renderizado sin verificar en `ingest`, orden de ventana ignorado, `oracle_term` en cualquier campo. Además, la prueba de presupuesto detecta ventanas de más de 31 días, más de 500 filas y texto SQL |
 | REGRESSION | 972/972 en macOS (bash 5.3). La primera corrida dio 968/972: las nuevas variantes 12.1+ usaban `max: latest`, y la política exige validar cada versión futura. Se fijó `23.0`; el SQL validado en el lab no cambió (mismo hash) |
 | LAB | 6/6 en real (arriba) |
-| HUMAN REVIEW | Pendiente |
+| HUMAN REVIEW | Aprobado: `AUTH-SEC-QUERIES-001`, revisor `REV-DBAMANAGER`, `2026-10-06T18:21:20Z`, digest `fdbcd32a…c9966e63`. PROMOTE: PR #33, merge `eec2e38`; CI en verde en los 6 jobs (ubuntu, macOS y Windows con Python 3.13 y 3.14) |

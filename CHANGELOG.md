@@ -2,17 +2,29 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased] — `/change query|security|documentation` — CHG-ESTACK-SEC-QUERIES-001 — consultas de seguridad, parámetros tipados y lote B3
+## [0.25.0] — 2026-10-06 — `v0.25.0-security-assessment` — 1 cambio: assessment de seguridad completo con la cuenta de mínimo privilegio
 
-Rama `change/sec-queries` sobre `main` (`6a9e652`). Validado en el lab: los 6 collectors de seguridad corren en real. Pendiente: CI y HUMAN REVIEW. Ver `docs/SEC_QUERIES.md`.
+El assessment de seguridad funciona con la cuenta de diagnóstico de mínimo privilegio. Se corrigió lo que mostró la corrida sobre LAB19S desde Windows:
+- privilegios y roles de toda la base, no sólo de la sesión;
+- resúmenes de auditoría unificada y tradicional sin filas crudas;
+- Data Redaction, Database Vault y directorios, que antes no resolvían;
+- cuentas con credenciales por defecto.
 
-### Fixed
+Seis de estas queries son collectors (lote B3) y quedan validadas en el lab; el catálogo llega a 61 collectors. En la ruta humana, las queries con binds ya aceptan parámetros tipados: 124 de 132 se pueden pedir en 19c.
+
+Aprobado por revisión humana. Regresión local (macOS, bash 5.3): 972/972. CI en verde en ubuntu, macOS y Windows con Python 3.13 y 3.14.
+
+### `/change query|security|documentation` — CHG-ESTACK-SEC-QUERIES-001 — consultas de seguridad, parámetros tipados y lote B3
+
+Rama `change/sec-queries` sobre `main` (`6a9e652`). Integrada a `main` vía PR #33 (merge `eec2e38`). Validado en el lab: los 6 collectors de seguridad corren en real y quedan `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Aprobación humana registrada: `AUTH-SEC-QUERIES-001`, revisor `REV-DBAMANAGER`, `2026-10-06T18:21:20Z`, contra el digest `fdbcd32a…c9966e63` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/SEC_QUERIES.md`.
+
+#### Fixed
 
 - `Q-SEC-ROLE-SYSTEM-PRIVILEGES-001` y `Q-SEC-NESTED-ROLE-GRANTS-001` 2.0.0: leen todos los roles (`DBA_*`), no sólo los de la sesión.
 - `Q-SEC-UNIFIED-AUDIT-TRAIL-001` y `Q-SEC-TRADITIONAL-AUDIT-001` 2.0.0: resúmenes de 7 días sin binds ni filas crudas. La unificada antes no resolvía.
 - `Q-SEC-DATA-REDACTION-POLICIES-001` 3.0.0, `Q-SEC-DATABASE-VAULT-STATUS-001` 2.0.0 y `Q-SEC-DIRECTORIES-001` 2.0.0: una sola sentencia; antes no resolvían.
 
-### Added
+#### Added
 
 - `human_evidence request --param NOMBRE=VALOR`: parámetros tipados (`config/query-parameters.json`) para queries con binds. Los faltantes se rechazan; el SQL renderizado se verifica en `ingest`. Cobertura en 19c: 124/132.
 - Lote B3: 6 collectors de seguridad (privilegios y roles, auditoría, directorios, cuentas con credenciales por defecto). El catálogo pasa a 61.
