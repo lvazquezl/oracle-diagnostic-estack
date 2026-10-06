@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B4)",
+  "rows": [
+    {
+      "wait_class": "User I/O",
+      "event": "db file sequential read",
+      "sql_id": "7ztv2z24kw0s0",
+      "ash_samples": 120,
+      "session_count": 42
+    }
+  ]
+}

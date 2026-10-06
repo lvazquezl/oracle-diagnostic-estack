@@ -134,8 +134,10 @@ def parameter_names_keep_only_the_oracle_name_shape():
 def every_generated_collector_runs_in_fixture_mode_without_dropped_values():
     c = InProcClient()
     c.initialize()
+    targets = {s["collector_id"]: s["factory"].get("fixture_target", PRIMARY)
+               for s in json.load(open(FACTORY, encoding="utf-8"))["collectors"]}
     for cid in _factory_ids():
-        env, _ = c.call("diagnostics.collect", {"collector_id": cid, "target_alias": PRIMARY})
+        env, _ = c.call("diagnostics.collect", {"collector_id": cid, "target_alias": targets[cid]})
         assert env["status"] == "OK", (cid, env.get("error"), env.get("capability_status"))
         assert not [x for x in env.get("limitations", []) if "DROP" in str(x)], (cid, env["limitations"])
 
@@ -336,6 +338,73 @@ def privilege_and_action_names_are_keepable_only_in_their_fields():
             p = os.path.join(d, "c.json")
             json.dump(spec, open(p, "w", encoding="utf-8"))
             assert "default-deny" in _raises(catalog.load_collectors, p), fields
+
+
+# --- lot B4 (AWR/ASH, CHG-ESTACK-AWR-LICENSED-001) ----------------------------------------------------------
+
+B4 = ("Q-PERF-AWR-DBTIME-24H-001", "Q-PERF-AWR-TOPSQL-24H-001", "Q-PERF-AWR-WAITS-24H-001", "Q-PERF-ASH-1H-001")
+
+
+@test
+def diagnostics_pack_collectors_run_only_where_the_license_is_confirmed():
+    c = InProcClient()
+    c.initialize()
+    for cid in B4:
+        env, _ = c.call("diagnostics.collect", {"collector_id": cid, "target_alias": PRIMARY})
+        assert env["status"] == "ERROR" and env["capability_status"] == "LICENSE_RESTRICTED", (cid, env)
+        env, _ = c.call("diagnostics.collect", {"collector_id": cid, "target_alias": "fixture-licensed-19c"})
+        assert env["status"] == "OK", (cid, env.get("error"))
+
+
+@test
+def license_keys_follow_the_option_and_tuning_implies_diagnostics():
+    from mcp_gateway.catalog import license_keys
+    assert license_keys("[Diagnostics Pack]") == {"diagnostics_pack"}
+    assert license_keys("Oracle Tuning Pack") == {"tuning_pack", "diagnostics_pack"}
+    assert license_keys("Active Data Guard") == {"active_data_guard"}
+    assert license_keys("Advanced Security Option") == {"other_option"}
+
+    class T:
+        oracle_version, container, role, missing_privileges, enabled = "19c", "NON_CDB", "PRIMARY", set(), True
+        allowed_collectors = {"Q-PERF-AWR-WAITS-24H-001"}
+    cols = catalog.load_collectors()
+    col = cols["Q-PERF-AWR-WAITS-24H-001"]
+    assert isinstance(col.license_requirements, (list, str))
+    for status, expected in (({}, "LICENSE_RESTRICTED"), ({"diagnostics_pack": "UNKNOWN"}, "LICENSE_RESTRICTED"),
+                             ({"tuning_pack": "CONFIRMED"}, "LICENSE_RESTRICTED"), ({"diagnostics_pack": "CONFIRMED"}, "SUPPORTED")):
+        t = T()
+        t.license_status = status
+        got = catalog.evaluate_capability(t, col, "VERIFIED_FIXTURE")
+        assert got == expected, (status, got)
+    tuning = copy.copy(col)
+    tuning.license_requirements = ["Tuning Pack"]                 # needs BOTH tuning_pack and diagnostics_pack
+    for status, expected in (({"tuning_pack": "CONFIRMED"}, "LICENSE_RESTRICTED"),
+                             ({"diagnostics_pack": "CONFIRMED"}, "LICENSE_RESTRICTED"),
+                             ({"tuning_pack": "CONFIRMED", "diagnostics_pack": "CONFIRMED"}, "SUPPORTED")):
+        t = T()
+        t.license_status = status
+        got = catalog.evaluate_capability(t, tuning, "VERIFIED_FIXTURE")
+        assert got == expected, (status, got)
+
+
+@test
+def awr_queries_use_deltas_not_cumulative_sums():
+    text = open(catalog._find_query_file("Q-PERF-AWR-WAITS-24H-001"), encoding="utf-8").read()
+    sql = "\n".join(catalog.sql_blocks(text)).lower()
+    assert "max(e.time_waited_micro) - min(e.time_waited_micro)" in sql and "startup_time" in sql
+    text = open(catalog._find_query_file("Q-PERF-AWR-DBTIME-24H-001"), encoding="utf-8").read()
+    sql = "\n".join(catalog.sql_blocks(text)).lower()
+    assert "lag(db_time)" in sql and "partition by dbid, instance_number, startup_time" in sql
+    # 12.1+: AWR keeps per-container rows in a CDB; mixing them gave DB CPU > DB time in the lab
+    from mcp_gateway_lab import sqlsource
+    import hashlib
+    for qid, col in (("Q-PERF-AWR-DBTIME-24H-001", "t.con_dbid = t.dbid"), ("Q-PERF-AWR-WAITS-24H-001", "e.con_dbid = e.dbid")):
+        class Q:
+            pass
+        q = Q()
+        b = catalog.sql_blocks(open(catalog._find_query_file(qid), encoding="utf-8").read())
+        q.collector_id, q.kind, q.query_sha256 = qid, "sql_query", hashlib.sha256("\n".join(b).encode()).hexdigest()
+        assert col in sqlsource.resolve(q, "19.0").sql and col not in sqlsource.resolve(q, "11.2").sql, qid
 
 
 if __name__ == "__main__":

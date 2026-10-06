@@ -704,6 +704,7 @@
    "values": [
     "Administrative",
     "Application",
+    "CPU",
     "Cluster",
     "Commit",
     "Concurrency",
@@ -1320,6 +1321,34 @@
     "OPEN"
    ],
    "example": "EXPIRED & LOCKED"
+  },
+  "snap_hours_ago": {
+   "type": "number",
+   "min": 0,
+   "max": 48,
+   "policy": "KEEP",
+   "example": 1.0
+  },
+  "db_time_sec": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 512.4
+  },
+  "db_cpu_sec": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 301.2
+  },
+  "ash_samples": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 120
   }
  }
 }

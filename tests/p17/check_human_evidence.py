@@ -111,7 +111,8 @@ def requests_are_refused_for_unknown_inactive_or_unresolvable_queries_and_bad_id
 @test
 def a_request_never_takes_sql_from_the_caller():
     import inspect
-    assert list(inspect.signature(cli.make_request).parameters) == ["query_id", "target_alias", "oracle_version", "scope", "params"]
+    assert list(inspect.signature(cli.make_request).parameters) == ["query_id", "target_alias", "oracle_version", "scope", "params",
+                                                                     "license_confirmed", "confirmed_by"]
     # params are typed values for bind variables, never SQL: see the bind-parameter cases below
 
 
@@ -197,6 +198,32 @@ def the_cli_takes_repeatable_typed_params():
             rc = cli.main(["request", "--query", BIND_Q, "--target", "lab-ol8-19c", "--version", "19c", "--scope", "SES-test-001",
                            "--param", "window_start"])
         assert rc == 2 and "NAME=VALUE" in err.getvalue()
+
+
+# --- license gate (CHG-ESTACK-AWR-LICENSED-001) -------------------------------------------------------------
+
+AWR_Q = "Q-PERF-WAIT-AWR-001"
+
+
+@test
+def a_licensed_query_needs_every_license_key_confirmed_by_a_named_reviewer():
+    with tmpdir() as d, _Env(d):
+        for lic, by in (([], None), (["diagnostics_pack"], None), (["tuning_pack"], "REV-DBAMANAGER"), (["diagnostics_pack"], "bad id;")):
+            msg = _refused(cli.make_request, AWR_Q, "lab-ol8-19c", "19c", "SES-test-001", dict(WINDOW), lic, by)
+            assert "requires a confirmed Oracle license (diagnostics_pack)" in msg and "--confirmed-by" in msg, (lic, by, msg)
+        req = cli.make_request(AWR_Q, "lab-ol8-19c", "19c", "SES-test-001", dict(WINDOW), ["diagnostics_pack"], "REV-DBAMANAGER")
+        assert req["license_confirmation"] == {"keys": ["diagnostics_pack"], "confirmed_by": "REV-DBAMANAGER"}
+        p = os.path.join(d, "w.csv")
+        _csv(p, ["INSTANCE_NUMBER", "EVENT_NAME", "WAIT_CLASS", "TOTAL_WAIT_TIME_SEC"], [["1", "log file sync", "Commit", "1.5"]])
+        doc = cli.ingest(req["request_id"], p, "REV-DBA01")
+        assert doc["provenance"]["license_confirmation"]["confirmed_by"] == "REV-DBAMANAGER"
+
+
+@test
+def unlicensed_queries_need_no_confirmation():
+    with tmpdir() as d, _Env(d):
+        req = cli.make_request("Q-ORA-PARAMETERS-001", "lab-ol8-19c", "19c", "SES-test-001")
+        assert req["license_confirmation"] is None
 
 
 # --- ingest --------------------------------------------------------------------------------------------------

@@ -91,7 +91,7 @@ def generate():
             spec = {"collector_id": cid, "kind": "sql_query", "domain": c["domain"], "title": c["title"],
                     "row_limit": int(c["row_limit"]), "params": {}, "output_fields": fields,
                     "adapters": {"fixture": "VERIFIED_FIXTURE", "oracle_sql": "DISABLED"},
-                    "factory": {"lot": lot["lot_id"], "lab_aliases": aliases}}
+                    "factory": {"lot": lot["lot_id"], "lab_aliases": aliases, "fixture_target": lot["fixture_target"]}}
             specs.append(spec)
             fixtures[os.path.join(FIXTURES, lot["fixture_target"], cid + ".json")] = {
                 "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot %s)" % lot["lot_id"],
@@ -121,6 +121,7 @@ def check():
 def write():
     doc, fixtures = generate()
     for path, obj in [(OUT, doc)] + list(fixtures.items()):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w", encoding="utf-8", newline="\n") as fh:
             fh.write(_text(obj))
     return doc, fixtures

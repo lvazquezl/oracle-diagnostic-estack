@@ -1,0 +1,65 @@
+{
+ "_doc": "CHG-ESTACK-AWR-LICENSED-001 \u2014 lot B4: AWR (last 24 h, deltas between snapshots) and ASH (last 60 min) for licensed targets. The queries declare Diagnostics Pack: the gateway only runs them where the target declares license_status.diagnostics_pack = CONFIRMED (human confirmation of the contract).",
+ "lot_id": "B4",
+ "fixture_target": "fixture-licensed-19c",
+ "collectors": [
+  {
+   "collector_id": "Q-PERF-AWR-DBTIME-24H-001",
+   "domain": "performance",
+   "title": "AWR DB time and DB CPU per snapshot interval in the last 24 hours (deltas; Diagnostics Pack)",
+   "row_limit": 100,
+   "fields": [
+    "instance_number",
+    "snap_hours_ago",
+    "elapsed_sec",
+    "db_time_sec",
+    "db_cpu_sec"
+   ]
+  },
+  {
+   "collector_id": "Q-PERF-AWR-TOPSQL-24H-001",
+   "domain": "performance",
+   "title": "AWR top 20 SQL by elapsed time in the last 24 hours: sql_id and metrics, never SQL text (Diagnostics Pack)",
+   "row_limit": 20,
+   "fields": [
+    "con_id",
+    "sql_id",
+    "plan_hash_value",
+    "executions",
+    "elapsed_sec",
+    "cpu_sec",
+    "buffer_gets",
+    "disk_reads",
+    "rows_processed"
+   ]
+  },
+  {
+   "collector_id": "Q-PERF-AWR-WAITS-24H-001",
+   "domain": "performance",
+   "title": "AWR top 20 non-idle wait events in the last 24 hours (deltas; Diagnostics Pack)",
+   "row_limit": 20,
+   "aliases": {
+    "event_name": "event"
+   },
+   "fields": [
+    "event",
+    "wait_class",
+    "total_waits",
+    "time_waited_sec"
+   ]
+  },
+  {
+   "collector_id": "Q-PERF-ASH-1H-001",
+   "domain": "performance",
+   "title": "ASH activity of the last 60 minutes by wait class, event and sql_id (samples; Diagnostics Pack)",
+   "row_limit": 25,
+   "fields": [
+    "wait_class",
+    "event",
+    "sql_id",
+    "ash_samples",
+    "session_count"
+   ]
+  }
+ ]
+}

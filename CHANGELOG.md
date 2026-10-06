@@ -2,6 +2,27 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased]
+
+### `/change query|security|compatibility|documentation` — CHG-ESTACK-AWR-LICENSED-001 — gate de licencias y lote B4 de AWR/ASH
+
+Rama `change/awr-licensed` sobre `main` (`c8df388`). Licencia Diagnostics + Tuning del lab confirmada por el revisor humano (2026-10-06). Validado en el lab: los 4 collectors de AWR/ASH corren en real y quedan `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Ver `docs/AWR_LICENSED.md`.
+
+#### Added
+
+- Gate de licencias: el gateway responde `LICENSE_RESTRICTED` si alguna clave de `license_requirements` no está `CONFIRMED` en el target. Tuning Pack exige también Diagnostics Pack. En la ruta humana, `--license-confirmed` y `--confirmed-by` son obligatorios y quedan en la procedencia.
+- Lote B4: `Q-PERF-AWR-DBTIME-24H-001`, `Q-PERF-AWR-TOPSQL-24H-001`, `Q-PERF-AWR-WAITS-24H-001` y `Q-PERF-ASH-1H-001`, con deltas correctos entre snapshots y por arranque, ventana fija y sin binds. El catálogo pasa a 65 collectors.
+- Fixture `fixture-licensed-19c` y `fixture_target` por lote en la fábrica de collectors.
+
+#### Fixed
+
+- `license_requirements` en forma de lista ya no provoca `E_INTERNAL` en el gateway.
+- `Q-PERF-WAIT-ASH-001` 2.2.0: un comentario con `;` salió del bloque SQL.
+
+#### Notes
+
+- Con carga casi nula, AWR registra deltas de DB CPU mayores que los de DB time. Se verificó contra los valores crudos de `DBA_HIST_SYS_TIME_MODEL`: no es un error de la query, y quedó documentado como regla de interpretación.
+
 ## [0.25.0] — 2026-10-06 — `v0.25.0-security-assessment` — 1 cambio: assessment de seguridad completo con la cuenta de mínimo privilegio
 
 El assessment de seguridad funciona con la cuenta de diagnóstico de mínimo privilegio. Se corrigió lo que mostró la corrida sobre LAB19S desde Windows:

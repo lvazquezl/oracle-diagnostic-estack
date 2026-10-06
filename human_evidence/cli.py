@@ -69,8 +69,12 @@ def _write_private(path, text):
 
 # --- request -------------------------------------------------------------------------------------------------
 
-def make_request(query_id: str, target_alias: str, oracle_version: str, scope: str, params: dict = None) -> dict:
-    """`params`: typed values for the query's bind variables (config/query-parameters.json), never SQL."""
+def make_request(query_id: str, target_alias: str, oracle_version: str, scope: str, params: dict = None,
+                 license_confirmed=None, confirmed_by: str = None) -> dict:
+    """`params`: typed values for the query's bind variables (config/query-parameters.json), never SQL.
+    `license_confirmed` / `confirmed_by` (CHG-ESTACK-AWR-LICENSED-001): a query that needs an Oracle option (Diagnostics,
+    Tuning, Active Data Guard...) is refused unless every required license key is explicitly confirmed by a named
+    reviewer for this target — the same rule the gateway applies with license_status = CONFIRMED."""
     if not _ALIAS_RE.match(target_alias or "") or not _SCOPE_RE.match(scope or ""):
         raise HumanEvidenceError("invalid target alias or scope")
     fam = family_of(oracle_version)
@@ -82,6 +86,15 @@ def make_request(query_id: str, target_alias: str, oracle_version: str, scope: s
     meta = catalog._parse_front_matter(open(path, encoding="utf-8").read())
     if str(meta.get("status", "")).strip() != "active" or str(meta.get("execution_mode", "")).strip() != "READ_ONLY":
         raise HumanEvidenceError("query is not an active READ_ONLY certified query")
+    lic_text = str(meta.get("license_requirements", "none")).strip()
+    license_confirmation = None
+    if lic_text.lower().strip("[]\"' ") not in ("none", "n/a", ""):
+        needed = sorted(catalog.license_keys(lic_text))
+        given = sorted(set(license_confirmed or []))
+        if not set(needed) <= set(given) or not _REPORTER_RE.match(confirmed_by or ""):
+            raise HumanEvidenceError("this query requires a confirmed Oracle license (" + ", ".join(needed) + ") for the target: pass "
+                                     + " ".join("--license-confirmed " + k for k in needed) + " --confirmed-by <reviewer id>")
+        license_confirmation = {"keys": needed, "confirmed_by": confirmed_by}
     try:
         cert = sqlsource.resolve(_Q(query_id), _FAMILY_TO_VERSION[fam])      # same guard + variant resolution as the lab
     except sqlsource.SqlSourceError:
@@ -97,6 +110,7 @@ def make_request(query_id: str, target_alias: str, oracle_version: str, scope: s
            "variant_id": cert.variant_id, "sql_sha256": cert.sql_sha256, "max_rows": min(int(cert.max_rows), MAX_ROWS),
            "csv_file": os.path.join(EVIDENCE, "inbox", req_id + ".csv"),
            "parameters": dict(params or {}),
+           "license_confirmation": license_confirmation,
            "rendered_sql_sha256": hashlib.sha256(rendered.encode("utf-8")).hexdigest()}
     _write_private(os.path.join(REQUESTS, req_id + ".json"), json.dumps(doc, indent=2) + "\n")
     _write_private(os.path.join(REQUESTS, req_id + ".sql"), sqlplus_script(doc, rendered))
@@ -260,7 +274,8 @@ def ingest(request_id: str, csv_path: str, reporter: str) -> dict:
            "provenance": {"kind": "HUMAN_REPORTED", "real_observation": True, "observed_by_estack": False,
                           "reporter_id": reporter, "reported_at_utc": now, "request_id": request_id, "scope": req["scope"],
                           "target_alias": req["target_alias"], "oracle_version": req["oracle_version"],
-                          "query_id": req["query_id"], "variant_id": req["variant_id"], "sql_sha256": req["sql_sha256"]},
+                          "query_id": req["query_id"], "variant_id": req["variant_id"], "sql_sha256": req["sql_sha256"],
+                          "license_confirmation": req.get("license_confirmation")},
            "validation_level": "HUMAN_REPORTED", "confidence_ceiling": "PROBABLE_CAUSE",
            "columns": cols, "rows": out_rows, "row_count": len(out_rows), "limitations": limitations}
     blob = json.dumps(out_rows, ensure_ascii=False, sort_keys=True)   # the values that came from the database
@@ -282,6 +297,9 @@ def main(argv=None):
     r.add_argument("--target", required=True)
     r.add_argument("--version", required=True, help="Oracle family, e.g. 19c")
     r.add_argument("--scope", required=True, help="ANA-*/INC-*/SES-* (masking aliases are stable within a scope)")
+    r.add_argument("--license-confirmed", action="append", default=[], metavar="KEY",
+                   help="Oracle option confirmed as licensed for this target: diagnostics_pack, tuning_pack, active_data_guard...")
+    r.add_argument("--confirmed-by", help="reviewer id of who confirmed the license, e.g. REV-DBAMANAGER")
     r.add_argument("--param", action="append", default=[], metavar="NAME=VALUE",
                    help="typed value for a bind variable of the query (config/query-parameters.json); repeatable")
     g = sub.add_parser("ingest", help="sanitize the DBA's CSV into evidence/sanitized")
@@ -297,7 +315,7 @@ def main(argv=None):
                 if not sep or not name or name in params:
                     raise HumanEvidenceError("--param must be NAME=VALUE, once per name")
                 params[name] = value
-            doc = make_request(a.query, a.target, a.version, a.scope, params)
+            doc = make_request(a.query, a.target, a.version, a.scope, params, a.license_confirmed, a.confirmed_by)
             print(json.dumps({"request_id": doc["request_id"], "query_id": doc["query_id"], "variant_id": doc["variant_id"],
                               "parameters": doc["parameters"],
                               "sql_script": os.path.join(REQUESTS, doc["request_id"] + ".sql"), "csv_file": doc["csv_file"]}, indent=2))
