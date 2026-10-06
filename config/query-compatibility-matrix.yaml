@@ -545,9 +545,27 @@ queries:
     cost_class: LOW
     validation_status: COMPATIBLE
   Q-SEC-ROLE-GRANTS-001: {file: queries/security/Q-SEC-ROLE-GRANTS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_ROLE_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
-  Q-SEC-NESTED-ROLE-GRANTS-001: {file: queries/security/Q-SEC-NESTED-ROLE-GRANTS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [ROLE_ROLE_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-SEC-NESTED-ROLE-GRANTS-001:
+    file: queries/security/Q-SEC-NESTED-ROLE-GRANTS-001.md
+    variants:
+      - {variant_id: Q-SEC-NESTED-ROLE-GRANTS-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-NESTED-ROLE-GRANTS-001-V2, label: modern_12plus, min: "12.1", max: latest, container_scope: ANY_CONTAINER}
+    required_views: [DBA_ROLE_PRIVS, DBA_ROLES]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-SEC-QUERIES-001: ROLE_ROLE_PRIVS sólo veía los roles de la sesión"
   Q-SEC-SYSTEM-PRIVILEGES-001: {file: queries/security/Q-SEC-SYSTEM-PRIVILEGES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_SYS_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
-  Q-SEC-ROLE-SYSTEM-PRIVILEGES-001: {file: queries/security/Q-SEC-ROLE-SYSTEM-PRIVILEGES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [ROLE_SYS_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-SEC-ROLE-SYSTEM-PRIVILEGES-001:
+    file: queries/security/Q-SEC-ROLE-SYSTEM-PRIVILEGES-001.md
+    variants:
+      - {variant_id: Q-SEC-ROLE-SYSTEM-PRIVILEGES-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-ROLE-SYSTEM-PRIVILEGES-001-V2, label: modern_12plus, min: "12.1", max: latest, container_scope: ANY_CONTAINER}
+    required_views: [DBA_SYS_PRIVS, DBA_ROLES]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-SEC-QUERIES-001: ROLE_SYS_PRIVS sólo veía los roles de la sesión"
   Q-SEC-OBJECT-PRIVILEGES-001: {file: queries/security/Q-SEC-OBJECT-PRIVILEGES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_TAB_PRIVS], role_scope: ANY, cost_class: HIGH, validation_status: COMPATIBLE}
   Q-SEC-ROLE-OBJECT-PRIVILEGES-001: {file: queries/security/Q-SEC-ROLE-OBJECT-PRIVILEGES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [ROLE_TAB_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
   Q-SEC-PUBLIC-SYSTEM-GRANTS-001: {file: queries/security/Q-SEC-PUBLIC-SYSTEM-GRANTS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_SYS_PRIVS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
@@ -589,7 +607,7 @@ queries:
     variants:
       - {variant_id: Q-SEC-TRADITIONAL-AUDIT-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
       - {variant_id: Q-SEC-TRADITIONAL-AUDIT-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
-    required_views: [V$PARAMETER, DBA_AUDIT_SESSION]
+    required_views: [DBA_AUDIT_SESSION]
     role_scope: ANY
     cost_class: MEDIUM
     validation_status: COMPATIBLE
@@ -606,7 +624,7 @@ queries:
   Q-SEC-SECURITY-PARAMETERS-001: {file: queries/security/Q-SEC-SECURITY-PARAMETERS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$PARAMETER], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-SEC-DB-LINKS-001: {file: queries/security/Q-SEC-DB-LINKS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_DB_LINKS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-SEC-DIRECTORIES-001: {file: queries/security/Q-SEC-DIRECTORIES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_DIRECTORIES, DBA_TAB_PRIVS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
-  Q-SEC-DATABASE-VAULT-STATUS-001: {file: queries/security/Q-SEC-DATABASE-VAULT-STATUS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$OPTION, DBA_DV_STATUS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, license: SEPARATELY_LICENSED}
+  Q-SEC-DATABASE-VAULT-STATUS-001: {file: queries/security/Q-SEC-DATABASE-VAULT-STATUS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$OPTION, DBA_REGISTRY], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, license: SEPARATELY_LICENSED}
   Q-SEC-OLS-STATUS-001: {file: queries/security/Q-SEC-OLS-STATUS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$OPTION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, license: SEPARATELY_LICENSED}
   Q-SEC-DATA-REDACTION-POLICIES-001: {file: queries/security/Q-SEC-DATA-REDACTION-POLICIES-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [REDACTION_POLICIES, REDACTION_COLUMNS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, license: SEPARATELY_LICENSED}
 

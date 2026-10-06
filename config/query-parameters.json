@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "description": "CHG-ESTACK-SEC-QUERIES-001. Typed bind parameters of certified queries for the human-reported evidence route (python -m human_evidence request --param NAME=VALUE). A value is accepted only if it matches its type and range, and is rendered as a literal of that type (integer, TO_DATE timestamp, quoted sql_id or upper-case Oracle name) after the certified SQL was resolved and hash-verified; the rendered SQL passes the read-only guard again. Adding a parameter is a /change security.",
+  "parameters": {
+    "time_window_hours": {"type": "integer", "min": 1, "max": 720},
+    "time_window_days": {"type": "integer", "min": 1, "max": 90},
+    "max_rows": {"type": "integer", "min": 1, "max": 5000},
+    "window_start": {"type": "timestamp"},
+    "window_end": {"type": "timestamp"},
+    "sql_id": {"type": "sql_id"},
+    "plan_hash_value": {"type": "integer", "min": 0, "max": 4294967295},
+    "session_recid": {"type": "integer", "min": 1, "max": 4294967295},
+    "function_owner": {"type": "oracle_name"},
+    "function_name": {"type": "oracle_name"}
+  }
+}

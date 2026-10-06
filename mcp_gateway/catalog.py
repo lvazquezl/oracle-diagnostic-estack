@@ -40,7 +40,7 @@ FIELD_TYPES = {"identifier", "version_string", "enum", "integer", "integer_or_un
 # not customer data), but only in a field literally named parameter_name — nobody can relabel an owner or host with it.
 PARAMETER_NAME_FIELDS = frozenset({"parameter_name"})
 # CHG-ESTACK-COLLECTOR-FACTORY-B2: Oracle vocabulary (wait events, library cache namespaces) — KEEP only in these fields.
-ORACLE_TERM_FIELDS = frozenset({"event", "namespace"})
+ORACLE_TERM_FIELDS = frozenset({"event", "namespace", "privilege", "action_name"})   # + privilege/action_name: CHG-ESTACK-SEC-QUERIES-001
 # ... and the SQL identifier (13 base-32 chars; identifies a cursor, never carries SQL text) — KEEP only in these fields.
 SQL_ID_FIELDS = frozenset({"sql_id", "waiter_sql_id"})
 POLICIES = {"KEEP", "MASK", "HASH", "TOKENIZE", "DROP", "SIGNATURE"}

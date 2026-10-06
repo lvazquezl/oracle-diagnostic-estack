@@ -290,5 +290,53 @@ def the_b2_query_fixes_are_in_the_certified_sql():
         assert sql("Q-PERF-HARDPARSE-001", v) and sql("Q-PERF-WAIT-SYSTEM-001", v) and sql("Q-PERF-WAIT-CLASS-001", v)
 
 
+# --- lot B3 (security, CHG-ESTACK-SEC-QUERIES-001) ----------------------------------------------------------
+
+@test
+def lot_b3_exposes_the_corrected_security_queries_without_licensed_options():
+    cols = catalog.load_collectors()
+    b3 = [c["collector_id"] for c in json.load(open(FACTORY, encoding="utf-8"))["collectors"] if c["factory"]["lot"] == "B3"]
+    assert set(b3) == {"Q-SEC-ROLE-SYSTEM-PRIVILEGES-001", "Q-SEC-NESTED-ROLE-GRANTS-001", "Q-SEC-UNIFIED-AUDIT-TRAIL-001",
+                       "Q-SEC-TRADITIONAL-AUDIT-001", "Q-SEC-DIRECTORIES-001", "Q-SEC-DEFAULT-ACCOUNTS-001"}, b3
+    for cid in b3:
+        f = cols[cid].output_fields
+        assert all(not (v["type"] == "identifier" and v["policy"] == "KEEP") for v in f.values()), cid
+        assert "directory_path" not in f and "sql_text" not in f and "dbusername" not in f, cid
+
+
+@test
+def role_privilege_queries_read_the_whole_database_not_the_session():
+    from mcp_gateway_lab import sqlsource
+    import hashlib
+
+    def sql(qid, v):
+        class Q:
+            pass
+        q = Q()
+        b = catalog.sql_blocks(open(catalog._find_query_file(qid), encoding="utf-8").read())
+        q.collector_id, q.kind, q.query_sha256 = qid, "sql_query", hashlib.sha256("\n".join(b).encode()).hexdigest()
+        return sqlsource.resolve(q, v).sql.lower()
+    for v in ("11.2", "19.0"):
+        a, b = sql("Q-SEC-ROLE-SYSTEM-PRIVILEGES-001", v), sql("Q-SEC-NESTED-ROLE-GRANTS-001", v)
+        assert "dba_sys_privs" in a and "role_sys_privs" not in a, a
+        assert "dba_role_privs" in b and "role_role_privs" not in b, b
+    for qid in ("Q-SEC-UNIFIED-AUDIT-TRAIL-001", "Q-SEC-TRADITIONAL-AUDIT-001", "Q-SEC-DATA-REDACTION-POLICIES-001",
+                "Q-SEC-DATABASE-VAULT-STATUS-001", "Q-SEC-DIRECTORIES-001"):
+        assert sql(qid, "19.0"), qid                              # every one of them resolves now
+
+
+@test
+def privilege_and_action_names_are_keepable_only_in_their_fields():
+    with tmpdir() as d:
+        for fields in ({"grantee": {"type": "oracle_term", "policy": "KEEP"}},
+                       {"privilege": {"type": "identifier", "policy": "MASK"}},
+                       {"action_name": {"type": "enum", "values": ["LOGON"], "policy": "KEEP"}}):
+            spec = json.load(open(catalog.DEFAULT_COLLECTORS_FILE, encoding="utf-8"))
+            spec["collectors"][0]["output_fields"] = fields
+            p = os.path.join(d, "c.json")
+            json.dump(spec, open(p, "w", encoding="utf-8"))
+            assert "default-deny" in _raises(catalog.load_collectors, p), fields
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

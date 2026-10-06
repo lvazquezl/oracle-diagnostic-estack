@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-DIRECTORIES-001
-version: 1.0.0
+version: 2.0.0
 
 domain: security
 purpose: Directory objects y sus grants — directories, nunca navega filesystem (# 38 del prompt de Fase 8).
@@ -36,21 +36,14 @@ status: active
 # Statement / procedure (read-only)
 
 ```sql
-SELECT owner, directory_name, directory_path
-FROM   dba_directories
-ORDER  BY directory_name;
+SELECT d.directory_name, d.directory_path, p.grantee, p.privilege
+FROM   dba_directories d
+LEFT   JOIN dba_tab_privs p
+       ON  p.owner = d.owner AND p.table_name = d.directory_name
+ORDER  BY d.directory_name, p.grantee, p.privilege;
 ```
 
-```sql
-SELECT grantee, table_name AS directory_name, privilege
-FROM   dba_tab_privs
-WHERE  table_name IN (SELECT directory_name FROM dba_directories)
-ORDER  BY table_name, grantee;
-```
-
-Dos statements — el primero inventaría los objetos `DIRECTORY`, el segundo sus grants (`DBA_
-TAB_PRIVS` también cubre privilegios sobre objetos `DIRECTORY`, no sólo tablas — mismo mecanismo
-que `Q-SEC-OBJECT-PRIVILEGES-001`). Nunca se navega el filesystem detrás del path.
+Una fila por grant de cada directorio (o una por directorio sin grants). La 1.0.0 tenía dos sentencias y no resolvía. `directory_path` es una ruta del servidor: el collector del gateway no la expone; en ejecución humana se enmascara.
 
 # Notes by version
 
@@ -79,5 +72,7 @@ Ninguna.
 defecto.
 
 # Evolution via `/change query`
+
+CHG-ESTACK-SEC-QUERIES-001 — 2.0.0: directorios y grants en una sola sentencia (`LEFT JOIN`).
 
 N/A.

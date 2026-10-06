@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-DATA-REDACTION-POLICIES-001
-version: 2.0.0
+version: 3.0.0
 
 domain: security
 purpose: >
@@ -39,21 +39,14 @@ status: active
 # Statement / procedure (read-only)
 
 ```sql
-SELECT object_owner, object_name, policy_name, enable
-FROM   redaction_policies
-ORDER  BY object_owner, object_name;
+SELECT p.object_owner, p.object_name, p.policy_name, p.enable, c.column_name, c.function_type
+FROM   redaction_policies p
+LEFT   JOIN redaction_columns c
+       ON  c.object_owner = p.object_owner AND c.object_name = p.object_name
+ORDER  BY p.object_owner, p.object_name, c.column_name;
 ```
 
-```sql
-SELECT object_owner, object_name, column_name, function_type
-FROM   redaction_columns
-ORDER  BY object_owner, object_name, column_name;
-```
-
-Requiere `SELECT_CATALOG_ROLE` (verificado WebSearch). Nunca ejecuta `DBMS_REDACT.ADD_POLICY/
-ALTER_POLICY/DROP_POLICY` — sólo lectura de metadata ya configurada.
-
-**2.0.0 (`CHG-ESTACK-ORA19C-LAB-007`, breaking):** el segundo bloque ya no selecciona `policy_name`, que no existe en `REDACTION_COLUMNS` (Reference 19c; confirmado en Oracle real por `Q-DICT-VERIFY`). El nombre de la política sale del primer bloque (`REDACTION_POLICIES`, una política por objeto) uniendo por `object_owner`/`object_name`.
+Una fila por columna redactada de cada política (o una fila por política sin columnas). Requiere `SELECT_CATALOG_ROLE`. Nunca ejecuta `DBMS_REDACT` — sólo lectura de metadata ya configurada. La 2.0.0 tenía dos sentencias en el mismo archivo y por eso nunca se podía resolver una variante única.
 
 # Notes by version
 
@@ -85,5 +78,7 @@ licenciamiento, `# 42` del prompt).
 esquema de aplicación).
 
 # Evolution via `/change query`
+
+CHG-ESTACK-SEC-QUERIES-001 — 3.0.0: políticas y columnas en una sola sentencia (`LEFT JOIN`); antes eran dos sentencias y la query no resolvía.
 
 N/A.

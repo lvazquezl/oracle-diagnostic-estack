@@ -1,9 +1,9 @@
 ---
 query_id: Q-SEC-UNIFIED-AUDIT-TRAIL-001
-version: 1.0.0
+version: 2.0.0
 
 domain: security
-purpose: >
+purpose: Resumen de la auditoría unificada de los últimos 7 días por acción y resultado (conteos, sin filas crudas ni texto SQL).
   Evidencia reciente de actividad privilegiada desde Unified Audit Trail — privileged-audit (#
   29 del prompt de Fase 8). Query filtrada — nunca todo UNIFIED_AUDIT_TRAIL (# 61 del prompt).
 
@@ -15,7 +15,7 @@ container_scope: ANY_CONTAINER
 database_role_scope: ANY
 
 objects_accessed: [UNIFIED_AUDIT_TRAIL]
-privileges_required: [SELECT on UNIFIED_AUDIT_TRAIL]
+privileges_required: [AUDIT_VIEWER (o SELECT on UNIFIED_AUDIT_TRAIL)]
 
 risk_class: R0
 cost_class: HIGH
@@ -38,21 +38,17 @@ status: active
 # Statement / procedure (read-only)
 
 ```sql
-SELECT event_timestamp, dbusername, action_name, object_schema, object_name, return_code
+SELECT action_name, return_code,
+       COUNT(*)                   AS event_count,
+       COUNT(DISTINCT dbusername) AS user_count
 FROM   unified_audit_trail
-WHERE  event_timestamp >= SYSTIMESTAMP - :time_window_days
-AND    (dbusername = 'SYS'
-        OR action_name IN ('GRANT', 'REVOKE', 'CREATE USER', 'ALTER USER', 'DROP USER',
-                            'CREATE ROLE', 'ALTER ROLE', 'DROP ROLE', 'AUDIT', 'NOAUDIT'))
-ORDER  BY event_timestamp DESC
-FETCH FIRST :max_rows ROWS ONLY;
+WHERE  event_timestamp >= SYSTIMESTAMP - INTERVAL '7' DAY
+GROUP  BY action_name, return_code
+ORDER  BY COUNT(*) DESC
+FETCH  FIRST 100 ROWS ONLY;
 ```
 
-`FETCH FIRST` requiere 12.1+ (`compatibility/oracle-sql-syntax/features.yaml`, `FETCH_FIRST`,
-`min_version: "12.1"`) — coincide exactamente con `min_version` de `UNIFIED_AUDIT_TRAIL` misma
-(12.1), no requiere variante legacy porque esta query nunca se certifica para versión anterior a
-12.1. `:time_window_days`/`:max_rows` son binds obligatorios — nunca se consulta sin filtro de
-tiempo (`# 61` del prompt: "usar filtros").
+Ventana fija de 7 días y agregación en la base: cuántos eventos de cada acción (logon, DDL, grants, etc.) y con qué código de retorno, y cuántos usuarios distintos los generaron. La 1.0.0 nunca podía resolverse: listaba las acciones como literales (`'GRANT'`, `'AUDIT'`…), que el guard de sólo lectura veta en cualquier parte del SQL, y además dependía de binds. Sin filas crudas, sin usuarios ni objetos, sin texto SQL. Requiere el rol `AUDIT_VIEWER` (no incluido en `SELECT_CATALOG_ROLE`).
 
 # Notes by version
 
@@ -82,5 +78,7 @@ Ninguna.
 metadata (`action_name`, no `sql_text`).
 
 # Evolution via `/change query`
+
+CHG-ESTACK-SEC-QUERIES-001 — 2.0.0: resumen agregado de 7 días sin literales vetados ni binds (antes no resolvía nunca).
 
 N/A.
