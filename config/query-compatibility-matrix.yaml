@@ -549,7 +549,7 @@ queries:
     file: queries/security/Q-SEC-NESTED-ROLE-GRANTS-001.md
     variants:
       - {variant_id: Q-SEC-NESTED-ROLE-GRANTS-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
-      - {variant_id: Q-SEC-NESTED-ROLE-GRANTS-001-V2, label: modern_12plus, min: "12.1", max: latest, container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-NESTED-ROLE-GRANTS-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
     required_views: [DBA_ROLE_PRIVS, DBA_ROLES]
     role_scope: ANY
     cost_class: MEDIUM
@@ -560,7 +560,7 @@ queries:
     file: queries/security/Q-SEC-ROLE-SYSTEM-PRIVILEGES-001.md
     variants:
       - {variant_id: Q-SEC-ROLE-SYSTEM-PRIVILEGES-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
-      - {variant_id: Q-SEC-ROLE-SYSTEM-PRIVILEGES-001-V2, label: modern_12plus, min: "12.1", max: latest, container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-ROLE-SYSTEM-PRIVILEGES-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
     required_views: [DBA_SYS_PRIVS, DBA_ROLES]
     role_scope: ANY
     cost_class: MEDIUM

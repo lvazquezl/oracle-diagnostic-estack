@@ -22,6 +22,8 @@ Se mantienen las reglas del stack:
    python -m human_evidence request --query Q-ORA-PARAMETERS-001 --target <alias> --version 19c --scope ANA-20260930-001
    ```
 
+   Si la query tiene variables bind, se pasan como `--param NOMBRE=VALOR`, validadas por tipo (ver [SEC_QUERIES.md](SEC_QUERIES.md#parámetros-tipados-en-la-ruta-humana)); sin ellas la solicitud se rechaza y dice cuáles faltan.
+
    Crea `evidence/requests/ER-*.json` y `ER-*.sql`. El `.sql` contiene:
    - el SELECT certificado exacto, con su `sha256` en el encabezado;
    - `SET MARKUP CSV ON QUOTE ON`;

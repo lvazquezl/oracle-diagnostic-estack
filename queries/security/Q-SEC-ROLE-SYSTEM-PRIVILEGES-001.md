@@ -37,7 +37,7 @@ variants:
     sql_block: "Variant V1 (legacy_10g_11g)"
   - variant_id: Q-SEC-ROLE-SYSTEM-PRIVILEGES-001-V2
     label: modern_12plus
-    oracle_versions: {min: "12.1", max: latest}
+    oracle_versions: {min: "12.1", max: "23.0"}
     container_scope: ANY_CONTAINER
     sql_block: "Variant V2 (modern_12plus)"
 

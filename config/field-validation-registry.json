@@ -721,6 +721,90 @@
       ],
       "record": "docs/COLLECTOR_FACTORY_B2.md",
       "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
+    },
+    {
+      "query_id": "Q-SEC-ROLE-SYSTEM-PRIVILEGES-001",
+      "query_sha256": "084cda2ad5a1d0a4be110eaa77dc2afdb4f0e594d9debdfb38b036b07b2faff7",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-06T16:54:59Z",
+      "evidence_refs": [
+        "EVR-fa2ff3b92d7190618bc162dd"
+      ],
+      "request_refs": [
+        "REQ-90963aad46d6"
+      ],
+      "record": "docs/SEC_QUERIES.md",
+      "change_id": "CHG-ESTACK-SEC-QUERIES-001"
+    },
+    {
+      "query_id": "Q-SEC-NESTED-ROLE-GRANTS-001",
+      "query_sha256": "4880b5bd1d3633e16d8d2df846849b8a82cb7a9efbe178de51ee13e7be59866f",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-06T16:55:00Z",
+      "evidence_refs": [
+        "EVR-43d1811cba6651c1bd4c7af9"
+      ],
+      "request_refs": [
+        "REQ-4ac24577d4ee"
+      ],
+      "record": "docs/SEC_QUERIES.md",
+      "change_id": "CHG-ESTACK-SEC-QUERIES-001"
+    },
+    {
+      "query_id": "Q-SEC-UNIFIED-AUDIT-TRAIL-001",
+      "query_sha256": "1b2c3efb82e90f23d148e57583433b4f1555a242f4c2259020478f41ad9a5714",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-06T16:55:01Z",
+      "evidence_refs": [
+        "EVR-3394c70a80ecd0de05ebbc76"
+      ],
+      "request_refs": [
+        "REQ-2898520a8c44"
+      ],
+      "record": "docs/SEC_QUERIES.md",
+      "change_id": "CHG-ESTACK-SEC-QUERIES-001"
+    },
+    {
+      "query_id": "Q-SEC-TRADITIONAL-AUDIT-001",
+      "query_sha256": "3b28d2a9964b09e251829eb077022849682872c49096fdc9f7e854cf2f0f7bcd",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-06T16:55:02Z",
+      "evidence_refs": [
+        "EVR-bc2b49f5615418c9d42f6f8c"
+      ],
+      "request_refs": [
+        "REQ-0861a7337409"
+      ],
+      "record": "docs/SEC_QUERIES.md",
+      "change_id": "CHG-ESTACK-SEC-QUERIES-001"
+    },
+    {
+      "query_id": "Q-SEC-DIRECTORIES-001",
+      "query_sha256": "f84652b03f91783a7885283e62a5ba6666b827f5a08a0d40515c19972cf8ed92",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-06T16:55:03Z",
+      "evidence_refs": [
+        "EVR-b07db39c1e40f094ac049aa2"
+      ],
+      "request_refs": [
+        "REQ-843adfa76d49"
+      ],
+      "record": "docs/SEC_QUERIES.md",
+      "change_id": "CHG-ESTACK-SEC-QUERIES-001"
+    },
+    {
+      "query_id": "Q-SEC-DEFAULT-ACCOUNTS-001",
+      "query_sha256": "f40fce7b860bc8e551e8b68d91202f3abba375d265b596847233e2efc789b6ba",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-06T16:55:03Z",
+      "evidence_refs": [
+        "EVR-26dd570023a91e84c0b39cd4"
+      ],
+      "request_refs": [
+        "REQ-12ea943f6511"
+      ],
+      "record": "docs/SEC_QUERIES.md",
+      "change_id": "CHG-ESTACK-SEC-QUERIES-001"
     }
   ]
 }

@@ -2,6 +2,23 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased] — `/change query|security|documentation` — CHG-ESTACK-SEC-QUERIES-001 — consultas de seguridad, parámetros tipados y lote B3
+
+Rama `change/sec-queries` sobre `main` (`6a9e652`). Validado en el lab: los 6 collectors de seguridad corren en real. Pendiente: CI y HUMAN REVIEW. Ver `docs/SEC_QUERIES.md`.
+
+### Fixed
+
+- `Q-SEC-ROLE-SYSTEM-PRIVILEGES-001` y `Q-SEC-NESTED-ROLE-GRANTS-001` 2.0.0: leen todos los roles (`DBA_*`), no sólo los de la sesión.
+- `Q-SEC-UNIFIED-AUDIT-TRAIL-001` y `Q-SEC-TRADITIONAL-AUDIT-001` 2.0.0: resúmenes de 7 días sin binds ni filas crudas. La unificada antes no resolvía.
+- `Q-SEC-DATA-REDACTION-POLICIES-001` 3.0.0, `Q-SEC-DATABASE-VAULT-STATUS-001` 2.0.0 y `Q-SEC-DIRECTORIES-001` 2.0.0: una sola sentencia; antes no resolvían.
+
+### Added
+
+- `human_evidence request --param NOMBRE=VALOR`: parámetros tipados (`config/query-parameters.json`) para queries con binds. Los faltantes se rechazan; el SQL renderizado se verifica en `ingest`. Cobertura en 19c: 124/132.
+- Lote B3: 6 collectors de seguridad (privilegios y roles, auditoría, directorios, cuentas con credenciales por defecto). El catálogo pasa a 61.
+- `oracle_term` también en los campos `privilege` y `action_name`.
+- Privilegios documentados: `AUDIT_VIEWER` y `SELECT ON DBA_USERS_WITH_DEFPWD`.
+
 ## [0.24.0] — 2026-10-03 — `v0.24.0-portable-performance` — 2 cambios: lote B2 de rendimiento y recolección real en Windows, Linux y macOS
 
 El e-stack es **portable de punta a punta**: el adaptador real recolecta evidencia sin intervención del DBA desde Windows, Linux y macOS.
