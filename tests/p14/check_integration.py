@@ -98,6 +98,10 @@ def the_whole_chain_is_read_only_for_the_repository():
 
 
 CDB_ROOT_COLLECTORS = ("Q-CDB-TABLESPACES-001", "Q-CDB-TEMP-001", "Q-RMAN-FRA-USAGE-001")   # CHG-ESTACK-ORA19C-LAB-003: fixture-cdb-root-19c
+# CHG-ESTACK-AWR-LICENSED-001: Diagnostics Pack collectors run only where the license is CONFIRMED (fixture-licensed-19c)
+LICENSED_COLLECTORS = tuple(c["collector_id"] for c in json.load(open(os.path.join(ROOT, "mcp_gateway", "catalog", "collectors.factory.json"),
+                                                                       encoding="utf-8"))["collectors"]
+                            if c["factory"].get("fixture_target") == "fixture-licensed-19c")
 
 
 @test
@@ -110,7 +114,8 @@ def runtime_provenance_and_the_registry_maturity_tell_the_same_story():
         for cid, comp in by_collector.items():
             if cid == "Q-DG-STATS-001":
                 continue                                             # standby-only: not applicable to the primary fixture target
-            env = c.collect(cid, "fixture-cdb-root-19c") if cid in CDB_ROOT_COLLECTORS else c.collect(cid)
+            env = (c.collect(cid, "fixture-cdb-root-19c") if cid in CDB_ROOT_COLLECTORS
+                   else c.collect(cid, "fixture-licensed-19c") if cid in LICENSED_COLLECTORS else c.collect(cid))
             assert "error" not in env, (cid, env.get("error"))
             assert env["provenance"] == {"kind": "FIXTURE", "real_observation": False} and env["collected_at_utc"] is None, cid
             assert comp["maturity"] == "TESTED_WITH_SYNTHETIC_FIXTURES", "a collector whose evidence is fixture data must not be registered above that"

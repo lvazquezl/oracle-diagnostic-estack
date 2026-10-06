@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B4)",
+  "rows": [
+    {
+      "instance_number": 1,
+      "snap_hours_ago": 1.0,
+      "elapsed_sec": 12.5,
+      "db_time_sec": 512.4,
+      "db_cpu_sec": 301.2
+    }
+  ]
+}

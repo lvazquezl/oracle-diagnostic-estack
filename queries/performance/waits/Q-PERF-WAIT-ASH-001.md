@@ -1,6 +1,6 @@
 ---
 query_id: Q-PERF-WAIT-ASH-001
-version: 2.1.0
+version: 2.2.0
 
 domain: performance
 purpose: Wait events granulares (por sesión activa) sobre una ventana ASH para diagnóstico de contención puntual
@@ -46,10 +46,9 @@ FROM   v$active_session_history h        -- ventana reciente en memoria (última
 WHERE  h.sample_time BETWEEN :window_start AND :window_end
   AND  h.wait_class IS NOT NULL
 ORDER  BY h.sample_time;
-
--- Para ventanas fuera de V$ACTIVE_SESSION_HISTORY (retención en memoria limitada),
--- usar DBA_HIST_ACTIVE_SESS_HISTORY (requiere snapshot AWR en la ventana) con la misma forma.
 ```
+
+Para ventanas fuera de `V$ACTIVE_SESSION_HISTORY` (retención en memoria limitada), usar `DBA_HIST_ACTIVE_SESS_HISTORY` (requiere snapshot AWR en la ventana) con la misma forma.
 
 **cost_class: HIGH** — ver `policies/query-cost-policy.md#ejemplos-conceptuales` ("ASH sobre ventana amplia → HIGH"). Requiere `constraints.time_window` explícito y acotado en el Task Package (nunca "todo lo disponible"); `max_rows`/`timeout_seconds` son más estrictos que el default genérico. Requiere Diagnostics Pack licenciado (`license_requirements: [Diagnostics Pack]`) — marcar `LICENSE_CHECK_REQUIRED` en el finding que consuma esta evidencia.
 
@@ -76,6 +75,8 @@ Diagnostics Pack. Sin confirmación de licencia, el hallazgo que consuma esta ev
 # Sanitization notes
 
 `sql_id` → KEEP (no es SQL text); `session_id`/`session_serial#` → KEEP (no identifican usuario final); ningún dato de aplicación ni bind value se lee en esta query.
+
+CHG-ESTACK-AWR-LICENSED-001 — 2.2.0: el comentario con `;` salía dentro del bloque SQL y la query nunca resolvía; ahora está fuera del bloque.
 
 # Evolution via `/change query`
 

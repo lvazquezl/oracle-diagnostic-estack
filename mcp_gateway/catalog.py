@@ -171,6 +171,21 @@ class Collector:
         }
 
 
+def license_keys(lic: str) -> frozenset:
+    """license_requirements text -> the license_status keys a human must set to CONFIRMED for the target.
+    CHG-ESTACK-AWR-LICENSED-001: Tuning Pack has its own key and always implies Diagnostics Pack (Oracle licenses
+    Tuning on top of Diagnostics), so a Tuning query needs both confirmed."""
+    lic = (lic or "").lower()
+    keys = set()
+    if "tuning" in lic:
+        keys |= {"tuning_pack", "diagnostics_pack"}
+    if "diagnostic" in lic or "awr" in lic or "ash" in lic:
+        keys.add("diagnostics_pack")
+    if "active data guard" in lic:
+        keys.add("active_data_guard")
+    return frozenset(keys or {"other_option"})
+
+
 def load_collectors(path: str = DEFAULT_COLLECTORS_FILE, factory_path: str = None) -> dict:
     """The hand-written catalog plus, for the default catalog, the factory-generated one. A collector id present in
     both is refused (fail closed); every generated spec passes exactly the same checks as a hand-written one."""
@@ -296,10 +311,11 @@ def evaluate_capability(target: Target, col: Collector, adapter_status: str) -> 
             return CapabilityStatus.NOT_APPLICABLE
     if col.collector_id in target.missing_privileges:
         return CapabilityStatus.INSUFFICIENT_PRIVILEGES
-    lic = (col.license_requirements or "none").lower()
+    lic = col.license_requirements or "none"
+    if isinstance(lic, (list, tuple)):                       # front matter `[Diagnostics Pack]` arrives as a list
+        lic = " ".join(str(x) for x in lic) or "none"
+    lic = str(lic).lower()
     if lic not in ("none", "n/a", ""):
-        key = ("diagnostics_pack" if "diagnostic" in lic or "awr" in lic or "ash" in lic
-               else "active_data_guard" if "active data guard" in lic else "other_option")
-        if target.license_status.get(key) != "CONFIRMED":
+        if any(target.license_status.get(k) != "CONFIRMED" for k in license_keys(lic)):
             return CapabilityStatus.LICENSE_RESTRICTED
     return CapabilityStatus.SUPPORTED

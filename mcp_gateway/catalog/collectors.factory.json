@@ -81,7 +81,8 @@
       },
       "factory": {
         "lot": "B1",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -156,7 +157,8 @@
       },
       "factory": {
         "lot": "B1",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -242,7 +244,8 @@
       },
       "factory": {
         "lot": "B1",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -311,7 +314,8 @@
       },
       "factory": {
         "lot": "B1",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -397,7 +401,8 @@
         "lot": "B1",
         "lab_aliases": {
           "type": "record_type"
-        }
+        },
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -455,7 +460,8 @@
         "lab_aliases": {
           "thread#": "thread_no",
           "group#": "group_no"
-        }
+        },
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -513,7 +519,8 @@
         "lot": "B1",
         "lab_aliases": {
           "type": "session_type"
-        }
+        },
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -548,7 +555,8 @@
       },
       "factory": {
         "lot": "B1",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -589,7 +597,8 @@
       },
       "factory": {
         "lot": "B1",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -638,7 +647,8 @@
       },
       "factory": {
         "lot": "B1",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -693,7 +703,8 @@
       },
       "factory": {
         "lot": "B1",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -793,7 +804,8 @@
       },
       "factory": {
         "lot": "B1",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -895,7 +907,8 @@
       },
       "factory": {
         "lot": "B1",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -953,7 +966,8 @@
       },
       "factory": {
         "lot": "B1",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -991,7 +1005,8 @@
       },
       "factory": {
         "lot": "B1",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1053,7 +1068,8 @@
       },
       "factory": {
         "lot": "B1",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1164,7 +1180,8 @@
         "lot": "B1",
         "lab_aliases": {
           "name": "parameter_name"
-        }
+        },
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1273,7 +1290,8 @@
         "lot": "B1",
         "lab_aliases": {
           "name": "parameter_name"
-        }
+        },
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1293,6 +1311,7 @@
           "values": [
             "Administrative",
             "Application",
+            "CPU",
             "Cluster",
             "Commit",
             "Concurrency",
@@ -1338,7 +1357,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1354,6 +1374,7 @@
           "values": [
             "Administrative",
             "Application",
+            "CPU",
             "Cluster",
             "Commit",
             "Concurrency",
@@ -1387,7 +1408,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1423,7 +1445,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1457,7 +1480,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1510,7 +1534,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1580,7 +1605,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1628,7 +1654,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1688,7 +1715,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1736,7 +1764,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1778,7 +1807,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1814,7 +1844,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1884,7 +1915,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -1928,6 +1960,7 @@
           "values": [
             "Administrative",
             "Application",
+            "CPU",
             "Cluster",
             "Commit",
             "Concurrency",
@@ -1959,7 +1992,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -2012,7 +2046,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -2072,7 +2107,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -2108,7 +2144,8 @@
       },
       "factory": {
         "lot": "B2",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -2151,7 +2188,8 @@
       },
       "factory": {
         "lot": "B3",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -2195,7 +2233,8 @@
       },
       "factory": {
         "lot": "B3",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -2235,7 +2274,8 @@
       },
       "factory": {
         "lot": "B3",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -2275,7 +2315,8 @@
       },
       "factory": {
         "lot": "B3",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -2307,7 +2348,8 @@
       },
       "factory": {
         "lot": "B3",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
       }
     },
     {
@@ -2353,7 +2395,244 @@
       },
       "factory": {
         "lot": "B3",
-        "lab_aliases": {}
+        "lab_aliases": {},
+        "fixture_target": "fixture-primary-19c"
+      }
+    },
+    {
+      "collector_id": "Q-PERF-AWR-DBTIME-24H-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "AWR DB time and DB CPU per snapshot interval in the last 24 hours (deltas; Diagnostics Pack)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "instance_number": {
+          "type": "integer",
+          "min": 1,
+          "max": 1000,
+          "policy": "KEEP"
+        },
+        "snap_hours_ago": {
+          "type": "number",
+          "min": 0,
+          "max": 48,
+          "policy": "KEEP"
+        },
+        "elapsed_sec": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        },
+        "db_time_sec": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        },
+        "db_cpu_sec": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B4",
+        "lab_aliases": {},
+        "fixture_target": "fixture-licensed-19c"
+      }
+    },
+    {
+      "collector_id": "Q-PERF-AWR-TOPSQL-24H-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "AWR top 20 SQL by elapsed time in the last 24 hours: sql_id and metrics, never SQL text (Diagnostics Pack)",
+      "row_limit": 20,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "sql_id": {
+          "type": "sql_id",
+          "policy": "KEEP"
+        },
+        "plan_hash_value": {
+          "type": "integer",
+          "min": 0,
+          "max": 4294967295,
+          "policy": "KEEP"
+        },
+        "executions": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "elapsed_sec": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        },
+        "cpu_sec": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        },
+        "buffer_gets": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000000000000,
+          "policy": "KEEP"
+        },
+        "disk_reads": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000000000000,
+          "policy": "KEEP"
+        },
+        "rows_processed": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B4",
+        "lab_aliases": {},
+        "fixture_target": "fixture-licensed-19c"
+      }
+    },
+    {
+      "collector_id": "Q-PERF-AWR-WAITS-24H-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "AWR top 20 non-idle wait events in the last 24 hours (deltas; Diagnostics Pack)",
+      "row_limit": 20,
+      "params": {},
+      "output_fields": {
+        "event": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "wait_class": {
+          "type": "enum",
+          "values": [
+            "Administrative",
+            "Application",
+            "CPU",
+            "Cluster",
+            "Commit",
+            "Concurrency",
+            "Configuration",
+            "Idle",
+            "Network",
+            "Other",
+            "Queueing",
+            "Scheduler",
+            "System I/O",
+            "User I/O"
+          ],
+          "policy": "KEEP"
+        },
+        "total_waits": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "time_waited_sec": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B4",
+        "lab_aliases": {
+          "event_name": "event"
+        },
+        "fixture_target": "fixture-licensed-19c"
+      }
+    },
+    {
+      "collector_id": "Q-PERF-ASH-1H-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "ASH activity of the last 60 minutes by wait class, event and sql_id (samples; Diagnostics Pack)",
+      "row_limit": 25,
+      "params": {},
+      "output_fields": {
+        "wait_class": {
+          "type": "enum",
+          "values": [
+            "Administrative",
+            "Application",
+            "CPU",
+            "Cluster",
+            "Commit",
+            "Concurrency",
+            "Configuration",
+            "Idle",
+            "Network",
+            "Other",
+            "Queueing",
+            "Scheduler",
+            "System I/O",
+            "User I/O"
+          ],
+          "policy": "KEEP"
+        },
+        "event": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "sql_id": {
+          "type": "sql_id",
+          "policy": "KEEP"
+        },
+        "ash_samples": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "session_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B4",
+        "lab_aliases": {},
+        "fixture_target": "fixture-licensed-19c"
       }
     }
   ]
