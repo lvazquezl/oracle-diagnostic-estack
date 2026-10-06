@@ -2,11 +2,15 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased]
+## [0.26.0] — 2026-10-06 — `v0.26.0-awr-licensed` — 1 cambio: AWR y ASH con licencia confirmada
+
+El e-stack recolecta evidencia histórica de rendimiento (AWR) y de la última hora (ASH) sin intervención del DBA, pero **sólo en targets con la licencia confirmada por un humano**. `CONTROL_MANAGEMENT_PACK_ACCESS` no cuenta como prueba. Las consultas nuevas calculan deltas entre snapshots dentro de cada arranque en lugar de sumar contadores acumulados. El catálogo llega a 65 collectors.
+
+Aprobado por revisión humana. Regresión local (macOS, bash 5.3): 972/972. CI en verde en ubuntu, macOS y Windows con Python 3.13 y 3.14.
 
 ### `/change query|security|compatibility|documentation` — CHG-ESTACK-AWR-LICENSED-001 — gate de licencias y lote B4 de AWR/ASH
 
-Rama `change/awr-licensed` sobre `main` (`c8df388`). Licencia Diagnostics + Tuning del lab confirmada por el revisor humano (2026-10-06). Validado en el lab: los 4 collectors de AWR/ASH corren en real y quedan `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Ver `docs/AWR_LICENSED.md`.
+Rama `change/awr-licensed` sobre `main` (`c8df388`). Integrada a `main` vía PR #35 (merge `1ccb552`). Licencia Diagnostics + Tuning del lab confirmada por el revisor humano (2026-10-06). Validado en el lab: los 4 collectors de AWR/ASH corren en real y quedan `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Aprobación humana registrada: `AUTH-AWR-LICENSED-001`, revisor `REV-DBAMANAGER`, `2026-10-06T20:38:35Z`, contra el digest `be60ecac…bfa8bcbd` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Ver `docs/AWR_LICENSED.md`.
 
 #### Added
 

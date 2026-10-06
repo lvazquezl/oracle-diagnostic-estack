@@ -73,7 +73,7 @@ En los 4 intervalos con delta, DB CPU superó a DB time (por ejemplo, 1.25 s con
 | SECURITY | 7/7 mutaciones detectadas: gate del gateway eliminado, Tuning sin la clave de Diagnostics, basta una clave confirmada (en vez de todas), ruta humana sin gate, `--confirmed-by` opcional, `license_requirements` en lista ignorado y procedencia sin la confirmación. Las pruebas de P18 cubren deltas por arranque y `con_dbid` |
 | REGRESSION | 972/972 en macOS (bash 5.3) |
 | LAB | 4/4 en real; `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM` (`config/field-validation-registry.json`) |
-| HUMAN REVIEW | Pendiente |
+| HUMAN REVIEW | Aprobado: `AUTH-AWR-LICENSED-001`, revisor `REV-DBAMANAGER`, `2026-10-06T20:38:35Z`, digest `be60ecac…bfa8bcbd`. PROMOTE: PR #35, merge `1ccb552`; CI en verde en los 6 jobs (ubuntu, macOS y Windows con Python 3.13 y 3.14) |
 
 ## Pendiente (fuera de este cambio)
 
