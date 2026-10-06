@@ -86,7 +86,9 @@ FROM  (SELECT s.dbid, s.instance_number, s.snap_id, s.startup_time,
 ORDER  BY instance_number, snap_id;
 ```
 
-Los valores de `DBA_HIST_SYS_TIME_MODEL` son **acumulados** desde el arranque: la carga de cada intervalo es la diferencia con el snapshot anterior de la misma instancia y el mismo arranque (`LAG ... PARTITION BY dbid, instance_number, startup_time`). El primer snapshot de la ventana o de un arranque queda con delta nulo. `db_time_sec / elapsed_sec` = sesiones activas promedio (AAS) del intervalo. **V2 (12.1+) filtra `con_dbid = dbid`**: en un CDB, AWR guarda también filas por contenedor, y mezclarlas daba un DB CPU mayor que el DB time (visto en el lab).
+Los valores de `DBA_HIST_SYS_TIME_MODEL` son **acumulados** desde el arranque: la carga de cada intervalo es la diferencia con el snapshot anterior de la misma instancia y el mismo arranque (`LAG ... PARTITION BY dbid, instance_number, startup_time`). El primer snapshot de la ventana o de un arranque queda con delta nulo: el intervalo arranque → primer snapshot no se reporta (como en el reporte AWR, que no cruza reinicios), y ahí suele concentrarse el DB time del arranque. `db_time_sec / elapsed_sec` = sesiones activas promedio (AAS) del intervalo. **V2 (12.1+) filtra `con_dbid = dbid`**: en un CDB, AWR puede guardar también filas por contenedor; el filtro conserva las de nivel CDB/instancia (en non-CDB no cambia nada).
+
+**Interpretación con carga baja:** en un intervalo casi ocioso, el delta de DB CPU puede **superar** al de DB time. Lo muestran los propios valores de `DBA_HIST_SYS_TIME_MODEL`, no el cálculo: en el lab, snaps 94→98, ΔDB CPU 1.25/0.83/1.12/1.06 s contra ΔDB time 0.92/0.53/0.67/0.69 s, verificado contra los valores crudos. Con menos de ~1 s de DB time por hora, la proporción CPU/DB time no es significativa; no la reportes como hallazgo.
 
 # Notes by version
 
