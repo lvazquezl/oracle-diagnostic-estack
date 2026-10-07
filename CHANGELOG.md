@@ -2,11 +2,15 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased]
+## [0.28.0] — 2026-10-07 — `v0.28.0-pdb-coverage` — 1 cambio: el assessment cubre la PDB de aplicación
+
+En un CDB, el assessment ya evalúa también la PDB de aplicación en objetos, jobs, componentes y seguridad. Además expone 7 queries certificadas que no se recolectaban: estado de PDBs, servicios, plug-in violations, políticas de auditoría, perfiles de contraseña, usuarios del password file y configuración RMAN. Ninguna deja salir texto libre, fechas absolutas, rutas ni nombres propios. El catálogo llega a 72 collectors.
+
+Aprobado por revisión humana. Regresión local (macOS, bash 5.3): 973/973. CI en verde en ubuntu, macOS y Windows con Python 3.13 y 3.14.
 
 ### `/change query|security|compatibility|documentation` — CHG-ESTACK-PDB-COVERAGE-001 — la PDB de aplicación entra al assessment
 
-Rama `change/pdb-coverage` sobre `main` (`d3f2818`). Origen: la revisión por 11 especialistas del assessment `ANA-20261007-001`, que mostró que, desde `CDB$ROOT`, los collectors de objetos, jobs, componentes y seguridad solo veían el root. Validado en el lab: 21 collectors `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Ver `docs/PDB_COVERAGE.md`.
+Rama `change/pdb-coverage` sobre `main` (`d3f2818`). Integrada a `main` vía PR #39 (merge `30b18a9`). Aprobación humana registrada: `AUTH-PDB-COVERAGE-001`, revisor `REV-DBAMANAGER`, `2026-10-07T20:22:55Z`, contra el digest `c15f00f5…934228c8` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Origen: la revisión por 11 especialistas del assessment `ANA-20261007-001`, que mostró que, desde `CDB$ROOT`, los collectors de objetos, jobs, componentes y seguridad solo veían el root. Validado en el lab: 21 collectors `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Ver `docs/PDB_COVERAGE.md`.
 
 #### Added
 

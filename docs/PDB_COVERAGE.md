@@ -121,4 +121,4 @@ Validaciones registradas en `config/field-validation-registry.json` (21 entradas
 | SECURITY | 10/10 mutaciones detectadas: volver a `DBA_*`, V2 sin `con_id` como columna, sin filtro de roles propios, `message` expuesto, `value` RMAN crudo, nombres de políticas propias, `directory_path`, `limit` crudo, `CDB_UNIFIED_AUDIT_TRAIL` antes de 19c y `policy_name` fuera de `oracle_term` |
 | REGRESSION | 973/973 en macOS (bash 5.3); fábrica y `dict_verify` sin drift |
 | LAB | 21/21 en real tras el grant y la allowlist (67 collectors en el lab); `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM` (arriba). Las 14 validaciones retiradas por cambio de SQL se reemplazaron por las nuevas |
-| HUMAN REVIEW | Pendiente |
+| HUMAN REVIEW | Aprobado: `AUTH-PDB-COVERAGE-001`, revisor `REV-DBAMANAGER`, `2026-10-07T20:22:55Z`, digest `c15f00f5…934228c8`. PROMOTE: PR #39, merge `30b18a9`; CI en verde en los 6 jobs (ubuntu, macOS y Windows con Python 3.13 y 3.14) |
