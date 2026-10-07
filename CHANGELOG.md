@@ -6,7 +6,7 @@ Versionado semántico del e-stack. Cambios por artefacto individual (agente/skil
 
 ### `/change query|compatibility` — CHG-ESTACK-AWR-BIND-QUERIES-001 — consultas AWR con ventana: deltas en lugar de acumulados
 
-Rama `change/awr-bind-queries` sobre `main` (`83427df`). Verificado en el lab por el DBA (salida de consola, `DOCUMENTATION_ONLY` hasta que haya `ingest`). Ver `docs/AWR_BIND_QUERIES.md`.
+Rama `change/awr-bind-queries` sobre `main` (`83427df`). Verificado en el lab por la ruta humana: `EVD-HR-20261007-003643-22008f` y `EVD-HR-20261007-003643-70d31e` (`HUMAN_REPORTED`); la query queda `DOCUMENTATION_ONLY` en el registro, que sólo admite corridas del gateway. Ver `docs/AWR_BIND_QUERIES.md`.
 
 #### Fixed
 

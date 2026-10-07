@@ -40,12 +40,16 @@ Las columnas de salida se conservan (`DBTIME-001` agrega `snap_id`). La ventana 
 
 ## Verificación en el lab (`lab-ol8-19c`, 19c, `CDB$ROOT`, 2026-10-06)
 
-Por la ruta humana se generaron las solicitudes `ER-20261007-003643-70d31e` (`Q-PERF-WAIT-AWR-001-V3`) y `ER-20261007-003643-22008f` (`Q-PERF-DBTIME-001-V2`). Ventana: 2026-10-06 de 10:00 a 15:00. Diagnostics Pack confirmado por `REV-DBAMANAGER`. El DBA ejecutó el SQL renderizado en SQL*Plus y entregó la salida de consola:
+Por la ruta humana se generaron las solicitudes `ER-20261007-003643-70d31e` (`Q-PERF-WAIT-AWR-001-V3`) y `ER-20261007-003643-22008f` (`Q-PERF-DBTIME-001-V2`). Ventana: 2026-10-06 de 10:00 a 15:00. Diagnostics Pack confirmado por `REV-DBAMANAGER`. El DBA ejecutó los scripts en el servidor del lab con SQL*Plus y entregó los CSV. `ingest` verificó el hash del SQL renderizado y produjo `EVD-HR-20261007-003643-22008f` (DB time, 5 filas) y `EVD-HR-20261007-003643-70d31e` (esperas, 20 filas), reportados por `REV-DBAMANAGER` el 2026-10-07T02:02Z con la confirmación de licencia en la procedencia:
 
 - **`Q-PERF-DBTIME-001`:** 5 snapshots (94–98). El 94, primero tras el arranque, sale sin delta. Los deltas fueron 0.92/1.25, 0.53/0.83, 0.67/1.12 y 0.69/1.06 s (DB time/DB CPU), con `elapsed_sec` numérico (657, 2224, 3605, 3605, 3608). Coinciden exactamente con los valores crudos de `DBA_HIST_SYS_TIME_MODEL` y con el collector `Q-PERF-AWR-DBTIME-24H-001`.
 - **`Q-PERF-WAIT-AWR-001`:** 20 eventos foreground, el mayor `library cache: bucket mutex X` con 0.08 s. `control file sequential read` da 0.01 s foreground, frente a 9.7 s totales en 24 h del collector `Q-PERF-AWR-WAITS-24H-001`. Es coherente: esa espera la generan sobre todo procesos de fondo, que `_fg` excluye. Con la 2.2.0, la misma ventana habría sumado los acumulados de los 5 snapshots, que incluyen todo lo ocurrido desde el arranque.
 
-**Nivel de validación: `DOCUMENTATION_ONLY`.** La salida llegó como texto de consola, no como CSV por `ingest`, así que no hay referencia `EVR-*` y no se registra en `config/field-validation-registry.json`. Para registrarla, el DBA ejecuta `@evidence/requests/<id>.sql`, que deja el CSV en `evidence/inbox/`, y se corre `python -m human_evidence ingest`.
+**Nivel de validación:**
+- **Evidencia:** `HUMAN_REPORTED`. Es una observación real, pero no la hizo el e-stack, así que la confianza máxima es `PROBABLE_CAUSE` (`policies/field-validation-policy.md`).
+- **Query:** queda `DOCUMENTATION_ONLY` en `config/field-validation-registry.json`. El registro sólo admite corridas observadas por el gateway (`EVR-*`), y estas dos queries tienen binds, así que el gateway no las ejecuta.
+
+La misma lógica de deltas sí está `FIELD_VALIDATED` en los collectors `Q-PERF-AWR-DBTIME-24H-001` y `Q-PERF-AWR-WAITS-24H-001`, y los valores coinciden.
 
 ## Registro del cambio
 
@@ -57,5 +61,5 @@ Por la ruta humana se generaron las solicitudes `ER-20261007-003643-70d31e` (`Q-
 | TEST | `test_awr_cumulative_counters_use_deltas.sh` 4/4 y rechaza las versiones anteriores; solicitudes de la ruta humana en 19c (V3 y V2) generadas y verificadas por hash |
 | SECURITY | Sin cambios de superficie: siguen siendo SELECT de solo lectura con binds tipados y gate de licencia. 7/7 mutaciones detectadas: `SUM` del acumulado, join sin `dbid`, `MAX − MIN` sin arranque, un `LAG` sin arranque, `INTERVAL × 86400`, `_fg` en 10g y `con_dbid` en V1 |
 | REGRESSION | 973/973 en macOS (bash 5.3); `generate.py --check` sin drift |
-| LAB | Verificado por el DBA (salida de consola): coincide con los valores crudos de AWR; `DOCUMENTATION_ONLY` hasta que haya `ingest` |
+| LAB | CSV del DBA ingeridos: `EVD-HR-20261007-003643-22008f` y `EVD-HR-20261007-003643-70d31e` (`HUMAN_REPORTED`), coinciden con los valores crudos de AWR y con los collectors B4. La query queda `DOCUMENTATION_ONLY` en el registro, que sólo admite corridas del gateway |
 | HUMAN REVIEW | Pendiente |
