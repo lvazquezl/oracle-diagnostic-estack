@@ -41,7 +41,7 @@ variants:
     container_scope: ANY_CONTAINER
     sql_block: "Variant V2 (multitenant_aware, 12.1+)"
 
-tests: [tests/test_no_write_operations.sh, tests/test_query_limits.sh, tests/test_every_logical_query_has_variant.sh, tests/test_collector_factory.sh]
+tests: [tests/test_no_write_operations.sh, tests/test_query_limits.sh, tests/test_every_logical_query_has_variant.sh, tests/test_collector_factory.sh, tests/test_awr_cumulative_counters_use_deltas.sh]
 status: active
 ---
 

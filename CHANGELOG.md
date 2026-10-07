@@ -2,6 +2,22 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased]
+
+### `/change query|compatibility` — CHG-ESTACK-AWR-BIND-QUERIES-001 — consultas AWR con ventana: deltas en lugar de acumulados
+
+Rama `change/awr-bind-queries` sobre `main` (`83427df`). Verificado en el lab por la ruta humana: `EVD-HR-20261007-003643-22008f` y `EVD-HR-20261007-003643-70d31e` (`HUMAN_REPORTED`); la query queda `DOCUMENTATION_ONLY` en el registro, que sólo admite corridas del gateway. Ver `docs/AWR_BIND_QUERIES.md`.
+
+#### Fixed
+
+- `Q-PERF-WAIT-AWR-001` 3.0.0: sumaba los valores acumulados de todos los snapshots de la ventana. Ahora calcula `MAX − MIN` por arranque y evento, con `dbid` en el join. La V1 de 10.2 usaba `time_waited_micro_fg`, que no existe en 10g: ahora hay V1 (10.2), V2 (11g) y V3 (12.1+, `con_dbid = dbid`).
+- `Q-PERF-DBTIME-001` 2.0.0: devolvía acumulados y calculaba `elapsed_sec` como un `INTERVAL`. Ahora da deltas por arranque, segundos numéricos y `snap_id`, con `dbid` en el join y variantes V1/V2.
+
+#### Added
+
+- `tests/test_awr_cumulative_counters_use_deltas.sh`: toda query de `DBA_HIST_SYS_TIME_MODEL`/`DBA_HIST_SYSTEM_EVENT` debe calcular deltas por arranque y unir por `dbid`.
+- `RISKY_COLUMNS` del validador estático: `time_waited_micro_fg` (11g+) y `con_dbid` (12.1+).
+
 ## [0.26.0] — 2026-10-06 — `v0.26.0-awr-licensed` — 1 cambio: AWR y ASH con licencia confirmada
 
 El e-stack recolecta evidencia histórica de rendimiento (AWR) y de la última hora (ASH) sin intervención del DBA, pero **sólo en targets con la licencia confirmada por un humano**. `CONTROL_MANAGEMENT_PACK_ACCESS` no cuenta como prueba. Las consultas nuevas calculan deltas entre snapshots dentro de cada arranque en lugar de sumar contadores acumulados. El catálogo llega a 65 collectors.
