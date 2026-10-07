@@ -91,6 +91,8 @@ RISKY_COLUMNS=(
   "\bcdb\b:12.1"
   "con_id:12.1"
   "instance_role:11.0"
+  "time_waited_micro_fg:11.0"   # CHG-ESTACK-AWR-BIND-QUERIES-001: DBA_HIST_SYSTEM_EVENT/V$SYSTEM_EVENT, no existe en 10g
+  "con_dbid:12.1"               # CHG-ESTACK-AWR-BIND-QUERIES-001: DBA_HIST_* multitenant
 )
 
 check_block() {

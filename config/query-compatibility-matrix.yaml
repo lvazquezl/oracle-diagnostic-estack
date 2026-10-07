@@ -119,14 +119,15 @@ queries:
   Q-PERF-WAIT-AWR-001:
     file: queries/performance/waits/Q-PERF-WAIT-AWR-001.md
     variants:
-      - {variant_id: Q-PERF-WAIT-AWR-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
-      - {variant_id: Q-PERF-WAIT-AWR-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-PERF-WAIT-AWR-001-V1, label: legacy_10g, min: "10.2", max: "10.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-PERF-WAIT-AWR-001-V2, label: legacy_11g_foreground, min: "11.1", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-PERF-WAIT-AWR-001-V3, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
     required_views: [DBA_HIST_SYSTEM_EVENT, DBA_HIST_SNAPSHOT]
     role_scope: PRIMARY
     cost_class: MEDIUM
     validation_status: COMPATIBLE
     license_requirements: [Diagnostics Pack]
-    was: VARIANT_REQUIRED   # PHASE 7 — RMAN LEGACY SQL SYNTAX HARDENING: FETCH FIRST certificado con min 10.2 desde Fase 3 — split legacy ROWNUM/modern FETCH FIRST, detectado por test_no_fetch_first_in_pre12c_queries.sh (enforcement global, no específico de RMAN)
+    was: VARIANT_REQUIRED   # PHASE 7 — RMAN LEGACY SQL SYNTAX HARDENING: FETCH FIRST certificado con min 10.2 desde Fase 3 — split legacy ROWNUM/modern FETCH FIRST, detectado por test_no_fetch_first_in_pre12c_queries.sh (enforcement global, no específico de RMAN). CHG-ESTACK-AWR-BIND-QUERIES-001: V1 propia para 10.2 (TIME_WAITED_MICRO_FG no existe en 10g)
   Q-PERF-WAIT-SYSTEM-001:
     file: queries/performance/waits/Q-PERF-WAIT-SYSTEM-001.md
     variants:
@@ -198,7 +199,17 @@ queries:
     cost_class: MEDIUM
     validation_status: COMPATIBLE
     was: VARIANT_REQUIRED
-  Q-PERF-DBTIME-001: {file: queries/performance/db-time/Q-PERF-DBTIME-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_HIST_SYS_TIME_MODEL, DBA_HIST_SNAPSHOT], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE, license_requirements: [Diagnostics Pack]}
+  Q-PERF-DBTIME-001:
+    file: queries/performance/db-time/Q-PERF-DBTIME-001.md
+    variants:
+      - {variant_id: Q-PERF-DBTIME-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-PERF-DBTIME-001-V2, label: multitenant_aware, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_HIST_SYS_TIME_MODEL, DBA_HIST_SNAPSHOT]
+    role_scope: PRIMARY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    license_requirements: [Diagnostics Pack]
+    was: implicit_full_range   # CHG-ESTACK-AWR-BIND-QUERIES-001: V2 (12.1+) filtra con_dbid = dbid
   Q-PERF-DBTIME-CURRENT-001: {file: queries/performance/db-time/Q-PERF-DBTIME-CURRENT-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SYS_TIME_MODEL, V$INSTANCE], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-PERF-TOPSQL-001:
     file: queries/performance/sql/Q-PERF-TOPSQL-001.md
