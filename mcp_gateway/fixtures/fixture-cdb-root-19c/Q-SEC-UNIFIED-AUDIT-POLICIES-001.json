@@ -1,0 +1,13 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B5)",
+  "rows": [
+    {
+      "policy_name": "ORA_LOGON_FAILURES",
+      "entity_type": "USER",
+      "entity_scope": "ALL_USERS",
+      "success": "YES",
+      "failure": "YES",
+      "entity_count": 1
+    }
+  ]
+}

@@ -318,10 +318,13 @@ def role_privilege_queries_read_the_whole_database_not_the_session():
         b = catalog.sql_blocks(open(catalog._find_query_file(qid), encoding="utf-8").read())
         q.collector_id, q.kind, q.query_sha256 = qid, "sql_query", hashlib.sha256("\n".join(b).encode()).hexdigest()
         return sqlsource.resolve(q, v).sql.lower()
-    for v in ("11.2", "19.0"):
-        a, b = sql("Q-SEC-ROLE-SYSTEM-PRIVILEGES-001", v), sql("Q-SEC-NESTED-ROLE-GRANTS-001", v)
-        assert "dba_sys_privs" in a and "role_sys_privs" not in a, a
-        assert "dba_role_privs" in b and "role_role_privs" not in b, b
+    a, b = sql("Q-SEC-ROLE-SYSTEM-PRIVILEGES-001", "11.2"), sql("Q-SEC-NESTED-ROLE-GRANTS-001", "11.2")
+    assert "dba_sys_privs" in a and "role_sys_privs" not in a, a
+    assert "dba_role_privs" in b and "role_role_privs" not in b, b
+    # CHG-ESTACK-PDB-COVERAGE-001: 12.1+ reads CDB_* (every open container) and only the custom roles
+    a, b = sql("Q-SEC-ROLE-SYSTEM-PRIVILEGES-001", "19.0"), sql("Q-SEC-NESTED-ROLE-GRANTS-001", "19.0")
+    assert "cdb_sys_privs" in a and "role_sys_privs" not in a and "oracle_maintained = 'n'" in a, a
+    assert "cdb_role_privs" in b and "role_role_privs" not in b and "oracle_maintained = 'n'" in b, b
     for qid in ("Q-SEC-UNIFIED-AUDIT-TRAIL-001", "Q-SEC-TRADITIONAL-AUDIT-001", "Q-SEC-DATA-REDACTION-POLICIES-001",
                 "Q-SEC-DATABASE-VAULT-STATUS-001", "Q-SEC-DIRECTORIES-001"):
         assert sql(qid, "19.0"), qid                              # every one of them resolves now
@@ -395,7 +398,7 @@ def awr_queries_use_deltas_not_cumulative_sums():
     text = open(catalog._find_query_file("Q-PERF-AWR-DBTIME-24H-001"), encoding="utf-8").read()
     sql = "\n".join(catalog.sql_blocks(text)).lower()
     assert "lag(db_time)" in sql and "partition by dbid, instance_number, startup_time" in sql
-    # 12.1+: AWR keeps per-container rows in a CDB; mixing them gave DB CPU > DB time in the lab
+    # 12.1+: keep only CDB-level rows (con_dbid = dbid); in a non-CDB it changes nothing (docs/AWR_LICENSED.md)
     from mcp_gateway_lab import sqlsource
     import hashlib
     for qid, col in (("Q-PERF-AWR-DBTIME-24H-001", "t.con_dbid = t.dbid"), ("Q-PERF-AWR-WAITS-24H-001", "e.con_dbid = e.dbid")):
@@ -405,6 +408,73 @@ def awr_queries_use_deltas_not_cumulative_sums():
         b = catalog.sql_blocks(open(catalog._find_query_file(qid), encoding="utf-8").read())
         q.collector_id, q.kind, q.query_sha256 = qid, "sql_query", hashlib.sha256("\n".join(b).encode()).hexdigest()
         assert col in sqlsource.resolve(q, "19.0").sql and col not in sqlsource.resolve(q, "11.2").sql, qid
+
+
+def _resolved(qid, version):
+    from mcp_gateway_lab import sqlsource
+    import hashlib
+
+    class Q:
+        pass
+    q = Q()
+    b = catalog.sql_blocks(open(catalog._find_query_file(qid), encoding="utf-8").read())
+    q.collector_id, q.kind, q.query_sha256 = qid, "sql_query", hashlib.sha256("\n".join(b).encode()).hexdigest()
+    return sqlsource.resolve(q, version).sql.lower()
+
+
+@test
+def pdb_coverage_variants_read_every_container_from_12_1():
+    # CHG-ESTACK-PDB-COVERAGE-001 (FND-0021 of ANA-20261007-001): from CDB$ROOT, DBA_* sees the root only
+    cases = {"Q-ORA-INVALID-OBJECTS-001": ("dba_objects", "cdb_objects"),
+             "Q-ORA-OBJECTS-INVENTORY-001": ("dba_objects", "cdb_objects"),
+             "Q-ORA-JOBS-SUMMARY-001": ("dba_scheduler_jobs", "cdb_scheduler_jobs"),
+             "Q-ORA-COMPONENTS-001": ("dba_registry", "cdb_registry"),
+             "Q-SEC-DIRECTORIES-001": ("dba_directories", "cdb_directories"),
+             "Q-SEC-TRADITIONAL-AUDIT-001": ("dba_audit_session", "cdb_audit_session"),
+             "Q-SEC-PASSWORD-PROFILES-001": ("dba_profiles", "cdb_profiles")}
+    for qid, (legacy, cdb) in cases.items():
+        old, new = _resolved(qid, "11.2"), _resolved(qid, "19.0")
+        assert legacy in old and cdb not in old and "con_id" not in old, qid
+        select_list = new.split(" from ")[0] if " from " in new else new.split("\nfrom")[0]
+        assert cdb in new and "con_id" in select_list.split("from")[0], qid      # con_id must be an output column
+    assert "cdb_unified_audit_trail" in _resolved("Q-SEC-UNIFIED-AUDIT-TRAIL-001", "19.0")
+    assert "cdb_unified_audit_trail" not in _resolved("Q-SEC-UNIFIED-AUDIT-TRAIL-001", "18.0")   # not documented before 19c
+    spec = catalog.load_collectors()
+    for qid in list(cases) + ["Q-SEC-ROLE-SYSTEM-PRIVILEGES-001", "Q-SEC-NESTED-ROLE-GRANTS-001", "Q-SEC-UNIFIED-AUDIT-TRAIL-001"]:
+        assert "con_id" in spec[qid].output_fields, qid
+
+
+@test
+def pdb_coverage_lot_never_exposes_free_text_or_raw_values():
+    spec = catalog.load_collectors()
+    forbidden = {"message", "action", "line", "error_number", "value", "limit", "directory_path", "open_time", "time",
+                 "entity_name", "user_name", "name"}
+    for qid in ("Q-CDB-PDB-STATE-001", "Q-CDB-SERVICES-001", "Q-CDB-PLUGIN-VIOLATIONS-001", "Q-SEC-UNIFIED-AUDIT-POLICIES-001",
+                "Q-SEC-PASSWORD-PROFILES-001", "Q-SEC-ADMIN-PRIVILEGES-001", "Q-RMAN-CONFIGURATION-001", "Q-SEC-DIRECTORIES-001"):
+        fields = set(spec[qid].output_fields)
+        assert not fields & forbidden, (qid, fields & forbidden)
+    pv = _resolved("Q-CDB-PLUGIN-VIOLATIONS-001", "19.0")
+    assert all(w not in pv for w in ("message", "action", " line")), pv
+    rm = _resolved("Q-RMAN-CONFIGURATION-001", "19.0")
+    assert "as setting" in rm and "regexp_substr(value" in rm and ", value" not in rm, rm
+    pp = _resolved("Q-SEC-PASSWORD-PROFILES-001", "19.0")
+    assert "custom_function" in pp and "as limit_keyword" in pp, pp
+    import re
+    assert not re.search(r"(select|,)\s*limit\s*(,|from)", pp), "the raw profile limit must never be an output column"
+    assert "directory_path" not in _resolved("Q-SEC-DIRECTORIES-001", "19.0")
+    for f in ("pdb_name", "service_name", "profile", "username"):
+        owner = next(c for c in spec.values() if f in c.output_fields and c.collector_id in
+                     ("Q-CDB-PDB-STATE-001", "Q-CDB-SERVICES-001", "Q-SEC-PASSWORD-PROFILES-001", "Q-SEC-ADMIN-PRIVILEGES-001"))
+        assert owner.output_fields[f]["policy"] == "MASK", f
+
+
+@test
+def custom_audit_policy_names_never_leave_the_database():
+    for v in ("12.1", "19.0"):
+        sql = _resolved("Q-SEC-UNIFIED-AUDIT-POLICIES-001", v)
+        assert "else 'custom' end as policy_name" in sql.replace("\n", " "), v
+        assert "entity_name" not in sql.split("from")[0].replace("case when entity_name = 'all users'", ""), v
+    assert "policy_name" in catalog.ORACLE_TERM_FIELDS and "cause" in catalog.ORACLE_TERM_FIELDS
 
 
 if __name__ == "__main__":

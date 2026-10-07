@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B5)",
+  "rows": [
+    {
+      "con_id": 1,
+      "service_name": "SYNTH_SVC",
+      "clb_goal": "LONG",
+      "rlb_goal": "NONE",
+      "active_instance": 1
+    }
+  ]
+}

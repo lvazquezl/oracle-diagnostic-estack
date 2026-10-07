@@ -2,6 +2,36 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased]
+
+### `/change query|security|compatibility|documentation` — CHG-ESTACK-PDB-COVERAGE-001 — la PDB de aplicación entra al assessment
+
+Rama `change/pdb-coverage` sobre `main` (`d3f2818`). Origen: la revisión por 11 especialistas del assessment `ANA-20261007-001`, que mostró que, desde `CDB$ROOT`, los collectors de objetos, jobs, componentes y seguridad solo veían el root. Validado en el lab: 21 collectors `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM`. Ver `docs/PDB_COVERAGE.md`.
+
+#### Added
+
+- Variantes 12.1+ sobre vistas `CDB_*` con `con_id` en 9 queries: objetos inválidos, inventario, jobs, componentes, privilegios de roles (solo roles propios), roles anidados, directorios (ya sin `directory_path`), auditoría unificada (19c+) y auditoría tradicional.
+- Lote B5: 7 queries certificadas ya existentes, expuestas por la fábrica:
+  - estado de PDBs y servicios;
+  - plug-in violations (resumen, sin texto libre);
+  - políticas de auditoría (solo nombres `ORA_*` o `CUSTOM`);
+  - perfiles de contraseña (límites clasificados);
+  - usuarios del password file;
+  - configuración RMAN (sin valores crudos).
+
+  El catálogo pasa de 65 a 72 collectors.
+- `ORACLE_TERM_FIELDS` admite `policy_name`, `cause` y `config_name`.
+- 8 vistas `CDB_*` en el registro del diccionario. `CDB_UNIFIED_AUDIT_TRAIL` se acota a 19c porque no está documentada en 12.2.
+
+#### Fixed
+
+- `Q-SEC-UNIFIED-AUDIT-POLICIES-001` 2.0.0: la 1.0.0 usaba `ENTITY_NAME` también en 12.1, donde la columna es `USER_NAME`.
+
+#### Changed
+
+- Privilegio nuevo para la cuenta de diagnóstico: `GRANT SELECT ON SYS.PDB_PLUG_IN_VIOLATIONS`.
+- Siguen limitados al root, porque no existe vista `CDB_*`: cuentas con credencial por defecto, proxy y políticas de auditoría habilitadas.
+
 ## [0.27.0] — 2026-10-07 — `v0.27.0-awr-window-deltas` — 1 cambio: consultas AWR con ventana corregidas
 
 Las consultas AWR con ventana (`:window_start`/`:window_end`) que usan los skills de rendimiento y la ruta humana ya calculan la carga real de cada intervalo. Antes sumaban contadores acumulados desde el arranque y daban cifras infladas; además, la de esperas fallaba en 10g. El validador estático y una prueba nueva evitan que el error vuelva a entrar.

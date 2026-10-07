@@ -441,6 +441,8 @@ $vw"
         # CHG-ESTACK-PORTABILITY-001: pseudocolumnas/funciones/palabras de SQL Oracle, no columnas de vista
         # (falsos positivos en GNU/Windows sobre Q-RMAN-BACKUP-FRESHNESS-001 / Q-RMAN-JOB-SUMMARY-001).
         sysdate|systimestamp|keep|dense_rank|first|last) continue ;;
+        # CHG-ESTACK-PDB-COVERAGE-001: funciones de fecha y de expresiones regulares (CAST(SYS_EXTRACT_UTC(x) AS DATE), REGEXP_*)
+        sys_extract_utc|date|regexp_like|regexp_substr|like|escape) continue ;;
       esac
 
       local target_view=""

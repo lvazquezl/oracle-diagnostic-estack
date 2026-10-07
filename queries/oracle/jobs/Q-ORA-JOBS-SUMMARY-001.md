@@ -1,6 +1,6 @@
 ---
 query_id: Q-ORA-JOBS-SUMMARY-001
-version: 1.1.0
+version: 2.0.0
 domain: oracle
 purpose: Jobs Scheduler/legacy fallidos, de larga duración o deshabilitados
 
@@ -10,8 +10,8 @@ supported_architectures: [standalone, rac]
 container_scope: ANY_CONTAINER
 database_role_scope: PRIMARY
 
-objects_accessed: [DBA_SCHEDULER_JOBS]
-privileges_required: [SELECT on DBA_SCHEDULER_JOBS]
+objects_accessed: [DBA_SCHEDULER_JOBS, CDB_SCHEDULER_JOBS]
+privileges_required: [SELECT on DBA_SCHEDULER_JOBS, SELECT on CDB_SCHEDULER_JOBS]
 # Oracle Core Compatibility Hardening: objects_accessed corregido — la v1.0 declaraba
 # DBA_SCHEDULER_JOB_RUN_DETAILS y DBA_JOBS (legacy DBMS_JOB) sin que el SQL real los consultara
 # (metadata/reality mismatch). DBA_JOBS legacy queda PLANNED como logical query separada
@@ -29,11 +29,23 @@ sanitization_required: true
 license_requirements: none
 execution_mode: READ_ONLY
 
+variants:
+  - variant_id: Q-ORA-JOBS-SUMMARY-001-V1
+    label: legacy_10g_11g
+    oracle_versions: {min: "10.2", max: "11.2"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V1 (legacy_10g_11g, 10.2–11.2)"
+  - variant_id: Q-ORA-JOBS-SUMMARY-001-V2
+    label: cdb_aware_12plus
+    oracle_versions: {min: "12.1", max: "23.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V2 (cdb_aware_12plus, 12.1+: CDB_* con con_id)"
+
 tests: [tests/test_no_write_operations.sh, tests/test_query_limits.sh, tests/test_no_application_table_access.sh]
 status: active
 ---
 
-# Statement / procedure (read-only)
+# Statement / procedure (read-only) — Variant V1 (legacy_10g_11g, 10.2–11.2)
 
 ```sql
 SELECT j.owner, j.job_name, j.state, j.failure_count,
@@ -41,6 +53,16 @@ SELECT j.owner, j.job_name, j.state, j.failure_count,
 FROM   dba_scheduler_jobs j
 WHERE  j.state IN ('BROKEN','FAILED') OR j.failure_count > 0
 ORDER  BY j.failure_count DESC;
+```
+
+# Statement / procedure (read-only) — Variant V2 (cdb_aware_12plus, 12.1+: CDB_* con con_id)
+
+```sql
+SELECT j.con_id, j.owner, j.job_name, j.state, j.failure_count,
+       ROUND((CAST(SYS_EXTRACT_UTC(SYSTIMESTAMP) AS DATE) - CAST(SYS_EXTRACT_UTC(j.last_start_date) AS DATE)) * 24, 2) AS hours_since_last_start
+FROM   cdb_scheduler_jobs j
+WHERE  j.state IN ('BROKEN','FAILED') OR j.failure_count > 0
+ORDER  BY j.failure_count DESC, j.con_id;
 ```
 
 Nunca lee el cuerpo PL/SQL del job (`DBA_SCHEDULER_JOBS.JOB_ACTION` con lógica de negocio) — sólo metadata de ejecución.
@@ -72,3 +94,5 @@ Ninguna.
 CHG-ESTACK-COLLECTOR-FACTORY-B1 — `hours_since_last_start` (1.1.0) **sustituye** a `last_start_date`: horas desde el último inicio, en UTC y calculadas en la base de datos (`TIMESTAMP WITH TIME ZONE`; el adaptador real rechaza fechas crudas).
 
 # Evolution via `/change query`
+
+2.0.0 CHG-ESTACK-PDB-COVERAGE-001: V2 (12.1+) lee `CDB_SCHEDULER_JOBS` y agrega `con_id`: los jobs de la PDB de aplicación quedan cubiertos.
