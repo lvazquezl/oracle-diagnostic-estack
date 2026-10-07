@@ -2,11 +2,15 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased]
+## [0.27.0] — 2026-10-07 — `v0.27.0-awr-window-deltas` — 1 cambio: consultas AWR con ventana corregidas
+
+Las consultas AWR con ventana (`:window_start`/`:window_end`) que usan los skills de rendimiento y la ruta humana ya calculan la carga real de cada intervalo. Antes sumaban contadores acumulados desde el arranque y daban cifras infladas; además, la de esperas fallaba en 10g. El validador estático y una prueba nueva evitan que el error vuelva a entrar.
+
+Aprobado por revisión humana. Regresión local (macOS, bash 5.3): 973/973. CI en verde en ubuntu, macOS y Windows con Python 3.13 y 3.14.
 
 ### `/change query|compatibility` — CHG-ESTACK-AWR-BIND-QUERIES-001 — consultas AWR con ventana: deltas en lugar de acumulados
 
-Rama `change/awr-bind-queries` sobre `main` (`83427df`). Verificado en el lab por la ruta humana: `EVD-HR-20261007-003643-22008f` y `EVD-HR-20261007-003643-70d31e` (`HUMAN_REPORTED`); la query queda `DOCUMENTATION_ONLY` en el registro, que sólo admite corridas del gateway. Ver `docs/AWR_BIND_QUERIES.md`.
+Rama `change/awr-bind-queries` sobre `main` (`83427df`). Integrada a `main` vía PR #37 (merge `068e718`). Aprobación humana registrada: `AUTH-AWR-BIND-QUERIES-001`, revisor `REV-DBAMANAGER`, `2026-10-07T01:50:11Z`, contra el digest `93bc6b8f…6c5cfa07` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Verificado en el lab por la ruta humana: `EVD-HR-20261007-003643-22008f` y `EVD-HR-20261007-003643-70d31e` (`HUMAN_REPORTED`); la query queda `DOCUMENTATION_ONLY` en el registro, que sólo admite corridas del gateway. Ver `docs/AWR_BIND_QUERIES.md`.
 
 #### Fixed
 

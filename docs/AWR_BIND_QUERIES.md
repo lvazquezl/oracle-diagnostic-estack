@@ -62,4 +62,4 @@ La misma lógica de deltas sí está `FIELD_VALIDATED` en los collectors `Q-PERF
 | SECURITY | Sin cambios de superficie: siguen siendo SELECT de solo lectura con binds tipados y gate de licencia. 7/7 mutaciones detectadas: `SUM` del acumulado, join sin `dbid`, `MAX − MIN` sin arranque, un `LAG` sin arranque, `INTERVAL × 86400`, `_fg` en 10g y `con_dbid` en V1 |
 | REGRESSION | 973/973 en macOS (bash 5.3); `generate.py --check` sin drift |
 | LAB | CSV del DBA ingeridos: `EVD-HR-20261007-003643-22008f` y `EVD-HR-20261007-003643-70d31e` (`HUMAN_REPORTED`), coinciden con los valores crudos de AWR y con los collectors B4. La query queda `DOCUMENTATION_ONLY` en el registro, que sólo admite corridas del gateway |
-| HUMAN REVIEW | Pendiente |
+| HUMAN REVIEW | Aprobado: `AUTH-AWR-BIND-QUERIES-001`, revisor `REV-DBAMANAGER`, `2026-10-07T01:50:11Z`, digest `93bc6b8f…6c5cfa07`. Después de la aprobación se agregó un commit sólo de documentación (`47a04de`: la evidencia del lab como `HUMAN_REPORTED`). PROMOTE: PR #37, merge `068e718`; CI en verde en los 6 jobs (ubuntu, macOS y Windows con Python 3.13 y 3.14) |
