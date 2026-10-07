@@ -256,6 +256,12 @@
       "row_limit": 100,
       "params": {},
       "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
         "comp_id": {
           "type": "enum",
           "values": [
@@ -715,6 +721,12 @@
       "row_limit": 100,
       "params": {},
       "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
         "owner": {
           "type": "identifier",
           "policy": "MASK",
@@ -816,6 +828,12 @@
       "row_limit": 100,
       "params": {},
       "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
         "owner": {
           "type": "identifier",
           "policy": "MASK",
@@ -919,6 +937,12 @@
       "row_limit": 100,
       "params": {},
       "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
         "owner": {
           "type": "identifier",
           "policy": "MASK",
@@ -2156,6 +2180,12 @@
       "row_limit": 200,
       "params": {},
       "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
         "role": {
           "type": "identifier",
           "policy": "MASK",
@@ -2200,6 +2230,12 @@
       "row_limit": 200,
       "params": {},
       "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
         "role": {
           "type": "identifier",
           "policy": "MASK",
@@ -2245,6 +2281,12 @@
       "row_limit": 100,
       "params": {},
       "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
         "action_name": {
           "type": "oracle_term",
           "policy": "KEEP"
@@ -2286,6 +2328,12 @@
       "row_limit": 100,
       "params": {},
       "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
         "action_name": {
           "type": "oracle_term",
           "policy": "KEEP"
@@ -2327,6 +2375,12 @@
       "row_limit": 100,
       "params": {},
       "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
         "directory_name": {
           "type": "identifier",
           "policy": "MASK",
@@ -2633,6 +2687,489 @@
         "lot": "B4",
         "lab_aliases": {},
         "fixture_target": "fixture-licensed-19c"
+      }
+    },
+    {
+      "collector_id": "Q-CDB-PDB-STATE-001",
+      "kind": "sql_query",
+      "domain": "multitenant",
+      "title": "PDBs seen from CDB$ROOT: open mode, restricted, recovery status, size, hours since open, application/proxy flags and local undo (names masked)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "pdb_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "pdb"
+        },
+        "open_mode": {
+          "type": "enum",
+          "values": [
+            "MIGRATE",
+            "MOUNTED",
+            "READ ONLY",
+            "READ WRITE"
+          ],
+          "policy": "KEEP"
+        },
+        "restricted": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "recovery_status": {
+          "type": "enum",
+          "values": [
+            "DISABLED",
+            "ENABLED"
+          ],
+          "policy": "KEEP"
+        },
+        "total_size": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000000000000,
+          "policy": "KEEP"
+        },
+        "hours_since_open": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "application_root": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "application_pdb": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "application_seed": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "proxy_pdb": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "local_undo": {
+          "type": "integer",
+          "min": 0,
+          "max": 1,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B5",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-CDB-SERVICES-001",
+      "kind": "sql_query",
+      "domain": "multitenant",
+      "title": "PDB services and the instances where they are active (service names masked)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "service_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "svc"
+        },
+        "clb_goal": {
+          "type": "enum",
+          "values": [
+            "LONG",
+            "SHORT"
+          ],
+          "policy": "KEEP"
+        },
+        "rlb_goal": {
+          "type": "enum",
+          "values": [
+            "NONE",
+            "SERVICE_TIME",
+            "THROUGHPUT"
+          ],
+          "policy": "KEEP"
+        },
+        "active_instance": {
+          "type": "integer",
+          "min": 1,
+          "max": 1000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B5",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-CDB-PLUGIN-VIOLATIONS-001",
+      "kind": "sql_query",
+      "domain": "multitenant",
+      "title": "PDB plug-in violations summarized by container, type, status and cause (no message text)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "pdb_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "pdb"
+        },
+        "violation_type": {
+          "type": "enum",
+          "values": [
+            "ERROR",
+            "WARNING"
+          ],
+          "policy": "KEEP"
+        },
+        "violation_status": {
+          "type": "enum",
+          "values": [
+            "IGNORE",
+            "PENDING",
+            "RESOLVED"
+          ],
+          "policy": "KEEP"
+        },
+        "cause": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "violation_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "hours_since_last": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B5",
+        "lab_aliases": {
+          "type": "violation_type",
+          "status": "violation_status"
+        },
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-UNIFIED-AUDIT-POLICIES-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Enabled unified audit policies: Oracle-maintained name or CUSTOM, entity type and scope, success/failure (no user or role names)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "policy_name": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "entity_type": {
+          "type": "enum",
+          "values": [
+            "ROLE",
+            "USER"
+          ],
+          "policy": "KEEP"
+        },
+        "entity_scope": {
+          "type": "enum",
+          "values": [
+            "ALL_USERS",
+            "SPECIFIC"
+          ],
+          "policy": "KEEP"
+        },
+        "success": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "failure": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "entity_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B5",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-PASSWORD-PROFILES-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Password profile limits per container: profile kind, resource and limit keyword/value (profile names masked, custom verify functions not exposed)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "profile": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "prf"
+        },
+        "profile_kind": {
+          "type": "enum",
+          "values": [
+            "CUSTOM",
+            "DEFAULT",
+            "ORACLE"
+          ],
+          "policy": "KEEP"
+        },
+        "resource_name": {
+          "type": "enum",
+          "values": [
+            "FAILED_LOGIN_ATTEMPTS",
+            "INACTIVE_ACCOUNT_TIME",
+            "PASSWORD_GRACE_TIME",
+            "PASSWORD_LIFE_TIME",
+            "PASSWORD_LOCK_TIME",
+            "PASSWORD_REUSE_MAX",
+            "PASSWORD_REUSE_TIME",
+            "PASSWORD_VERIFY_FUNCTION"
+          ],
+          "policy": "KEEP"
+        },
+        "limit_keyword": {
+          "type": "enum",
+          "values": [
+            "CUSTOM_FUNCTION",
+            "DEFAULT",
+            "NULL",
+            "ORACLE_FUNCTION",
+            "UNLIMITED",
+            "VALUE"
+          ],
+          "policy": "KEEP"
+        },
+        "limit_value": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B5",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-ADMIN-PRIVILEGES-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Password-file users and their administrative privileges (user names masked)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "username": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "use"
+        },
+        "sysdba": {
+          "type": "enum",
+          "values": [
+            "FALSE",
+            "TRUE"
+          ],
+          "policy": "KEEP"
+        },
+        "sysoper": {
+          "type": "enum",
+          "values": [
+            "FALSE",
+            "TRUE"
+          ],
+          "policy": "KEEP"
+        },
+        "sysasm": {
+          "type": "enum",
+          "values": [
+            "FALSE",
+            "TRUE"
+          ],
+          "policy": "KEEP"
+        },
+        "sysbackup": {
+          "type": "enum",
+          "values": [
+            "FALSE",
+            "TRUE"
+          ],
+          "policy": "KEEP"
+        },
+        "sysdg": {
+          "type": "enum",
+          "values": [
+            "FALSE",
+            "TRUE"
+          ],
+          "policy": "KEEP"
+        },
+        "syskm": {
+          "type": "enum",
+          "values": [
+            "FALSE",
+            "TRUE"
+          ],
+          "policy": "KEEP"
+        },
+        "common": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B5",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-RMAN-CONFIGURATION-001",
+      "kind": "sql_query",
+      "domain": "rman",
+      "title": "RMAN persistent configuration: setting name, classified value and number (raw values and paths never exposed); no rows means all defaults",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "config_name": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "setting": {
+          "type": "enum",
+          "values": [
+            "APPLIED_ON_STANDBY",
+            "BACKED_UP",
+            "DISK",
+            "NONE",
+            "OFF",
+            "ON",
+            "OTHER",
+            "RECOVERY_WINDOW",
+            "REDUNDANCY",
+            "SBT",
+            "SHIPPED"
+          ],
+          "policy": "KEEP"
+        },
+        "setting_number": {
+          "type": "number",
+          "min": 0,
+          "max": 100000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B5",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
       }
     }
   ]

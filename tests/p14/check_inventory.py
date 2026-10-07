@@ -30,7 +30,7 @@ def the_registry_is_consistent_with_the_running_code_and_registries():
     from release_readiness import registry
     res = registry.verify_registry(ROOT)
     assert res["findings"] == [], res["findings"][:5]
-    assert sum(res["counts"].values()) == len(reg()["components"]) == 133      # CHG-ESTACK-COLLECTOR-FACTORY-B1: +18 collectors; B2: +16; B3: +6; B4: +4
+    assert sum(res["counts"].values()) == len(reg()["components"]) == 140      # CHG-ESTACK-COLLECTOR-FACTORY-B1: +18 collectors; B2: +16; B3: +6; B4: +4; B5: +7
 
 
 @test
@@ -53,7 +53,7 @@ def every_agent_collector_adapter_domain_and_skill_domain_is_registered():
     for x in reg()["components"]:
         kinds.setdefault(x["kind"], set()).add(x["id"])
     assert len(kinds["agent"]) == len(facts["agents"]) == 18
-    assert len(kinds["collector"]) == len(facts["collectors"]) == 65      # CHG-ESTACK-COLLECTOR-FACTORY-B1: +18 generated (lot B1); B2: +16 (lot B2); B3: +6 (security); B4: +4 (AWR/ASH)
+    assert len(kinds["collector"]) == len(facts["collectors"]) == 72      # CHG-ESTACK-COLLECTOR-FACTORY-B1: +18 generated (lot B1); B2: +16 (lot B2); B3: +6 (security); B4: +4 (AWR/ASH); B5: +7 (PDB coverage)
     assert len(kinds["adapter"]) == len(facts["adapters"]) == 4
     assert len(kinds["domain"]) == len(facts["matrix"]) == 20
     assert len(kinds["skill_domain"]) == len(facts["skill_domains"]) == 16

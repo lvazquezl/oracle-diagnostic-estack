@@ -1,0 +1,15 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B5)",
+  "rows": [
+    {
+      "username": "SYNTH_USER",
+      "sysdba": "TRUE",
+      "sysoper": "TRUE",
+      "sysasm": "FALSE",
+      "sysbackup": "FALSE",
+      "sysdg": "FALSE",
+      "syskm": "FALSE",
+      "common": "NO"
+    }
+  ]
+}

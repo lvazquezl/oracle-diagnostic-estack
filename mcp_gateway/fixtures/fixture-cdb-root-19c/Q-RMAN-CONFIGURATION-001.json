@@ -1,0 +1,10 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B5)",
+  "rows": [
+    {
+      "config_name": "RETENTION POLICY",
+      "setting": "RECOVERY_WINDOW",
+      "setting_number": 7
+    }
+  ]
+}

@@ -1349,6 +1349,360 @@
    "max": 100000000,
    "policy": "KEEP",
    "example": 120
+  },
+  "pdb_name": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "pdb",
+   "example": "SYNTH_PDB"
+  },
+  "open_mode": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "MIGRATE",
+    "MOUNTED",
+    "READ ONLY",
+    "READ WRITE"
+   ],
+   "example": "READ WRITE"
+  },
+  "restricted": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "NO"
+  },
+  "recovery_status": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "DISABLED",
+    "ENABLED"
+   ],
+   "example": "ENABLED"
+  },
+  "total_size": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000000000000000,
+   "policy": "KEEP",
+   "example": 2147483648
+  },
+  "hours_since_open": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 0.5
+  },
+  "application_root": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "NO"
+  },
+  "application_pdb": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "NO"
+  },
+  "application_seed": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "NO"
+  },
+  "proxy_pdb": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "NO"
+  },
+  "local_undo": {
+   "type": "integer",
+   "min": 0,
+   "max": 1,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "service_name": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "svc",
+   "example": "SYNTH_SVC"
+  },
+  "clb_goal": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "LONG",
+    "SHORT"
+   ],
+   "example": "LONG"
+  },
+  "rlb_goal": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NONE",
+    "SERVICE_TIME",
+    "THROUGHPUT"
+   ],
+   "example": "NONE"
+  },
+  "active_instance": {
+   "type": "integer",
+   "min": 1,
+   "max": 1000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "cause": {
+   "type": "oracle_term",
+   "policy": "KEEP",
+   "example": "Parameter"
+  },
+  "violation_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "hours_since_last": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 12.5
+  },
+  "policy_name": {
+   "type": "oracle_term",
+   "policy": "KEEP",
+   "example": "ORA_LOGON_FAILURES"
+  },
+  "entity_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "ROLE",
+    "USER"
+   ],
+   "example": "USER"
+  },
+  "entity_scope": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "ALL_USERS",
+    "SPECIFIC"
+   ],
+   "example": "ALL_USERS"
+  },
+  "success": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "YES"
+  },
+  "failure": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "YES"
+  },
+  "entity_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "profile": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "prf",
+   "example": "SYNTH_PROFILE"
+  },
+  "profile_kind": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "CUSTOM",
+    "DEFAULT",
+    "ORACLE"
+   ],
+   "example": "DEFAULT"
+  },
+  "resource_name": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FAILED_LOGIN_ATTEMPTS",
+    "INACTIVE_ACCOUNT_TIME",
+    "PASSWORD_GRACE_TIME",
+    "PASSWORD_LIFE_TIME",
+    "PASSWORD_LOCK_TIME",
+    "PASSWORD_REUSE_MAX",
+    "PASSWORD_REUSE_TIME",
+    "PASSWORD_VERIFY_FUNCTION"
+   ],
+   "example": "FAILED_LOGIN_ATTEMPTS"
+  },
+  "limit_keyword": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "CUSTOM_FUNCTION",
+    "DEFAULT",
+    "NULL",
+    "ORACLE_FUNCTION",
+    "UNLIMITED",
+    "VALUE"
+   ],
+   "example": "VALUE"
+  },
+  "limit_value": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 10
+  },
+  "sysdba": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FALSE",
+    "TRUE"
+   ],
+   "example": "TRUE"
+  },
+  "sysoper": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FALSE",
+    "TRUE"
+   ],
+   "example": "TRUE"
+  },
+  "sysasm": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FALSE",
+    "TRUE"
+   ],
+   "example": "FALSE"
+  },
+  "sysbackup": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FALSE",
+    "TRUE"
+   ],
+   "example": "FALSE"
+  },
+  "sysdg": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FALSE",
+    "TRUE"
+   ],
+   "example": "FALSE"
+  },
+  "syskm": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FALSE",
+    "TRUE"
+   ],
+   "example": "FALSE"
+  },
+  "common": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "NO"
+  },
+  "config_name": {
+   "type": "oracle_term",
+   "policy": "KEEP",
+   "example": "RETENTION POLICY"
+  },
+  "setting": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "APPLIED_ON_STANDBY",
+    "BACKED_UP",
+    "DISK",
+    "NONE",
+    "OFF",
+    "ON",
+    "OTHER",
+    "RECOVERY_WINDOW",
+    "REDUNDANCY",
+    "SBT",
+    "SHIPPED"
+   ],
+   "example": "RECOVERY_WINDOW"
+  },
+  "setting_number": {
+   "type": "number",
+   "min": 0,
+   "max": 100000,
+   "policy": "KEEP",
+   "example": 7
+  },
+  "violation_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "ERROR",
+    "WARNING"
+   ],
+   "example": "WARNING"
+  },
+  "violation_status": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "IGNORE",
+    "PENDING",
+    "RESOLVED"
+   ],
+   "example": "RESOLVED"
   }
  }
 }

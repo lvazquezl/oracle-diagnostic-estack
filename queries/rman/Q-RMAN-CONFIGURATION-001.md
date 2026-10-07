@@ -1,6 +1,6 @@
 ---
 query_id: Q-RMAN-CONFIGURATION-001
-version: 1.0.0
+version: 2.0.0
 
 domain: rman
 purpose: Visibilidad de configuración RMAN persistente (retention policy, backup optimization, device type, channels, snapshot controlfile, archivelog deletion policy) — nunca ejecuta CONFIGURE
@@ -49,7 +49,19 @@ status: active
 # Statement / procedure (read-only) — Variant V1 (all_versions, 10g-23ai)
 
 ```sql
-SELECT conf#, name, value
+SELECT name AS config_name,
+       CASE WHEN value LIKE 'TO RECOVERY WINDOW%' THEN 'RECOVERY_WINDOW'
+            WHEN value LIKE 'TO REDUNDANCY%'      THEN 'REDUNDANCY'
+            WHEN value LIKE 'TO NONE%'            THEN 'NONE'
+            WHEN value IN ('ON','OFF')            THEN value
+            WHEN value LIKE '%APPLIED%'           THEN 'APPLIED_ON_STANDBY'
+            WHEN value LIKE '%BACKED UP%'         THEN 'BACKED_UP'
+            WHEN value LIKE '%SHIPPED%'           THEN 'SHIPPED'
+            WHEN value LIKE '%SBT%'               THEN 'SBT'
+            WHEN value LIKE '%DISK%'              THEN 'DISK'
+            ELSE 'OTHER' END AS setting,
+       CASE WHEN name IN ('RETENTION POLICY','ARCHIVELOG DELETION POLICY','DEVICE TYPE') OR name LIKE '%BACKUP COPIES%'
+            THEN TO_NUMBER(REGEXP_SUBSTR(value, '[0-9]+')) END AS setting_number
 FROM   v$rman_configuration
 ORDER  BY conf#;
 ```
@@ -83,3 +95,5 @@ Ninguna.
 # Evolution via `/change query`
 
 N/A — vista estable desde 9i.
+
+2.0.0 CHG-ESTACK-PDB-COVERAGE-001: `value` ya no sale crudo: puede llevar rutas (`FORMAT`, `SNAPSHOT CONTROLFILE NAME`) o parámetros de canal. Se clasifica en `setting` y, para retención, borrado de archivelogs, paralelismo y copias, `setting_number`. Sin filas significa que no hay ningún `CONFIGURE` persistente (todo en default).

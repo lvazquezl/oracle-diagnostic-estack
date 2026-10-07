@@ -1,5 +1,5 @@
 {
- "_doc": "CHG-ESTACK-COLLECTOR-FACTORY-B1 \u2014 lot B1: Oracle Core + tablespaces for /healthcheck. Each entry becomes one gateway collector (mcp_gateway/catalog/collectors.factory.json) and one synthetic fixture. 'aliases' maps the driver column to the field (the lab adapter uses the same map); 'fields' is the default-deny allowlist; 'overrides' may only narrow a knowledge-base definition.",
+ "_doc": "CHG-ESTACK-COLLECTOR-FACTORY-B1 — lot B1: Oracle Core + tablespaces for /healthcheck. Each entry becomes one gateway collector (mcp_gateway/catalog/collectors.factory.json) and one synthetic fixture. 'aliases' maps the driver column to the field (the lab adapter uses the same map); 'fields' is the default-deny allowlist; 'overrides' may only narrow a knowledge-base definition.",
  "lot_id": "B1",
  "fixture_target": "fixture-primary-19c",
  "collectors": [
@@ -77,6 +77,7 @@
    "title": "Registry components: id, version and status",
    "row_limit": 100,
    "fields": [
+    "con_id",
     "comp_id",
     "version",
     "status"
@@ -231,6 +232,7 @@
    "title": "Invalid objects by owner and type (owner and object names masked)",
    "row_limit": 100,
    "fields": [
+    "con_id",
     "owner",
     "object_type",
     "object_name",
@@ -243,6 +245,7 @@
    "title": "Object counts by owner (masked), type and status",
    "row_limit": 100,
    "fields": [
+    "con_id",
     "owner",
     "object_type",
     "status",
@@ -265,6 +268,7 @@
    "title": "Scheduler jobs broken, failed or with failures (names masked; hours since last start)",
    "row_limit": 100,
    "fields": [
+    "con_id",
     "owner",
     "job_name",
     "state",

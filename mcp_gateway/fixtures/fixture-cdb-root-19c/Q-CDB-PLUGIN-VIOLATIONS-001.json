@@ -1,0 +1,14 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B5)",
+  "rows": [
+    {
+      "con_id": 1,
+      "pdb_name": "SYNTH_PDB",
+      "violation_type": "WARNING",
+      "violation_status": "RESOLVED",
+      "cause": "Parameter",
+      "violation_count": 1,
+      "hours_since_last": 12.5
+    }
+  ]
+}

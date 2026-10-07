@@ -98,6 +98,10 @@ def the_whole_chain_is_read_only_for_the_repository():
 
 
 CDB_ROOT_COLLECTORS = ("Q-CDB-TABLESPACES-001", "Q-CDB-TEMP-001", "Q-RMAN-FRA-USAGE-001")   # CHG-ESTACK-ORA19C-LAB-003: fixture-cdb-root-19c
+# CHG-ESTACK-PDB-COVERAGE-001: lot B5 is generated with fixture-cdb-root-19c as its synthetic target
+CDB_ROOT_COLLECTORS += tuple(c["collector_id"] for c in json.load(open(os.path.join(ROOT, "mcp_gateway", "catalog", "collectors.factory.json"),
+                                                                       encoding="utf-8"))["collectors"]
+                             if c["factory"].get("fixture_target") == "fixture-cdb-root-19c")
 # CHG-ESTACK-AWR-LICENSED-001: Diagnostics Pack collectors run only where the license is CONFIRMED (fixture-licensed-19c)
 LICENSED_COLLECTORS = tuple(c["collector_id"] for c in json.load(open(os.path.join(ROOT, "mcp_gateway", "catalog", "collectors.factory.json"),
                                                                        encoding="utf-8"))["collectors"]

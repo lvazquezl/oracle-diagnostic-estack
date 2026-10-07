@@ -2,6 +2,7 @@
   "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B3)",
   "rows": [
     {
+      "con_id": 1,
       "action_name": "LOGON",
       "return_code": 0,
       "event_count": 42,

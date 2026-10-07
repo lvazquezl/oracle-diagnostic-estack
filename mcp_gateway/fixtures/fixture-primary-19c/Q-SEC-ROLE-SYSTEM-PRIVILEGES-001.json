@@ -2,6 +2,7 @@
   "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B3)",
   "rows": [
     {
+      "con_id": 1,
       "role": "SYNTH_APP_ROLE",
       "oracle_maintained": "N",
       "privilege": "CREATE SESSION",

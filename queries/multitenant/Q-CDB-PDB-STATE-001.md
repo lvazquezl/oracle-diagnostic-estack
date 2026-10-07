@@ -1,6 +1,6 @@
 ---
 query_id: Q-CDB-PDB-STATE-001
-version: 1.0.0
+version: 2.0.0
 
 domain: multitenant
 purpose: Inventario y estado de cada PDB — open mode, restricted, tamaño, recovery status, y (12.2+) Application Containers/Proxy PDB/Local Undo awareness
@@ -39,12 +39,12 @@ variants:
   - variant_id: Q-CDB-PDB-STATE-001-V1
     label: legacy_121
     oracle_versions: {min: "12.1", max: "12.1"}
-    container_scope: CDB_ROOT_ONLY
+    container_scope: ANY_CONTAINER
     sql_block: "Variant V1 (legacy_121, 12.1 only)"
   - variant_id: Q-CDB-PDB-STATE-001-V2
     label: modern_122plus
     oracle_versions: {min: "12.2", max: "23.0"}
-    container_scope: CDB_ROOT_ONLY
+    container_scope: ANY_CONTAINER
     sql_block: "Variant V2 (modern_122plus, 12.2+)"
 
 tests: [tests/test_no_write_operations.sh, tests/test_pdb_inventory.sh, tests/test_pdb_state.sh, tests/test_multitenant_container_scope.sh, tests/test_multitenant_query_version_compatibility.sh, tests/test_multitenant_query_cost.sh]
@@ -54,18 +54,18 @@ status: active
 # Statement / procedure (read-only) — Variant V1 (legacy_121, 12.1 only)
 
 ```sql
-SELECT con_id, name, open_mode, restricted, open_time, total_size, recovery_status
+SELECT con_id, name AS pdb_name, open_mode, restricted, recovery_status, total_size,
+       ROUND((CAST(SYS_EXTRACT_UTC(SYSTIMESTAMP) AS DATE) - CAST(SYS_EXTRACT_UTC(open_time) AS DATE)) * 24, 2) AS hours_since_open
 FROM   v$pdbs
 WHERE  con_id > 1
 ORDER  BY con_id;
 ```
 
-Application Containers/Proxy PDB/Local Undo no existen en 12.1 — no se seleccionan `application_root`/`application_pdb`/`application_seed`/`proxy_pdb`/`local_undo` en esta variante (bug real evitado deliberadamente, no un olvido).
-
 # Statement / procedure (read-only) — Variant V2 (modern_122plus, 12.2+)
 
 ```sql
-SELECT con_id, name, open_mode, restricted, open_time, total_size, recovery_status,
+SELECT con_id, name AS pdb_name, open_mode, restricted, recovery_status, total_size,
+       ROUND((CAST(SYS_EXTRACT_UTC(SYSTIMESTAMP) AS DATE) - CAST(SYS_EXTRACT_UTC(open_time) AS DATE)) * 24, 2) AS hours_since_open,
        application_root, application_pdb, application_seed, proxy_pdb, local_undo
 FROM   v$pdbs
 WHERE  con_id > 1
@@ -103,3 +103,5 @@ Ninguna — metadata core de contenedor. Multi-PDB más allá del límite de edi
 # Evolution via `/change query`
 
 Nueva major Oracle: verificar si `V$PDBS` agrega columnas antes de asumir compatibilidad — `/change compatibility`.
+
+2.0.0 CHG-ESTACK-PDB-COVERAGE-001: `open_time` (fecha absoluta) se reemplaza por `hours_since_open`, calculado en la base en UTC, y `name` se renombra a `pdb_name` (identificador, se enmascara). Así el gateway puede exponer la query sin fechas crudas.

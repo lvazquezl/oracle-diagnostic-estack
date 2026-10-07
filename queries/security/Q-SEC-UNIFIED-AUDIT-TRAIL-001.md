@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-UNIFIED-AUDIT-TRAIL-001
-version: 2.0.0
+version: 3.0.0
 
 domain: security
 purpose: Resumen de la auditoría unificada de los últimos 7 días por acción y resultado (conteos, sin filas crudas ni texto SQL).
@@ -14,8 +14,8 @@ supported_architectures: [Standalone, RAC]
 container_scope: ANY_CONTAINER
 database_role_scope: ANY
 
-objects_accessed: [UNIFIED_AUDIT_TRAIL]
-privileges_required: [AUDIT_VIEWER (o SELECT on UNIFIED_AUDIT_TRAIL)]
+objects_accessed: [UNIFIED_AUDIT_TRAIL, CDB_UNIFIED_AUDIT_TRAIL]
+privileges_required: [SELECT on UNIFIED_AUDIT_TRAIL, SELECT on CDB_UNIFIED_AUDIT_TRAIL]
 
 risk_class: R0
 cost_class: HIGH
@@ -31,11 +31,23 @@ license_requirements: none
 
 execution_mode: READ_ONLY
 
+variants:
+  - variant_id: Q-SEC-UNIFIED-AUDIT-TRAIL-001-V1
+    label: unified_12_18
+    oracle_versions: {min: "12.1", max: "18.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V1 (unified_12_18, 12.1–18c)"
+  - variant_id: Q-SEC-UNIFIED-AUDIT-TRAIL-001-V2
+    label: cdb_19plus
+    oracle_versions: {min: "19.0", max: "23.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V2 (cdb_19plus, 19c+: CDB_UNIFIED_AUDIT_TRAIL con con_id)"
+
 tests: [tests/test_no_write_operations.sh, tests/test_audit_query_budget.sh, tests/test_privileged_audit_awareness.sh]
 status: active
 ---
 
-# Statement / procedure (read-only)
+# Statement / procedure (read-only) — Variant V1 (unified_12_18, 12.1–18c)
 
 ```sql
 SELECT action_name, return_code,
@@ -44,6 +56,19 @@ SELECT action_name, return_code,
 FROM   unified_audit_trail
 WHERE  event_timestamp >= SYSTIMESTAMP - INTERVAL '7' DAY
 GROUP  BY action_name, return_code
+ORDER  BY COUNT(*) DESC
+FETCH  FIRST 100 ROWS ONLY;
+```
+
+# Statement / procedure (read-only) — Variant V2 (cdb_19plus, 19c+: CDB_UNIFIED_AUDIT_TRAIL con con_id)
+
+```sql
+SELECT con_id, action_name, return_code,
+       COUNT(*)                   AS event_count,
+       COUNT(DISTINCT dbusername) AS user_count
+FROM   cdb_unified_audit_trail
+WHERE  event_timestamp >= SYSTIMESTAMP - INTERVAL '7' DAY
+GROUP  BY con_id, action_name, return_code
 ORDER  BY COUNT(*) DESC
 FETCH  FIRST 100 ROWS ONLY;
 ```
@@ -82,3 +107,5 @@ metadata (`action_name`, no `sql_text`).
 CHG-ESTACK-SEC-QUERIES-001 — 2.0.0: resumen agregado de 7 días sin literales vetados ni binds (antes no resolvía nunca).
 
 N/A.
+
+3.0.0 CHG-ESTACK-PDB-COVERAGE-001: V2 (19c+) lee `CDB_UNIFIED_AUDIT_TRAIL` con `con_id`. Se acota a 19c porque la Database Reference de 12.2 no documenta esa vista; existe y se validó en 19c (lab). 12.1–18c sigue con `UNIFIED_AUDIT_TRAIL` (solo el contenedor actual).

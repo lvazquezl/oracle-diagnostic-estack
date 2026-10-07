@@ -1,5 +1,5 @@
 {
- "_doc": "CHG-ESTACK-SEC-QUERIES-001 \u2014 lot B3: the security queries corrected by this change (role privileges and nested roles over DBA_* views, 7-day audit summaries, redaction, Database Vault, directories, default-password accounts). Same rules as lots/B1-oracle-core.json. Data Redaction and Database Vault stay out of this lot: their queries declare an option licence and the gateway gates them as LICENSE_RESTRICTED unless confirmed; they are corrected for the human route.",
+ "_doc": "CHG-ESTACK-SEC-QUERIES-001 — lot B3: the security queries corrected by this change (role privileges and nested roles over DBA_* views, 7-day audit summaries, redaction, Database Vault, directories, default-password accounts). Same rules as lots/B1-oracle-core.json. Data Redaction and Database Vault stay out of this lot: their queries declare an option licence and the gateway gates them as LICENSE_RESTRICTED unless confirmed; they are corrected for the human route.",
  "lot_id": "B3",
  "fixture_target": "fixture-primary-19c",
  "collectors": [
@@ -9,6 +9,7 @@
    "title": "System privileges granted to every role of the database (role names masked; Oracle-maintained flag)",
    "row_limit": 200,
    "fields": [
+    "con_id",
     "role",
     "oracle_maintained",
     "privilege",
@@ -21,6 +22,7 @@
    "title": "Roles granted to roles across the database (names masked; Oracle-maintained flag)",
    "row_limit": 200,
    "fields": [
+    "con_id",
     "role",
     "oracle_maintained",
     "granted_role",
@@ -33,6 +35,7 @@
    "title": "Unified audit summary of the last 7 days by action and return code (counts only)",
    "row_limit": 100,
    "fields": [
+    "con_id",
     "action_name",
     "return_code",
     "event_count",
@@ -45,6 +48,7 @@
    "title": "Traditional session audit summary of the last 7 days by action and return code (counts only)",
    "row_limit": 100,
    "fields": [
+    "con_id",
     "action_name",
     "return_code",
     "event_count",
@@ -57,6 +61,7 @@
    "title": "Directory objects and their grants (names and grantees masked; server paths not exposed)",
    "row_limit": 100,
    "fields": [
+    "con_id",
     "directory_name",
     "grantee",
     "privilege"

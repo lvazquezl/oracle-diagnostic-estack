@@ -1,0 +1,114 @@
+{
+ "_doc": "CHG-ESTACK-PDB-COVERAGE-001 — lot B5: PDB coverage of the assessment. Certified queries that existed but were not exposed: PDB state, services, plug-in violations (summary), unified audit policies (Oracle names only), password profiles (keywords, never custom function names), password-file users and RMAN persistent configuration (classified, never the raw value). Same rules as lots/B1-oracle-core.json.",
+ "lot_id": "B5",
+ "fixture_target": "fixture-cdb-root-19c",
+ "collectors": [
+  {
+   "collector_id": "Q-CDB-PDB-STATE-001",
+   "domain": "multitenant",
+   "title": "PDBs seen from CDB$ROOT: open mode, restricted, recovery status, size, hours since open, application/proxy flags and local undo (names masked)",
+   "row_limit": 100,
+   "fields": [
+    "con_id",
+    "pdb_name",
+    "open_mode",
+    "restricted",
+    "recovery_status",
+    "total_size",
+    "hours_since_open",
+    "application_root",
+    "application_pdb",
+    "application_seed",
+    "proxy_pdb",
+    "local_undo"
+   ]
+  },
+  {
+   "collector_id": "Q-CDB-SERVICES-001",
+   "domain": "multitenant",
+   "title": "PDB services and the instances where they are active (service names masked)",
+   "row_limit": 100,
+   "fields": [
+    "con_id",
+    "service_name",
+    "clb_goal",
+    "rlb_goal",
+    "active_instance"
+   ]
+  },
+  {
+   "collector_id": "Q-CDB-PLUGIN-VIOLATIONS-001",
+   "domain": "multitenant",
+   "title": "PDB plug-in violations summarized by container, type, status and cause (no message text)",
+   "row_limit": 100,
+   "aliases": {
+    "type": "violation_type",
+    "status": "violation_status"
+   },
+   "fields": [
+    "con_id",
+    "pdb_name",
+    "violation_type",
+    "violation_status",
+    "cause",
+    "violation_count",
+    "hours_since_last"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-UNIFIED-AUDIT-POLICIES-001",
+   "domain": "security",
+   "title": "Enabled unified audit policies: Oracle-maintained name or CUSTOM, entity type and scope, success/failure (no user or role names)",
+   "row_limit": 100,
+   "fields": [
+    "policy_name",
+    "entity_type",
+    "entity_scope",
+    "success",
+    "failure",
+    "entity_count"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-PASSWORD-PROFILES-001",
+   "domain": "security",
+   "title": "Password profile limits per container: profile kind, resource and limit keyword/value (profile names masked, custom verify functions not exposed)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "profile",
+    "profile_kind",
+    "resource_name",
+    "limit_keyword",
+    "limit_value"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-ADMIN-PRIVILEGES-001",
+   "domain": "security",
+   "title": "Password-file users and their administrative privileges (user names masked)",
+   "row_limit": 100,
+   "fields": [
+    "username",
+    "sysdba",
+    "sysoper",
+    "sysasm",
+    "sysbackup",
+    "sysdg",
+    "syskm",
+    "common"
+   ]
+  },
+  {
+   "collector_id": "Q-RMAN-CONFIGURATION-001",
+   "domain": "rman",
+   "title": "RMAN persistent configuration: setting name, classified value and number (raw values and paths never exposed); no rows means all defaults",
+   "row_limit": 100,
+   "fields": [
+    "config_name",
+    "setting",
+    "setting_number"
+   ]
+  }
+ ]
+}

@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-TRADITIONAL-AUDIT-001
-version: 2.0.0
+version: 3.0.0
 
 domain: security
 purpose: Resumen de la auditoría tradicional de sesiones de los últimos 7 días por acción y código de retorno (conteos, sin filas crudas).
@@ -14,8 +14,8 @@ supported_architectures: [Standalone, RAC]
 container_scope: ANY_CONTAINER
 database_role_scope: ANY
 
-objects_accessed: [DBA_AUDIT_SESSION]
-privileges_required: [SELECT on DBA_AUDIT_SESSION]
+objects_accessed: [DBA_AUDIT_SESSION, CDB_AUDIT_SESSION]
+privileges_required: [SELECT on DBA_AUDIT_SESSION, SELECT on CDB_AUDIT_SESSION]
 
 risk_class: R0
 cost_class: MEDIUM
@@ -38,10 +38,10 @@ variants:
     container_scope: ANY_CONTAINER
     sql_block: "Variant V1 (legacy_10g_11g, 10g-11g)"
   - variant_id: Q-SEC-TRADITIONAL-AUDIT-001-V2
-    label: modern_12plus
+    label: cdb_aware_12plus
     oracle_versions: {min: "12.1", max: "23.0"}
     container_scope: ANY_CONTAINER
-    sql_block: "Variant V2 (modern_12plus, 12.1+)"
+    sql_block: "Variant V2 (cdb_aware_12plus, 12.1+)"
 
 tests: [tests/test_no_write_operations.sh, tests/test_audit_query_budget.sh, tests/test_traditional_audit_detection.sh]
 status: active
@@ -60,14 +60,14 @@ FROM  (SELECT action_name, returncode AS return_code,
 WHERE  ROWNUM <= 100;
 ```
 
-# Statement / procedure (read-only) — Variant V2 (modern_12plus, 12.1+)
+# Statement / procedure (read-only) — Variant V2 (cdb_aware_12plus, 12.1+)
 
 ```sql
-SELECT action_name, returncode AS return_code,
+SELECT con_id, action_name, returncode AS return_code,
        COUNT(*) AS event_count, COUNT(DISTINCT username) AS user_count
-FROM   dba_audit_session
+FROM   cdb_audit_session
 WHERE  timestamp >= SYSDATE - 7
-GROUP  BY action_name, returncode
+GROUP  BY con_id, action_name, returncode
 ORDER  BY COUNT(*) DESC
 FETCH  FIRST 100 ROWS ONLY;
 ```
@@ -105,3 +105,5 @@ Ninguna.
 CHG-ESTACK-SEC-QUERIES-001 — 2.0.0: resumen agregado de 7 días sin binds; se retira el bloque común de `AUDIT_TRAIL` (cubierto por `Q-ORA-PARAMETERS-001`).
 
 N/A.
+
+3.0.0 CHG-ESTACK-PDB-COVERAGE-001: V2 (12.1+) lee `CDB_AUDIT_SESSION` con `con_id`.

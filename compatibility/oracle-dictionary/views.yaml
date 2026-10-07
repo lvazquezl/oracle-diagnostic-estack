@@ -223,13 +223,42 @@ views:
 
   CDB_OBJECTS:
     min_version: "12.1"
-    notes: "No usado por defecto en Fase 2 (ver Q-ORA-OBJECTS-INVENTORY-001); documentado como alternativa cross-PDB."
+    notes: "Usada por la V2 (12.1+) de Q-ORA-OBJECTS-INVENTORY-001 y Q-ORA-INVALID-OBJECTS-001 desde CHG-ESTACK-PDB-COVERAGE-001 (cobertura de la PDB desde CDB$ROOT)."
 
   DBA_REGISTRY:
     min_version: all
 
   CDB_REGISTRY:
     min_version: "12.1"
+
+  # --- CHG-ESTACK-PDB-COVERAGE-001: vistas CDB_* de las V2 (12.1+) que cubren la PDB desde CDB$ROOT.
+  # Mínimo 12.1: la familia CDB_* nace con multitenant. No toda DBA_* tiene CDB_* (DBA_USERS_WITH_DEFPWD no la tiene:
+  # ORA-00942 en el lab y ausente de la Database Reference 19c), así que cada vista se verifica individualmente.
+  # Existencia y acceso verificados en el lab 19c como C##ESTACK_DIAG (2026-10-07), con filas en con_id 1 y 3.
+  CDB_SCHEDULER_JOBS:
+    min_version: "12.1"
+    notes: "V2 de Q-ORA-JOBS-SUMMARY-001."
+  CDB_SYS_PRIVS:
+    min_version: "12.1"
+    notes: "V2 de Q-SEC-ROLE-SYSTEM-PRIVILEGES-001."
+  CDB_ROLE_PRIVS:
+    min_version: "12.1"
+    notes: "V2 de Q-SEC-NESTED-ROLE-GRANTS-001."
+  CDB_DIRECTORIES:
+    min_version: "12.1"
+    notes: "V2 de Q-SEC-DIRECTORIES-001."
+  CDB_TAB_PRIVS:
+    min_version: "12.1"
+    notes: "V2 de Q-SEC-DIRECTORIES-001 (grants sobre directorios)."
+  CDB_PROFILES:
+    min_version: "12.1"
+    notes: "V2 de Q-SEC-PASSWORD-PROFILES-001."
+  CDB_AUDIT_SESSION:
+    min_version: "12.1"
+    notes: "V2 de Q-SEC-TRADITIONAL-AUDIT-001."
+  CDB_UNIFIED_AUDIT_TRAIL:
+    min_version: "19.0"
+    notes: "V2 de Q-SEC-UNIFIED-AUDIT-TRAIL-001. Conservador: la Database Reference de 12.2 no documenta esta vista (solo UNIFIED_AUDIT_TRAIL); existe y se verificó en 19c (lab). Bajar el mínimo requiere evidencia de 12.2/18c."
 
   DBA_SCHEDULER_JOBS:
     min_version: all
