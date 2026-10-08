@@ -493,7 +493,8 @@ def clock_check_compares_the_database_clock_with_the_gateway():
 @test
 def accuracy_queries_fix_redo_scope_and_placement():
     rs = _resolved("Q-ORA-REDO-SWITCH-24H-001", "19.0")
-    assert "next_time" in rs and "first_time" not in rs, rs
+    assert "from v$log where status = 'current'" in rs and "next_time" not in rs, rs     # V$LOG_HISTORY has no NEXT_TIME
+    assert "switch_time <= sysdate" in rs, rs                                             # no negative hours from a skewed clock
     un = _resolved("Q-ORA-UNDO-001", "19.0")
     assert "group  by u.con_id" in un and "con_id" in un.split("from")[0], un
     assert "con_id" not in _resolved("Q-ORA-UNDO-001", "11.2")

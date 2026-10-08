@@ -117,6 +117,18 @@ views:
 
   V$LOG_HISTORY:
     min_version: all
+    columns_exhaustive: true
+    columns:                         # CHG-ESTACK-ASSESSMENT-ACCURACY-001: Database Reference 19c (V$LOG_HISTORY). NO tiene NEXT_TIME (eso es V$ARCHIVED_LOG)
+      recid:              {min_version: all}
+      stamp:              {min_version: all}
+      thread#:            {min_version: all}
+      sequence#:          {min_version: all}
+      first_change#:      {min_version: all}
+      first_time:         {min_version: all}
+      next_change#:       {min_version: all}
+      resetlogs_change#:  {min_version: all}
+      resetlogs_time:     {min_version: all}
+      con_id:             {min_version: "12.1"}
 
   V$ARCHIVE_DEST:
     min_version: all

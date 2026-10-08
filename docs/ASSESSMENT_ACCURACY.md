@@ -25,7 +25,7 @@ Al implementar apareció un bug del gateway que no se conocía. Si el máximo de
 | `Q-DISC-CLOCK-001` | 1.0.0 (nueva) | Hora UTC de la base (segundos desde 1970) y desfase de zona horaria; lee `V$INSTANCE` |
 | Gateway: `clock_check` | — | Compara `db_utc_epoch` con su hora UTC de recolección; limitación `CLOCK_SKEW` si el desfase supera 300 s. La evidencia de fixture nunca se compara |
 | `Q-CDB-CONTAINER-DATA-001` | 1.0.0 (nueva) | Contenedores que ve la cuenta de diagnóstico (`DBA_CONTAINER_DATA`, filtrado por `SESSION_USER`); nombres de PDB enmascarados |
-| `Q-ORA-REDO-SWITCH-24H-001` | 2.0.0 | Cuenta los switches por `NEXT_TIME` |
+| `Q-ORA-REDO-SWITCH-24H-001` | 2.0.0 | Suma el `FIRST_TIME` del log actual (`V$LOG`, `CURRENT`) a la historia y descarta horas futuras. `NEXT_TIME`, sugerido en la revisión, no existe en `V$LOG_HISTORY`: un primer intento falló en el lab |
 | `Q-ORA-UNDO-001` | 2.0.0 | V2 (12.1+): retención ajustada por `con_id` |
 | `Q-SEC-ADMIN-PRIVILEGES-001` | 2.0.0 | V3 (12.1+): `con_id` |
 | `Q-SEC-PROXY-AUTHENTICATION-001` | 3.0.0 | V3 (12.1.0.2+, donde existe `DBA_USERS.ORACLE_MAINTAINED`): `oracle_maintained` del proxy y del cliente |
