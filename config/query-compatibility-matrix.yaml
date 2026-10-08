@@ -95,11 +95,22 @@ queries:
   Q-ORA-CONTROLFILE-001: {file: queries/oracle/controlfile/Q-ORA-CONTROLFILE-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$CONTROLFILE, V$CONTROLFILE_RECORD_SECTION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-ORA-REDO-001: {file: queries/oracle/redo/Q-ORA-REDO-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$LOG, V$LOGFILE], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-ORA-REDO-SWITCH-FREQ-001: {file: queries/oracle/redo/Q-ORA-REDO-SWITCH-FREQ-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$LOG_HISTORY], role_scope: PRIMARY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-DISC-CLOCK-001: {file: queries/oracle/discovery/Q-DISC-CLOCK-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$INSTANCE], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-CDB-CONTAINER-DATA-001: {file: queries/multitenant/Q-CDB-CONTAINER-DATA-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [DBA_CONTAINER_DATA], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-ORA-REDO-SWITCH-24H-001: {file: queries/oracle/redo/Q-ORA-REDO-SWITCH-24H-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$LOG_HISTORY], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-ORA-ARCHIVE-001: {file: queries/oracle/archive/Q-ORA-ARCHIVE-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$ARCHIVE_DEST, V$ARCHIVE_DEST_STATUS, V$ARCHIVED_LOG], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-DBA-TBS-DATAFILES-001: {file: queries/oracle/tablespaces/Q-DBA-TBS-DATAFILES-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_DATA_FILES], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
   Q-ORA-TEMP-001: {file: queries/oracle/temp/Q-ORA-TEMP-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [DBA_TEMP_FILES, DBA_TEMP_FREE_SPACE], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
-  Q-ORA-UNDO-001: {file: queries/oracle/undo/Q-ORA-UNDO-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$PARAMETER, DBA_TABLESPACES, V$UNDOSTAT], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ORA-UNDO-001:
+    file: queries/oracle/undo/Q-ORA-UNDO-001.md
+    variants:
+      - {variant_id: Q-ORA-UNDO-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-ORA-UNDO-001-V2, label: per_container_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$PARAMETER, DBA_TABLESPACES, V$UNDOSTAT]
+    role_scope: PRIMARY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
   Q-ORA-SESSIONS-SUMMARY-001: {file: queries/oracle/sessions/Q-ORA-SESSIONS-SUMMARY-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SESSION], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
   Q-ORA-PROCESSES-SUMMARY-001: {file: queries/oracle/processes/Q-ORA-PROCESSES-SUMMARY-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$PROCESS, V$PARAMETER], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-ORA-JOBS-SUMMARY-001:
@@ -343,7 +354,15 @@ queries:
 
   Q-RAC-INTERCONNECT-001: {file: queries/rac/Q-RAC-INTERCONNECT-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$CLUSTER_INTERCONNECTS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-RAC-GES-GCS-001: {file: queries/rac/Q-RAC-GES-GCS-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$GES_STATISTICS, GV$SYSSTAT, GV$INSTANCE_CACHE_TRANSFER], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
-  Q-ASM-TOPOLOGY-001: {file: queries/asm/Q-ASM-TOPOLOGY-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [V$ASM_CLIENT, V$ASM_DISKGROUP_STAT], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-ASM-TOPOLOGY-001:
+    file: queries/asm/Q-ASM-TOPOLOGY-001.md
+    variants:
+      - {variant_id: Q-ASM-TOPOLOGY-001-V1, label: placement_11plus, min: "11.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$ASM_CLIENT, V$ASM_DISKGROUP_STAT, V$DATAFILE, V$LOGFILE, V$CONTROLFILE, V$PARAMETER]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
   Q-ASM-DISKS-001: {file: queries/asm/Q-ASM-DISKS-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [V$ASM_DISK], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
   Q-ASM-REBALANCE-001: {file: queries/asm/Q-ASM-REBALANCE-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$ASM_OPERATION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
 
@@ -684,11 +703,13 @@ queries:
     file: queries/security/Q-SEC-PROXY-AUTHENTICATION-001.md
     variants:
       - {variant_id: Q-SEC-PROXY-AUTHENTICATION-001-V1, label: legacy_pre112, min: "10.2", max: "11.1", container_scope: ANY_CONTAINER}
-      - {variant_id: Q-SEC-PROXY-AUTHENTICATION-001-V2, label: flags_112plus, min: "11.2", max: "23.0", container_scope: ANY_CONTAINER}
-    required_views: [PROXY_USERS]
+      - {variant_id: Q-SEC-PROXY-AUTHENTICATION-001-V2, label: flags_112, min: "11.2", max: "12.1.0.1", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-PROXY-AUTHENTICATION-001-V3, label: oracle_maintained_12102plus, min: "12.1.0.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [PROXY_USERS, DBA_USERS]
     role_scope: ANY
     cost_class: LOW
-    validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-007: authorization_constraint → FLAGS (11.2+)
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
   Q-SEC-PASSWORD-PROFILES-001:
     file: queries/security/Q-SEC-PASSWORD-PROFILES-001.md
     variants:
@@ -756,11 +777,12 @@ queries:
     variants:
       - {variant_id: Q-SEC-DIRECTORIES-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
       - {variant_id: Q-SEC-DIRECTORIES-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
-    required_views: [DBA_DIRECTORIES, DBA_TAB_PRIVS, CDB_DIRECTORIES, CDB_TAB_PRIVS]
+    required_views: [DBA_DIRECTORIES, DBA_TAB_PRIVS, CDB_DIRECTORIES, CDB_TAB_PRIVS, CDB_USERS, CDB_ROLES]
     role_scope: ANY
     cost_class: LOW
     validation_status: COMPATIBLE
-    was: "CHG-ESTACK-PDB-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) o columnas seguras para el gateway"
+    was: "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
+    was_before: "CHG-ESTACK-PDB-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) o columnas seguras para el gateway"
   Q-SEC-DATABASE-VAULT-STATUS-001: {file: queries/security/Q-SEC-DATABASE-VAULT-STATUS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$OPTION, DBA_REGISTRY], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, license: SEPARATELY_LICENSED}
   Q-SEC-OLS-STATUS-001: {file: queries/security/Q-SEC-OLS-STATUS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$OPTION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, license: SEPARATELY_LICENSED}
   Q-SEC-DATA-REDACTION-POLICIES-001: {file: queries/security/Q-SEC-DATA-REDACTION-POLICIES-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [REDACTION_POLICIES, REDACTION_COLUMNS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, license: SEPARATELY_LICENSED}

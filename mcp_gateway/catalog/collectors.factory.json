@@ -537,6 +537,12 @@
       "row_limit": 1,
       "params": {},
       "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
         "undo_tablespace": {
           "type": "identifier",
           "policy": "MASK",
@@ -2391,6 +2397,14 @@
           "policy": "MASK",
           "alias_prefix": "grt"
         },
+        "grantee_oracle_maintained": {
+          "type": "enum",
+          "values": [
+            "N",
+            "Y"
+          ],
+          "policy": "KEEP"
+        },
         "privilege": {
           "type": "oracle_term",
           "policy": "KEEP"
@@ -3054,6 +3068,12 @@
       "row_limit": 100,
       "params": {},
       "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
         "username": {
           "type": "identifier",
           "policy": "MASK",
@@ -3168,6 +3188,95 @@
       },
       "factory": {
         "lot": "B5",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-DISC-CLOCK-001",
+      "kind": "sql_query",
+      "domain": "oracle",
+      "title": "Database UTC clock (seconds since 1970) and time zone offset; the gateway compares it with its own clock (clock_check, CLOCK_SKEW above 300 s)",
+      "row_limit": 1,
+      "params": {},
+      "output_fields": {
+        "db_utc_epoch": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000000,
+          "policy": "KEEP"
+        },
+        "db_tz_offset_minutes": {
+          "type": "integer",
+          "min": -840,
+          "max": 840,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B6",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-CDB-CONTAINER-DATA-001",
+      "kind": "sql_query",
+      "domain": "multitenant",
+      "title": "Containers the diagnostic account can see from CDB$ROOT (CONTAINER_DATA attribute; PDB names masked)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "container_kind": {
+          "type": "enum",
+          "values": [
+            "NONE",
+            "PDB",
+            "ROOT",
+            "SEED"
+          ],
+          "policy": "KEEP"
+        },
+        "pdb_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "pdb"
+        },
+        "default_attr": {
+          "type": "enum",
+          "values": [
+            "N",
+            "Y"
+          ],
+          "policy": "KEEP"
+        },
+        "all_containers": {
+          "type": "enum",
+          "values": [
+            "N",
+            "Y"
+          ],
+          "policy": "KEEP"
+        },
+        "attr_scope": {
+          "type": "enum",
+          "values": [
+            "DEFAULT",
+            "OBJECT"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B6",
         "lab_aliases": {},
         "fixture_target": "fixture-cdb-root-19c"
       }

@@ -5,6 +5,7 @@
       "con_id": 1,
       "directory_name": "SYNTH_DIR",
       "grantee": "SYNTH_USER",
+      "grantee_oracle_maintained": "Y",
       "privilege": "CREATE SESSION"
     }
   ]

@@ -89,6 +89,7 @@
    "title": "Password-file users and their administrative privileges (user names masked)",
    "row_limit": 100,
    "fields": [
+    "con_id",
     "username",
     "sysdba",
     "sysoper",

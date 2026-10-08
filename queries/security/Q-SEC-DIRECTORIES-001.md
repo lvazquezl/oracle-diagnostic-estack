@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-DIRECTORIES-001
-version: 3.0.0
+version: 4.0.0
 
 domain: security
 purpose: Directory objects y sus grants — directories, nunca navega filesystem (# 38 del prompt de Fase 8).
@@ -12,8 +12,8 @@ supported_architectures: [Standalone, RAC]
 container_scope: ANY_CONTAINER
 database_role_scope: ANY
 
-objects_accessed: [DBA_DIRECTORIES, DBA_TAB_PRIVS, CDB_DIRECTORIES, CDB_TAB_PRIVS]
-privileges_required: [SELECT on DBA_DIRECTORIES, SELECT on DBA_TAB_PRIVS, SELECT on CDB_DIRECTORIES, SELECT on CDB_TAB_PRIVS]
+objects_accessed: [DBA_DIRECTORIES, DBA_TAB_PRIVS, CDB_DIRECTORIES, CDB_TAB_PRIVS, CDB_USERS, CDB_ROLES]
+privileges_required: [SELECT on DBA_DIRECTORIES, SELECT on DBA_TAB_PRIVS, SELECT on CDB_DIRECTORIES, SELECT on CDB_TAB_PRIVS, SELECT on CDB_USERS, SELECT on CDB_ROLES]
 
 risk_class: R0
 cost_class: LOW
@@ -58,10 +58,14 @@ ORDER  BY d.directory_name, p.grantee, p.privilege;
 # Statement / procedure (read-only) — Variant V2 (cdb_aware_12plus, 12.1+: CDB_* con con_id)
 
 ```sql
-SELECT d.con_id, d.directory_name, p.grantee, p.privilege
+SELECT d.con_id, d.directory_name, p.grantee,
+       COALESCE(u.oracle_maintained, r.oracle_maintained) AS grantee_oracle_maintained,
+       p.privilege
 FROM   cdb_directories d
 LEFT   JOIN cdb_tab_privs p
        ON  p.con_id = d.con_id AND p.owner = d.owner AND p.table_name = d.directory_name
+LEFT   JOIN cdb_users u ON u.con_id = p.con_id AND u.username = p.grantee
+LEFT   JOIN cdb_roles r ON r.con_id = p.con_id AND r.role = p.grantee
 ORDER  BY d.con_id, d.directory_name, p.grantee, p.privilege;
 ```
 
@@ -100,3 +104,5 @@ CHG-ESTACK-SEC-QUERIES-001 — 2.0.0: directorios y grants en una sola sentencia
 N/A.
 
 3.0.0 CHG-ESTACK-PDB-COVERAGE-001: V2 (12.1+) lee `CDB_DIRECTORIES`/`CDB_TAB_PRIVS` con `con_id` y **ya no selecciona `directory_path`** (el gateway nunca lo expuso; ahora tampoco sale de la base).
+
+4.0.0 CHG-ESTACK-ASSESSMENT-ACCURACY-001: V2 agrega `grantee_oracle_maintained` (usuario o rol de Oracle frente a propio): un grant de `READ`/`WRITE` a una cuenta propia es lo que importa revisar (FND-0013 de ANA-20261007-001).

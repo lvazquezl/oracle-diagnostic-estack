@@ -135,34 +135,6 @@
       "change_id": "CHG-ESTACK-LAB-REVALIDATE-007"
     },
     {
-      "query_id": "Q-SEC-PROXY-AUTHENTICATION-001",
-      "query_sha256": "164b7604ca2f208b4c5986b0506492f3a14063ffe40a0f76ad8d98f3e0081b4a",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T03:38:00Z",
-      "evidence_refs": [
-        "EVR-5f9ca0aba28072d1431371ea"
-      ],
-      "request_refs": [
-        "REQ-091f4c1d537f"
-      ],
-      "record": "docs/LAB_REVALIDATE_007.md",
-      "change_id": "CHG-ESTACK-LAB-REVALIDATE-007"
-    },
-    {
-      "query_id": "Q-ASM-TOPOLOGY-001",
-      "query_sha256": "1355d8cdf2db879b438b10dbcaf4ba59c0fa457c4b2997ffea2dee7cd14a0eb3",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T03:38:00Z",
-      "evidence_refs": [
-        "EVR-417325d97b1297203726a9c3"
-      ],
-      "request_refs": [
-        "REQ-98c25d84c0fd"
-      ],
-      "record": "docs/LAB_REVALIDATE_007.md",
-      "change_id": "CHG-ESTACK-LAB-REVALIDATE-007"
-    },
-    {
       "query_id": "Q-CDB-TEMP-001",
       "query_sha256": "3cb779271c59314abbf1190eac41205278c40e8e8c6677ae847aa624e3f296e9",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
@@ -256,20 +228,6 @@
       ],
       "request_refs": [
         "REQ-b7ef9e9ef606"
-      ],
-      "record": "docs/COLLECTOR_FACTORY.md",
-      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B1"
-    },
-    {
-      "query_id": "Q-ORA-UNDO-001",
-      "query_sha256": "9b52336b923edd9a8554029472245a4ab71d478192992f17f7e60e01668af222",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-30T02:26:00Z",
-      "evidence_refs": [
-        "EVR-3d875fbe0b123e26b2a475df"
-      ],
-      "request_refs": [
-        "REQ-ca58dc0d8135"
       ],
       "record": "docs/COLLECTOR_FACTORY.md",
       "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B1"
@@ -513,20 +471,6 @@
       "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
     },
     {
-      "query_id": "Q-ORA-REDO-SWITCH-24H-001",
-      "query_sha256": "e3be276a24242507f43cd2d7c92fb6efde72881e92ece7718e7041ee702909ff",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-02T15:58:42Z",
-      "evidence_refs": [
-        "EVR-b6a198fd90c3b90f22954b55"
-      ],
-      "request_refs": [
-        "REQ-6221b83d7d46"
-      ],
-      "record": "docs/COLLECTOR_FACTORY_B2.md",
-      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
-    },
-    {
       "query_id": "Q-ORA-SPFILE-001",
       "query_sha256": "122f705ba6e326a075132926f952327404aebfdb2a089ef32bd6484f6738b558",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
@@ -751,20 +695,6 @@
       "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
     },
     {
-      "query_id": "Q-SEC-DIRECTORIES-001",
-      "query_sha256": "9b5b271b612a12ea6e71ccc0fcee1dcd72304e05015bf9e1bb4b7fe399ebff78",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-07T20:12:25Z",
-      "evidence_refs": [
-        "EVR-7cf8e04a7f2ec35465ac1848"
-      ],
-      "request_refs": [
-        "REQ-154931d84ffe"
-      ],
-      "record": "docs/PDB_COVERAGE.md",
-      "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
-    },
-    {
       "query_id": "Q-SEC-UNIFIED-AUDIT-TRAIL-001",
       "query_sha256": "de8159e9d499421f216091f29751318899c5dfb081f7b30e4d814c5293375947",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
@@ -863,20 +793,6 @@
       "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
     },
     {
-      "query_id": "Q-SEC-ADMIN-PRIVILEGES-001",
-      "query_sha256": "b060c2f9cd797b703f6deebaece36524b88a9946b14e4dce0976967d6d819487",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-07T20:12:39Z",
-      "evidence_refs": [
-        "EVR-a32cf7fa6360d042dfe026f7"
-      ],
-      "request_refs": [
-        "REQ-f47a3888cead"
-      ],
-      "record": "docs/PDB_COVERAGE.md",
-      "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
-    },
-    {
       "query_id": "Q-RMAN-CONFIGURATION-001",
       "query_sha256": "39ab308065a4741463942d132d598ace34815007e8d35633d9581b1a54421c12",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
@@ -891,34 +807,6 @@
       "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
     },
     {
-      "query_id": "Q-DICT-VERIFY-001",
-      "query_sha256": "93d09cf765ff332454e434573aa4ddeffa57031131173788688590930d72d232",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-07T20:12:47Z",
-      "evidence_refs": [
-        "EVR-be249eb842c40a903654aa8c"
-      ],
-      "request_refs": [
-        "REQ-b835cc145dd4"
-      ],
-      "record": "docs/PDB_COVERAGE.md",
-      "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
-    },
-    {
-      "query_id": "Q-DICT-VERIFY-002",
-      "query_sha256": "bb88f8ac5061c2a819c31534248e1c1dd97a46f269683f759acb3d7f2938977a",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-07T20:12:47Z",
-      "evidence_refs": [
-        "EVR-1329a39c64a042ecbdd0c366"
-      ],
-      "request_refs": [
-        "REQ-9eff15a9ca31"
-      ],
-      "record": "docs/PDB_COVERAGE.md",
-      "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
-    },
-    {
       "query_id": "Q-DICT-VERIFY-003",
       "query_sha256": "49596f831226a469bc95338578f07f4cf1114059eb07114bb3dcc3ae15da06f5",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
@@ -928,34 +816,6 @@
       ],
       "request_refs": [
         "REQ-f903143edaad"
-      ],
-      "record": "docs/PDB_COVERAGE.md",
-      "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
-    },
-    {
-      "query_id": "Q-DICT-VERIFY-004",
-      "query_sha256": "a93654d64f04addc5aebf195e79b59054cbf5e319f231fefed1590c8f6c57c52",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-07T20:12:48Z",
-      "evidence_refs": [
-        "EVR-8e19cc250c7357885d6ec121"
-      ],
-      "request_refs": [
-        "REQ-bddb07e90592"
-      ],
-      "record": "docs/PDB_COVERAGE.md",
-      "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
-    },
-    {
-      "query_id": "Q-DICT-VERIFY-005",
-      "query_sha256": "9d9f5ce2584727a91abc2dd89c738cb4aa96d845bc00340ed35d8eb5759a1724",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-07T20:12:48Z",
-      "evidence_refs": [
-        "EVR-4668a4c569aa637c492d0634"
-      ],
-      "request_refs": [
-        "REQ-f8bbaf089738"
       ],
       "record": "docs/PDB_COVERAGE.md",
       "change_id": "CHG-ESTACK-PDB-COVERAGE-001"

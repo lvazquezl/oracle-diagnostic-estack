@@ -64,6 +64,7 @@
     "con_id",
     "directory_name",
     "grantee",
+    "grantee_oracle_maintained",
     "privilege"
    ]
   },

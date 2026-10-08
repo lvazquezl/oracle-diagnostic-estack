@@ -1703,6 +1703,67 @@
     "RESOLVED"
    ],
    "example": "RESOLVED"
+  },
+  "db_utc_epoch": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000000000,
+   "policy": "KEEP",
+   "example": 1791417600
+  },
+  "db_tz_offset_minutes": {
+   "type": "integer",
+   "min": -840,
+   "max": 840,
+   "policy": "KEEP",
+   "example": -360
+  },
+  "container_kind": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NONE",
+    "PDB",
+    "ROOT",
+    "SEED"
+   ],
+   "example": "PDB"
+  },
+  "default_attr": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "N",
+    "Y"
+   ],
+   "example": "Y"
+  },
+  "all_containers": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "N",
+    "Y"
+   ],
+   "example": "N"
+  },
+  "attr_scope": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "DEFAULT",
+    "OBJECT"
+   ],
+   "example": "DEFAULT"
+  },
+  "grantee_oracle_maintained": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "N",
+    "Y"
+   ],
+   "example": "Y"
   }
  }
 }

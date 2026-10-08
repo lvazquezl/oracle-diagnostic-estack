@@ -1,6 +1,6 @@
 ---
 query_id: Q-ASM-TOPOLOGY-001
-version: 2.0.0
+version: 3.0.0
 
 domain: asm
 purpose: Topología ASM — instancias y disk groups montados, capacidad vía V$ASM_DISKGROUP_STAT (sin disco discovery)
@@ -12,8 +12,8 @@ supported_architectures: [Standalone, RAC, RAC One Node]
 container_scope: NOT_APPLICABLE
 database_role_scope: ANY
 
-objects_accessed: [V$ASM_CLIENT, V$ASM_DISKGROUP_STAT]
-privileges_required: [SELECT on V$ASM_CLIENT, SELECT on V$ASM_DISKGROUP_STAT]
+objects_accessed: [V$ASM_CLIENT, V$ASM_DISKGROUP_STAT, V$DATAFILE, V$LOGFILE, V$CONTROLFILE, V$PARAMETER]
+privileges_required: [SELECT on V$ASM_CLIENT, SELECT on V$ASM_DISKGROUP_STAT, SELECT on V$DATAFILE, SELECT on V$LOGFILE, SELECT on V$CONTROLFILE, SELECT on V$PARAMETER]
 
 risk_class: R0
 cost_class: LOW
@@ -29,16 +29,30 @@ license_requirements: none
 
 execution_mode: READ_ONLY
 
+variants:
+  - variant_id: Q-ASM-TOPOLOGY-001-V1
+    label: placement_11plus
+    oracle_versions: {min: "11.1", max: "23.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V1 (placement_11plus)"
+
 tests: [tests/test_no_write_operations.sh, tests/test_asm_diskgroup_stat_default.sh, tests/test_asm_capacity_usable_file.sh, tests/test_query_contract_requires_container_scope.sh, tests/test_query_contract_requires_role_scope.sh, tests/test_query_contract_requires_cost_class.sh]
 status: active
 ---
 
-# Statement / procedure (read-only)
+# Statement / procedure (read-only) — Variant V1 (placement_11plus)
 
 ```sql
-SELECT c.instance_name AS asm_instance, c.db_name, c.status, c.software_version,
+SELECT c.instance_name AS asm_instance, c.db_name, c.status, c.software_version, c.group_number,
        g.name AS diskgroup, g.state, g.type,
-       g.total_mb, g.free_mb, g.usable_file_mb, g.required_mirror_free_mb
+       g.total_mb, g.free_mb, g.usable_file_mb, g.required_mirror_free_mb,
+       CASE WHEN g.name IS NULL THEN NULL WHEN EXISTS (SELECT 1 FROM v$datafile x WHERE SUBSTR(x.name, 1, LENGTH(g.name) + 2) = '+' || g.name || '/') THEN 'YES' ELSE 'NO' END AS holds_datafiles,
+       CASE WHEN g.name IS NULL THEN NULL WHEN EXISTS (SELECT 1 FROM v$logfile x WHERE SUBSTR(x.member, 1, LENGTH(g.name) + 2) = '+' || g.name || '/') THEN 'YES' ELSE 'NO' END AS holds_redo,
+       CASE WHEN g.name IS NULL THEN NULL WHEN EXISTS (SELECT 1 FROM v$controlfile x WHERE SUBSTR(x.name, 1, LENGTH(g.name) + 2) = '+' || g.name || '/') THEN 'YES' ELSE 'NO' END AS holds_controlfile,
+       CASE WHEN g.name IS NULL THEN NULL
+            WHEN EXISTS (SELECT 1 FROM v$parameter x WHERE x.name = 'db_recovery_file_dest'
+                         AND (x.value = '+' || g.name OR SUBSTR(x.value, 1, LENGTH(g.name) + 2) = '+' || g.name || '/')) THEN 'YES'
+            ELSE 'NO' END AS holds_fra
 FROM   v$asm_client c
 LEFT   JOIN v$asm_diskgroup_stat g ON g.group_number = c.group_number
 ORDER  BY c.instance_name, g.name;
@@ -75,3 +89,5 @@ Ninguna.
 # Evolution via `/change query`
 
 `V$ASM_DISKGROUP` (disk discovery explícito) como query separada de mayor costo, vía `/change query`, cuando un escenario lo requiera explícitamente — nunca sustituye a esta query por defecto.
+
+3.0.0 CHG-ESTACK-ASSESSMENT-ACCURACY-001: agrega `group_number` (para interpretar filas de cliente sin diskgroup) y, por diskgroup, si contiene datafiles, redo, controlfile o la FRA (`YES`/`NO`, calculado en la base comparando el prefijo `+DG/`; ninguna ruta sale de la base). Resuelve la hipótesis de si la FRA comparte el diskgroup con los datafiles (FND-0006 de ANA-20261007-001, FND-0004 de ANA-20261008-001).

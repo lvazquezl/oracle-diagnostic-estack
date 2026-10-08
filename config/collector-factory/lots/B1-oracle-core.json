@@ -182,6 +182,7 @@
    "title": "Undo tablespace (masked), configured and tuned undo retention (seconds)",
    "row_limit": 1,
    "fields": [
+    "con_id",
     "undo_tablespace",
     "undo_retention",
     "tuned_undoretention_last_hour"

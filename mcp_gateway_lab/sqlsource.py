@@ -92,7 +92,13 @@ def resolve(collector, db_version: str) -> Certified:
 
 def _covers(db_version: str, m) -> bool:
     lo_ok = compare_versions(db_version, m.group("min")) in (0, 1)
-    hi_ok = True if m.group("latest") else compare_versions(db_version, m.group("max") + ".99.99.99") in (-1, 0)
+    if m.group("latest"):
+        return lo_ok
+    # The max is inclusive at its own precision ("11.2" covers 11.2.0.4; "12.1.0.1" covers 12.1.0.1.x). Comparing the
+    # database version truncated to that precision avoids padding the max beyond what parse_version accepts
+    # (CHG-ESTACK-ASSESSMENT-ACCURACY-001: "12.1.0.1" + ".99.99.99" had 7 components and never matched).
+    hi, db = parse_version(m.group("max")), parse_version(db_version)
+    hi_ok = hi is not None and db is not None and db[:len(hi)] <= hi
     return lo_ok and hi_ok
 
 

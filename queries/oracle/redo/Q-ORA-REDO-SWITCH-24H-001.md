@@ -1,6 +1,6 @@
 ---
 query_id: Q-ORA-REDO-SWITCH-24H-001
-version: 1.0.0
+version: 2.0.0
 domain: oracle
 purpose: Log switches por hilo en las últimas 24 horas, en tramos de una hora hacia atrás (ventana fija, sin binds)
 
@@ -32,11 +32,11 @@ status: active
 
 ```sql
 SELECT thread#                                   AS thread_no,
-       FLOOR((SYSDATE - first_time) * 24)        AS hours_ago,
+       FLOOR((SYSDATE - next_time) * 24)         AS hours_ago,
        COUNT(*)                                  AS switch_count
 FROM   v$log_history
-WHERE  first_time >= SYSDATE - 1
-GROUP  BY thread#, FLOOR((SYSDATE - first_time) * 24)
+WHERE  next_time >= SYSDATE - 1
+GROUP  BY thread#, FLOOR((SYSDATE - next_time) * 24)
 ORDER  BY thread#, hours_ago;
 ```
 
@@ -69,3 +69,5 @@ Sólo números (hilo, horas hacia atrás, conteo) → KEEP. Sin fechas absolutas
 # Evolution via `/change query`
 
 CHG-ESTACK-COLLECTOR-FACTORY-B2 — creada: versión sin binds de `Q-ORA-REDO-SWITCH-FREQ-001` para que el gateway pueda recolectarla.
+
+2.0.0 CHG-ESTACK-ASSESSMENT-ACCURACY-001: cuenta los switches por `NEXT_TIME` (el momento del switch) en vez de `FIRST_TIME` (el inicio del log). Con poca actividad un log abarca días: la 1.0.0 reportaba 0 switches aunque hubiera habido uno al abrir la base (FND-0017 de ANA-20261007-001, FND-0028 de ANA-20261008-001).
