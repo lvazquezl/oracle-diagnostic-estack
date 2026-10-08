@@ -36,6 +36,10 @@ Todos los skills `active` de los dominios cuyos agentes se activaron, más `capa
 
 Todas las queries certificadas relevantes a los dominios activados, con ventanas de tiempo más amplias que `healthcheck` (hasta el máximo de `policies/rate-limiting-policy.md`).
 
+**Reloj y alcance (CHG-ESTACK-ASSESSMENT-ACCURACY-001).**
+- **Reloj:** el discovery incluye `Q-DISC-CLOCK-001`. Si el gateway marca `CLOCK_SKEW` (desfase > 300 s entre el reloj del host de la base y el del gateway), todo "horas desde…" calculado en la base se reporta con esa limitación y la causa se deriva a `os-platform-analyst` (sincronización de tiempo).
+- **Alcance multitenant:** en CDB, `Q-CDB-CONTAINER-DATA-001` declara qué contenedores alcanzan las vistas `CDB_*` y las `V$` filtradas por `CONTAINER_DATA`.
+
 # Stop conditions
 
 Igual que `healthcheck.md`. Adicionalmente: si un dominio activo (ej. RAC) no puede completarse por falta de acceso, el assessment continúa con el resto de dominios y declara ese dominio `UNDETERMINED` explícitamente, en vez de abortar completo.
@@ -51,6 +55,15 @@ Cualquier hallazgo `HIGH` activa `incident-root-cause-analyst` si hay indicios d
 # Documentation output
 
 `analysis/ANA-YYYYMMDD-NNN/` completo, más `recommendations.md` extendido con matriz de riesgo. Base típica para `/document assessment --format pptx` (executive assessment).
+
+**Revisión por especialistas (paso fijo, CHG-ESTACK-ASSESSMENT-ACCURACY-001).** Antes de cerrar el análisis, el orquestador revisa el informe actuando como cada agente especialista activado (roles en el mismo contexto, con Task Package; no se abren sesiones de modelo aparte). Como mínimo, revisan el dominio con el hallazgo de mayor severidad, `oracle-discovery-analyst` (alcance y confianza del contexto) y `technical-documentation-manager` (contrato, trazabilidad, conteos).
+
+Cada revisor:
+- contrasta cada cifra con la evidencia saneada (`diagnostics.get_evidence`), sin recolectar de nuevo;
+- marca como error toda afirmación fuera del alcance observado (contenedor, ventana, top-N), toda confianza mayor que la evidencia y toda recomendación que pida una vía inexistente (query no certificada o inactiva, comandos del SO por la ruta humana);
+- emite `ADECUADO | ADECUADO_CON_CAMBIOS | INADECUADO`.
+
+Las correcciones producen la revisión 2 del análisis, con la sección "Revisión por especialistas" en `analysis.md`. Antecedente: en `ANA-20261007-001` y `ANA-20261008-001` la revisión encontró errores reales en el 100 % de los informes consolidados.
 
 # Token/context budget
 

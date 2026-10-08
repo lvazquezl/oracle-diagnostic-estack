@@ -135,34 +135,6 @@
       "change_id": "CHG-ESTACK-LAB-REVALIDATE-007"
     },
     {
-      "query_id": "Q-SEC-PROXY-AUTHENTICATION-001",
-      "query_sha256": "164b7604ca2f208b4c5986b0506492f3a14063ffe40a0f76ad8d98f3e0081b4a",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T03:38:00Z",
-      "evidence_refs": [
-        "EVR-5f9ca0aba28072d1431371ea"
-      ],
-      "request_refs": [
-        "REQ-091f4c1d537f"
-      ],
-      "record": "docs/LAB_REVALIDATE_007.md",
-      "change_id": "CHG-ESTACK-LAB-REVALIDATE-007"
-    },
-    {
-      "query_id": "Q-ASM-TOPOLOGY-001",
-      "query_sha256": "1355d8cdf2db879b438b10dbcaf4ba59c0fa457c4b2997ffea2dee7cd14a0eb3",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-29T03:38:00Z",
-      "evidence_refs": [
-        "EVR-417325d97b1297203726a9c3"
-      ],
-      "request_refs": [
-        "REQ-98c25d84c0fd"
-      ],
-      "record": "docs/LAB_REVALIDATE_007.md",
-      "change_id": "CHG-ESTACK-LAB-REVALIDATE-007"
-    },
-    {
       "query_id": "Q-CDB-TEMP-001",
       "query_sha256": "3cb779271c59314abbf1190eac41205278c40e8e8c6677ae847aa624e3f296e9",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
@@ -256,20 +228,6 @@
       ],
       "request_refs": [
         "REQ-b7ef9e9ef606"
-      ],
-      "record": "docs/COLLECTOR_FACTORY.md",
-      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B1"
-    },
-    {
-      "query_id": "Q-ORA-UNDO-001",
-      "query_sha256": "9b52336b923edd9a8554029472245a4ab71d478192992f17f7e60e01668af222",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-09-30T02:26:00Z",
-      "evidence_refs": [
-        "EVR-3d875fbe0b123e26b2a475df"
-      ],
-      "request_refs": [
-        "REQ-ca58dc0d8135"
       ],
       "record": "docs/COLLECTOR_FACTORY.md",
       "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B1"
@@ -513,20 +471,6 @@
       "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
     },
     {
-      "query_id": "Q-ORA-REDO-SWITCH-24H-001",
-      "query_sha256": "e3be276a24242507f43cd2d7c92fb6efde72881e92ece7718e7041ee702909ff",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-02T15:58:42Z",
-      "evidence_refs": [
-        "EVR-b6a198fd90c3b90f22954b55"
-      ],
-      "request_refs": [
-        "REQ-6221b83d7d46"
-      ],
-      "record": "docs/COLLECTOR_FACTORY_B2.md",
-      "change_id": "CHG-ESTACK-COLLECTOR-FACTORY-B2"
-    },
-    {
       "query_id": "Q-ORA-SPFILE-001",
       "query_sha256": "122f705ba6e326a075132926f952327404aebfdb2a089ef32bd6484f6738b558",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
@@ -751,20 +695,6 @@
       "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
     },
     {
-      "query_id": "Q-SEC-DIRECTORIES-001",
-      "query_sha256": "9b5b271b612a12ea6e71ccc0fcee1dcd72304e05015bf9e1bb4b7fe399ebff78",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-07T20:12:25Z",
-      "evidence_refs": [
-        "EVR-7cf8e04a7f2ec35465ac1848"
-      ],
-      "request_refs": [
-        "REQ-154931d84ffe"
-      ],
-      "record": "docs/PDB_COVERAGE.md",
-      "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
-    },
-    {
       "query_id": "Q-SEC-UNIFIED-AUDIT-TRAIL-001",
       "query_sha256": "de8159e9d499421f216091f29751318899c5dfb081f7b30e4d814c5293375947",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
@@ -863,20 +793,6 @@
       "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
     },
     {
-      "query_id": "Q-SEC-ADMIN-PRIVILEGES-001",
-      "query_sha256": "b060c2f9cd797b703f6deebaece36524b88a9946b14e4dce0976967d6d819487",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-07T20:12:39Z",
-      "evidence_refs": [
-        "EVR-a32cf7fa6360d042dfe026f7"
-      ],
-      "request_refs": [
-        "REQ-f47a3888cead"
-      ],
-      "record": "docs/PDB_COVERAGE.md",
-      "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
-    },
-    {
       "query_id": "Q-RMAN-CONFIGURATION-001",
       "query_sha256": "39ab308065a4741463942d132d598ace34815007e8d35633d9581b1a54421c12",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
@@ -891,74 +807,186 @@
       "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
     },
     {
-      "query_id": "Q-DICT-VERIFY-001",
-      "query_sha256": "93d09cf765ff332454e434573aa4ddeffa57031131173788688590930d72d232",
+      "query_id": "Q-DISC-CLOCK-001",
+      "query_sha256": "0c0023db003d3ef4ba8090466477ba61a260313ae0b24384755e6a955ef505f6",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-07T20:12:47Z",
+      "validated_at_utc": "2026-10-08T13:47:35Z",
       "evidence_refs": [
-        "EVR-be249eb842c40a903654aa8c"
+        "EVR-da2711c875bb597926bcc15c"
       ],
       "request_refs": [
-        "REQ-b835cc145dd4"
+        "REQ-7ac4a482fe88"
       ],
-      "record": "docs/PDB_COVERAGE.md",
-      "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
+      "record": "docs/ASSESSMENT_ACCURACY.md",
+      "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
+    },
+    {
+      "query_id": "Q-CDB-CONTAINER-DATA-001",
+      "query_sha256": "a20f1e4daf5a428014e39623b182cca1812a9084634d1c6e68d93e64cabd6540",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-08T13:47:36Z",
+      "evidence_refs": [
+        "EVR-459f5df48f556059c8e63400"
+      ],
+      "request_refs": [
+        "REQ-d78a680c2e25"
+      ],
+      "record": "docs/ASSESSMENT_ACCURACY.md",
+      "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
+    },
+    {
+      "query_id": "Q-ORA-UNDO-001",
+      "query_sha256": "2e6dcca7f0d7559f86fb3a50933d47dd1c00f845a16b30da9a905344618bc3f5",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-08T13:47:38Z",
+      "evidence_refs": [
+        "EVR-7f9d553842bcb9432c25828c"
+      ],
+      "request_refs": [
+        "REQ-538d267aab50"
+      ],
+      "record": "docs/ASSESSMENT_ACCURACY.md",
+      "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
+    },
+    {
+      "query_id": "Q-SEC-ADMIN-PRIVILEGES-001",
+      "query_sha256": "590adc81e60c92f06cabaa9a842437ffd4ba60143aad896f2fb729b4c543c350",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-08T13:47:38Z",
+      "evidence_refs": [
+        "EVR-29777785271cf9ca549136bb"
+      ],
+      "request_refs": [
+        "REQ-0ca4f9f41507"
+      ],
+      "record": "docs/ASSESSMENT_ACCURACY.md",
+      "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
+    },
+    {
+      "query_id": "Q-SEC-PROXY-AUTHENTICATION-001",
+      "query_sha256": "ad3a4d02c78b7c8035d2b59b81a1d2129ae6664e071e6dabd9c11a5806117002",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-08T13:47:39Z",
+      "evidence_refs": [
+        "EVR-ddd6e203a21df8f2622d9c19"
+      ],
+      "request_refs": [
+        "REQ-19972f43c95b"
+      ],
+      "record": "docs/ASSESSMENT_ACCURACY.md",
+      "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
+    },
+    {
+      "query_id": "Q-SEC-DIRECTORIES-001",
+      "query_sha256": "ec4747b8a7b6c521c1174c265abb76b926acf2787236a6508722a5c90d56293c",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-08T13:47:40Z",
+      "evidence_refs": [
+        "EVR-c43730ed15031b50f3c523db"
+      ],
+      "request_refs": [
+        "REQ-b14b4f82a2b9"
+      ],
+      "record": "docs/ASSESSMENT_ACCURACY.md",
+      "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
+    },
+    {
+      "query_id": "Q-ASM-TOPOLOGY-001",
+      "query_sha256": "4cf64624a6d336831fd6633fd857889d6014c0d9497a4706d4d6b4a6ed31bf55",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-08T13:47:40Z",
+      "evidence_refs": [
+        "EVR-22a488910cc647d6c3ce3960"
+      ],
+      "request_refs": [
+        "REQ-9489e5cfeedc"
+      ],
+      "record": "docs/ASSESSMENT_ACCURACY.md",
+      "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
+    },
+    {
+      "query_id": "Q-ORA-REDO-SWITCH-24H-001",
+      "query_sha256": "b10283a8ea9d454658b706cf492f0bedb4fa64e06638b5a3ae1e363cb791877b",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-08T15:44:08Z",
+      "evidence_refs": [
+        "EVR-4b832cd536355164160cb31b"
+      ],
+      "request_refs": [
+        "REQ-4e992cc97cb9"
+      ],
+      "record": "docs/ASSESSMENT_ACCURACY.md",
+      "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-001",
+      "query_sha256": "2e625e0d1444a42865f044d20433d14c0c4441e94f340ab843cb9e3a539bedf5",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-08T15:44:09Z",
+      "evidence_refs": [
+        "EVR-b0a856f8b3e29cf76f974e07"
+      ],
+      "request_refs": [
+        "REQ-7a60adfc8b42"
+      ],
+      "record": "docs/ASSESSMENT_ACCURACY.md",
+      "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
     },
     {
       "query_id": "Q-DICT-VERIFY-002",
-      "query_sha256": "bb88f8ac5061c2a819c31534248e1c1dd97a46f269683f759acb3d7f2938977a",
+      "query_sha256": "f01f82fdf642362f29a51f4461ccb318e6c6547834ef2a2ac04230fd0721b600",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-07T20:12:47Z",
+      "validated_at_utc": "2026-10-08T15:44:10Z",
       "evidence_refs": [
-        "EVR-1329a39c64a042ecbdd0c366"
+        "EVR-0e60e053315efdea4329c9b9"
       ],
       "request_refs": [
-        "REQ-9eff15a9ca31"
+        "REQ-d8e41e1ac935"
       ],
-      "record": "docs/PDB_COVERAGE.md",
-      "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
+      "record": "docs/ASSESSMENT_ACCURACY.md",
+      "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
     },
     {
       "query_id": "Q-DICT-VERIFY-003",
-      "query_sha256": "49596f831226a469bc95338578f07f4cf1114059eb07114bb3dcc3ae15da06f5",
+      "query_sha256": "29523339be47eb804da5b18e96e5adb203438897dd003612343e92ca984e4c8a",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-07T20:12:48Z",
+      "validated_at_utc": "2026-10-08T15:44:10Z",
       "evidence_refs": [
-        "EVR-606ea286a02e0595a1a1321b"
+        "EVR-70f6e39297bfc9d1a38f8734"
       ],
       "request_refs": [
-        "REQ-f903143edaad"
+        "REQ-26a8a62830e6"
       ],
-      "record": "docs/PDB_COVERAGE.md",
-      "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
+      "record": "docs/ASSESSMENT_ACCURACY.md",
+      "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
     },
     {
       "query_id": "Q-DICT-VERIFY-004",
-      "query_sha256": "a93654d64f04addc5aebf195e79b59054cbf5e319f231fefed1590c8f6c57c52",
+      "query_sha256": "ad9bb2f661eb209080ee88bf76da4c45c4645f992dc5ea764e01f4bb5a52fb2a",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-07T20:12:48Z",
+      "validated_at_utc": "2026-10-08T15:44:11Z",
       "evidence_refs": [
-        "EVR-8e19cc250c7357885d6ec121"
+        "EVR-c53d0de9e46fa0861ec65685"
       ],
       "request_refs": [
-        "REQ-bddb07e90592"
+        "REQ-48d38866a418"
       ],
-      "record": "docs/PDB_COVERAGE.md",
-      "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
+      "record": "docs/ASSESSMENT_ACCURACY.md",
+      "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
     },
     {
       "query_id": "Q-DICT-VERIFY-005",
-      "query_sha256": "9d9f5ce2584727a91abc2dd89c738cb4aa96d845bc00340ed35d8eb5759a1724",
+      "query_sha256": "c71a6e966fa3f7d42b1378cede4a30cd0bd0584630d4b11091028de140689d40",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-07T20:12:48Z",
+      "validated_at_utc": "2026-10-08T15:44:12Z",
       "evidence_refs": [
-        "EVR-4668a4c569aa637c492d0634"
+        "EVR-37d0f3d5203d2ce59aef2186"
       ],
       "request_refs": [
-        "REQ-f8bbaf089738"
+        "REQ-6800d828668c"
       ],
-      "record": "docs/PDB_COVERAGE.md",
-      "change_id": "CHG-ESTACK-PDB-COVERAGE-001"
+      "record": "docs/ASSESSMENT_ACCURACY.md",
+      "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
     }
   ]
 }

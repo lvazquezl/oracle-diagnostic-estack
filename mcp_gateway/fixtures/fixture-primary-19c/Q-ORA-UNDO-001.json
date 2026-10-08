@@ -2,6 +2,7 @@
   "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B1)",
   "rows": [
     {
+      "con_id": 1,
       "undo_tablespace": "UNDOTBS1",
       "undo_retention": 900,
       "tuned_undoretention_last_hour": 1800

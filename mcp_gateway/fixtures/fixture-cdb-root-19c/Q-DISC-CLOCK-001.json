@@ -1,0 +1,9 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B6)",
+  "rows": [
+    {
+      "db_utc_epoch": 1791417600,
+      "db_tz_offset_minutes": -360
+    }
+  ]
+}

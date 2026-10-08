@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-ADMIN-PRIVILEGES-001
-version: 1.0.0
+version: 2.0.0
 
 domain: security
 purpose: >
@@ -77,9 +77,9 @@ WebSearch, "Administrative Privileges and Job Role Separation ... 12c Release 1"
 # Statement / procedure (read-only) — Variant V3 (modern_12plus, con SYSBACKUP/SYSDG/SYSKM/COMMON)
 
 ```sql
-SELECT username, sysdba, sysoper, sysasm, sysbackup, sysdg, syskm, common
+SELECT con_id, username, sysdba, sysoper, sysasm, sysbackup, sysdg, syskm, common
 FROM   v$pwfile_users
-ORDER  BY common DESC, username;
+ORDER  BY con_id, common DESC, username;
 ```
 
 # Notes by version
@@ -111,3 +111,5 @@ contenido del password file más allá de esta vista dinámica (sin acceso a fil
 # Evolution via `/change query`
 
 N/A.
+
+2.0.0 CHG-ESTACK-ASSESSMENT-ACCURACY-001: V3 (12.1+) agrega `con_id`: distingue los usuarios administrativos comunes de los locales de cada PDB.

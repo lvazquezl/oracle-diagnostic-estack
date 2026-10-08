@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B6)",
+  "rows": [
+    {
+      "container_kind": "PDB",
+      "pdb_name": "SYNTH_PDB",
+      "default_attr": "Y",
+      "all_containers": "N",
+      "attr_scope": "DEFAULT"
+    }
+  ]
+}

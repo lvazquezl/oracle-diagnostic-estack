@@ -2,6 +2,7 @@
   "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B5)",
   "rows": [
     {
+      "con_id": 1,
       "username": "SYNTH_USER",
       "sysdba": "TRUE",
       "sysoper": "TRUE",

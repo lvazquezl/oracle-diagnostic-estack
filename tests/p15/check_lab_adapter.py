@@ -461,7 +461,7 @@ def corrected_queries_run_their_certified_blocks_and_mask_every_name():
                 assert raw not in text, (q, raw)
         env, _ = lab.collect("Q-SEC-PROXY-AUTHENTICATION-001")
         blocks = catalog.sql_blocks(open(catalog._find_query_file("Q-SEC-PROXY-AUTHENTICATION-001"), encoding="utf-8").read())
-        assert lab.driver.statements[-1] == blocks[1].rstrip().rstrip(";").rstrip(), "19c resolves the FLAGS variant (V2)"
+        assert lab.driver.statements[-1] == blocks[2].rstrip().rstrip(";").rstrip(), "19c resolves the ORACLE_MAINTAINED variant (V3, 12.1.0.2+)"
         assert {r["flags"] for r in env["evidence"]["rows"]} == {"PROXY MAY ACTIVATE ROLE", "PROXY MAY ACTIVATE ALL CLIENT ROLES"}
         env, _ = lab.collect("Q-ASM-TOPOLOGY-001")
         row, = env["evidence"]["rows"]

@@ -1,0 +1,30 @@
+{
+ "_doc": "CHG-ESTACK-ASSESSMENT-ACCURACY-001 — lot B6: assessment accuracy. Database clock (UTC epoch and zone offset; the gateway publishes clock_check against its own clock) and the CONTAINER_DATA scope of the diagnostic account (which containers the CDB_* and filtered V$ views really cover). Same rules as lots/B1-oracle-core.json.",
+ "lot_id": "B6",
+ "fixture_target": "fixture-cdb-root-19c",
+ "collectors": [
+  {
+   "collector_id": "Q-DISC-CLOCK-001",
+   "domain": "oracle",
+   "title": "Database UTC clock (seconds since 1970) and time zone offset; the gateway compares it with its own clock (clock_check, CLOCK_SKEW above 300 s)",
+   "row_limit": 1,
+   "fields": [
+    "db_utc_epoch",
+    "db_tz_offset_minutes"
+   ]
+  },
+  {
+   "collector_id": "Q-CDB-CONTAINER-DATA-001",
+   "domain": "multitenant",
+   "title": "Containers the diagnostic account can see from CDB$ROOT (CONTAINER_DATA attribute; PDB names masked)",
+   "row_limit": 100,
+   "fields": [
+    "container_kind",
+    "pdb_name",
+    "default_attr",
+    "all_containers",
+    "attr_scope"
+   ]
+  }
+ ]
+}

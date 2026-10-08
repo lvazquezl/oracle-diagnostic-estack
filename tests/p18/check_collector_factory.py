@@ -477,5 +477,61 @@ def custom_audit_policy_names_never_leave_the_database():
     assert "policy_name" in catalog.ORACLE_TERM_FIELDS and "cause" in catalog.ORACLE_TERM_FIELDS
 
 
+@test
+def clock_check_compares_the_database_clock_with_the_gateway():
+    # CHG-ESTACK-ASSESSMENT-ACCURACY-001: a skewed host clock shifts every "hours since ..." computed in the database
+    from mcp_gateway import gateway
+    ok = gateway.clock_check([{"db_utc_epoch": 1791417600}], "2026-10-08T00:00:30+00:00")
+    assert ok["compared"] and ok["offset_seconds"] == -30 and not ok["skew"], ok
+    bad = gateway.clock_check([{"db_utc_epoch": 1791417600 - 7920}], "2026-10-08T00:00:00+00:00")
+    assert bad["skew"] and bad["offset_seconds"] == -7920, bad
+    assert gateway.clock_check([{"db_utc_epoch": 1791417600}], None)["compared"] is False      # fixture: never compared
+    assert gateway.clock_check([], "2026-10-08T00:00:00+00:00")["compared"] is False
+    assert "sys_extract_utc(systimestamp)" in _resolved("Q-DISC-CLOCK-001", "19.0")
+
+
+@test
+def accuracy_queries_fix_redo_scope_and_placement():
+    rs = _resolved("Q-ORA-REDO-SWITCH-24H-001", "19.0")
+    assert "from v$log where status = 'current'" in rs and "next_time" not in rs, rs     # V$LOG_HISTORY has no NEXT_TIME
+    assert "switch_time <= sysdate" in rs, rs                                             # no negative hours from a skewed clock
+    un = _resolved("Q-ORA-UNDO-001", "19.0")
+    assert "group  by u.con_id" in un and "con_id" in un.split("from")[0], un
+    assert "con_id" not in _resolved("Q-ORA-UNDO-001", "11.2")
+    assert "con_id" in _resolved("Q-SEC-ADMIN-PRIVILEGES-001", "19.0").split("from")[0]
+    px = _resolved("Q-SEC-PROXY-AUTHENTICATION-001", "19.0")
+    assert "proxy_oracle_maintained" in px and "client_oracle_maintained" in px
+    assert "oracle_maintained" not in _resolved("Q-SEC-PROXY-AUTHENTICATION-001", "12.1.0.1")   # column exists from 12.1.0.2
+    assert "grantee_oracle_maintained" in _resolved("Q-SEC-DIRECTORIES-001", "19.0")
+    asm = _resolved("Q-ASM-TOPOLOGY-001", "19.0")
+    for f in ("holds_datafiles", "holds_redo", "holds_controlfile", "holds_fra", "c.group_number"):
+        assert f in asm, f
+    spec = catalog.load_collectors()
+    exposed = set(spec["Q-ASM-TOPOLOGY-001"].output_fields)
+    assert not exposed & {"name", "member", "value"}, exposed                 # paths and the FRA destination never leave
+    assert all(spec["Q-ASM-TOPOLOGY-001"].output_fields[f]["values"] == ["NO", "YES"]
+               for f in ("holds_datafiles", "holds_redo", "holds_controlfile", "holds_fra"))
+    cd = _resolved("Q-CDB-CONTAINER-DATA-001", "19.0")
+    assert "sys_context('userenv', 'session_user')" in cd, cd                 # only the diagnostic account itself
+    assert spec["Q-CDB-CONTAINER-DATA-001"].output_fields["pdb_name"]["policy"] == "MASK"
+
+
+@test
+def a_variant_max_is_inclusive_at_its_own_precision():
+    # CHG-ESTACK-ASSESSMENT-ACCURACY-001: a 4-component max ("12.1.0.1") padded with ".99.99.99" exceeded the version
+    # parser and the variant never matched, so 11g/12.1.0.1 targets failed closed for split queries.
+    for v in ("11.2.0.4.0", "12.1.0.1.0"):
+        assert "oracle_maintained" not in _resolved("Q-SEC-DEFAULT-ACCOUNTS-001", v), v
+        assert "oracle_maintained" not in _resolved("Q-SEC-PROXY-AUTHENTICATION-001", v), v
+    for v in ("12.1.0.2.0", "19.0.0.0.0"):
+        assert "oracle_maintained" in _resolved("Q-SEC-DEFAULT-ACCOUNTS-001", v), v
+    assert "rownum" in _resolved("Q-SEC-TRADITIONAL-AUDIT-001", "11.2.0.4.0")          # max "11.2" still covers 11.2.0.4
+    try:
+        _resolved("Q-SEC-PROXY-AUTHENTICATION-001", "24.0.0.0.0")                     # above every max: fail closed
+        raise AssertionError("a version above every variant must not resolve")
+    except Exception as e:
+        assert "could not be resolved" in str(e), e
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

@@ -96,6 +96,24 @@ def tool_list(lab_mode: bool = False) -> list:
     return out
 
 
+
+# CHG-ESTACK-ASSESSMENT-ACCURACY-001: database clock vs gateway clock. The database computes "hours since ..." with
+# its own (host OS) clock; a skewed host clock silently shifts uptimes, backup ages and PDB open times.
+CLOCK_COLLECTOR_ID = "Q-DISC-CLOCK-001"
+CLOCK_SKEW_SECONDS = 300
+
+
+def clock_check(rows, collected_at_utc):
+    """Compare db_utc_epoch with the gateway's UTC collection time. Fixture rows (no collection time) are not compared."""
+    db = rows[0].get("db_utc_epoch") if rows else None
+    if not isinstance(db, int) or not collected_at_utc:
+        return {"db_utc_epoch": db, "gateway_utc_epoch": None, "offset_seconds": None, "skew": False, "compared": False}
+    gw = int(datetime.fromisoformat(collected_at_utc).timestamp())
+    off = db - gw
+    return {"db_utc_epoch": db, "gateway_utc_epoch": gw, "offset_seconds": off,
+            "skew": abs(off) > CLOCK_SKEW_SECONDS, "threshold_seconds": CLOCK_SKEW_SECONDS, "compared": True}
+
+
 class Audit:
     """Local audit: one JSON line per tool call with ONLY these keys — never arguments, evidence or errors' text."""
     KEYS = ("ts_utc", "tool_id", "collector_id", "target_token", "status", "error_code", "duration_ms", "request_id", "session")
@@ -302,6 +320,10 @@ class Gateway:
                                            "applies_to_field_validation": bool(real and ru)}
             if ru and declared_ru and ru != declared_ru:
                 env["limitations"] = list(env["limitations"]) + ["DECLARED_RELEASE_UPDATE_MISMATCH"]
+        if col.collector_id == CLOCK_COLLECTOR_ID:
+            env["clock_check"] = clock_check(payload["rows"], payload["collected_at_utc"])
+            if env["clock_check"]["skew"]:
+                env["limitations"] = list(env["limitations"]) + ["CLOCK_SKEW"]
         env["field_validation"] = field_validation.assess(self.field_registry, col, self._fv_target(session, target))
         return env
 
