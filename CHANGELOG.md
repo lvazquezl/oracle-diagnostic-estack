@@ -2,6 +2,28 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased]
+
+### `/change query|security|compatibility|documentation` — CHG-ESTACK-ASSESSMENT-ACCURACY-001 — exactitud del assessment
+
+Rama `change/assessment-accuracy` sobre `main` (`230ae4b`). Origen: la revisión por especialistas de `ANA-20261008-001`. Validado en el lab: 13 collectors `FIELD_VALIDATED`. Ver `docs/ASSESSMENT_ACCURACY.md`.
+
+#### Added
+
+- `Q-DISC-CLOCK-001` y `clock_check` en el gateway: desfase entre el reloj del host de la base y el del gateway, con limitación `CLOCK_SKEW` si supera 300 s.
+- `Q-CDB-CONTAINER-DATA-001`: contenedores que alcanza la cuenta de diagnóstico.
+- Columnas nuevas:
+  - `con_id` en undo y password file;
+  - `oracle_maintained` en proxy y directorios;
+  - en ASM, `group_number` y si cada diskgroup contiene datafiles, redo, controlfile o FRA.
+- `/assessment`: la revisión por especialistas es un paso fijo, hecha con roles en el mismo contexto.
+- El catálogo pasa de 72 a 74 collectors.
+
+#### Fixed
+
+- `Q-ORA-REDO-SWITCH-24H-001` 2.0.0: reportaba 0 switches porque no contaba el log actual.
+- Resolver de variantes: un máximo de 4 componentes (por ejemplo `12.1.0.1`) nunca aplicaba, y `Q-SEC-DEFAULT-ACCOUNTS-001` fallaba cerrado en 11g.
+
 ## [0.28.0] — 2026-10-07 — `v0.28.0-pdb-coverage` — 1 cambio: el assessment cubre la PDB de aplicación
 
 En un CDB, el assessment ya evalúa también la PDB de aplicación en objetos, jobs, componentes y seguridad. Además expone 7 queries certificadas que no se recolectaban: estado de PDBs, servicios, plug-in violations, políticas de auditoría, perfiles de contraseña, usuarios del password file y configuración RMAN. Ninguna deja salir texto libre, fechas absolutas, rutas ni nombres propios. El catálogo llega a 72 collectors.

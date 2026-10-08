@@ -42,14 +42,32 @@ Al implementar apareció un bug del gateway que no se conocía. Si el máximo de
 - `DBA_CONTAINER_DATA` (12.1);
 - `V$PWFILE_USERS.CON_ID` (12.1), según la Database Reference 19c.
 
+## Validación en el lab (`lab-ol8-19c`, `LAB-OL8-19C-CDBROOT-ASM`, 2026-10-08)
+
+Los 13 collectors corrieron en real y su `query_sha256` coincide con el SQL versionado. 7 se validaron con `09c43f0` y 6 con `db71836`, porque redo y las sondas del diccionario se corrigieron después.
+
+| Collector | Request | Evidencia | Resultado |
+|---|---|---|---|
+| `Q-DISC-CLOCK-001` | `REQ-7ac4a482fe88` | `EVR-da2711c875bb597926bcc15c` | `clock_check` con desfase de **0 s**: el salto de ~2.2 h de ayer fue transitorio |
+| `Q-CDB-CONTAINER-DATA-001` | `REQ-d78a680c2e25` | `EVR-459f5df48f556059c8e63400` | La cuenta ve el root y una PDB (`all_containers` = N); por eso no aparece `PDB$SEED` (ahora FACT) |
+| `Q-ASM-TOPOLOGY-001` | `REQ-9489e5cfeedc` | `EVR-22a488910cc647d6c3ce3960` | El diskgroup único contiene datafiles, redo, controlfile **y la FRA** (confirma la hipótesis de dos assessments). La fila sin diskgroup es `group_number` 0 |
+| `Q-SEC-PROXY-AUTHENTICATION-001` | `REQ-19972f43c95b` | `EVR-ddd6e203a21df8f2622d9c19` | El proxy y sus 2 clientes son cuentas **propias** |
+| `Q-SEC-DIRECTORIES-001` | `REQ-b14b4f82a2b9` | `EVR-c43730ed15031b50f3c523db` | Grants de directorio con `grantee_oracle_maintained` |
+| `Q-ORA-UNDO-001` | `REQ-538d267aab50` | `EVR-7f9d553842bcb9432c25828c` | Retención por `con_id` (en la última hora solo hubo filas del root) |
+| `Q-SEC-ADMIN-PRIVILEGES-001` | `REQ-0ca4f9f41507` | `EVR-29777785271cf9ca549136bb` | `con_id` 0: el usuario del password file es de nivel CDB |
+| `Q-ORA-REDO-SWITCH-24H-001` | `REQ-4e992cc97cb9` | `EVR-4b832cd536355164160cb31b` | 1 switch en 24 h (antes 0) |
+| `Q-DICT-VERIFY-001`..`005` | `REQ-7a60adfc8b42`, `REQ-d8e41e1ac935`, `REQ-26a8a62830e6`, `REQ-48d38866a418`, `REQ-6800d828668c` | `EVR-b0a856f8b3e29cf76f974e07`, `EVR-0e60e053315efdea4329c9b9`, `EVR-70f6e39297bfc9d1a38f8734`, `EVR-c53d0de9e46fa0861ec65685`, `EVR-37d0f3d5203d2ce59aef2186` | Todas las vistas y columnas declaradas existen, incluidas las 10 de `V$LOG_HISTORY`; solo faltan `STATS$*` (Statspack no instalado) |
+
+**Primer intento fallido de redo:** la revisión por especialistas sugirió `NEXT_TIME`, que no existe en `V$LOG_HISTORY`. El collector falló con `E_ADAPTER_FAILED`, sin ejecutar nada indebido. Se confirmó con la Database Reference 19c y se corrigió en `db71836`. El validador estático no revisa columnas dentro de subconsultas (límite conocido); ahora lo cubre P18.
+
 ## Registro del cambio
 
 | Fase | Resultado |
 |---|---|
 | DETECT GAP | Revisión por especialistas de `ANA-20261008-001` |
 | IMPLEMENT | 2 queries nuevas, 6 modificadas, `clock_check` en el gateway, corrección del resolver, lote B6, campos en la base de conocimiento, collectors base de proxy y ASM, matriz, diccionario, workflow, registro de madurez (74 collectors, 142 componentes) |
-| TEST | P18 30/30 (3 casos nuevos: `clock_check`, correcciones de exactitud, máximo inclusivo con su precisión); P15 actualizado a la variante V3 de proxy |
-| SECURITY | 8/8 mutaciones detectadas: redo con `first_time`, undo sin `con_id`, ASM exponiendo el destino de la FRA, `CONTAINER_DATA` sin filtro de sesión, `clock_check` ignorando desfases negativos, resolver con relleno, proxy V3 desde 12.1 y directorios sin `oracle_maintained` |
+| TEST | P18 30/30 (3 casos nuevos: `clock_check`, correcciones de exactitud —incluido el rechazo de `NEXT_TIME`—, máximo inclusivo con su precisión); P15 actualizado a la variante V3 de proxy; columnas de `V$LOG_HISTORY` registradas como exhaustivas |
+| SECURITY | 9/9 mutaciones detectadas: redo sin el log actual, redo con `NEXT_TIME`, undo sin `con_id`, ASM exponiendo el destino de la FRA, `CONTAINER_DATA` sin filtro de sesión, `clock_check` ignorando desfases negativos, resolver con relleno, proxy V3 desde 12.1 y directorios sin `oracle_maintained` |
 | REGRESSION | 973/973 en macOS (bash 5.3); la fábrica y el generador del diccionario sin drift |
-| LAB | **Pendiente:** allowlist de los 2 collectors nuevos y validación en campo de 8 collectors y de las sondas `Q-DICT-VERIFY` regeneradas (10 validaciones retiradas del registro por cambio de SQL) |
+| LAB | 13/13 en real (arriba), `FIELD_VALIDATED`; allowlist del lab con 69 collectors |
 | HUMAN REVIEW | Pendiente |
