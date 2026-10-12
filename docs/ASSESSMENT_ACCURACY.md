@@ -70,4 +70,4 @@ Los 13 collectors corrieron en real y su `query_sha256` coincide con el SQL vers
 | SECURITY | 9/9 mutaciones detectadas: redo sin el log actual, redo con `NEXT_TIME`, undo sin `con_id`, ASM exponiendo el destino de la FRA, `CONTAINER_DATA` sin filtro de sesión, `clock_check` ignorando desfases negativos, resolver con relleno, proxy V3 desde 12.1 y directorios sin `oracle_maintained` |
 | REGRESSION | 973/973 en macOS (bash 5.3); la fábrica y el generador del diccionario sin drift |
 | LAB | 13/13 en real (arriba), `FIELD_VALIDATED`; allowlist del lab con 69 collectors |
-| HUMAN REVIEW | Pendiente |
+| HUMAN REVIEW | Aprobado: `AUTH-ASSESSMENT-ACCURACY-001`, revisor `REV-DBAMANAGER`, `2026-10-08T20:13:24Z`, digest `042e8de9…3dec01`. PROMOTE: PR #41, merge `0facc67`; CI en verde en los 6 jobs (ubuntu, macOS y Windows con Python 3.13 y 3.14) |
