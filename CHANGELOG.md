@@ -2,11 +2,15 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
-## [Unreleased]
+## [0.29.0] — 2026-10-08 — `v0.29.0-assessment-accuracy` — 1 cambio: exactitud del assessment
+
+El assessment detecta por sí mismo un desfase entre el reloj del host de la base y el del gateway, y declara qué contenedores ve realmente la cuenta de diagnóstico. También dice en qué diskgroup están datafiles, redo, controlfile y FRA. Se corrigieron el conteo de switches de redo y un error del resolver de variantes que dejaba sin resolver algunas queries en 11g. La revisión por especialistas pasa a ser un paso fijo de `/assessment`. El catálogo llega a 74 collectors.
+
+Aprobado por revisión humana. Regresión local (macOS, bash 5.3): 973/973. CI en verde en ubuntu, macOS y Windows con Python 3.13 y 3.14.
 
 ### `/change query|security|compatibility|documentation` — CHG-ESTACK-ASSESSMENT-ACCURACY-001 — exactitud del assessment
 
-Rama `change/assessment-accuracy` sobre `main` (`230ae4b`). Origen: la revisión por especialistas de `ANA-20261008-001`. Validado en el lab: 13 collectors `FIELD_VALIDATED`. Ver `docs/ASSESSMENT_ACCURACY.md`.
+Rama `change/assessment-accuracy` sobre `main` (`230ae4b`). Integrada a `main` vía PR #41 (merge `0facc67`). Aprobación humana registrada: `AUTH-ASSESSMENT-ACCURACY-001`, revisor `REV-DBAMANAGER`, `2026-10-08T20:13:24Z`, contra el digest `042e8de9…3dec01` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Origen: la revisión por especialistas de `ANA-20261008-001`. Validado en el lab: 13 collectors `FIELD_VALIDATED`. Ver `docs/ASSESSMENT_ACCURACY.md`.
 
 #### Added
 
