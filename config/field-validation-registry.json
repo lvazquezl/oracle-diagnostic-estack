@@ -917,6 +917,286 @@
       ],
       "record": "docs/ASSESSMENT_ACCURACY.md",
       "change_id": "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
+    },
+    {
+      "query_id": "Q-SEC-ACCOUNT-INVENTORY-001",
+      "query_sha256": "b0ed3fe05a90110e29920caf019c3ca06cbe539517c1bef076b12b494c95345c",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:00Z",
+      "evidence_refs": [
+        "EVR-7913efac7a8015a5a9d37eb9"
+      ],
+      "request_refs": [
+        "REQ-a588293b222f"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-DATA-REDACTION-POLICIES-001",
+      "query_sha256": "5b94acf62829f738260a06f53fdccdc6eed03a8d514d5dd6a46c5219dc01b4b6",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:00Z",
+      "evidence_refs": [
+        "EVR-879a1018fd3de9d943c7a011"
+      ],
+      "request_refs": [
+        "REQ-aaf989477cb3"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-DATABASE-VAULT-STATUS-001",
+      "query_sha256": "188b9b3675c6d863a5332b2f3b4610e6c2483c849cecd914e31bbc71a1b72126",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:01Z",
+      "evidence_refs": [
+        "EVR-4b30b69f3047e458636367b9"
+      ],
+      "request_refs": [
+        "REQ-6a1d69d769a9"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-OLS-STATUS-001",
+      "query_sha256": "070d37c0f34611175c20dc3b28eb012ecbf63b75aaf9535ce4571fdaf91125d3",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:01Z",
+      "evidence_refs": [
+        "EVR-452c6a5ee6ba2fa7de2bc72f"
+      ],
+      "request_refs": [
+        "REQ-a7ae32b426d8"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-ENCRYPTED-COLUMNS-001",
+      "query_sha256": "11eb5d2cab56880517242237d49cb3d2101851fa49b399759b21859c640d901d",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:06Z",
+      "evidence_refs": [
+        "EVR-787bc2ed1f6cf75b92a3bd03"
+      ],
+      "request_refs": [
+        "REQ-de700b4c4896"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-ENCRYPTED-TABLESPACES-001",
+      "query_sha256": "8d879905b92fb23603b46b6a4d6706c65025f848a92b3dfc8e369f4502652286",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:07Z",
+      "evidence_refs": [
+        "EVR-3d7225a05faecba4007674f4"
+      ],
+      "request_refs": [
+        "REQ-fb29d2881a0a"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-OBJECT-PRIVILEGES-001",
+      "query_sha256": "d562c354930ea564a9435796b53f34df5bcd4672fb3727079b16dd3b0cb32228",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:09Z",
+      "evidence_refs": [
+        "EVR-adab8a16a56ae601f6bc6daa"
+      ],
+      "request_refs": [
+        "REQ-e83427622419"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-PASSWORD-VERSIONS-001",
+      "query_sha256": "99ed6c53e76d1490f89a1725bc037e4ece94c682c4948bf2f8c2cf0aa8b0a336",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:13Z",
+      "evidence_refs": [
+        "EVR-249093af9bf5c98b91381047"
+      ],
+      "request_refs": [
+        "REQ-48ffd5781343"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-PUBLIC-OBJECT-GRANTS-001",
+      "query_sha256": "9cb2c41d125bf8efe98408f28f7ea87ee570310cb971f44c5e41a4b229734a0e",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:15Z",
+      "evidence_refs": [
+        "EVR-8d8fc837594e91c82d77a257"
+      ],
+      "request_refs": [
+        "REQ-d638cface484"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-PUBLIC-SYSTEM-GRANTS-001",
+      "query_sha256": "f9c2d661fb689b1b8d4bb01cbab560de6cd2c8cd083e22ba37479479068cc4ab",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:15Z",
+      "evidence_refs": [
+        "EVR-60b34f49e89b5c2a72742749"
+      ],
+      "request_refs": [
+        "REQ-3da5e72fad67"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-ROLE-GRANTS-001",
+      "query_sha256": "051ecd2e629ec428dee8e5cdbc191d6e5d07f56fafc70f18f3429a8eb5ed1a33",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:15Z",
+      "evidence_refs": [
+        "EVR-c5465ebf6078e835d2a98b74"
+      ],
+      "request_refs": [
+        "REQ-48d834be5484"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-ROLES-001",
+      "query_sha256": "ec9f781bb410dabac5002b07c53a52f0a966b518fa13aad9579dbcc29544562d",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:20Z",
+      "evidence_refs": [
+        "EVR-084314b0633b256cb50c97d6"
+      ],
+      "request_refs": [
+        "REQ-29aae4a93a3f"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-SECURITY-PARAMETERS-001",
+      "query_sha256": "e2406331cec0438b23c1114cb94a59c3f837166f0c27e230f29beefcfb957168",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:20Z",
+      "evidence_refs": [
+        "EVR-3815e177f8b5041a97d3a6d6"
+      ],
+      "request_refs": [
+        "REQ-d7310537c4dc"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-SYSTEM-PRIVILEGES-001",
+      "query_sha256": "034bfa67901bd13d668f247d07bef8f2a04d2526630f8c37228e4d5773dfba19",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:21Z",
+      "evidence_refs": [
+        "EVR-2c346ef6fe48f05ed5afddd6"
+      ],
+      "request_refs": [
+        "REQ-3cb766540a1b"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-TDE-WALLET-001",
+      "query_sha256": "45380792c3ac814cc83dc07d95a0adb52750db33846ef72d7ac11e06caaa11ce",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:22Z",
+      "evidence_refs": [
+        "EVR-5f9a33abe65af5e5eeb1c1d2"
+      ],
+      "request_refs": [
+        "REQ-9968ba747f8c"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-001",
+      "query_sha256": "46103b5bdba8a0c994abc2aec9a4aa3df06dc62453993186b515ae043bc418a4",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:29Z",
+      "evidence_refs": [
+        "EVR-1dd2c23aad0132ea3bb72570"
+      ],
+      "request_refs": [
+        "REQ-51bbcf35cc35"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-002",
+      "query_sha256": "889abe86b5da60b9cc0e14b09294aabb1d76216283235714ed632ba8c1bebde1",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:29Z",
+      "evidence_refs": [
+        "EVR-1924b34402cb5c6e55490e43"
+      ],
+      "request_refs": [
+        "REQ-af01e8d1cc45"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-003",
+      "query_sha256": "8b88b1d4c5845f26cd9c88bc712f3d0b8a352bc2e833c320f316108f46dc55b3",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:30Z",
+      "evidence_refs": [
+        "EVR-ab34e13b2ff7d616fb4c4dfc"
+      ],
+      "request_refs": [
+        "REQ-ac09efbcb69b"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-004",
+      "query_sha256": "f438add123e09925037da9a65e9c52abbec07e61802718ffe8ee43bde666f8a5",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:31Z",
+      "evidence_refs": [
+        "EVR-59ed25c7da1bf63b6227b6aa"
+      ],
+      "request_refs": [
+        "REQ-30e97eb98d55"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-005",
+      "query_sha256": "9c5b438ad8123f57c03f7c0f94daf84b97a1ce1b3727bdc208b152a0c67aad77",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-23T19:31:32Z",
+      "evidence_refs": [
+        "EVR-c0f33b04fcf411b5bc09575a"
+      ],
+      "request_refs": [
+        "REQ-ff79749fb753"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
     }
   ]
 }

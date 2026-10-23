@@ -55,11 +55,12 @@
   {
    "collector_id": "Q-SEC-DB-LINKS-001",
    "domain": "security",
-   "title": "Database links per container: masked owner and name, fixed or connected user, kind of target (host and username never leave the database)",
+   "title": "Database links per container: masked owner and name, public or private, fixed or connected user, kind of target (host and username never leave the database)",
    "row_limit": 100,
    "fields": [
     "con_id",
     "owner",
+    "link_scope",
     "db_link",
     "link_auth",
     "target_kind"

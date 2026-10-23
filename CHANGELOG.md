@@ -22,6 +22,8 @@ Rama `change/b7-security-coverage` sobre `change/field-validation-freshness`. Or
 - Lote B7: 16 queries de seguridad certificadas, reescritas y expuestas por el gateway: cuentas, privilegios de sistema y de objeto, roles, `PUBLIC`, DB links, parámetros de seguridad, versiones de verificadores, TDE (keystore, tablespaces y columnas), Data Redaction, DV y OLS. El catálogo pasa de 74 a 90 collectors.
 - `oracle_role` en `ORACLE_TERM_FIELDS`, solo con nombres de roles mantenidos por Oracle.
 - P18: toda variante declarada de todo collector debe interpretarse y resolver en su versión mínima y máxima.
+- `link_scope` (`PUBLIC`/`PRIVATE`) en `Q-SEC-DB-LINKS-001`: enmascarar al dueño ocultaba que un link es público (revisión de especialistas en el lab).
+- Validación en campo: 15 collectors de B7 y las 5 sondas del diccionario, en `LAB-OL8-19C-CDBROOT-ASM`.
 
 #### Changed
 

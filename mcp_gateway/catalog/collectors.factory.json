@@ -3511,7 +3511,7 @@
       "collector_id": "Q-SEC-DB-LINKS-001",
       "kind": "sql_query",
       "domain": "security",
-      "title": "Database links per container: masked owner and name, fixed or connected user, kind of target (host and username never leave the database)",
+      "title": "Database links per container: masked owner and name, public or private, fixed or connected user, kind of target (host and username never leave the database)",
       "row_limit": 100,
       "params": {},
       "output_fields": {
@@ -3525,6 +3525,14 @@
           "type": "identifier",
           "policy": "MASK",
           "alias_prefix": "own"
+        },
+        "link_scope": {
+          "type": "enum",
+          "values": [
+            "PRIVATE",
+            "PUBLIC"
+          ],
+          "policy": "KEEP"
         },
         "db_link": {
           "type": "identifier",

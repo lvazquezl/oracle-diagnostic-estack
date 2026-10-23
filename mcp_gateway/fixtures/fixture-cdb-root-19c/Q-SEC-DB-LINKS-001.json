@@ -4,6 +4,7 @@
     {
       "con_id": 1,
       "owner": "SYNTH_APP",
+      "link_scope": "PUBLIC",
       "db_link": "SYNTH_LINK",
       "link_auth": "FIXED_USER",
       "target_kind": "NET_SERVICE_NAME"

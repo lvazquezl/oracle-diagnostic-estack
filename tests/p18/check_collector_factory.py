@@ -581,7 +581,7 @@ def b7_sql_never_selects_hosts_keystore_paths_raw_dates_or_credentials():
     for v in ("11.2", "12.1.0.1", "19.0"):
         dl = _resolved("Q-SEC-DB-LINKS-001", v)
         sl = _select_list(dl)
-        assert "as target_kind" in dl and "as link_auth" in dl, v
+        assert "as target_kind" in dl and "as link_auth" in dl and "as link_scope" in dl, v
         assert not re.search(raw.format(c="host"), sl) and not re.search(raw.format(c="username"), sl), (v, sl)
         tde = _resolved("Q-SEC-TDE-WALLET-001", v)
         assert "wrl_parameter" not in tde and "wrl_type" in tde, v

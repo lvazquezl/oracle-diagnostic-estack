@@ -1891,6 +1891,15 @@
    ],
    "example": "FIXED_USER"
   },
+  "link_scope": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "PRIVATE",
+    "PUBLIC"
+   ],
+   "example": "PUBLIC"
+  },
   "target_kind": {
    "type": "enum",
    "policy": "KEEP",
