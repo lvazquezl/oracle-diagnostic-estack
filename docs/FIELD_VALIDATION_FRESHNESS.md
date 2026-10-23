@@ -54,5 +54,19 @@ Aplica al gateway de fixtures (`mcp_gateway`) y al del lab (`mcp_gateway_lab`), 
 | TEST | P16 20/20, con 6 casos nuevos: digest del archivo, validación agregada y **retirada** sin reiniciar, archivo sin cambios o solo tocado, archivo roto o borrado (fallo cerrado), registro inyectado, y gateway de punta a punta (sin rutas en la salida) |
 | SECURITY | 8/8 mutaciones detectadas: refresco omitido, refresco que devuelve siempre el viejo, conservar el registro viejo ante un archivo roto (fallo abierto), ruta real en `summary`, digest del JSON en vez del archivo, `registry_sha256` omitido, recarga por solo tocar el archivo, y `list_capabilities` sin el registro |
 | REGRESSION | 973/973 en macOS (bash 5.3), sin fallos |
-| LAB | Pendiente: con el MCP del lab reconectado sobre esta rama, `list_capabilities` debe mostrar el `sha256` del registro, y una edición del registro debe verse sin reconectar |
-| HUMAN REVIEW | Pendiente |
+| LAB | Correcto con `7b3ae53` en el checkout del lab (gateway PID 83988, `lab-ol8-19c`, 2026-10-19). Detalle abajo |
+| HUMAN REVIEW | Aprobado: `AUTH-FIELD-VALIDATION-FRESHNESS-001`, revisor `REV-DBAMANAGER`, `2026-10-23T16:42:23Z`, contra el digest `fd07709f…992646` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). PROMOTE: pendiente (push, PR y merge, acciones humanas) |
+
+## Prueba en el lab (`lab-ol8-19c`, 2026-10-19)
+
+El gateway del lab corrió `7b3ae53` y se reconectó una vez, antes de la prueba. Sin volver a reconectar, se retiró la validación de `Q-DISC-CLOCK-001` en `config/field-validation-registry.json` del checkout del lab y después se restauró el archivo original, que se dejó sin cambios.
+
+| Paso | Request | Evidencia | Registro (`sha256`) | Resultado |
+|---|---|---|---|---|
+| `list_capabilities` inicial | `REQ-d243335c25bf` | — | `cd53c3c7…6569eda`, igual a `shasum -a 256` del archivo | `LOADED`, 69 validaciones, 0 recargas |
+| `collect` con el registro original | `REQ-eb308818b4c7` | `EVR-16a5e5c825f30c31a2bf2c9f` | `cd53c3c7…6569eda` | `FIELD_VALIDATED` |
+| `collect` con la validación retirada | `REQ-1a7a15a2ff1e` | `EVR-3080199f39aa7836fa995582` | `0ab4af2b…ed0e2fad` (68 validaciones) | `DOCUMENTATION_ONLY`, `NO_FIELD_VALIDATION_RECORDED` |
+| `collect` con el archivo restaurado | `REQ-94c092b11b7c` | `EVR-025ef4fb69e9a178f888e0a3` | `cd53c3c7…6569eda` | `FIELD_VALIDATED` |
+| `list_capabilities` final | `REQ-145084c121e7` | — | `cd53c3c7…6569eda` | `LOADED`, 2 recargas |
+
+Este cambio no modifica ninguna query, así que no agrega entradas al registro de validaciones.
