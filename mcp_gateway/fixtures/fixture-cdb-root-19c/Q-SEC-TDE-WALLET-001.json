@@ -1,0 +1,13 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B7)",
+  "rows": [
+    {
+      "con_id": 1,
+      "wrl_type": "FILE",
+      "status": "NOT_AVAILABLE",
+      "wallet_type": "UNKNOWN",
+      "wallet_order": "SINGLE",
+      "fully_backed_up": "UNDEFINED"
+    }
+  ]
+}

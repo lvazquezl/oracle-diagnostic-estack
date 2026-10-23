@@ -533,5 +533,146 @@ def a_variant_max_is_inclusive_at_its_own_precision():
         assert "could not be resolved" in str(e), e
 
 
+# --- CHG-ESTACK-B7-SECURITY-COVERAGE-001 ------------------------------------------------------------------------
+
+B7 = {"Q-SEC-ACCOUNT-INVENTORY-001", "Q-SEC-DATA-REDACTION-POLICIES-001", "Q-SEC-DATABASE-VAULT-STATUS-001",
+      "Q-SEC-OLS-STATUS-001", "Q-SEC-DB-LINKS-001", "Q-SEC-ENCRYPTED-COLUMNS-001", "Q-SEC-ENCRYPTED-TABLESPACES-001",
+      "Q-SEC-OBJECT-PRIVILEGES-001", "Q-SEC-PASSWORD-VERSIONS-001", "Q-SEC-PUBLIC-OBJECT-GRANTS-001",
+      "Q-SEC-PUBLIC-SYSTEM-GRANTS-001", "Q-SEC-ROLE-GRANTS-001", "Q-SEC-ROLES-001", "Q-SEC-SECURITY-PARAMETERS-001",
+      "Q-SEC-SYSTEM-PRIVILEGES-001", "Q-SEC-TDE-WALLET-001"}
+
+
+def _select_list(sql):
+    """Output columns of the outermost SELECT (subqueries in the select list are kept: they never add columns)."""
+    import re
+    depth, i = 0, 0
+    low = sql.lower()
+    start = low.index("select") + len("select")
+    for i in range(start, len(low)):
+        ch = low[i]
+        depth += ch == "("
+        depth -= ch == ")"
+        if depth == 0 and re.match(r"\s+from\s", low[i:i + 6] if low[i].isspace() else " " + low[i:i + 5]):
+            break
+    return low[start:i]
+
+
+@test
+def lot_b7_exposes_sixteen_security_queries_without_raw_sensitive_fields():
+    cols = catalog.load_collectors()
+    b7 = {c["collector_id"] for c in json.load(open(FACTORY, encoding="utf-8"))["collectors"] if c["factory"]["lot"] == "B7"}
+    assert b7 == B7, b7 ^ B7
+    forbidden = {"host", "wrl_parameter", "created", "lock_date", "expiry_date", "last_login", "user_id", "table_name",
+                 "column_name", "object_name", "policy_name", "text", "value", "name", "password", "spare4", "line"}
+    for cid in b7:
+        f = cols[cid].output_fields
+        assert not set(f) & forbidden, (cid, set(f) & forbidden)
+        assert all(not (v["type"] == "identifier" and v["policy"] == "KEEP") for v in f.values()), cid
+    assert "username" not in cols["Q-SEC-DB-LINKS-001"].output_fields and "username" not in cols["Q-SEC-PASSWORD-VERSIONS-001"].output_fields
+    for cid in ("Q-SEC-ACCOUNT-INVENTORY-001", "Q-SEC-DB-LINKS-001", "Q-SEC-OBJECT-PRIVILEGES-001", "Q-SEC-ROLE-GRANTS-001"):
+        idents = [k for k, v in cols[cid].output_fields.items() if v["type"] == "identifier"]
+        assert idents and all(cols[cid].output_fields[k]["policy"] == "MASK" for k in idents), cid
+
+
+@test
+def b7_sql_never_selects_hosts_keystore_paths_raw_dates_or_credentials():
+    import re
+    raw = r"(^|,)\s*{c}\s*(,|$)"
+    for v in ("11.2", "12.1.0.1", "19.0"):
+        dl = _resolved("Q-SEC-DB-LINKS-001", v)
+        sl = _select_list(dl)
+        assert "as target_kind" in dl and "as link_auth" in dl, v
+        assert not re.search(raw.format(c="host"), sl) and not re.search(raw.format(c="username"), sl), (v, sl)
+        tde = _resolved("Q-SEC-TDE-WALLET-001", v)
+        assert "wrl_parameter" not in tde and "wrl_type" in tde, v
+        acc = _resolved("Q-SEC-ACCOUNT-INVENTORY-001", v)
+        for c in ("created", "lock_date", "expiry_date", "last_login", "user_id"):
+            assert not re.search(raw.format(c=c), _select_list(acc)), (v, c)
+        assert not re.search(r"password\b|spare4", acc), v
+        pv = _resolved("Q-SEC-PASSWORD-VERSIONS-001", v)
+        assert "username" not in pv and "count(*) as account_count" in pv, v
+        par = _resolved("Q-SEC-SECURITY-PARAMETERS-001", v)
+        assert not re.search(raw.format(c="value"), _select_list(par)) and "as value_keyword" in par, v
+    red = _resolved("Q-SEC-DATA-REDACTION-POLICIES-001", "19.0")
+    assert "count(distinct x.object_key) as protected_objects" in red and not re.search(raw.format(c="x.column_name"), _select_list(red))
+    for v in ("10.2", "19.0"):
+        ec = _resolved("Q-SEC-ENCRYPTED-COLUMNS-001", v)
+        assert "table_name" not in ec and "column_name" not in ec, v
+
+
+@test
+def b7_reads_every_container_and_excludes_oracle_grantees_where_the_column_exists():
+    with_om = ("Q-SEC-OBJECT-PRIVILEGES-001", "Q-SEC-SYSTEM-PRIVILEGES-001", "Q-SEC-ROLE-GRANTS-001")
+    for qid in with_om:
+        legacy, pre, modern = _resolved(qid, "11.2"), _resolved(qid, "12.1.0.1"), _resolved(qid, "19.0")
+        assert "cdb_" not in legacy and "con_id" not in legacy, qid
+        assert "cdb_" in pre and "oracle_maintained" not in pre, qid                 # ORACLE_MAINTAINED needs 12.1.0.2
+        assert "u.oracle_maintained = 'y'" in modern and "r.oracle_maintained = 'y'" in modern and "not exists" in modern, qid
+    for qid in ("Q-SEC-OBJECT-PRIVILEGES-001", "Q-SEC-SYSTEM-PRIVILEGES-001"):
+        for v in ("11.2", "12.1.0.1", "19.0"):
+            assert "grantee != 'public'" in _resolved(qid, v), (qid, v)
+    for qid in ("Q-SEC-DB-LINKS-001", "Q-SEC-ENCRYPTED-COLUMNS-001", "Q-SEC-ENCRYPTED-TABLESPACES-001", "Q-SEC-PUBLIC-SYSTEM-GRANTS-001",
+                "Q-SEC-ROLES-001", "Q-SEC-ACCOUNT-INVENTORY-001", "Q-SEC-PASSWORD-VERSIONS-001", "Q-SEC-PUBLIC-OBJECT-GRANTS-001"):
+        modern = _resolved(qid, "19.0")
+        assert "cdb_" in modern and "con_id" in _select_list(modern), qid
+    ts = _resolved("Q-SEC-ENCRYPTED-TABLESPACES-001", "19.0")
+    assert "e.con_id = v.con_id" in ts and "v.con_id = t.con_id" in ts, "the TS# join must stay inside one container"
+    acc = _resolved("Q-SEC-ACCOUNT-INVENTORY-001", "19.0")
+    assert "oracle_maintained = 'n' or account_status not like '%locked%'" in acc
+
+
+@test
+def oracle_role_carries_only_oracle_maintained_role_names():
+    sql = " ".join(_resolved("Q-SEC-ROLE-GRANTS-001", "19.0").split())
+    assert "case when r.oracle_maintained = 'y' then p.granted_role else 'custom' end as oracle_role" in sql, sql
+    assert "case when r.oracle_maintained = 'y' then null else p.granted_role end as granted_role" in sql, sql
+    assert "oracle_role" in catalog.ORACLE_TERM_FIELDS
+    f = catalog.load_collectors()["Q-SEC-ROLE-GRANTS-001"].output_fields
+    assert f["oracle_role"]["type"] == "oracle_term" and f["granted_role"]["policy"] == "MASK"
+
+
+@test
+def reading_option_status_needs_no_license_but_the_option_stays_separately_licensed():
+    cols = catalog.load_collectors()
+    for cid in ("Q-SEC-DATABASE-VAULT-STATUS-001", "Q-SEC-OLS-STATUS-001", "Q-SEC-DATA-REDACTION-POLICIES-001"):
+        assert str(cols[cid].license_requirements).lower() == "none", cid
+        text = open(catalog._find_query_file(cid), encoding="utf-8").read()
+        assert "no usa" in text and "requiere" in text, cid            # the license note explains why
+    for skill in ("database-vault-awareness", "ols-awareness"):
+        man = open(os.path.join(ROOT, "skills", "security", skill, "manifest.yaml"), encoding="utf-8").read()
+        assert "SEPARATELY_LICENSED" in man, skill
+
+
+@test
+def every_declared_variant_of_every_catalog_query_resolves_at_its_own_bounds():
+    # CHG-ESTACK-B7-SECURITY-COVERAGE-001: a variant label longer than the resolver's 120 characters hid V3 of
+    # Q-SEC-ACCOUNT-INVENTORY-001, so 19c had no variant and the lab gateway failed closed. Every declared variant must be
+    # parsed and reachable at its min and max version.
+    from mcp_gateway_lab import sqlsource
+    bad = []
+    for cid, col in catalog.load_collectors().items():
+        if col.kind != "sql_query":
+            continue
+        text = open(catalog._find_query_file(cid), encoding="utf-8").read()
+        front = text.split("\n---\n", 1)[0]
+        for m in sqlsource._VARIANT.finditer(front):
+            for v in (m.group("min"), m.group("max")):
+                if not v or v.lower() == "latest":
+                    continue
+                try:
+                    got = _resolved(cid, v)
+                except Exception:
+                    bad.append((cid, m.group("id"), v))
+                    continue
+                block = {b.group("label").strip(): b.group("sql").strip() for b in sqlsource._BLOCK.finditer(text)}.get(m.group("block"))
+                if block is None or got != block.rstrip().rstrip(";").rstrip().lower():
+                    bad.append((cid, m.group("id"), v, "resolved another block"))
+        declared = len(re.findall(r"^  - variant_id:", front, re.M))
+        found = len(list(sqlsource._VARIANT.finditer(front)))
+        if declared != found:
+            bad.append((cid, "declared variants not parsed", declared, found))
+    assert not bad, bad
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

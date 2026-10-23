@@ -1,0 +1,11 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B7)",
+  "rows": [
+    {
+      "con_id": 1,
+      "owner": "SYNTH_APP",
+      "encryption_alg": "AES256",
+      "encrypted_columns": 4
+    }
+  ]
+}

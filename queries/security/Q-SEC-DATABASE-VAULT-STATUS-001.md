@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-DATABASE-VAULT-STATUS-001
-version: 2.0.0
+version: 2.1.0
 
 domain: security
 purpose: >
@@ -27,7 +27,7 @@ max_output_bytes: 8192
 sensitivity: LOW
 sanitization_required: false
 
-license_requirements: "Oracle Database Vault — SEPARATELY_LICENSED salvo confirmación explícita del DBA"
+license_requirements: none
 
 execution_mode: READ_ONLY
 
@@ -67,6 +67,8 @@ Ninguna.
 `SEPARATELY_LICENSED` por defecto — `security/licensing-gates` nunca reporta `INCLUDED` sin
 confirmación explícita del DBA en el Target Profile (`licensing_profile`).
 
+2.1.0 CHG-ESTACK-B7-SECURITY-COVERAGE-001: `license_requirements: none`. Leer `V$OPTION` y `DBA_REGISTRY` no usa Database Vault; indica si está instalado o habilitado. El uso de la opción sí requiere licencia.
+
 # Sanitization notes
 
 Ninguna — sólo booleanos/enums de configuración.
@@ -76,3 +78,5 @@ Ninguna — sólo booleanos/enums de configuración.
 CHG-ESTACK-SEC-QUERIES-001 — 2.0.0: una sola sentencia sobre `V$OPTION` y `DBA_REGISTRY`, válida con o sin Database Vault instalado.
 
 N/A.
+
+2.1.0 CHG-ESTACK-B7-SECURITY-COVERAGE-001: `license_requirements: none`. Leer `V$OPTION` y `DBA_REGISTRY` no usa Database Vault; indica si está instalado o habilitado. El uso de la opción sí requiere licencia.

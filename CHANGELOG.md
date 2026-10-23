@@ -13,6 +13,26 @@ Rama `change/field-validation-freshness` sobre `main` (`b3d22d7`). Origen: REC-0
 - El gateway relee `config/field-validation-registry.json` en cada llamada si cambió en disco. Una validación agregada o retirada rige sin reiniciar el proceso; un archivo roto o borrado falla cerrado.
 - `field_validation` agrega `registry_sha256`, y `diagnostics.list_capabilities` agrega `field_validation_registry` (estado, `sha256`, recargas y conteos, sin rutas).
 
+### `/change query|security|compatibility|documentation` — CHG-ESTACK-B7-SECURITY-COVERAGE-001 — lote B7: cobertura de seguridad
+
+Rama `change/b7-security-coverage` sobre `change/field-validation-freshness`. Origen: la cobertura por dominio de `ANA-20261020-001` (Seguridad PARTIAL, TDE NOT_ASSESSED). Ver `docs/B7_SECURITY_COVERAGE.md`.
+
+#### Added
+
+- Lote B7: 16 queries de seguridad certificadas, reescritas y expuestas por el gateway: cuentas, privilegios de sistema y de objeto, roles, `PUBLIC`, DB links, parámetros de seguridad, versiones de verificadores, TDE (keystore, tablespaces y columnas), Data Redaction, DV y OLS. El catálogo pasa de 74 a 90 collectors.
+- `oracle_role` en `ORACLE_TERM_FIELDS`, solo con nombres de roles mantenidos por Oracle.
+- P18: toda variante declarada de todo collector debe interpretarse y resolver en su versión mínima y máxima.
+
+#### Changed
+
+- Las 16 queries pasan a `CDB_*` por contenedor (12.1+), conteos en vez de listas, fechas como horas y grantees de Oracle excluidos desde 12.1.0.2. `host`/`username` de DB links y la ruta del keystore nunca salen de la base.
+- DV, OLS y Data Redaction: `license_requirements: none` para la lectura de su estado. El uso de la opción sigue requiriendo licencia.
+
+#### Fixed
+
+- El validador estático ya no toma `SUBSTR`, `INSTR`, `TRIM`, `UPPER`, `IS` y `EXISTS` como columnas.
+- `V$ENCRYPTION_WALLET.WALLET_TYPE` registrada desde 12.1 (no 11.2).
+
 ## [0.29.0] — 2026-10-08 — `v0.29.0-assessment-accuracy` — 1 cambio: exactitud del assessment
 
 El assessment detecta por sí mismo un desfase entre el reloj del host de la base y el del gateway, y declara qué contenedores ve realmente la cuenta de diagnóstico. También dice en qué diskgroup están datafiles, redo, controlfile y FRA. Se corrigieron el conteo de switches de redo y un error del resolver de variantes que dejaba sin resolver algunas queries en 11g. La revisión por especialistas pasa a ser un paso fijo de `/assessment`. El catálogo llega a 74 collectors.

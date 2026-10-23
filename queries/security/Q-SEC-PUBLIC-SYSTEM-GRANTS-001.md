@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-PUBLIC-SYSTEM-GRANTS-001
-version: 1.0.0
+version: 2.0.0
 
 domain: security
 purpose: System privileges otorgados a PUBLIC — PUBLIC exposure analysis (# 12 del prompt de Fase 8).
@@ -12,8 +12,8 @@ supported_architectures: [Standalone, RAC]
 container_scope: ANY_CONTAINER
 database_role_scope: ANY
 
-objects_accessed: [DBA_SYS_PRIVS]
-privileges_required: [SELECT on DBA_SYS_PRIVS]
+objects_accessed: [DBA_SYS_PRIVS, CDB_SYS_PRIVS]
+privileges_required: [SELECT on DBA_SYS_PRIVS, SELECT on CDB_SYS_PRIVS]
 
 risk_class: R0
 cost_class: LOW
@@ -29,26 +29,43 @@ license_requirements: none
 
 execution_mode: READ_ONLY
 
+variants:
+  - variant_id: Q-SEC-PUBLIC-SYSTEM-GRANTS-001-V1
+    label: legacy_10g_11g
+    oracle_versions: {min: "10.2", max: "11.2"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V1 (legacy_10g_11g, 10.2–11.2: DBA_SYS_PRIVS)"
+  - variant_id: Q-SEC-PUBLIC-SYSTEM-GRANTS-001-V2
+    label: cdb_aware_12plus
+    oracle_versions: {min: "12.1", max: "23.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V2 (cdb_aware_12plus, 12.1–23.0: CDB_SYS_PRIVS con con_id)"
+
 tests: [tests/test_no_write_operations.sh, tests/test_security_public_grants.sh]
 status: active
 ---
 
-# Statement / procedure (read-only)
+# Statement / procedure (read-only) — Variant V1 (legacy_10g_11g, 10.2–11.2: DBA_SYS_PRIVS)
 
 ```sql
-SELECT privilege
+SELECT privilege, admin_option
 FROM   dba_sys_privs
 WHERE  grantee = 'PUBLIC'
 ORDER  BY privilege;
 ```
 
-`grantee = 'PUBLIC'` es un literal fijo, no un token de usuario — sin necesidad de sanitización.
-Clasificación posterior (`ORACLE_REQUIRED_DEFAULT/APPLICATION_REQUIRED/CUSTOM/UNKNOWN`) vía
-catálogo interno del skill `security/public-grants`, nunca inventada por heurística de nombre.
+# Statement / procedure (read-only) — Variant V2 (cdb_aware_12plus, 12.1–23.0: CDB_SYS_PRIVS con con_id)
+
+```sql
+SELECT con_id, privilege, admin_option
+FROM   cdb_sys_privs
+WHERE  grantee = 'PUBLIC'
+ORDER  BY con_id, privilege;
+```
 
 # Notes by version
 
-Estable desde 10g.
+`CDB_SYS_PRIVS` existe desde 12.1.
 
 # Notes by platform
 
@@ -56,7 +73,7 @@ Ninguna.
 
 # Container / role scope notes
 
-`ANY_CONTAINER`.
+V2 cubre los contenedores visibles por `CONTAINER_DATA`.
 
 # Cost classification rationale
 
@@ -68,8 +85,10 @@ Ninguna.
 
 # Sanitization notes
 
-`privilege` es un nombre de privilegio Oracle estándar → KEEP.
+Los privilegios de sistema son términos de Oracle (`privilege` como `oracle_term`).
 
 # Evolution via `/change query`
 
 N/A.
+
+2.0.0 CHG-ESTACK-B7-SECURITY-COVERAGE-001: 2.0.0: `CDB_SYS_PRIVS` por contenedor y `admin_option`.

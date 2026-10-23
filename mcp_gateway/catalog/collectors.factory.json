@@ -1153,6 +1153,7 @@
           "type": "enum",
           "values": [
             "ADAPTIVE",
+            "ALERT",
             "ALL",
             "ALL_ROWS",
             "ASYNCH",
@@ -1178,6 +1179,7 @@
             "INSTANCE",
             "INTERPRETED",
             "LOCAL",
+            "LOG",
             "LOW",
             "MANUAL",
             "MEDIUM",
@@ -1194,6 +1196,7 @@
             "SHARED",
             "SIMILAR",
             "SPFILE",
+            "TRACE",
             "TYPICAL",
             "XML",
             "XML, EXTENDED",
@@ -1263,6 +1266,7 @@
           "type": "enum",
           "values": [
             "ADAPTIVE",
+            "ALERT",
             "ALL",
             "ALL_ROWS",
             "ASYNCH",
@@ -1288,6 +1292,7 @@
             "INSTANCE",
             "INTERPRETED",
             "LOCAL",
+            "LOG",
             "LOW",
             "MANUAL",
             "MEDIUM",
@@ -1304,6 +1309,7 @@
             "SHARED",
             "SIMILAR",
             "SPFILE",
+            "TRACE",
             "TYPICAL",
             "XML",
             "XML, EXTENDED",
@@ -3277,6 +3283,914 @@
       },
       "factory": {
         "lot": "B6",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-ACCOUNT-INVENTORY-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Database accounts per container: status, profile, authentication type, common/Oracle-maintained flags and ages in hours (names masked; own or open accounts from 12.1.0.2)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "username": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "use"
+        },
+        "account_status": {
+          "type": "enum",
+          "values": [
+            "EXPIRED",
+            "EXPIRED & LOCKED",
+            "EXPIRED & LOCKED(TIMED)",
+            "EXPIRED(GRACE)",
+            "EXPIRED(GRACE) & LOCKED",
+            "EXPIRED(GRACE) & LOCKED(TIMED)",
+            "LOCKED",
+            "LOCKED(TIMED)",
+            "OPEN"
+          ],
+          "policy": "KEEP"
+        },
+        "profile": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "prf"
+        },
+        "authentication_type": {
+          "type": "enum",
+          "values": [
+            "EXTERNAL",
+            "GLOBAL",
+            "NONE",
+            "PASSWORD"
+          ],
+          "policy": "KEEP"
+        },
+        "common": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "oracle_maintained": {
+          "type": "enum",
+          "values": [
+            "N",
+            "Y"
+          ],
+          "policy": "KEEP"
+        },
+        "hours_since_last_login": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "hours_to_expiry": {
+          "type": "number",
+          "min": -10000000,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "hours_since_lock": {
+          "type": "number",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-DATA-REDACTION-POLICIES-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Data Redaction policies counted by enabled state and redaction function (no owner, object, column or policy names)",
+      "row_limit": 20,
+      "params": {},
+      "output_fields": {
+        "policy_enabled": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "OTHER",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "function_type": {
+          "type": "enum",
+          "values": [
+            "FULL",
+            "NONE",
+            "NO_COLUMN",
+            "NULLIFY",
+            "OTHER",
+            "PARTIAL",
+            "RANDOM",
+            "REGEXP"
+          ],
+          "policy": "KEEP"
+        },
+        "protected_objects": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        },
+        "redacted_columns": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-DATABASE-VAULT-STATUS-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Database Vault option and registry status (reading status is not using the option)",
+      "row_limit": 5,
+      "params": {},
+      "output_fields": {
+        "dv_option": {
+          "type": "enum",
+          "values": [
+            "FALSE",
+            "TRUE"
+          ],
+          "policy": "KEEP"
+        },
+        "dv_registry_status": {
+          "type": "enum",
+          "values": [
+            "DOWNGRADED",
+            "DOWNGRADING",
+            "INVALID",
+            "LOADED",
+            "LOADING",
+            "NO SCRIPT",
+            "OPTION OFF",
+            "REMOVED",
+            "REMOVING",
+            "UPGRADED",
+            "UPGRADING",
+            "VALID"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-OLS-STATUS-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Oracle Label Security option status (reading status is not using the option)",
+      "row_limit": 5,
+      "params": {},
+      "output_fields": {
+        "ols_option": {
+          "type": "enum",
+          "values": [
+            "FALSE",
+            "TRUE"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-DB-LINKS-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Database links per container: masked owner and name, fixed or connected user, kind of target (host and username never leave the database)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "owner": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "own"
+        },
+        "db_link": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "lnk"
+        },
+        "link_auth": {
+          "type": "enum",
+          "values": [
+            "CONNECTED_USER",
+            "FIXED_USER"
+          ],
+          "policy": "KEEP"
+        },
+        "target_kind": {
+          "type": "enum",
+          "values": [
+            "CONNECT_DESCRIPTOR",
+            "EASY_CONNECT",
+            "NET_SERVICE_NAME",
+            "NONE"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-ENCRYPTED-COLUMNS-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "TDE-encrypted columns counted per container, masked owner and algorithm (no table or column names)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "owner": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "own"
+        },
+        "encryption_alg": {
+          "type": "enum",
+          "values": [
+            "3DES168",
+            "AES128",
+            "AES192",
+            "AES256",
+            "OTHER"
+          ],
+          "policy": "KEEP"
+        },
+        "encrypted_columns": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-ENCRYPTED-TABLESPACES-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Tablespaces per container encrypted or not, and the TDE algorithm (names masked)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "tablespace_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "ts"
+        },
+        "classification": {
+          "type": "enum",
+          "values": [
+            "ENCRYPTED",
+            "UNENCRYPTED"
+          ],
+          "policy": "KEEP"
+        },
+        "encryptionalg": {
+          "type": "enum",
+          "values": [
+            "3DES168",
+            "AES128",
+            "AES192",
+            "AES256",
+            "ARIA128",
+            "ARIA192",
+            "ARIA256",
+            "GOST256",
+            "OTHER",
+            "SEED128"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-OBJECT-PRIVILEGES-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Object privileges counted per grantee and privilege (masked grantee; Oracle-maintained grantees excluded from 12.1.0.2; no owners or objects)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "grantee": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "grt"
+        },
+        "grantee_kind": {
+          "type": "enum",
+          "values": [
+            "ROLE",
+            "USER"
+          ],
+          "policy": "KEEP"
+        },
+        "privilege": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "grantable": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "object_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-PASSWORD-VERSIONS-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Accounts counted per password verifier versions, container and Oracle-maintained flag (no user names, no verifiers)",
+      "row_limit": 50,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "oracle_maintained": {
+          "type": "enum",
+          "values": [
+            "N",
+            "Y"
+          ],
+          "policy": "KEEP"
+        },
+        "password_versions": {
+          "type": "enum",
+          "values": [
+            "10G",
+            "10G 11G",
+            "10G 11G 12C",
+            "10G 12C",
+            "11G",
+            "11G 12C",
+            "12C",
+            "OTHER"
+          ],
+          "policy": "KEEP"
+        },
+        "account_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-PUBLIC-OBJECT-GRANTS-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Object privileges granted to PUBLIC, counted per privilege and owner (own schemas masked; Oracle schemas aggregated)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "owner": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "own"
+        },
+        "owner_oracle_maintained": {
+          "type": "enum",
+          "values": [
+            "N",
+            "Y"
+          ],
+          "policy": "KEEP"
+        },
+        "privilege": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "object_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-PUBLIC-SYSTEM-GRANTS-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "System privileges granted to PUBLIC per container",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "privilege": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "admin_option": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-ROLE-GRANTS-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Roles granted to own users and roles per container: Oracle role by name or CUSTOM, admin option and default flag (grantees and own roles masked)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "grantee": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "grt"
+        },
+        "grantee_kind": {
+          "type": "enum",
+          "values": [
+            "ROLE",
+            "USER"
+          ],
+          "policy": "KEEP"
+        },
+        "oracle_role": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "granted_role": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "rol"
+        },
+        "admin_option": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "default_role": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-ROLES-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Roles counted per container, common and Oracle-maintained flags (no names)",
+      "row_limit": 20,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "common": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "oracle_maintained": {
+          "type": "enum",
+          "values": [
+            "N",
+            "Y"
+          ],
+          "policy": "KEEP"
+        },
+        "role_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-SECURITY-PARAMETERS-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "Security-relevant initialization parameters: default flag and value only as number, TRUE/FALSE or closed keyword",
+      "row_limit": 20,
+      "params": {},
+      "output_fields": {
+        "parameter_name": {
+          "type": "parameter_name",
+          "policy": "KEEP"
+        },
+        "isdefault": {
+          "type": "enum",
+          "values": [
+            "FALSE",
+            "TRUE"
+          ],
+          "policy": "KEEP"
+        },
+        "value_number": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "value_flag": {
+          "type": "enum",
+          "values": [
+            "FALSE",
+            "TRUE"
+          ],
+          "policy": "KEEP"
+        },
+        "value_keyword": {
+          "type": "enum",
+          "values": [
+            "ADAPTIVE",
+            "ALERT",
+            "ALL",
+            "ALL_ROWS",
+            "ASYNCH",
+            "AUTO",
+            "BASIC",
+            "BOTH",
+            "DB",
+            "DB, EXTENDED",
+            "DEDICATED",
+            "DEFAULT",
+            "DIRECTIO",
+            "DISABLE",
+            "DISABLED",
+            "ENABLE",
+            "ENABLED",
+            "EXACT",
+            "EXCLUSIVE",
+            "EXTENDED",
+            "FIRST_ROWS",
+            "FORCE",
+            "FULL",
+            "HIGH",
+            "INSTANCE",
+            "INTERPRETED",
+            "LOCAL",
+            "LOG",
+            "LOW",
+            "MANUAL",
+            "MEDIUM",
+            "MEMORY",
+            "NATIVE",
+            "NO",
+            "NONE",
+            "OFF",
+            "ON",
+            "OS",
+            "PARTIAL",
+            "SESSION",
+            "SETALL",
+            "SHARED",
+            "SIMILAR",
+            "SPFILE",
+            "TRACE",
+            "TYPICAL",
+            "XML",
+            "XML, EXTENDED",
+            "YES"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-SYSTEM-PRIVILEGES-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "System privileges granted directly to own users and roles per container (masked grantee; Oracle-maintained grantees excluded from 12.1.0.2)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "grantee": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "grt"
+        },
+        "grantee_kind": {
+          "type": "enum",
+          "values": [
+            "ROLE",
+            "USER"
+          ],
+          "policy": "KEEP"
+        },
+        "privilege": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "admin_option": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-TDE-WALLET-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "TDE keystore per container: type, status, wallet type, order and backup flag (the keystore path never leaves the database)",
+      "row_limit": 10,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "wrl_type": {
+          "type": "enum",
+          "values": [
+            "AWS_KMS",
+            "AZURE_KMS",
+            "FILE",
+            "GCP_KMS",
+            "HSM",
+            "KMS",
+            "OKV"
+          ],
+          "policy": "KEEP"
+        },
+        "status": {
+          "type": "enum",
+          "values": [
+            "CLOSED",
+            "NOT_AVAILABLE",
+            "OPEN",
+            "OPEN_NO_MASTER_KEY",
+            "OPEN_UNKNOWN_MASTER_KEY_STATUS",
+            "UNDEFINED"
+          ],
+          "policy": "KEEP"
+        },
+        "wallet_type": {
+          "type": "enum",
+          "values": [
+            "AUTOLOGIN",
+            "HSM",
+            "LOCAL_AUTOLOGIN",
+            "PASSWORD",
+            "UNKNOWN"
+          ],
+          "policy": "KEEP"
+        },
+        "wallet_order": {
+          "type": "enum",
+          "values": [
+            "NOT APPLICABLE",
+            "PRIMARY",
+            "SECONDARY",
+            "SINGLE"
+          ],
+          "policy": "KEEP"
+        },
+        "fully_backed_up": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "UNDEFINED",
+            "YES"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B7",
         "lab_aliases": {},
         "fixture_target": "fixture-cdb-root-19c"
       }

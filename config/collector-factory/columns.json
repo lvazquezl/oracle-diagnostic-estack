@@ -626,6 +626,7 @@
    "policy": "KEEP",
    "values": [
     "ADAPTIVE",
+    "ALERT",
     "ALL",
     "ALL_ROWS",
     "ASYNCH",
@@ -651,6 +652,7 @@
     "INSTANCE",
     "INTERPRETED",
     "LOCAL",
+    "LOG",
     "LOW",
     "MANUAL",
     "MEDIUM",
@@ -667,6 +669,7 @@
     "SHARED",
     "SIMILAR",
     "SPFILE",
+    "TRACE",
     "TYPICAL",
     "XML",
     "XML, EXTENDED",
@@ -1764,6 +1767,302 @@
     "Y"
    ],
    "example": "Y"
+  },
+  "hours_to_expiry": {
+   "type": "number",
+   "min": -10000000,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 1440.5
+  },
+  "hours_since_lock": {
+   "type": "number",
+   "min": 0,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 72.0
+  },
+  "hours_since_last_login": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 3.5
+  },
+  "authentication_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "EXTERNAL",
+    "GLOBAL",
+    "NONE",
+    "PASSWORD"
+   ],
+   "example": "PASSWORD"
+  },
+  "policy_enabled": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "OTHER",
+    "YES"
+   ],
+   "example": "YES"
+  },
+  "function_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FULL",
+    "NONE",
+    "NO_COLUMN",
+    "NULLIFY",
+    "OTHER",
+    "PARTIAL",
+    "RANDOM",
+    "REGEXP"
+   ],
+   "example": "PARTIAL"
+  },
+  "protected_objects": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 2
+  },
+  "redacted_columns": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 3
+  },
+  "ols_option": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FALSE",
+    "TRUE"
+   ],
+   "example": "FALSE"
+  },
+  "dv_option": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FALSE",
+    "TRUE"
+   ],
+   "example": "FALSE"
+  },
+  "dv_registry_status": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "DOWNGRADED",
+    "DOWNGRADING",
+    "INVALID",
+    "LOADED",
+    "LOADING",
+    "NO SCRIPT",
+    "OPTION OFF",
+    "REMOVED",
+    "REMOVING",
+    "UPGRADED",
+    "UPGRADING",
+    "VALID"
+   ],
+   "example": "VALID"
+  },
+  "db_link": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "lnk",
+   "example": "SYNTH_LINK"
+  },
+  "link_auth": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "CONNECTED_USER",
+    "FIXED_USER"
+   ],
+   "example": "FIXED_USER"
+  },
+  "target_kind": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "CONNECT_DESCRIPTOR",
+    "EASY_CONNECT",
+    "NET_SERVICE_NAME",
+    "NONE"
+   ],
+   "example": "NET_SERVICE_NAME"
+  },
+  "encryption_alg": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "3DES168",
+    "AES128",
+    "AES192",
+    "AES256",
+    "OTHER"
+   ],
+   "example": "AES256"
+  },
+  "encrypted_columns": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 4
+  },
+  "classification": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "ENCRYPTED",
+    "UNENCRYPTED"
+   ],
+   "example": "UNENCRYPTED"
+  },
+  "encryptionalg": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "3DES168",
+    "AES128",
+    "AES192",
+    "AES256",
+    "ARIA128",
+    "ARIA192",
+    "ARIA256",
+    "GOST256",
+    "OTHER",
+    "SEED128"
+   ],
+   "example": "AES256"
+  },
+  "grantee_kind": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "ROLE",
+    "USER"
+   ],
+   "example": "USER"
+  },
+  "grantable": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "NO"
+  },
+  "password_versions": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "10G",
+    "10G 11G",
+    "10G 11G 12C",
+    "10G 12C",
+    "11G",
+    "11G 12C",
+    "12C",
+    "OTHER"
+   ],
+   "example": "11G 12C"
+  },
+  "account_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 12
+  },
+  "owner_oracle_maintained": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "N",
+    "Y"
+   ],
+   "example": "N"
+  },
+  "oracle_role": {
+   "type": "oracle_term",
+   "policy": "KEEP",
+   "example": "CONNECT"
+  },
+  "default_role": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "YES"
+  },
+  "role_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 5
+  },
+  "wrl_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "AWS_KMS",
+    "AZURE_KMS",
+    "FILE",
+    "GCP_KMS",
+    "HSM",
+    "KMS",
+    "OKV"
+   ],
+   "example": "FILE"
+  },
+  "wallet_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "AUTOLOGIN",
+    "HSM",
+    "LOCAL_AUTOLOGIN",
+    "PASSWORD",
+    "UNKNOWN"
+   ],
+   "example": "UNKNOWN"
+  },
+  "wallet_order": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NOT APPLICABLE",
+    "PRIMARY",
+    "SECONDARY",
+    "SINGLE"
+   ],
+   "example": "SINGLE"
+  },
+  "fully_backed_up": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "UNDEFINED",
+    "YES"
+   ],
+   "example": "UNDEFINED"
   }
  }
 }

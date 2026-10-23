@@ -1,0 +1,12 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B7)",
+  "rows": [
+    {
+      "con_id": 1,
+      "owner": "SYNTH_APP",
+      "owner_oracle_maintained": "N",
+      "privilege": "CREATE SESSION",
+      "object_count": 57
+    }
+  ]
+}

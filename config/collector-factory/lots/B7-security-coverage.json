@@ -1,0 +1,223 @@
+{
+ "_doc": "CHG-ESTACK-B7-SECURITY-COVERAGE-001 — lot B7: security coverage. Exposes 16 certified security queries rewritten so that nothing leaves the database unsanitized: CDB_* variants per container, aggregated counts instead of object lists, Oracle-maintained grantees excluded from 12.1.0.2, dates as hours, DB link host and keystore path never selected. Same rules as lots/B1-oracle-core.json.",
+ "lot_id": "B7",
+ "fixture_target": "fixture-cdb-root-19c",
+ "collectors": [
+  {
+   "collector_id": "Q-SEC-ACCOUNT-INVENTORY-001",
+   "domain": "security",
+   "title": "Database accounts per container: status, profile, authentication type, common/Oracle-maintained flags and ages in hours (names masked; own or open accounts from 12.1.0.2)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "username",
+    "account_status",
+    "profile",
+    "authentication_type",
+    "common",
+    "oracle_maintained",
+    "hours_since_last_login",
+    "hours_to_expiry",
+    "hours_since_lock"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-DATA-REDACTION-POLICIES-001",
+   "domain": "security",
+   "title": "Data Redaction policies counted by enabled state and redaction function (no owner, object, column or policy names)",
+   "row_limit": 20,
+   "fields": [
+    "policy_enabled",
+    "function_type",
+    "protected_objects",
+    "redacted_columns"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-DATABASE-VAULT-STATUS-001",
+   "domain": "security",
+   "title": "Database Vault option and registry status (reading status is not using the option)",
+   "row_limit": 5,
+   "fields": [
+    "dv_option",
+    "dv_registry_status"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-OLS-STATUS-001",
+   "domain": "security",
+   "title": "Oracle Label Security option status (reading status is not using the option)",
+   "row_limit": 5,
+   "fields": [
+    "ols_option"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-DB-LINKS-001",
+   "domain": "security",
+   "title": "Database links per container: masked owner and name, fixed or connected user, kind of target (host and username never leave the database)",
+   "row_limit": 100,
+   "fields": [
+    "con_id",
+    "owner",
+    "db_link",
+    "link_auth",
+    "target_kind"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-ENCRYPTED-COLUMNS-001",
+   "domain": "security",
+   "title": "TDE-encrypted columns counted per container, masked owner and algorithm (no table or column names)",
+   "row_limit": 100,
+   "fields": [
+    "con_id",
+    "owner",
+    "encryption_alg",
+    "encrypted_columns"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-ENCRYPTED-TABLESPACES-001",
+   "domain": "security",
+   "title": "Tablespaces per container encrypted or not, and the TDE algorithm (names masked)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "tablespace_name",
+    "classification",
+    "encryptionalg"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-OBJECT-PRIVILEGES-001",
+   "domain": "security",
+   "title": "Object privileges counted per grantee and privilege (masked grantee; Oracle-maintained grantees excluded from 12.1.0.2; no owners or objects)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "grantee",
+    "grantee_kind",
+    "privilege",
+    "grantable",
+    "object_count"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-PASSWORD-VERSIONS-001",
+   "domain": "security",
+   "title": "Accounts counted per password verifier versions, container and Oracle-maintained flag (no user names, no verifiers)",
+   "row_limit": 50,
+   "fields": [
+    "con_id",
+    "oracle_maintained",
+    "password_versions",
+    "account_count"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-PUBLIC-OBJECT-GRANTS-001",
+   "domain": "security",
+   "title": "Object privileges granted to PUBLIC, counted per privilege and owner (own schemas masked; Oracle schemas aggregated)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "owner",
+    "owner_oracle_maintained",
+    "privilege",
+    "object_count"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-PUBLIC-SYSTEM-GRANTS-001",
+   "domain": "security",
+   "title": "System privileges granted to PUBLIC per container",
+   "row_limit": 100,
+   "fields": [
+    "con_id",
+    "privilege",
+    "admin_option"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-ROLE-GRANTS-001",
+   "domain": "security",
+   "title": "Roles granted to own users and roles per container: Oracle role by name or CUSTOM, admin option and default flag (grantees and own roles masked)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "grantee",
+    "grantee_kind",
+    "oracle_role",
+    "granted_role",
+    "admin_option",
+    "default_role"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-ROLES-001",
+   "domain": "security",
+   "title": "Roles counted per container, common and Oracle-maintained flags (no names)",
+   "row_limit": 20,
+   "fields": [
+    "con_id",
+    "common",
+    "oracle_maintained",
+    "role_count"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-SECURITY-PARAMETERS-001",
+   "domain": "security",
+   "title": "Security-relevant initialization parameters: default flag and value only as number, TRUE/FALSE or closed keyword",
+   "row_limit": 20,
+   "fields": [
+    "parameter_name",
+    "isdefault",
+    "value_number",
+    "value_flag",
+    "value_keyword"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-SYSTEM-PRIVILEGES-001",
+   "domain": "security",
+   "title": "System privileges granted directly to own users and roles per container (masked grantee; Oracle-maintained grantees excluded from 12.1.0.2)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "grantee",
+    "grantee_kind",
+    "privilege",
+    "admin_option"
+   ]
+  },
+  {
+   "collector_id": "Q-SEC-TDE-WALLET-001",
+   "domain": "security",
+   "title": "TDE keystore per container: type, status, wallet type, order and backup flag (the keystore path never leaves the database)",
+   "row_limit": 10,
+   "fields": [
+    "con_id",
+    "wrl_type",
+    "status",
+    "wallet_type",
+    "wallet_order",
+    "fully_backed_up"
+   ],
+   "overrides": {
+    "status": {
+     "values": [
+      "CLOSED",
+      "NOT_AVAILABLE",
+      "OPEN",
+      "OPEN_NO_MASTER_KEY",
+      "OPEN_UNKNOWN_MASTER_KEY_STATUS",
+      "UNDEFINED"
+     ],
+     "example": "NOT_AVAILABLE"
+    }
+   }
+  }
+ ]
+}

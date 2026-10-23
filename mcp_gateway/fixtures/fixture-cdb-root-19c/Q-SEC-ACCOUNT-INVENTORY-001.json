@@ -1,0 +1,17 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B7)",
+  "rows": [
+    {
+      "con_id": 1,
+      "username": "SYNTH_USER",
+      "account_status": "EXPIRED & LOCKED",
+      "profile": "SYNTH_PROFILE",
+      "authentication_type": "PASSWORD",
+      "common": "NO",
+      "oracle_maintained": "N",
+      "hours_since_last_login": 3.5,
+      "hours_to_expiry": 1440.5,
+      "hours_since_lock": 72.0
+    }
+  ]
+}
