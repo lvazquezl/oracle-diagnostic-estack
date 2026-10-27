@@ -54,6 +54,27 @@ Faltaban además datos para detectar los riesgos más comunes:
 
 **Validaciones en campo retiradas** hasta revalidar en el lab, porque su SQL cambió: `Q-SEC-SECURITY-PARAMETERS-001`, `Q-SEC-TDE-WALLET-001` y las sondas `Q-DICT-VERIFY-001`..`004` (el registro pasa de 85 a 79).
 
+## Validación en el lab
+
+`lab-ol8-19c`, contexto `LAB-OL8-19C-CDBROOT-ASM`, 2026-10-27, evidencia REAL sanitizada:
+
+| Query | Resultado | Evidencia |
+|---|---|---|
+| `Q-SEC-TDE-MASTER-KEYS-001` | 0 filas: sin llaves maestras | `EVR-11299e1e8a4c97a8d1b5e8a4` (`REQ-e7f2db62f594`) |
+| `Q-SEC-TDE-WALLET-001` (V3) | root y PDB: `FILE`, `NOT_AVAILABLE`, `UNKNOWN`; `keystore_mode` `NONE` en el root y `UNITED` en el PDB | `EVR-c8090a3f0e303a40df49ed8f` (`REQ-a4f62dc7ceab`) |
+| `Q-SEC-SECURITY-PARAMETERS-001` | 17 filas; `encrypt_new_tablespaces` `CLOUD_ONLY`, `tde_configuration` y `wallet_root` en default | `EVR-09475d2e9e3119da45f370aa` (`REQ-a1d0d935f53f`) |
+| `Q-DICT-VERIFY-001` | `CHECKED` 110, sin columnas faltantes | `EVR-fb42362c879e6eadb0697a96` (`REQ-b69d545265b5`) |
+| `Q-DICT-VERIFY-002` | `CHECKED` 110; `STATS$` `VIEW_NOT_FOUND` (Statspack no instalado, igual que en B7) | `EVR-94dc3ef9f326a7a7878b529e` (`REQ-000a96a1781d`) |
+| `Q-DICT-VERIFY-003` | `CHECKED` 106, `keystore_mode` y `V$ENCRYPTION_KEYS` presentes | `EVR-501e52b03322ba63be3c2cdd` (`REQ-08c773eb9070`) |
+| `Q-DICT-VERIFY-004` | `CHECKED` 109 | `EVR-977eb4ae4710a8c82cf9b82c` (`REQ-70c0215a93fa`) |
+
+`Q-SEC-ENCRYPTED-TABLESPACES-001` (10 tablespaces `UNENCRYPTED`) y `Q-SEC-ENCRYPTED-COLUMNS-001` (0 filas) siguen `FIELD_VALIDATED` por B7.
+
+**Revisión del especialista de seguridad:**
+- Postura `NOT_CONFIGURED` en root y PDB (keystore `NOT_AVAILABLE`, sin llaves, sin datos cifrados, `wallet_root` y `tde_configuration` en default); global `NOT_CONFIGURED`. Hallazgo `TDE-11` IMPROVEMENT INFO; sin `TDE-12` porque no hay uso.
+- En 19c el root reporta `keystore_mode` `NONE` siempre. `TDE-08` aclara que `NONE` en el root o en un non-CDB no es mezcla, y `tests/test_tde_posture.sh` lo verifica.
+- Los casos `IN_USE` y `CONFIGURED_NOT_IN_USE` no se pueden observar en el lab sin usar la opción; quedan cubiertos por las pruebas sintéticas.
+
 ## Registro del cambio
 
 | Fase | Resultado |
@@ -64,8 +85,8 @@ Faltaban además datos para detectar los riesgos más comunes:
 | IMPACT ANALYSIS | Catálogo de 90 a 91 collectors; 2 queries cambian de SQL (revalidación en el lab); sin privilegios nuevos esperados (`V$ENCRYPTION_KEYS` con `SELECT_CATALOG_ROLE`); sin licencia; sin tools nuevas |
 | PROPOSAL | Este documento |
 | IMPLEMENT | Query nueva y lote B8T; 2 queries a 2.1.0; 4 campos y 8 palabras clave; diccionario (`V$ENCRYPTION_KEYS`, `keystore_mode`); matriz, registro de madurez (159 componentes), target de fixtures; skill 1.1.0; workflows `assessment` y `healthcheck`; agente de seguridad; política de licencias |
-| TEST | P18 37/37 (caso nuevo de la postura); `tests/test_tde_posture.sh` 41/41 |
+| TEST | P18 37/37 (caso nuevo de la postura); `tests/test_tde_posture.sh` 42/42 (incluye `TDE-08` con `NONE` en el root) |
 | SECURITY | 12/12 mutaciones detectadas: severidad de `TDE-01` rebajada, `TDE-12` sin `LICENSE_CHECK_REQUIRED`, gate de licencia en el manifest, paso fijo quitado de `assessment`, collector quitado de `healthcheck`, `NOT_CONFIGURED` sin evidencia, `key_id` expuesto, licencia en la query nueva, valor crudo de parámetro, `wallet_root` fuera de la lista, V3 sin `keystore_mode`, regla "leer no es usar" quitada |
-| REGRESSION | 974/974 en macOS (bash 5.3), con `tests/test_tde_posture.sh` |
-| LAB | Pendiente |
-| HUMAN REVIEW | Pendiente |
+| REGRESSION | 974/974 en macOS (bash 5.3), con `tests/test_tde_posture.sh`; repetida tras el lab: 974/974 |
+| LAB | `lab-ol8-19c` (19.32, CDB root, ASM): 3 collectors de TDE y 4 sondas del diccionario `FIELD_VALIDATED` con la cuenta de diagnóstico, sin privilegios nuevos; registro de 79 a 86. Postura del lab `NOT_CONFIGURED` → `TDE-11` |
+| HUMAN REVIEW | Pendiente (`PENDING_HUMAN_REVIEW`) |

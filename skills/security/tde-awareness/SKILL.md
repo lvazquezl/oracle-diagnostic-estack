@@ -82,7 +82,7 @@ La postura global es la más alta de los contenedores (`IN_USE` > `CONFIGURED_NO
 | `TDE-05` | `hours_since_last_activation` mayor que `tde_key_rotation_hours` (8760 por defecto): llave maestra sin rotar | IMPROVEMENT | MEDIUM |
 | `TDE-06` | Algoritmo `3DES168` en tablespaces o columnas: algoritmo obsoleto; `AES128` se reporta como mejora opcional hacia `AES256` | IMPROVEMENT | MEDIUM (`3DES168`) / LOW (`AES128`) |
 | `TDE-07` | `encryption_required: true` en el Target Profile y tablespaces `UNENCRYPTED` en un contenedor con datos de aplicación (lo resuelve `security/tablespace-encryption`) | MISCONFIGURATION | HIGH |
-| `TDE-08` | CDB con `keystore_mode` mixto (`UNITED` e `ISOLATED`) o un PDB con datos cifrados y keystore en otro estado que el root | MISCONFIGURATION | MEDIUM |
+| `TDE-08` | CDB con `keystore_mode` mixto (`UNITED` e `ISOLATED`) o un PDB con datos cifrados y keystore en otro estado que el root. `NONE` en el root (`con_id` 1) o en un non-CDB es lo normal y no cuenta como mezcla | MISCONFIGURATION | MEDIUM |
 | `TDE-09` | `IN_USE` con `encrypt_new_tablespaces` distinto de `ALWAYS` y `encryption_required: true`: los tablespaces nuevos pueden nacer sin cifrar | IMPROVEMENT | LOW |
 | `TDE-10` | 18c+ con keystore y `wallet_root` en default: el keystore se ubica por `sqlnet.ora` (`ENCRYPTION_WALLET_LOCATION`, método heredado); conviene migrar a `WALLET_ROOT` + `TDE_CONFIGURATION` | IMPROVEMENT | LOW |
 | `TDE-11` | `NOT_CONFIGURED`: los datos en reposo, los respaldos y los archivos de datos copiados quedan legibles fuera de la base. Se propone evaluar TDE según la clasificación de datos | IMPROVEMENT | INFO; MEDIUM si el Target Profile declara datos sensibles; si `encryption_required: true`, aplica `TDE-07` |

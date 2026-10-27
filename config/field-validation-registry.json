@@ -1127,6 +1127,104 @@
       ],
       "record": "docs/B7_SECURITY_COVERAGE.md",
       "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-SECURITY-PARAMETERS-001",
+      "query_sha256": "69a8dd1650463b0f498e3aa18f1ee0e4d70f94808ae986e064d502fbc8ba6210",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:05Z",
+      "evidence_refs": [
+        "EVR-09475d2e9e3119da45f370aa"
+      ],
+      "request_refs": [
+        "REQ-a1d0d935f53f"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
+    },
+    {
+      "query_id": "Q-SEC-TDE-WALLET-001",
+      "query_sha256": "3bbd7eb3af7272d4f472078bb673a2d4a45879a2f3b2be73323c0cfc196563fd",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:04Z",
+      "evidence_refs": [
+        "EVR-c8090a3f0e303a40df49ed8f"
+      ],
+      "request_refs": [
+        "REQ-a4f62dc7ceab"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
+    },
+    {
+      "query_id": "Q-SEC-TDE-MASTER-KEYS-001",
+      "query_sha256": "3e44a9dc7a9cd9c2e12ba52a68b125ce534d200c6fa564a9594c5c4de0f9115d",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:04Z",
+      "evidence_refs": [
+        "EVR-11299e1e8a4c97a8d1b5e8a4"
+      ],
+      "request_refs": [
+        "REQ-e7f2db62f594"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-001",
+      "query_sha256": "8eaea4b962f5b7a73f7800725d2dec49bc09a1d2eaacb6ee40bd9372e755045a",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:12Z",
+      "evidence_refs": [
+        "EVR-fb42362c879e6eadb0697a96"
+      ],
+      "request_refs": [
+        "REQ-b69d545265b5"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-002",
+      "query_sha256": "14df42e9876eda251944a25f43ff2e1d43e710c59065f1794aa4c33e942849c9",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:13Z",
+      "evidence_refs": [
+        "EVR-94dc3ef9f326a7a7878b529e"
+      ],
+      "request_refs": [
+        "REQ-000a96a1781d"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-003",
+      "query_sha256": "396ba2d6e126974267157470eceaf86fc65ce4544b0088850d87b1d3a5e55ce5",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:14Z",
+      "evidence_refs": [
+        "EVR-501e52b03322ba63be3c2cdd"
+      ],
+      "request_refs": [
+        "REQ-08c773eb9070"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-004",
+      "query_sha256": "2b747f0df2a6c5024c86eecdef50a5632808ab3fe8c44a87fced313ad6e0c020",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:15Z",
+      "evidence_refs": [
+        "EVR-977eb4ae4710a8c82cf9b82c"
+      ],
+      "request_refs": [
+        "REQ-70c0215a93fa"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
     }
   ]
 }

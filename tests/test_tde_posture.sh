@@ -35,6 +35,7 @@ check_row TDE-11 IMPROVEMENT INFO
 check_row TDE-12 LICENSE_REVIEW MEDIUM
 check_row TDE-13 MISCONFIGURATION LOW
 
+grep -qF "\`NONE\` en el root" <<<"$(row TDE-08)" && pass "TDE-08 no confunde NONE del root con modo mixto" || fail "TDE-08 trata NONE del root como mezcla"
 grep -qF "LICENSE_CHECK_REQUIRED" <<<"$(row TDE-12)" && pass "TDE-12 pide LICENSE_CHECK_REQUIRED" || fail "TDE-12 sin LICENSE_CHECK_REQUIRED"
 grep -qF "nunca se reporta \`NOT_CONFIGURED\` por falta de datos" "$S" && pass "sin evidencia → UNDETERMINED, nunca NOT_CONFIGURED" || fail "falta la regla de evidencia ausente"
 grep -qE "^license_requirements: none" "$M" && pass "manifest: leer la postura no requiere licencia" || fail "manifest con gate de licencia"
