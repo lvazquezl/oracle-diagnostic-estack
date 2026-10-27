@@ -638,9 +638,14 @@ def reading_option_status_needs_no_license_but_the_option_stays_separately_licen
         assert str(cols[cid].license_requirements).lower() == "none", cid
         text = open(catalog._find_query_file(cid), encoding="utf-8").read()
         assert "no usa" in text and "requiere" in text, cid            # the license note explains why
-    for skill in ("database-vault-awareness", "ols-awareness"):
-        man = open(os.path.join(ROOT, "skills", "security", skill, "manifest.yaml"), encoding="utf-8").read()
-        assert "SEPARATELY_LICENSED" in man, skill
+    # Human decision 2026-10-27: the skills read the status with no license; the option itself stays licensed.
+    for skill, option in (("database-vault-awareness", "SEPARATELY_LICENSED"), ("ols-awareness", "SEPARATELY_LICENSED"),
+                          ("data-redaction-awareness", "Advanced Security Option")):
+        base = os.path.join(ROOT, "skills", "security", skill)
+        man = open(os.path.join(base, "manifest.yaml"), encoding="utf-8").read()
+        assert re.search(r"^license_requirements: none\b", man, re.M), skill
+        doc = open(os.path.join(base, "SKILL.md"), encoding="utf-8").read()
+        assert "**Leer el estado: `none`.**" in doc and option in doc.split("# Licensing requirements", 1)[1], skill
 
 
 @test

@@ -27,6 +27,7 @@ Rama `change/b7-security-coverage` sobre `change/field-validation-freshness`. Or
 
 #### Changed
 
+- `security/database-vault-awareness`, `security/ols-awareness` y `security/data-redaction-awareness` 1.1.0: leer el estado de la opción no requiere licencia (decisión humana del 2026-10-27); usarla sigue requiriéndola y se reporta `REQUIRES_REVIEW`.
 - Las 16 queries pasan a `CDB_*` por contenedor (12.1+), conteos en vez de listas, fechas como horas y grantees de Oracle excluidos desde 12.1.0.2. `host`/`username` de DB links y la ruta del keystore nunca salen de la base.
 - DV, OLS y Data Redaction: `license_requirements: none` para la lectura de su estado. El uso de la opción sigue requiriendo licencia.
 

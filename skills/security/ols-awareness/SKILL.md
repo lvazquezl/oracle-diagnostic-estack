@@ -1,7 +1,7 @@
 ---
 name: ols-awareness
 id: security/ols-awareness
-version: 1.0.0
+version: 1.1.0
 domain: security
 status: active
 ---
@@ -35,6 +35,8 @@ Ninguno.
 Ninguna.
 
 # Licensing requirements
+
+**Leer el estado: `none`.** Consultar en el diccionario si la opción está instalada, habilitada o con políticas no usa la opción; el skill corre sin licencia confirmada. **Usar la opción** (crear o aplicar políticas, habilitarla) sí requiere licencia:
 
 Oracle Label Security — `SEPARATELY_LICENSED` por defecto.
 
@@ -121,3 +123,5 @@ Alimenta `analysis/ANA-*/security-posture.md`.
 # Change history
 
 v1.0.0 — Fase 8, creación inicial.
+
+v1.1.0 — `CHG-ESTACK-B7-SECURITY-COVERAGE-001`: leer el estado de la opción no requiere licencia (`license_requirements: none`, decisión humana del 2026-10-27); la opción sigue SEPARATELY_LICENSED y su uso se reporta `REQUIRES_REVIEW`.
