@@ -1,7 +1,7 @@
 name: tde-awareness
 display_name: "TDE Awareness"
 id: security/tde-awareness
-version: 1.0.0
+version: 1.1.0
 domain: security
 status: active
 
@@ -11,11 +11,14 @@ supported_architectures: [standalone, rac, rac_one_node]
 container_scope: ANY_CONTAINER
 database_role_scope: ANY
 
-license_requirements: "Advanced Security Option donde aplique"
+license_requirements: none   # leer la postura no usa la opción; el uso de TDE se reporta como TDE-12 (LICENSE_REVIEW)
 
 required_evidence:
   - query_id: Q-SEC-TDE-WALLET-001
+  - query_id: Q-SEC-ENCRYPTED-TABLESPACES-001
   - query_id: Q-SEC-ENCRYPTED-COLUMNS-001
+  - query_id: Q-SEC-TDE-MASTER-KEYS-001
+  - query_id: Q-SEC-SECURITY-PARAMETERS-001
 optional_evidence: []
 data_sensitivity: MEDIUM
 context_budget: LOW

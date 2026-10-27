@@ -84,7 +84,8 @@
                              "Q-SEC-ENCRYPTED-COLUMNS-001", "Q-SEC-ENCRYPTED-TABLESPACES-001",
                              "Q-SEC-OBJECT-PRIVILEGES-001", "Q-SEC-PASSWORD-VERSIONS-001", "Q-SEC-PUBLIC-OBJECT-GRANTS-001",
                              "Q-SEC-PUBLIC-SYSTEM-GRANTS-001", "Q-SEC-ROLE-GRANTS-001", "Q-SEC-ROLES-001",
-                             "Q-SEC-SECURITY-PARAMETERS-001", "Q-SEC-SYSTEM-PRIVILEGES-001", "Q-SEC-TDE-WALLET-001"],
+                             "Q-SEC-SECURITY-PARAMETERS-001", "Q-SEC-SYSTEM-PRIVILEGES-001", "Q-SEC-TDE-WALLET-001",
+                             "Q-SEC-TDE-MASTER-KEYS-001"],
       "budget": {"max_calls": 50, "max_rows": 500}
     },
     {

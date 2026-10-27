@@ -43,6 +43,8 @@ Si cualquier paso falla, el resultado es el `capability_status` correspondiente 
 
 Cuando un agente detecta uso o necesidad de alguna de estas, marca el finding/recomendación correspondiente en vez de asumir que está cubierto.
 
+**Leer el estado de una opción no es usarla.** Consultar en el diccionario si TDE, Database Vault, Label Security o Data Redaction están configurados no requiere la opción; configurarla o aplicarla, sí. Por eso la **postura TDE** (`security/tde-awareness`) corre en toda revisión sin gate de licencia (`CHG-ESTACK-TDE-POSTURE-001`). Si observa TDE en uso, emite `TDE-12` (`LICENSE_REVIEW`, `LICENSE_CHECK_REQUIRED`), y si no está configurado, la mejora `TDE-11` menciona que adoptarlo requiere Advanced Security Option fuera de los servicios cloud de Oracle que la incluyen.
+
 ## Alternativa cuando la licencia no se puede confirmar
 
 Si una capability queda `LICENSE_RESTRICTED`, el skill/agente busca una ruta alternativa no licenciada cuando existe, y la declara explícitamente en `alternative` (ver `policies/capability-degradation-policy.md`). Ejemplo ya implementado en el catálogo (`skills/performance/wait-events/SKILL.md`):

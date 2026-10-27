@@ -46,6 +46,8 @@ Target identificado (alias de conexión read-only ya configurado en `config/allo
 
 `Q-DISC-IDENTITY-001`, `Q-DISC-INSTANCE-001`, `Q-DBA-TBS-USAGE-001` como mínimo del Target Profile + tablespaces; el resto de las ~20 queries `Q-ORA-*` de Oracle Core (ver `queries/REGISTRY.md#oracle-core-queries-fase-2`) según las áreas efectivamente activadas.
 
+**Postura TDE (paso fijo, CHG-ESTACK-TDE-POSTURE-001).** Toda revisión evalúa la postura de cifrado con `security/tde-awareness`, **aunque no se haya pedido seguridad y aunque la opción no esté licenciada**: leer el estado no usa la opción. Collectors: `Q-SEC-TDE-WALLET-001`, `Q-SEC-ENCRYPTED-TABLESPACES-001`, `Q-SEC-ENCRYPTED-COLUMNS-001`, `Q-SEC-TDE-MASTER-KEYS-001` (12.1+) y `Q-SEC-SECURITY-PARAMETERS-001`. El informe incluye siempre la sección **Postura de cifrado (TDE)**: postura global y por contenedor (`NOT_CONFIGURED`, `CONFIGURED_NOT_IN_USE`, `IN_USE`, `UNDETERMINED`) y hallazgos `TDE-01`..`TDE-13` clasificados como riesgo, mala configuración, mejora o revisión de licencia. Si TDE está en uso, se agrega `TDE-12` (`LICENSE_CHECK_REQUIRED`), sin afirmar nunca cobertura de licencia. Estas lecturas nunca se marcan `LICENSE_RESTRICTED`.
+
 # Stop conditions
 
 Discovery no puede confirmar identidad/rol del target con al menos `OBSERVATION`; target no accesible en modo read-only.

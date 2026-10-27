@@ -1156,12 +1156,15 @@
             "ALERT",
             "ALL",
             "ALL_ROWS",
+            "ALWAYS",
             "ASYNCH",
             "AUTO",
             "BASIC",
             "BOTH",
+            "CLOUD_ONLY",
             "DB",
             "DB, EXTENDED",
+            "DDL",
             "DEDICATED",
             "DEFAULT",
             "DIRECTIO",
@@ -1178,6 +1181,11 @@
             "HIGH",
             "INSTANCE",
             "INTERPRETED",
+            "KEYSTORE_CONFIGURATION=FILE",
+            "KEYSTORE_CONFIGURATION=HSM",
+            "KEYSTORE_CONFIGURATION=HSM|FILE",
+            "KEYSTORE_CONFIGURATION=OKV",
+            "KEYSTORE_CONFIGURATION=OKV|FILE",
             "LOCAL",
             "LOG",
             "LOW",
@@ -1269,12 +1277,15 @@
             "ALERT",
             "ALL",
             "ALL_ROWS",
+            "ALWAYS",
             "ASYNCH",
             "AUTO",
             "BASIC",
             "BOTH",
+            "CLOUD_ONLY",
             "DB",
             "DB, EXTENDED",
+            "DDL",
             "DEDICATED",
             "DEFAULT",
             "DIRECTIO",
@@ -1291,6 +1302,11 @@
             "HIGH",
             "INSTANCE",
             "INTERPRETED",
+            "KEYSTORE_CONFIGURATION=FILE",
+            "KEYSTORE_CONFIGURATION=HSM",
+            "KEYSTORE_CONFIGURATION=HSM|FILE",
+            "KEYSTORE_CONFIGURATION=OKV",
+            "KEYSTORE_CONFIGURATION=OKV|FILE",
             "LOCAL",
             "LOG",
             "LOW",
@@ -4014,12 +4030,15 @@
             "ALERT",
             "ALL",
             "ALL_ROWS",
+            "ALWAYS",
             "ASYNCH",
             "AUTO",
             "BASIC",
             "BOTH",
+            "CLOUD_ONLY",
             "DB",
             "DB, EXTENDED",
+            "DDL",
             "DEDICATED",
             "DEFAULT",
             "DIRECTIO",
@@ -4036,6 +4055,11 @@
             "HIGH",
             "INSTANCE",
             "INTERPRETED",
+            "KEYSTORE_CONFIGURATION=FILE",
+            "KEYSTORE_CONFIGURATION=HSM",
+            "KEYSTORE_CONFIGURATION=HSM|FILE",
+            "KEYSTORE_CONFIGURATION=OKV",
+            "KEYSTORE_CONFIGURATION=OKV|FILE",
             "LOCAL",
             "LOG",
             "LOW",
@@ -4127,7 +4151,7 @@
       "collector_id": "Q-SEC-TDE-WALLET-001",
       "kind": "sql_query",
       "domain": "security",
-      "title": "TDE keystore per container: type, status, wallet type, order and backup flag (the keystore path never leaves the database)",
+      "title": "TDE keystore per container: type, status, wallet type, order, united/isolated mode and backup flag (the keystore path never leaves the database)",
       "row_limit": 10,
       "params": {},
       "output_fields": {
@@ -4183,6 +4207,15 @@
           ],
           "policy": "KEEP"
         },
+        "keystore_mode": {
+          "type": "enum",
+          "values": [
+            "ISOLATED",
+            "NONE",
+            "UNITED"
+          ],
+          "policy": "KEEP"
+        },
         "fully_backed_up": {
           "type": "enum",
           "values": [
@@ -4199,6 +4232,49 @@
       },
       "factory": {
         "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-SEC-TDE-MASTER-KEYS-001",
+      "kind": "sql_query",
+      "domain": "security",
+      "title": "TDE master keys per container: key count, keys not backed up and hours since the newest activation (no key ids, tags or dates)",
+      "row_limit": 50,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "master_keys": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000,
+          "policy": "KEEP"
+        },
+        "keys_not_backed_up": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000,
+          "policy": "KEEP"
+        },
+        "hours_since_last_activation": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B8T",
         "lab_aliases": {},
         "fixture_target": "fixture-cdb-root-19c"
       }

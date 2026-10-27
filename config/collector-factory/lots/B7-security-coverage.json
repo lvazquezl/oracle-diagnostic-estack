@@ -196,7 +196,7 @@
   {
    "collector_id": "Q-SEC-TDE-WALLET-001",
    "domain": "security",
-   "title": "TDE keystore per container: type, status, wallet type, order and backup flag (the keystore path never leaves the database)",
+   "title": "TDE keystore per container: type, status, wallet type, order, united/isolated mode and backup flag (the keystore path never leaves the database)",
    "row_limit": 10,
    "fields": [
     "con_id",
@@ -204,6 +204,7 @@
     "status",
     "wallet_type",
     "wallet_order",
+    "keystore_mode",
     "fully_backed_up"
    ],
    "overrides": {

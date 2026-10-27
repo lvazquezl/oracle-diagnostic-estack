@@ -679,5 +679,30 @@ def every_declared_variant_of_every_catalog_query_resolves_at_its_own_bounds():
     assert not bad, bad
 
 
+
+@test
+def tde_posture_reads_keystore_mode_keys_and_parameters_without_ids_dates_paths_or_license():
+    """CHG-ESTACK-TDE-POSTURE-001: every review reads the TDE posture; reading is not using the option."""
+    import re
+    cols = catalog.load_collectors()
+    assert "Q-SEC-TDE-MASTER-KEYS-001" in cols
+    for cid in ("Q-SEC-TDE-WALLET-001", "Q-SEC-TDE-MASTER-KEYS-001", "Q-SEC-ENCRYPTED-TABLESPACES-001",
+                "Q-SEC-ENCRYPTED-COLUMNS-001", "Q-SEC-SECURITY-PARAMETERS-001"):
+        assert re.search(r"^license_requirements:\s*none\s*$", open(catalog._find_query_file(cid), encoding="utf-8").read(), re.M), cid
+    keys = _resolved("Q-SEC-TDE-MASTER-KEYS-001", "19.0")
+    sl = _select_list(keys)
+    for c in ("key_id", "tag", "creator", "creation_time", "activation_time", "keystore_type"):
+        assert not re.search(r"(^|,)\s*{}\s*(,|$)".format(c), sl), c
+    assert "as hours_since_last_activation" in keys and re.search(r"group\s+by\s+con_id", keys)
+    assert "keystore_mode" in _select_list(_resolved("Q-SEC-TDE-WALLET-001", "19.0"))
+    assert "keystore_mode" not in _resolved("Q-SEC-TDE-WALLET-001", "12.1")
+    params = _resolved("Q-SEC-SECURITY-PARAMETERS-001", "19.0")
+    for name in ("encrypt_new_tablespaces", "tde_configuration", "wallet_root"):
+        assert "'{}'".format(name) in params, name
+    assert not re.search(r"(^|,)\s*value\s*(,|$)", _select_list(params)), "a raw parameter value (wallet_root is a path) must never be selected"
+    fields = cols["Q-SEC-TDE-MASTER-KEYS-001"].output_fields
+    assert set(fields) == {"con_id", "master_keys", "keys_not_backed_up", "hours_since_last_activation"}, fields
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

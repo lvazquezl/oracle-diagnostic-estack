@@ -1,0 +1,11 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B8T)",
+  "rows": [
+    {
+      "con_id": 1,
+      "master_keys": 2,
+      "keys_not_backed_up": 0,
+      "hours_since_last_activation": 4380.5
+    }
+  ]
+}
