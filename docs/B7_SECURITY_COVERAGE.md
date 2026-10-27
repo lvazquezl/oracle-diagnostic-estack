@@ -111,7 +111,7 @@ DROP ROLE ESTACK_B7_ROLE;
 | `Q-SEC-DATA-REDACTION-POLICIES-001` | 0 | Sin políticas (opción no usada) | `EVR-879a1018fd3de9d943c7a011` / `REQ-aaf989477cb3` |
 | `Q-SEC-DATABASE-VAULT-STATUS-001` | 1 | `dv_option` `FALSE` | `EVR-4b30b69f3047e458636367b9` / `REQ-6a1d69d769a9` |
 | `Q-SEC-OLS-STATUS-001` | 1 | `ols_option` `FALSE` | `EVR-452c6a5ee6ba2fa7de2bc72f` / `REQ-a7ae32b426d8` |
-| `Q-SEC-DB-LINKS-001` | 1 | El link público del escenario: `CONNECTED_USER`, `NET_SERVICE_NAME`, sin host. Ver hallazgo 1 | Revalidación pendiente con `link_scope` (primera corrida: `EVR-17faa8cce0ac6407a4092460` / `REQ-0241856e6ffc`) |
+| `Q-SEC-DB-LINKS-001` | 1 | El link público del escenario: `link_scope` `PUBLIC`, `CONNECTED_USER`, `NET_SERVICE_NAME`, sin host. Ver hallazgo 1 | `EVR-c6dd082e93dfadab279d99ae` / `REQ-df4f8f0ab502` (antes de `link_scope`: `EVR-17faa8cce0ac6407a4092460` / `REQ-0241856e6ffc`) |
 | `Q-SEC-ENCRYPTED-COLUMNS-001` | 0 | Sin columnas TDE | `EVR-787bc2ed1f6cf75b92a3bd03` / `REQ-de700b4c4896` |
 | `Q-SEC-ENCRYPTED-TABLESPACES-001` | 10 | 5 tablespaces por contenedor, todos `UNENCRYPTED` | `EVR-3d7225a05faecba4007674f4` / `REQ-fb29d2881a0a` |
 | `Q-SEC-OBJECT-PRIVILEGES-001` | 4 | El rol propio con `SELECT` sobre 1 objeto; `PUBLIC` y grantees de Oracle excluidos | `EVR-adab8a16a56ae601f6bc6daa` / `REQ-e83427622419` |
@@ -135,7 +135,7 @@ DROP ROLE ESTACK_B7_ROLE;
 | `Q-DICT-VERIFY-005` | `EVR-c0f33b04fcf411b5bc09575a` / `REQ-ff79749fb753` |
 
 **Hallazgos de la revisión de especialistas:**
-1. **`security-analyst`: el dueño `PUBLIC` de un DB link salía enmascarado**, así que no se sabía que el link es público, que es el dato de riesgo. Se agrega `link_scope` (`PUBLIC`/`PRIVATE`), calculado en la base; P18 lo exige. Pendiente: revalidar en el lab.
+1. **`security-analyst`: el dueño `PUBLIC` de un DB link salía enmascarado**, así que no se sabía que el link es público, que es el dato de riesgo. Se agrega `link_scope` (`PUBLIC`/`PRIVATE`), calculado en la base; P18 lo exige. Revalidado en el lab: el link del escenario sale `PUBLIC`.
 2. **`oracle-dba-analyst`:** la ausencia de `o7_dictionary_accessibility` y de `STATS$*` es correcta para 19c sin Statspack. No requiere cambio.
 
 ## Registro del cambio
@@ -151,5 +151,5 @@ DROP ROLE ESTACK_B7_ROLE;
 | TEST | P18 36/36, con 6 casos nuevos: lote B7 sin campos sensibles; ni `host`, ni `wrl_parameter`, ni fechas, ni credenciales en 10.2–19c; fronteras `CDB_*`/`ORACLE_MAINTAINED`; `oracle_role` acotado; licencias; toda variante del catálogo resuelve en sus bordes |
 | SECURITY | 12/12 mutaciones detectadas: `host` crudo, ruta del keystore, `oracle_role` sin guarda, grantees de Oracle incluidos, fecha cruda, licencia reintroducida, `oracle_role` fuera de `ORACLE_TERM_FIELDS`, `db_link` en `KEEP`, join de `TS#` entre contenedores, valor de parámetro crudo, `PUBLIC` no excluido y etiqueta de variante demasiado larga |
 | REGRESSION | 972/973 en macOS (bash 5.3). El único fallo fue un `grep -q` tras un pipe en `test_no_wallet_secret_exposure.sh` (modificado por este cambio; riesgo de SIGPIPE); se corrigió y ese test, `test_no_pipe_into_early_exit_grep.sh` y los de consistencia de documentos pasan. Tras `link_scope`: una corrida dio 972/973 por `a_fixture_replaced_by_a_link_after_startup_is_denied_at_read_time` (P14), que no toca nada de este cambio; pasó 10 de 10 veces aislado y la corrida siguiente dio **973/973**. Queda anotado como intermitente |
-| LAB | 15 collectors y 5 sondas `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM` (20 registros nuevos; el registro pasa de 64 a 84). Sin privilegios nuevos. `Q-SEC-DB-LINKS-001`: revalidación pendiente tras agregar `link_scope` |
+| LAB | Los 16 collectors y las 5 sondas, `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM` (21 registros nuevos; el registro pasa de 64 a 85). Sin privilegios nuevos. `Q-SEC-DB-LINKS-001` revalidado tras agregar `link_scope`. El registro recargado por el gateway sin reconectar (`CHG-ESTACK-FIELD-VALIDATION-FRESHNESS-001`): `Q-SEC-ROLES-001` respondió `FIELD_VALIDATED` (`REQ-8ae30541c633`) |
 | HUMAN REVIEW | Pendiente |

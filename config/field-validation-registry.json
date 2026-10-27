@@ -1197,6 +1197,20 @@
       ],
       "record": "docs/B7_SECURITY_COVERAGE.md",
       "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-DB-LINKS-001",
+      "query_sha256": "47f24ada157f105da3ce346d41aa1cf68d706c9bcb23aa7f5f76d79c8717b118",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T17:03:44Z",
+      "evidence_refs": [
+        "EVR-c6dd082e93dfadab279d99ae"
+      ],
+      "request_refs": [
+        "REQ-df4f8f0ab502"
+      ],
+      "record": "docs/B7_SECURITY_COVERAGE.md",
+      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
     }
   ]
 }
