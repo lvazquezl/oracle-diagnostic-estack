@@ -49,4 +49,6 @@ Sólo por `/change`, después de una ejecución humana en el lab (o en un piloto
 
 `tests/test_field_validation_registry.sh` verifica que cada entrada apunte a una query existente con su hash vigente y que sus `EVR-*` consten en el registro citado. Si una query cambia, ese test falla hasta que se revalide o se retire la entrada; mientras tanto, el gateway ya la trata como `DOCUMENTATION_ONLY`.
 
+Un gateway en ejecución relee el registro cuando cambia en disco (`CHG-ESTACK-FIELD-VALIDATION-FRESHNESS-001`). Una validación agregada o retirada rige desde la llamada siguiente, sin reiniciar. Cada `field_validation` lleva el `registry_sha256` del registro que decidió el nivel, y `diagnostics.list_capabilities` lo expone en `field_validation_registry`. Un análisis debe citar ese digest cuando el nivel de su evidencia importe para una conclusión.
+
 Resultados que no son representativos (p. ej. 0 filas por ejecutarse en un contenedor donde la vista no aplica, o columnas nulas por un defecto del SQL) **no** se registran como validación.

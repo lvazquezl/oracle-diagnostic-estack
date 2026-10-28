@@ -153,7 +153,7 @@ Windows:
 claude mcp add oracle-estack-lab -- C:\Users\<usuario>\Projects\oracle-diagnostic-estack\.venv\Scripts\python.exe -m mcp_gateway_lab serve --targets <ruta>\targets.lab.json --lab-profile <ruta>\lab-profile.json
 ```
 
-Linux y macOS: lo mismo con `.venv/bin/python`. Después, `/mcp` → `oracle-estack-lab` → **Reconnect**. Cada vez que cambie el perfil, el código o una query, hay que reconectar: el servidor carga el catálogo al arrancar y rechaza SQL cuyo hash haya cambiado.
+Linux y macOS: lo mismo con `.venv/bin/python`. Después, `/mcp` → `oracle-estack-lab` → **Reconnect**. Cada vez que cambie el perfil, el código o una query, hay que reconectar: el servidor carga el catálogo al arrancar y rechaza SQL cuyo hash haya cambiado. El registro de validaciones en campo es la excepción: el servidor lo relee solo cuando cambia (`CHG-ESTACK-FIELD-VALIDATION-FRESHNESS-001`). Para confirmar qué registro usa, compara `field_validation_registry.sha256` de `diagnostics.list_capabilities` con `shasum -a 256 config/field-validation-registry.json` (macOS y Linux) o `Get-FileHash config\field-validation-registry.json` (Windows; muestra el hash en mayúsculas).
 
 ## Registro del cambio
 

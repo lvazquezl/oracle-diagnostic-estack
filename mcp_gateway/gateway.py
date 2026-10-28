@@ -183,6 +183,8 @@ class Gateway:
             if tool is None:
                 raise GatewayError("E_TOOL_UNKNOWN")
             args = validate(arguments if arguments is not None else {}, tool["inputSchema"])
+            # CHG-ESTACK-FIELD-VALIDATION-FRESHNESS-001: the registry on disk decides, not the copy read at startup.
+            self.field_registry = field_validation.refresh(self.field_registry)
             handler = getattr(self, "_tool_" + name.split(".", 1)[1])
             envelope = handler(session, request_id, args)
             envelope.setdefault("status", "OK")
@@ -242,6 +244,7 @@ class Gateway:
         env.update({"status": "OK", "capability_status": CapabilityStatus.SUPPORTED, "sanitization_status": "SANITIZED",
                     "evidence_refs": [], "provenance": {"kind": "CATALOG", "real_observation": False},
                     "adapters": self.adapters.describe(), "targets": targets,
+                    "field_validation_registry": field_validation.summary(self.field_registry),
                     "collectors": [{"collector_id": cid, "domain": c.domain, "kind": c.kind, "title": c.title} for cid, c in sorted(self.collectors.items())],
                     "limitations": [("LAB launcher: oracle_sql is LAB_ENABLED for one human-authorized non-production target only; "
                                      "this is not production readiness") if self.lab_mode else
