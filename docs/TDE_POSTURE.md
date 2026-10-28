@@ -89,4 +89,4 @@ Faltaban además datos para detectar los riesgos más comunes:
 | SECURITY | 12/12 mutaciones detectadas: severidad de `TDE-01` rebajada, `TDE-12` sin `LICENSE_CHECK_REQUIRED`, gate de licencia en el manifest, paso fijo quitado de `assessment`, collector quitado de `healthcheck`, `NOT_CONFIGURED` sin evidencia, `key_id` expuesto, licencia en la query nueva, valor crudo de parámetro, `wallet_root` fuera de la lista, V3 sin `keystore_mode`, regla "leer no es usar" quitada |
 | REGRESSION | 974/974 en macOS (bash 5.3), con `tests/test_tde_posture.sh`; repetida tras el lab: 974/974 |
 | LAB | `lab-ol8-19c` (19.32, CDB root, ASM): 3 collectors de TDE y 4 sondas del diccionario `FIELD_VALIDATED` con la cuenta de diagnóstico, sin privilegios nuevos; registro de 79 a 86. Postura del lab `NOT_CONFIGURED` → `TDE-11` |
-| HUMAN REVIEW | Pendiente (`PENDING_HUMAN_REVIEW`) |
+| HUMAN REVIEW | Aprobado: `AUTH-TDE-POSTURE-001`, revisor `REV-DBAMANAGER`, `2026-10-28T00:16:08Z`, contra el digest `5d67f4cc…8f565f0b` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). PROMOTE: pendiente (push, PR y merge, acciones humanas) |
