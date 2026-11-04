@@ -240,5 +240,117 @@ def fixture_identity_reports_the_ru_but_never_overrides_the_declaration():
     assert chk["applies_to_field_validation"] is False and "release_update" in env["field_validation"]["not_compared"], (chk, env["field_validation"])
 
 
+# --- CHG-ESTACK-FIELD-VALIDATION-FRESHNESS-001 -----------------------------------------------------------------
+
+def _write(path, doc):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(doc, f)
+    st = os.stat(path)
+    os.utime(path, ns=(st.st_atime_ns, st.st_mtime_ns + 1_000_000_000))   # a later mtime even on coarse filesystems
+
+
+def _without(doc, qid):
+    x = copy.deepcopy(doc)
+    x["validations"] = [v for v in x["validations"] if v["query_id"] != qid]
+    return x
+
+
+@test
+def the_registry_digest_is_the_sha256_of_the_file_and_travels_with_every_level():
+    r = _reg()
+    raw = open(REG, "rb").read()
+    assert r["source"]["sha256"] == hashlib.sha256(raw).hexdigest() and r["source"]["reloads"] == 0
+    s = fv.summary(r)
+    assert s == {"status": "LOADED", "sha256": hashlib.sha256(raw).hexdigest(), "reloads": 0,
+                 "validations": len(r["validations"]), "contexts": len(r["contexts"]),
+                 "file": "config/field-validation-registry.json"}, s
+    sha = _current_sha("Q-DISC-IDENTITY-001")
+    assert fv.assess(r, C("Q-DISC-IDENTITY-001", sha), T())["registry_sha256"] == s["sha256"]
+    assert fv.assess(r, C("Q-DISC-IDENTITY-001", "0" * 64), T())["registry_sha256"] == s["sha256"], "also when not validated"
+
+
+@test
+def a_validation_added_or_retired_on_disk_is_seen_without_restarting():
+    sha = _current_sha("Q-DISC-IDENTITY-001")
+    doc = json.load(open(REG))
+    with tmpdir() as d:
+        p = os.path.join(d, "registry.json")
+        _write(p, _without(doc, "Q-DISC-IDENTITY-001"))
+        r = fv.load(p)
+        assert fv.assess(r, C("Q-DISC-IDENTITY-001", sha), T())["level"] == "DOCUMENTATION_ONLY"
+        _write(p, doc)                                          # validation added (the 2026-10-19 case)
+        r2 = fv.refresh(r)
+        assert r2 is not r and r2["source"]["reloads"] == 1
+        assert fv.assess(r2, C("Q-DISC-IDENTITY-001", sha), T())["level"] == "FIELD_VALIDATED"
+        _write(p, _without(doc, "Q-DISC-IDENTITY-001"))        # validation retired: the dangerous direction
+        r3 = fv.refresh(r2)
+        assert r3["source"]["reloads"] == 2
+        assert fv.assess(r3, C("Q-DISC-IDENTITY-001", sha), T())["level"] == "DOCUMENTATION_ONLY", "a stale FIELD_VALIDATED must not survive"
+
+
+@test
+def an_unchanged_or_only_touched_registry_is_not_reloaded():
+    doc = json.load(open(REG))
+    with tmpdir() as d:
+        p = os.path.join(d, "registry.json")
+        _write(p, doc)
+        r = fv.load(p)
+        assert fv.refresh(r) is r, "same size and mtime: no read at all"
+        st = os.stat(p)
+        os.utime(p, ns=(st.st_atime_ns, st.st_mtime_ns + 2_000_000_000))
+        r2 = fv.refresh(r)
+        assert r2 is r and r2["source"]["reloads"] == 0 and r2["source"]["stat"][1] == os.stat(p).st_mtime_ns
+
+
+@test
+def a_registry_broken_or_removed_while_running_fails_closed():
+    sha = _current_sha("Q-DISC-IDENTITY-001")
+    doc = json.load(open(REG))
+    with tmpdir() as d:
+        p = os.path.join(d, "registry.json")
+        _write(p, doc)
+        r = fv.load(p)
+        assert fv.assess(r, C("Q-DISC-IDENTITY-001", sha), T())["level"] == "FIELD_VALIDATED"
+        with open(p, "w") as f:
+            f.write("{")
+        r2 = fv.refresh(r)
+        assert fv.summary(r2)["status"] == "INVALID_FAIL_CLOSED" and fv.assess(r2, C("Q-DISC-IDENTITY-001", sha), T())["level"] == "DOCUMENTATION_ONLY"
+        os.remove(p)
+        r3 = fv.refresh(r2)
+        assert fv.summary(r3)["status"] == "INVALID_FAIL_CLOSED" and fv.summary(r3)["sha256"] is None
+        assert fv.assess(r3, C("Q-DISC-IDENTITY-001", sha), T())["level"] == "DOCUMENTATION_ONLY"
+        assert fv.summary(r3)["file"] == "other", "a non-default path is never echoed"
+
+
+@test
+def an_injected_registry_is_never_reloaded_and_says_so():
+    r = {"contexts": {}, "validations": [], "loaded": True}
+    assert fv.refresh(r) is r and fv.summary(r)["status"] == "INJECTED" and fv.summary(r)["sha256"] is None
+
+
+@test
+def the_gateway_reports_its_registry_and_follows_the_file_while_running():
+    doc = json.load(open(REG))
+    c = InProcClient()
+    c.initialize()
+    env, _ = c.call("diagnostics.list_capabilities", {})
+    s = env["field_validation_registry"]
+    assert s["status"] == "LOADED" and s["sha256"] == hashlib.sha256(open(REG, "rb").read()).hexdigest(), s
+    assert ROOT not in json.dumps(env) and os.path.expanduser("~") not in json.dumps(s), "no path leaves the gateway"
+    with tmpdir() as d:
+        p = os.path.join(d, "registry.json")
+        _write(p, _without(doc, "Q-DISC-IDENTITY-001"))
+        c.server.gateway.field_registry = fv.load(p)           # a gateway started before the validation existed
+        e1, _ = c.call("diagnostics.collect", {"collector_id": "Q-DISC-IDENTITY-001", "target_alias": PRIMARY})
+        assert e1["field_validation"]["level"] == "DOCUMENTATION_ONLY"
+        _write(p, doc)
+        e2, _ = c.call("diagnostics.collect", {"collector_id": "Q-DISC-IDENTITY-001", "target_alias": PRIMARY})
+        assert e2["field_validation"]["level"] == "FIELD_VALIDATED_OTHER_CONTEXT", e2["field_validation"]
+        assert e2["field_validation"]["registry_sha256"] != e1["field_validation"]["registry_sha256"]
+        e3, _ = c.call("diagnostics.list_capabilities", {})
+        assert e3["field_validation_registry"]["reloads"] == 1 and e3["field_validation_registry"]["file"] == "other"
+        assert p not in json.dumps(e3) and d not in json.dumps(e2)
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

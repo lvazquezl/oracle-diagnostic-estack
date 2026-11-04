@@ -10,8 +10,14 @@ change record. Levels (policies/field-validation-policy.md):
 
 Fail closed: an unreadable/invalid registry means DOCUMENTATION_ONLY for everything, never a validated claim.
 A target dimension that is not declared (e.g. OS, release update) cannot be compared: it is reported under
-`not_compared`, and never turns a mismatch into a match. Stdlib only, no I/O beyond reading the registry once.
+`not_compared`, and never turns a mismatch into a match. Stdlib only.
+
+CHG-ESTACK-FIELD-VALIDATION-FRESHNESS-001: a long-running gateway used to keep the registry it read at startup, so a
+validation added or retired on disk afterwards was ignored (a stale FIELD_VALIDATED is the dangerous direction).
+`refresh` compares the file (size + mtime, then sha256) on every call and reloads it when the content changed, with the
+same fail-closed rules. `summary` reports which registry decides the levels, without the file path.
 """
+import hashlib
 import json
 import os
 import re
@@ -45,16 +51,61 @@ def _valid(doc) -> bool:
         return False
 
 
-def load(path: str = REGISTRY_FILE) -> dict:
+def _stat(path):
     try:
-        with open(path, encoding="utf-8") as f:
-            doc = json.load(f)
+        st = os.stat(path)
+        return (st.st_size, st.st_mtime_ns)
+    except OSError:
+        return None
+
+
+def load(path: str = REGISTRY_FILE) -> dict:
+    stat = _stat(path)
+    source = {"path": path, "stat": stat, "sha256": None, "reloads": 0}
+    try:
+        with open(path, "rb") as f:
+            raw = f.read()
+        source["sha256"] = hashlib.sha256(raw).hexdigest()
+        doc = json.loads(raw.decode("utf-8"))
     except (OSError, ValueError):
-        return {"contexts": {}, "validations": [], "loaded": False}
-    if not _valid(doc):
-        return {"contexts": {}, "validations": [], "loaded": False}
+        return {"contexts": {}, "validations": [], "loaded": False, "source": source}
+    if not isinstance(doc, dict) or not _valid(doc):
+        return {"contexts": {}, "validations": [], "loaded": False, "source": source}
     doc["loaded"] = True
+    doc["source"] = source
     return doc
+
+
+def refresh(registry: dict) -> dict:
+    """The registry to use now: the same object if the file did not change, else a fresh load (fail closed).
+    A registry without a file source (injected by a caller) is returned as is."""
+    source = registry.get("source")
+    if not source or not source.get("path"):
+        return registry
+    stat = _stat(source["path"])
+    if stat is not None and stat == source["stat"]:
+        return registry
+    try:
+        with open(source["path"], "rb") as f:
+            digest = hashlib.sha256(f.read()).hexdigest()
+    except OSError:
+        digest = None
+    if digest is not None and digest == source["sha256"]:
+        source["stat"] = stat                       # touched, same content: keep it
+        return registry
+    fresh = load(source["path"])
+    fresh["source"]["reloads"] = source["reloads"] + 1
+    return fresh
+
+
+def summary(registry: dict) -> dict:
+    """Which registry decides the field validation levels (no file path: it stays inside the gateway)."""
+    source = registry.get("source") or {}
+    status = "INJECTED" if not source.get("path") else "LOADED" if registry.get("loaded") else "INVALID_FAIL_CLOSED"
+    return {"status": status, "sha256": source.get("sha256"), "reloads": source.get("reloads", 0),
+            "validations": len(registry.get("validations", [])), "contexts": len(registry.get("contexts", {})),
+            "file": "config/field-validation-registry.json" if source.get("path") == REGISTRY_FILE else
+                    ("other" if source.get("path") else None)}
 
 
 def _ru_tuple(text):
@@ -99,7 +150,8 @@ def assess(registry: dict, collector, target) -> dict:
     """Field validation of `collector` (its current certified SQL) for `target`. Never raises."""
     qid, sha = getattr(collector, "query_id", None) or getattr(collector, "collector_id", None), getattr(collector, "query_sha256", None)
     out = {"level": "DOCUMENTATION_ONLY", "reason": "NO_FIELD_VALIDATION_RECORDED", "validated_context": None,
-           "differences": [], "not_compared": [], "change_ids": [], "evidence_refs": []}
+           "differences": [], "not_compared": [], "change_ids": [], "evidence_refs": [],
+           "registry_sha256": (registry.get("source") or {}).get("sha256")}
     if getattr(collector, "kind", "sql_query") != "sql_query" or not sha:
         out["reason"] = "NOT_A_CERTIFIED_QUERY"
         return out

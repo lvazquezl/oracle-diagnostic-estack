@@ -2,6 +2,17 @@
 
 Versionado semántico del e-stack. Cambios por artefacto individual (agente/skill/query/workflow/policy) se versionan por separado según `EVOLUTION.md`; este changelog cubre el repositorio en su conjunto.
 
+## [Unreleased]
+
+### `/change security|compatibility|documentation` — CHG-ESTACK-FIELD-VALIDATION-FRESHNESS-001 — el gateway usa el registro de validaciones vigente
+
+Rama `change/field-validation-freshness` sobre `main` (`b3d22d7`). Origen: REC-0015 de `ANA-20261019-001`, donde un gateway iniciado antes del merge de la v0.29.0 reportó 13 collectors validados como `DOCUMENTATION_ONLY`. Ver `docs/FIELD_VALIDATION_FRESHNESS.md`.
+
+#### Changed
+
+- El gateway relee `config/field-validation-registry.json` en cada llamada si cambió en disco. Una validación agregada o retirada rige sin reiniciar el proceso; un archivo roto o borrado falla cerrado.
+- `field_validation` agrega `registry_sha256`, y `diagnostics.list_capabilities` agrega `field_validation_registry` (estado, `sha256`, recargas y conteos, sin rutas).
+
 ## [0.29.0] — 2026-10-08 — `v0.29.0-assessment-accuracy` — 1 cambio: exactitud del assessment
 
 El assessment detecta por sí mismo un desfase entre el reloj del host de la base y el del gateway, y declara qué contenedores ve realmente la cuenta de diagnóstico. También dice en qué diskgroup están datafiles, redo, controlfile y FRA. Se corrigieron el conteo de switches de redo y un error del resolver de variantes que dejaba sin resolver algunas queries en 11g. La revisión por especialistas pasa a ser un paso fijo de `/assessment`. El catálogo llega a 74 collectors.
