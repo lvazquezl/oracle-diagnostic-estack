@@ -36,6 +36,8 @@ Todos los skills `active` de los dominios cuyos agentes se activaron, más `capa
 
 Todas las queries certificadas relevantes a los dominios activados, con ventanas de tiempo más amplias que `healthcheck` (hasta el máximo de `policies/rate-limiting-policy.md`).
 
+**Postura TDE (paso fijo, CHG-ESTACK-TDE-POSTURE-001).** Toda revisión evalúa la postura de cifrado con `security/tde-awareness`, **aunque no se haya pedido seguridad y aunque la opción no esté licenciada**: leer el estado no usa la opción. Collectors: `Q-SEC-TDE-WALLET-001`, `Q-SEC-ENCRYPTED-TABLESPACES-001`, `Q-SEC-ENCRYPTED-COLUMNS-001`, `Q-SEC-TDE-MASTER-KEYS-001` (12.1+) y `Q-SEC-SECURITY-PARAMETERS-001`. El informe incluye siempre la sección **Postura de cifrado (TDE)**: postura global y por contenedor (`NOT_CONFIGURED`, `CONFIGURED_NOT_IN_USE`, `IN_USE`, `UNDETERMINED`) y hallazgos `TDE-01`..`TDE-13` clasificados como riesgo, mala configuración, mejora o revisión de licencia. Si TDE está en uso, se agrega `TDE-12` (`LICENSE_CHECK_REQUIRED`), sin afirmar nunca cobertura de licencia. Estas lecturas nunca se marcan `LICENSE_RESTRICTED`.
+
 **Reloj y alcance (CHG-ESTACK-ASSESSMENT-ACCURACY-001).**
 - **Reloj:** el discovery incluye `Q-DISC-CLOCK-001`. Si el gateway marca `CLOCK_SKEW` (desfase > 300 s entre el reloj del host de la base y el del gateway), todo "horas desde…" calculado en la base se reporta con esa limitación y la causa se deriva a `os-platform-analyst` (sincronización de tiempo).
 - **Alcance multitenant:** en CDB, `Q-CDB-CONTAINER-DATA-001` declara qué contenedores alcanzan las vistas `CDB_*` y las `V$` filtradas por `CONTAINER_DATA`.
@@ -80,7 +82,7 @@ gates:
   version:      config/capability-matrix.yaml evaluado por cada dominio candidato; dominios UNSUPPORTED/PLANNED para esta versión no se activan (se reportan como tal, no se omiten silenciosamente)
   architecture: cada agente opcional se activa sólo si su Activation condition se cumple (misma lógica que healthcheck.md, pero aplicada exhaustivamente)
   environment:  target debe estar en config/allowed-targets.local.yaml
-  license:      dominios LICENSE_DEPENDENT (AWR/ASH/ADDM, Active Data Guard, multi-PDB) se marcan LICENSE_RESTRICTED si no se confirma licencia; el assessment continúa con el resto
+  license:      dominios LICENSE_DEPENDENT (AWR/ASH/ADDM, Active Data Guard, multi-PDB) se marcan LICENSE_RESTRICTED si no se confirma licencia; el assessment continúa con el resto. La postura TDE nunca es LICENSE_RESTRICTED: leer su estado no usa la opción (CHG-ESTACK-TDE-POSTURE-001)
   privilege:    ESTACK_DIAGNOSTIC_ROLE debe alcanzar para cada dominio activado; si no, ese dominio queda INSUFFICIENT_PRIVILEGES
   security:     ninguna query requerida puede tener risk_class fuera de R0
   cost:         queries cost_class HIGH permitidas (ventana amplia es esperada en assessment), siempre con timeout/max_rows reforzados

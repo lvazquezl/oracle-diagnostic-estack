@@ -1305,9 +1305,18 @@ views:
       status:           {min_version: "11.2"}
       wallet_type:         {min_version: "12.1"}   # B7: Database Reference 12.1 (no está en 11.2); antes registrada como 11.2
       wallet_order:        {min_version: "12.1"}   # B7
+      keystore_mode:       {min_version: "12.2"}   # CHG-ESTACK-TDE-POSTURE-001: NONE/UNITED/ISOLATED (Database Reference 12.2)
       fully_backed_up:     {min_version: "12.1"}   # B7
       con_id:              {min_version: "12.1"}   # B7
     notes: "Fase 8. En 10g/11.1, security/tde-awareness publica capability_status: UNSUPPORTED."
+
+  V$ENCRYPTION_KEYS:
+    min_version: "12.1"
+    columns:
+      con_id:           {min_version: "12.1"}
+      backed_up:        {min_version: "12.1"}
+      activation_time:  {min_version: "12.1"}
+    notes: "CHG-ESTACK-TDE-POSTURE-001: Q-SEC-TDE-MASTER-KEYS-001 agrega por contenedor; key_id, tag, creador y fechas nunca salen de la base."
 
   V$ENCRYPTED_TABLESPACES:
     min_version: "11.2"

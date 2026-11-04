@@ -133,7 +133,8 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-SEC-UNIFIED-AUDIT-POLICIES-001` | Políticas Unified Auditing habilitadas | 12c–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-SEC-UNIFIED-AUDIT-TRAIL-001` | Evidencia de actividad privilegiada (Unified, filtrada) | 12c–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-SEC-TRADITIONAL-AUDIT-001` | AUDIT_TRAIL parameter + evidencia de sesión (legacy) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
-| `Q-SEC-TDE-WALLET-001` | Estado de wallet/keystore TDE | 11g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-TDE-WALLET-001` | Estado de wallet/keystore TDE (modo unido/aislado 12.2+) | 11g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-SEC-TDE-MASTER-KEYS-001` | Llaves maestras TDE: conteo, sin respaldo y antigüedad de la activa | 12c–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-SEC-ENCRYPTED-TABLESPACES-001` | Tablespaces con TDE tablespace encryption | 11g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-SEC-ENCRYPTED-COLUMNS-001` | Columnas con TDE column encryption | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-SEC-NETWORK-ENCRYPTION-PARAMS-001` | **RETIRADA** — SQLNET.* no es evidencia de V$PARAMETER (`INCORRECT_EVIDENCE_SOURCE`). Reemplazada por collector `network/oracle-net-security` | N/A | N/A | N/A | N/A | N/A |
@@ -231,9 +232,10 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-SEC-UNIFIED-AUDIT-POLICIES-001` | `AUDIT_UNIFIED_ENABLED_POLICIES` | R0 | LOW | 10 | 200 | LOW | none |
 | `Q-SEC-UNIFIED-AUDIT-TRAIL-001` | `UNIFIED_AUDIT_TRAIL` | R0 | HIGH | 20 | 200 | HIGH | none |
 | `Q-SEC-TRADITIONAL-AUDIT-001` | `V$PARAMETER`, `DBA_AUDIT_SESSION` | R0 | MEDIUM | 15 | 200 | MEDIUM | none |
-| `Q-SEC-TDE-WALLET-001` | `V$ENCRYPTION_WALLET` | R0 | LOW | 10 | 10 | MEDIUM | Advanced Security Option (donde aplique) |
-| `Q-SEC-ENCRYPTED-TABLESPACES-001` | `V$ENCRYPTED_TABLESPACES`, `DBA_TABLESPACES` | R0 | LOW | 10 | 200 | LOW | Advanced Security Option (donde aplique) |
-| `Q-SEC-ENCRYPTED-COLUMNS-001` | `DBA_ENCRYPTED_COLUMNS` | R0 | LOW | 10 | 500 | LOW | Advanced Security Option (donde aplique) |
+| `Q-SEC-TDE-WALLET-001` | `V$ENCRYPTION_WALLET` | R0 | LOW | 10 | 10 | MEDIUM | none (leer el estado no usa la opción; usar TDE requiere Advanced Security Option) |
+| `Q-SEC-TDE-MASTER-KEYS-001` | `V$ENCRYPTION_KEYS` | R0 | LOW | 10 | 50 | LOW | none (leer el estado no usa la opción; usar TDE requiere Advanced Security Option) |
+| `Q-SEC-ENCRYPTED-TABLESPACES-001` | `V$ENCRYPTED_TABLESPACES`, `DBA_TABLESPACES` | R0 | LOW | 10 | 200 | LOW | none (leer el estado no usa la opción; usar TDE requiere Advanced Security Option) |
+| `Q-SEC-ENCRYPTED-COLUMNS-001` | `DBA_ENCRYPTED_COLUMNS` | R0 | LOW | 10 | 500 | LOW | none (leer el estado no usa la opción; usar TDE requiere Advanced Security Option) |
 | `Q-SEC-NETWORK-ENCRYPTION-PARAMS-001` | **RETIRADA** — ver fila de Identity & Scope | R0 | LOW | 0 | 0 | LOW | none |
 | `Q-SEC-SECURITY-PARAMETERS-001` | `V$PARAMETER` | R0 | LOW | 10 | 20 | LOW | none |
 | `Q-SEC-DB-LINKS-001` | `DBA_DB_LINKS` | R0 | LOW | 10 | 200 | HIGH | none |

@@ -36,6 +36,23 @@ Rama `change/b7-security-coverage` sobre `change/field-validation-freshness`. Or
 - El validador estático ya no toma `SUBSTR`, `INSTR`, `TRIM`, `UPPER`, `IS` y `EXISTS` como columnas.
 - `V$ENCRYPTION_WALLET.WALLET_TYPE` registrada desde 12.1 (no 11.2).
 
+
+### `/change skill|workflow|query|policy|security|documentation` — CHG-ESTACK-TDE-POSTURE-001 — postura TDE en toda revisión
+
+Rama `change/tde-posture` sobre `change/b7-security-coverage`. Origen: pedido del DBA de que toda revisión valide si hay algo de TDE configurado, sin depender de la licencia, para detectar riesgos, malas configuraciones y mejoras. Ver `docs/TDE_POSTURE.md`.
+
+#### Added
+
+- `Q-SEC-TDE-MASTER-KEYS-001` (lote B8T): llaves maestras por contenedor, llaves sin respaldo y horas desde la activación más reciente, sin identificadores, etiquetas ni fechas. El catálogo pasa de 90 a 91 collectors.
+- `security/tde-awareness` 1.1.0: postura por contenedor (`NOT_CONFIGURED`, `CONFIGURED_NOT_IN_USE`, `IN_USE`, `UNDETERMINED`) y hallazgos `TDE-01`..`TDE-13` como riesgo, mala configuración, mejora o revisión de licencia.
+- `tests/test_tde_posture.sh` y un caso P18 de la postura.
+
+#### Changed
+
+- `/assessment` y `/healthcheck` evalúan la postura TDE como paso fijo, aunque el alcance no sea seguridad y aunque la opción no esté licenciada: leer no es usar. Nunca `LICENSE_RESTRICTED`; si TDE está en uso, `TDE-12` pide `LICENSE_CHECK_REQUIRED`.
+- `Q-SEC-TDE-WALLET-001` 2.1.0: V3 (12.2+) con `keystore_mode`. `Q-SEC-SECURITY-PARAMETERS-001` 2.1.0: `encrypt_new_tablespaces`, `tde_configuration` y `wallet_root` (este último solo como configurado o no).
+- `policies/licensing-awareness-policy.md`: leer el estado de una opción no es usarla.
+- `queries/REGISTRY.md`: la licencia de las lecturas de TDE queda en `none`, como sus contratos.
 ## [0.29.0] — 2026-10-08 — `v0.29.0-assessment-accuracy` — 1 cambio: exactitud del assessment
 
 El assessment detecta por sí mismo un desfase entre el reloj del host de la base y el del gateway, y declara qué contenedores ve realmente la cuenta de diagnóstico. También dice en qué diskgroup están datafiles, redo, controlfile y FRA. Se corrigieron el conteo de switches de redo y un error del resolver de variantes que dejaba sin resolver algunas queries en 11g. La revisión por especialistas pasa a ser un paso fijo de `/assessment`. El catálogo llega a 74 collectors.

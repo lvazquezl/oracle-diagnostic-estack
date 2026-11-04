@@ -1087,20 +1087,6 @@
       "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
     },
     {
-      "query_id": "Q-SEC-SECURITY-PARAMETERS-001",
-      "query_sha256": "e2406331cec0438b23c1114cb94a59c3f837166f0c27e230f29beefcfb957168",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-23T19:31:20Z",
-      "evidence_refs": [
-        "EVR-3815e177f8b5041a97d3a6d6"
-      ],
-      "request_refs": [
-        "REQ-d7310537c4dc"
-      ],
-      "record": "docs/B7_SECURITY_COVERAGE.md",
-      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
-    },
-    {
       "query_id": "Q-SEC-SYSTEM-PRIVILEGES-001",
       "query_sha256": "034bfa67901bd13d668f247d07bef8f2a04d2526630f8c37228e4d5773dfba19",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
@@ -1110,76 +1096,6 @@
       ],
       "request_refs": [
         "REQ-3cb766540a1b"
-      ],
-      "record": "docs/B7_SECURITY_COVERAGE.md",
-      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
-    },
-    {
-      "query_id": "Q-SEC-TDE-WALLET-001",
-      "query_sha256": "45380792c3ac814cc83dc07d95a0adb52750db33846ef72d7ac11e06caaa11ce",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-23T19:31:22Z",
-      "evidence_refs": [
-        "EVR-5f9a33abe65af5e5eeb1c1d2"
-      ],
-      "request_refs": [
-        "REQ-9968ba747f8c"
-      ],
-      "record": "docs/B7_SECURITY_COVERAGE.md",
-      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
-    },
-    {
-      "query_id": "Q-DICT-VERIFY-001",
-      "query_sha256": "46103b5bdba8a0c994abc2aec9a4aa3df06dc62453993186b515ae043bc418a4",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-23T19:31:29Z",
-      "evidence_refs": [
-        "EVR-1dd2c23aad0132ea3bb72570"
-      ],
-      "request_refs": [
-        "REQ-51bbcf35cc35"
-      ],
-      "record": "docs/B7_SECURITY_COVERAGE.md",
-      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
-    },
-    {
-      "query_id": "Q-DICT-VERIFY-002",
-      "query_sha256": "889abe86b5da60b9cc0e14b09294aabb1d76216283235714ed632ba8c1bebde1",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-23T19:31:29Z",
-      "evidence_refs": [
-        "EVR-1924b34402cb5c6e55490e43"
-      ],
-      "request_refs": [
-        "REQ-af01e8d1cc45"
-      ],
-      "record": "docs/B7_SECURITY_COVERAGE.md",
-      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
-    },
-    {
-      "query_id": "Q-DICT-VERIFY-003",
-      "query_sha256": "8b88b1d4c5845f26cd9c88bc712f3d0b8a352bc2e833c320f316108f46dc55b3",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-23T19:31:30Z",
-      "evidence_refs": [
-        "EVR-ab34e13b2ff7d616fb4c4dfc"
-      ],
-      "request_refs": [
-        "REQ-ac09efbcb69b"
-      ],
-      "record": "docs/B7_SECURITY_COVERAGE.md",
-      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
-    },
-    {
-      "query_id": "Q-DICT-VERIFY-004",
-      "query_sha256": "f438add123e09925037da9a65e9c52abbec07e61802718ffe8ee43bde666f8a5",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-23T19:31:31Z",
-      "evidence_refs": [
-        "EVR-59ed25c7da1bf63b6227b6aa"
-      ],
-      "request_refs": [
-        "REQ-30e97eb98d55"
       ],
       "record": "docs/B7_SECURITY_COVERAGE.md",
       "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
@@ -1211,6 +1127,104 @@
       ],
       "record": "docs/B7_SECURITY_COVERAGE.md",
       "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-SEC-SECURITY-PARAMETERS-001",
+      "query_sha256": "69a8dd1650463b0f498e3aa18f1ee0e4d70f94808ae986e064d502fbc8ba6210",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:05Z",
+      "evidence_refs": [
+        "EVR-09475d2e9e3119da45f370aa"
+      ],
+      "request_refs": [
+        "REQ-a1d0d935f53f"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
+    },
+    {
+      "query_id": "Q-SEC-TDE-WALLET-001",
+      "query_sha256": "3bbd7eb3af7272d4f472078bb673a2d4a45879a2f3b2be73323c0cfc196563fd",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:04Z",
+      "evidence_refs": [
+        "EVR-c8090a3f0e303a40df49ed8f"
+      ],
+      "request_refs": [
+        "REQ-a4f62dc7ceab"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
+    },
+    {
+      "query_id": "Q-SEC-TDE-MASTER-KEYS-001",
+      "query_sha256": "3e44a9dc7a9cd9c2e12ba52a68b125ce534d200c6fa564a9594c5c4de0f9115d",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:04Z",
+      "evidence_refs": [
+        "EVR-11299e1e8a4c97a8d1b5e8a4"
+      ],
+      "request_refs": [
+        "REQ-e7f2db62f594"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-001",
+      "query_sha256": "8eaea4b962f5b7a73f7800725d2dec49bc09a1d2eaacb6ee40bd9372e755045a",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:12Z",
+      "evidence_refs": [
+        "EVR-fb42362c879e6eadb0697a96"
+      ],
+      "request_refs": [
+        "REQ-b69d545265b5"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-002",
+      "query_sha256": "14df42e9876eda251944a25f43ff2e1d43e710c59065f1794aa4c33e942849c9",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:13Z",
+      "evidence_refs": [
+        "EVR-94dc3ef9f326a7a7878b529e"
+      ],
+      "request_refs": [
+        "REQ-000a96a1781d"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-003",
+      "query_sha256": "396ba2d6e126974267157470eceaf86fc65ce4544b0088850d87b1d3a5e55ce5",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:14Z",
+      "evidence_refs": [
+        "EVR-501e52b03322ba63be3c2cdd"
+      ],
+      "request_refs": [
+        "REQ-08c773eb9070"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-004",
+      "query_sha256": "2b747f0df2a6c5024c86eecdef50a5632808ab3fe8c44a87fced313ad6e0c020",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-10-27T18:52:15Z",
+      "evidence_refs": [
+        "EVR-977eb4ae4710a8c82cf9b82c"
+      ],
+      "request_refs": [
+        "REQ-70c0215a93fa"
+      ],
+      "record": "docs/TDE_POSTURE.md",
+      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
     }
   ]
 }
