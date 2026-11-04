@@ -78,7 +78,13 @@
       "allowed_collectors": ["Q-DISC-IDENTITY-001", "Q-CDB-TABLESPACES-001", "Q-CDB-TEMP-001", "Q-RMAN-FRA-USAGE-001",
                              "Q-CDB-PDB-STATE-001", "Q-CDB-SERVICES-001", "Q-CDB-PLUGIN-VIOLATIONS-001", "Q-SEC-UNIFIED-AUDIT-POLICIES-001",
                              "Q-SEC-PASSWORD-PROFILES-001", "Q-SEC-ADMIN-PRIVILEGES-001", "Q-RMAN-CONFIGURATION-001",
-                             "Q-DISC-CLOCK-001", "Q-CDB-CONTAINER-DATA-001"],
+                             "Q-DISC-CLOCK-001", "Q-CDB-CONTAINER-DATA-001",
+                             "Q-SEC-ACCOUNT-INVENTORY-001", "Q-SEC-DATA-REDACTION-POLICIES-001",
+                             "Q-SEC-DATABASE-VAULT-STATUS-001", "Q-SEC-OLS-STATUS-001", "Q-SEC-DB-LINKS-001",
+                             "Q-SEC-ENCRYPTED-COLUMNS-001", "Q-SEC-ENCRYPTED-TABLESPACES-001",
+                             "Q-SEC-OBJECT-PRIVILEGES-001", "Q-SEC-PASSWORD-VERSIONS-001", "Q-SEC-PUBLIC-OBJECT-GRANTS-001",
+                             "Q-SEC-PUBLIC-SYSTEM-GRANTS-001", "Q-SEC-ROLE-GRANTS-001", "Q-SEC-ROLES-001",
+                             "Q-SEC-SECURITY-PARAMETERS-001", "Q-SEC-SYSTEM-PRIVILEGES-001", "Q-SEC-TDE-WALLET-001"],
       "budget": {"max_calls": 50, "max_rows": 500}
     },
     {

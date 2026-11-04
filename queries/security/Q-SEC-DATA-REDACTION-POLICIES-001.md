@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-DATA-REDACTION-POLICIES-001
-version: 3.0.0
+version: 4.0.0
 
 domain: security
 purpose: >
@@ -25,34 +25,44 @@ timeout_seconds: 10
 max_rows: 200
 max_output_bytes: 65536
 
-sensitivity: MEDIUM
+sensitivity: LOW
 sanitization_required: true
 
-license_requirements: "Oracle Data Redaction (DBMS_REDACT) — Advanced Security Option"
+license_requirements: none
 
 execution_mode: READ_ONLY
+
+variants:
+  - variant_id: Q-SEC-DATA-REDACTION-POLICIES-001-V1
+    label: aggregated_12plus
+    oracle_versions: {min: "12.1", max: "23.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V1 (aggregated_12plus, 12.1–23.0: agregado por estado y tipo de función)"
 
 tests: [tests/test_no_write_operations.sh, tests/test_no_redaction_change.sh, tests/test_data_redaction_awareness.sh, tests/test_security_licensing_gate.sh]
 status: active
 ---
 
-# Statement / procedure (read-only)
+# Statement / procedure (read-only) — Variant V1 (aggregated_12plus, 12.1–23.0: agregado por estado y tipo de función)
 
 ```sql
-SELECT p.object_owner, p.object_name, p.policy_name, p.enable, c.column_name, c.function_type
-FROM   redaction_policies p
-LEFT   JOIN redaction_columns c
-       ON  c.object_owner = p.object_owner AND c.object_name = p.object_name
-ORDER  BY p.object_owner, p.object_name, c.column_name;
+SELECT x.policy_enabled, x.function_type, COUNT(DISTINCT x.object_key) AS protected_objects,
+       COUNT(x.column_name) AS redacted_columns
+FROM  (SELECT CASE WHEN p.enable IN ('YES', 'NO') THEN p.enable ELSE 'OTHER' END AS policy_enabled,
+              CASE c.function_type WHEN 'FULL REDACTION' THEN 'FULL' WHEN 'PARTIAL REDACTION' THEN 'PARTIAL'
+                   WHEN 'REGEXP REDACTION' THEN 'REGEXP' WHEN 'RANDOM REDACTION' THEN 'RANDOM'
+                   WHEN 'NO REDACTION' THEN 'NONE' WHEN 'NULLIFY REDACTION' THEN 'NULLIFY'
+                   ELSE CASE WHEN c.column_name IS NULL THEN 'NO_COLUMN' ELSE 'OTHER' END END AS function_type,
+              p.object_owner || '.' || p.object_name AS object_key, c.column_name
+       FROM   redaction_policies p
+       LEFT   JOIN redaction_columns c ON c.object_owner = p.object_owner AND c.object_name = p.object_name) x
+GROUP  BY x.policy_enabled, x.function_type
+ORDER  BY x.policy_enabled, x.function_type;
 ```
-
-Una fila por columna redactada de cada política (o una fila por política sin columnas). Requiere `SELECT_CATALOG_ROLE`. Nunca ejecuta `DBMS_REDACT` — sólo lectura de metadata ya configurada. La 2.0.0 tenía dos sentencias en el mismo archivo y por eso nunca se podía resolver una variante única.
 
 # Notes by version
 
-`REDACTION_POLICIES`/`REDACTION_COLUMNS` verificadas disponibles desde 12.1 (WebSearch, `DBMS_
-REDACT` introducido 12cR1) — en 10g/11g, `security/data-redaction-awareness` publica
-`capability_status: UNSUPPORTED`.
+Data Redaction existe desde 12.1. `NULLIFY REDACTION` aparece en versiones recientes; un valor desconocido sale como `OTHER`.
 
 # Notes by platform
 
@@ -60,7 +70,7 @@ Ninguna.
 
 # Container / role scope notes
 
-`ANY_CONTAINER`.
+`REDACTION_POLICIES`/`REDACTION_COLUMNS` describen el contenedor de la sesión (el root). No tienen variante `CDB_*`.
 
 # Cost classification rationale
 
@@ -68,17 +78,16 @@ Ninguna.
 
 # License notes
 
-Advanced Security Option (mismo bucket que TDE) — verificado WebSearch, distinto del Data
-Masking and Subsetting Pack (`security/data-masking-awareness` nunca asume el mismo
-licenciamiento, `# 42` del prompt).
+Leer `REDACTION_POLICIES` y `REDACTION_COLUMNS` (diccionario) no usa Data Redaction; crear o aplicar políticas con `DBMS_REDACT` sí requiere Advanced Security Option. Por eso `license_requirements: none` desde 4.0.0: la consulta informa si la opción se usa, que es justamente lo que el licenciamiento necesita saber.
 
 # Sanitization notes
 
-`object_owner`/`object_name`/`column_name` → MASK por defecto (pueden revelar estructura de
-esquema de aplicación).
+Solo conteos por estado y tipo: dueño, objeto, columna y nombre de política nunca salen de la base. Requiere `SELECT_CATALOG_ROLE`.
 
 # Evolution via `/change query`
 
 CHG-ESTACK-SEC-QUERIES-001 — 3.0.0: políticas y columnas en una sola sentencia (`LEFT JOIN`); antes eran dos sentencias y la query no resolvía.
 
 N/A.
+
+4.0.0 CHG-ESTACK-B7-SECURITY-COVERAGE-001: 4.0.0: agregado sin identificadores, `license_requirements: none` (lectura de diccionario).

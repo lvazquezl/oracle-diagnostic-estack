@@ -638,10 +638,11 @@ queries:
       - {variant_id: Q-SEC-ACCOUNT-INVENTORY-001-V1, label: legacy_pre12c, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
       - {variant_id: Q-SEC-ACCOUNT-INVENTORY-001-V2, label: multitenant_pre12102, min: "12.1", max: "12.1.0.1", container_scope: ANY_CONTAINER}
       - {variant_id: Q-SEC-ACCOUNT-INVENTORY-001-V3, label: modern_12102plus, min: "12.1.0.2", max: "23.0", container_scope: ANY_CONTAINER}
-    required_views: [DBA_USERS]
+    required_views: [DBA_USERS, CDB_USERS]
     role_scope: ANY
     cost_class: LOW
     validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
   Q-SEC-DEFAULT-ACCOUNTS-001:
     file: queries/security/Q-SEC-DEFAULT-ACCOUNTS-001.md
     variants:
@@ -655,13 +656,24 @@ queries:
   Q-SEC-ROLES-001:
     file: queries/security/Q-SEC-ROLES-001.md
     variants:
-      - {variant_id: Q-SEC-ROLES-001-V1, label: legacy_pre12c, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
-      - {variant_id: Q-SEC-ROLES-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
-    required_views: [DBA_ROLES]
+      - {variant_id: Q-SEC-ROLES-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-ROLES-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_ROLES, CDB_ROLES]
     role_scope: ANY
     cost_class: LOW
     validation_status: COMPATIBLE
-  Q-SEC-ROLE-GRANTS-001: {file: queries/security/Q-SEC-ROLE-GRANTS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_ROLE_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
+  Q-SEC-ROLE-GRANTS-001:
+    file: queries/security/Q-SEC-ROLE-GRANTS-001.md
+    variants:
+      - {variant_id: Q-SEC-ROLE-GRANTS-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-ROLE-GRANTS-001-V2, label: cdb_aware_121, min: "12.1", max: "12.1.0.1", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-ROLE-GRANTS-001-V3, label: cdb_aware_12102plus, min: "12.1.0.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_ROLE_PRIVS, DBA_ROLES, CDB_ROLE_PRIVS, CDB_USERS, CDB_ROLES]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
   Q-SEC-NESTED-ROLE-GRANTS-001:
     file: queries/security/Q-SEC-NESTED-ROLE-GRANTS-001.md
     variants:
@@ -673,7 +685,17 @@ queries:
     validation_status: COMPATIBLE
     was: "CHG-ESTACK-PDB-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) o columnas seguras para el gateway"
     was_before: "CHG-ESTACK-SEC-QUERIES-001: ROLE_ROLE_PRIVS sólo veía los roles de la sesión"
-  Q-SEC-SYSTEM-PRIVILEGES-001: {file: queries/security/Q-SEC-SYSTEM-PRIVILEGES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_SYS_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-SEC-SYSTEM-PRIVILEGES-001:
+    file: queries/security/Q-SEC-SYSTEM-PRIVILEGES-001.md
+    variants:
+      - {variant_id: Q-SEC-SYSTEM-PRIVILEGES-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-SYSTEM-PRIVILEGES-001-V2, label: cdb_aware_121, min: "12.1", max: "12.1.0.1", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-SYSTEM-PRIVILEGES-001-V3, label: cdb_aware_12102plus, min: "12.1.0.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_SYS_PRIVS, DBA_ROLES, CDB_SYS_PRIVS, CDB_USERS, CDB_ROLES]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
   Q-SEC-ROLE-SYSTEM-PRIVILEGES-001:
     file: queries/security/Q-SEC-ROLE-SYSTEM-PRIVILEGES-001.md
     variants:
@@ -685,10 +707,39 @@ queries:
     validation_status: COMPATIBLE
     was: "CHG-ESTACK-PDB-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) o columnas seguras para el gateway"
     was_before: "CHG-ESTACK-SEC-QUERIES-001: ROLE_SYS_PRIVS sólo veía los roles de la sesión"
-  Q-SEC-OBJECT-PRIVILEGES-001: {file: queries/security/Q-SEC-OBJECT-PRIVILEGES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_TAB_PRIVS], role_scope: ANY, cost_class: HIGH, validation_status: COMPATIBLE}
+  Q-SEC-OBJECT-PRIVILEGES-001:
+    file: queries/security/Q-SEC-OBJECT-PRIVILEGES-001.md
+    variants:
+      - {variant_id: Q-SEC-OBJECT-PRIVILEGES-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-OBJECT-PRIVILEGES-001-V2, label: cdb_aware_121, min: "12.1", max: "12.1.0.1", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-OBJECT-PRIVILEGES-001-V3, label: cdb_aware_12102plus, min: "12.1.0.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_TAB_PRIVS, DBA_ROLES, CDB_TAB_PRIVS, CDB_USERS, CDB_ROLES]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
   Q-SEC-ROLE-OBJECT-PRIVILEGES-001: {file: queries/security/Q-SEC-ROLE-OBJECT-PRIVILEGES-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [ROLE_TAB_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
-  Q-SEC-PUBLIC-SYSTEM-GRANTS-001: {file: queries/security/Q-SEC-PUBLIC-SYSTEM-GRANTS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_SYS_PRIVS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
-  Q-SEC-PUBLIC-OBJECT-GRANTS-001: {file: queries/security/Q-SEC-PUBLIC-OBJECT-GRANTS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_TAB_PRIVS], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-SEC-PUBLIC-SYSTEM-GRANTS-001:
+    file: queries/security/Q-SEC-PUBLIC-SYSTEM-GRANTS-001.md
+    variants:
+      - {variant_id: Q-SEC-PUBLIC-SYSTEM-GRANTS-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-PUBLIC-SYSTEM-GRANTS-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_SYS_PRIVS, CDB_SYS_PRIVS]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
+  Q-SEC-PUBLIC-OBJECT-GRANTS-001:
+    file: queries/security/Q-SEC-PUBLIC-OBJECT-GRANTS-001.md
+    variants:
+      - {variant_id: Q-SEC-PUBLIC-OBJECT-GRANTS-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-PUBLIC-OBJECT-GRANTS-001-V2, label: cdb_aware_121, min: "12.1", max: "12.1.0.1", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-PUBLIC-OBJECT-GRANTS-001-V3, label: cdb_aware_12102plus, min: "12.1.0.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_TAB_PRIVS, CDB_TAB_PRIVS, CDB_USERS]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
   Q-SEC-ADMIN-PRIVILEGES-001:
     file: queries/security/Q-SEC-ADMIN-PRIVILEGES-001.md
     variants:
@@ -729,7 +780,17 @@ queries:
     role_scope: ANY
     cost_class: MEDIUM
     validation_status: COMPATIBLE
-  Q-SEC-PASSWORD-VERSIONS-001: {file: queries/security/Q-SEC-PASSWORD-VERSIONS-001.md, variants: implicit_full_range, min: "11.0", max: "23.0", required_views: [DBA_USERS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-PASSWORD-VERSIONS-001:
+    file: queries/security/Q-SEC-PASSWORD-VERSIONS-001.md
+    variants:
+      - {variant_id: Q-SEC-PASSWORD-VERSIONS-001-V1, label: legacy_11g, min: "11.1", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-PASSWORD-VERSIONS-001-V2, label: cdb_aware_121, min: "12.1", max: "12.1.0.1", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-PASSWORD-VERSIONS-001-V3, label: cdb_aware_12102plus, min: "12.1.0.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_USERS, CDB_USERS]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
   Q-SEC-UNIFIED-AUDIT-POLICIES-001:
     file: queries/security/Q-SEC-UNIFIED-AUDIT-POLICIES-001.md
     variants:
@@ -760,9 +821,36 @@ queries:
     cost_class: MEDIUM
     validation_status: COMPATIBLE
     was: "CHG-ESTACK-PDB-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) o columnas seguras para el gateway"
-  Q-SEC-TDE-WALLET-001: {file: queries/security/Q-SEC-TDE-WALLET-001.md, variants: implicit_full_range, min: "11.2", max: "23.0", required_views: [V$ENCRYPTION_WALLET], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
-  Q-SEC-ENCRYPTED-TABLESPACES-001: {file: queries/security/Q-SEC-ENCRYPTED-TABLESPACES-001.md, variants: implicit_full_range, min: "11.2", max: "23.0", required_views: [V$ENCRYPTED_TABLESPACES, DBA_TABLESPACES, V$TABLESPACE], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
-  Q-SEC-ENCRYPTED-COLUMNS-001: {file: queries/security/Q-SEC-ENCRYPTED-COLUMNS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_ENCRYPTED_COLUMNS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-TDE-WALLET-001:
+    file: queries/security/Q-SEC-TDE-WALLET-001.md
+    variants:
+      - {variant_id: Q-SEC-TDE-WALLET-001-V1, label: legacy_11g, min: "11.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-TDE-WALLET-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$ENCRYPTION_WALLET]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
+  Q-SEC-ENCRYPTED-TABLESPACES-001:
+    file: queries/security/Q-SEC-ENCRYPTED-TABLESPACES-001.md
+    variants:
+      - {variant_id: Q-SEC-ENCRYPTED-TABLESPACES-001-V1, label: legacy_11g, min: "11.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-ENCRYPTED-TABLESPACES-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_TABLESPACES, CDB_TABLESPACES, V$TABLESPACE, V$ENCRYPTED_TABLESPACES]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
+  Q-SEC-ENCRYPTED-COLUMNS-001:
+    file: queries/security/Q-SEC-ENCRYPTED-COLUMNS-001.md
+    variants:
+      - {variant_id: Q-SEC-ENCRYPTED-COLUMNS-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-ENCRYPTED-COLUMNS-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_ENCRYPTED_COLUMNS, CDB_ENCRYPTED_COLUMNS]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
   # Q-SEC-NETWORK-ENCRYPTION-PARAMS-001: RETIRADA (PHASE 8 — SECURITY QUERY COMPATIBILITY,
   # ORACLE NET EVIDENCE & STATIC VALIDATOR HARDENING) — SQLNET.* no es evidencia de V$PARAMETER.
   # Removida de este matrix de logical queries certificadas (no es una query activa con variantes
@@ -770,8 +858,25 @@ queries:
   # conserva como registro histórico del defecto (status: not_certified,
   # not_certified_reason: INCORRECT_EVIDENCE_SOURCE). Reemplazada por el collector semántico
   # get_oracle_net_security_configuration (network/oracle-net-security, oracle-network-analyst).
-  Q-SEC-SECURITY-PARAMETERS-001: {file: queries/security/Q-SEC-SECURITY-PARAMETERS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$PARAMETER], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
-  Q-SEC-DB-LINKS-001: {file: queries/security/Q-SEC-DB-LINKS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [DBA_DB_LINKS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-SECURITY-PARAMETERS-001:
+    file: queries/security/Q-SEC-SECURITY-PARAMETERS-001.md
+    variants:
+      - {variant_id: Q-SEC-SECURITY-PARAMETERS-001-V1, label: all_versions, min: "10.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$PARAMETER]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
+  Q-SEC-DB-LINKS-001:
+    file: queries/security/Q-SEC-DB-LINKS-001.md
+    variants:
+      - {variant_id: Q-SEC-DB-LINKS-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-DB-LINKS-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_DB_LINKS, CDB_DB_LINKS]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
   Q-SEC-DIRECTORIES-001:
     file: queries/security/Q-SEC-DIRECTORIES-001.md
     variants:
@@ -783,9 +888,25 @@ queries:
     validation_status: COMPATIBLE
     was: "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
     was_before: "CHG-ESTACK-PDB-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) o columnas seguras para el gateway"
-  Q-SEC-DATABASE-VAULT-STATUS-001: {file: queries/security/Q-SEC-DATABASE-VAULT-STATUS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$OPTION, DBA_REGISTRY], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, license: SEPARATELY_LICENSED}
-  Q-SEC-OLS-STATUS-001: {file: queries/security/Q-SEC-OLS-STATUS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$OPTION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, license: SEPARATELY_LICENSED}
-  Q-SEC-DATA-REDACTION-POLICIES-001: {file: queries/security/Q-SEC-DATA-REDACTION-POLICIES-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [REDACTION_POLICIES, REDACTION_COLUMNS], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, license: SEPARATELY_LICENSED}
+  Q-SEC-DATABASE-VAULT-STATUS-001: {file: queries/security/Q-SEC-DATABASE-VAULT-STATUS-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$OPTION, DBA_REGISTRY], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-SEC-OLS-STATUS-001:
+    file: queries/security/Q-SEC-OLS-STATUS-001.md
+    variants:
+      - {variant_id: Q-SEC-OLS-STATUS-001-V1, label: all_versions, min: "10.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$OPTION]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
+  Q-SEC-DATA-REDACTION-POLICIES-001:
+    file: queries/security/Q-SEC-DATA-REDACTION-POLICIES-001.md
+    variants:
+      - {variant_id: Q-SEC-DATA-REDACTION-POLICIES-001-V1, label: aggregated_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [REDACTION_POLICIES, REDACTION_COLUMNS]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
 
 notes: >
   "implicit_full_range" significa: la query no requirió split porque su SQL, verificado contra

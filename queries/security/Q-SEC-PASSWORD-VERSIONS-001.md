@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-PASSWORD-VERSIONS-001
-version: 1.0.0
+version: 2.0.0
 
 domain: security
 purpose: >
@@ -13,8 +13,8 @@ supported_architectures: [Standalone, RAC]
 container_scope: ANY_CONTAINER
 database_role_scope: ANY
 
-objects_accessed: [DBA_USERS]
-privileges_required: [SELECT on DBA_USERS]
+objects_accessed: [DBA_USERS, CDB_USERS]
+privileges_required: [SELECT on DBA_USERS, SELECT on CDB_USERS]
 
 risk_class: R0
 cost_class: LOW
@@ -23,36 +23,67 @@ timeout_seconds: 10
 max_rows: 500
 max_output_bytes: 65536
 
-sensitivity: HIGH
+sensitivity: LOW
 sanitization_required: true
 
 license_requirements: none
 
 execution_mode: READ_ONLY
 
+variants:
+  - variant_id: Q-SEC-PASSWORD-VERSIONS-001-V1
+    label: legacy_11g
+    oracle_versions: {min: "11.1", max: "11.2"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V1 (legacy_11g, 11.1–11.2: DBA_USERS, conteo por versión de verificador)"
+  - variant_id: Q-SEC-PASSWORD-VERSIONS-001-V2
+    label: cdb_aware_121
+    oracle_versions: {min: "12.1", max: "12.1.0.1"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V2 (cdb_aware_121, 12.1–12.1.0.1: CDB_USERS con con_id)"
+  - variant_id: Q-SEC-PASSWORD-VERSIONS-001-V3
+    label: cdb_aware_12102plus
+    oracle_versions: {min: "12.1.0.2", max: "23.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V3 (cdb_aware_12102plus, 12.1.0.2–23.0: CDB_USERS con oracle_maintained)"
+
 tests: [tests/test_no_write_operations.sh, tests/test_no_password_verifier_exposure.sh]
 status: active
 ---
 
-# Statement / procedure (read-only)
+# Statement / procedure (read-only) — Variant V1 (legacy_11g, 11.1–11.2: DBA_USERS, conteo por versión de verificador)
 
 ```sql
-SELECT username, password_versions
+SELECT CASE WHEN TRIM(password_versions) IN ('10G', '11G', '12C', '10G 11G', '10G 12C', '11G 12C', '10G 11G 12C') THEN TRIM(password_versions) ELSE 'OTHER' END AS password_versions, COUNT(*) AS account_count
 FROM   dba_users
-ORDER  BY username;
+WHERE  password_versions IS NOT NULL
+GROUP  BY CASE WHEN TRIM(password_versions) IN ('10G', '11G', '12C', '10G 11G', '10G 12C', '11G 12C', '10G 11G 12C') THEN TRIM(password_versions) ELSE 'OTHER' END
+ORDER  BY 1;
 ```
 
-`PASSWORD_VERSIONS` reporta qué formatos de hash existen para la cuenta (`10G`, `11G`, `12C`,
-`HTTP`) — nunca el valor del hash mismo. `security/password-verifiers` traduce esto a
-`LEGACY_PRESENT|MODERN_PRESENT|MIXED|UNKNOWN`, nunca expone la cadena cruda de
-`PASSWORD_VERSIONS` tal cual si contuviera algo más que el indicador de formato (no lo contiene,
-pero el skill nunca lo asume sin normalizar).
+# Statement / procedure (read-only) — Variant V2 (cdb_aware_121, 12.1–12.1.0.1: CDB_USERS con con_id)
+
+```sql
+SELECT con_id, CASE WHEN TRIM(password_versions) IN ('10G', '11G', '12C', '10G 11G', '10G 12C', '11G 12C', '10G 11G 12C') THEN TRIM(password_versions) ELSE 'OTHER' END AS password_versions, COUNT(*) AS account_count
+FROM   cdb_users
+WHERE  password_versions IS NOT NULL
+GROUP  BY con_id, CASE WHEN TRIM(password_versions) IN ('10G', '11G', '12C', '10G 11G', '10G 12C', '11G 12C', '10G 11G 12C') THEN TRIM(password_versions) ELSE 'OTHER' END
+ORDER  BY 1, 2;
+```
+
+# Statement / procedure (read-only) — Variant V3 (cdb_aware_12102plus, 12.1.0.2–23.0: CDB_USERS con oracle_maintained)
+
+```sql
+SELECT con_id, oracle_maintained, CASE WHEN TRIM(password_versions) IN ('10G', '11G', '12C', '10G 11G', '10G 12C', '11G 12C', '10G 11G 12C') THEN TRIM(password_versions) ELSE 'OTHER' END AS password_versions, COUNT(*) AS account_count
+FROM   cdb_users
+WHERE  password_versions IS NOT NULL
+GROUP  BY con_id, oracle_maintained, CASE WHEN TRIM(password_versions) IN ('10G', '11G', '12C', '10G 11G', '10G 12C', '11G 12C', '10G 11G 12C') THEN TRIM(password_versions) ELSE 'OTHER' END
+ORDER  BY 1, 2, 3;
+```
 
 # Notes by version
 
-`PASSWORD_VERSIONS` disponible desde 11g (introducida junto con case-sensitive passwords/SHA-1
-hashing, 11.1) — en 10g no existe esta columna, `password_verifiers` publica
-`capability_status: UNSUPPORTED`.
+`PASSWORD_VERSIONS` existe desde 11.1 (catálogo: 11.2); `ORACLE_MAINTAINED` desde 12.1.0.2.
 
 # Notes by platform
 
@@ -60,7 +91,7 @@ Ninguna.
 
 # Container / role scope notes
 
-`ANY_CONTAINER`.
+V2/V3 cubren los contenedores visibles por `CONTAINER_DATA`.
 
 # Cost classification rationale
 
@@ -72,10 +103,10 @@ Ninguna.
 
 # Sanitization notes
 
-`username` → MASK por defecto. `password_versions` → KEEP (es un indicador de formato, ej.
-"10G 11G", nunca el hash mismo) pero normalizado a un enum antes de reportarse — nunca la cadena
-cruda de Oracle.
+Solo conteos por combinación de verificadores (enum cerrado). Ningún usuario ni verificador sale de la base.
 
 # Evolution via `/change query`
 
 N/A.
+
+2.0.0 CHG-ESTACK-B7-SECURITY-COVERAGE-001: 2.0.0: conteo agregado sin usuarios; `CDB_USERS` por contenedor.

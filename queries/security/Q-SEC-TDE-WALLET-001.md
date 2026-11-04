@@ -1,6 +1,6 @@
 ---
 query_id: Q-SEC-TDE-WALLET-001
-version: 1.0.0
+version: 2.0.0
 
 domain: security
 purpose: Estado de wallet/keystore de TDE — tde-awareness/keystore-awareness (# 31, # 32 del prompt de Fase 8).
@@ -22,32 +22,47 @@ timeout_seconds: 10
 max_rows: 10
 max_output_bytes: 16384
 
-sensitivity: MEDIUM
+sensitivity: LOW
 sanitization_required: true
 
 license_requirements: none
 
 execution_mode: READ_ONLY
 
+variants:
+  - variant_id: Q-SEC-TDE-WALLET-001-V1
+    label: legacy_11g
+    oracle_versions: {min: "11.2", max: "11.2"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V1 (legacy_11g, 11.2–11.2: V$ENCRYPTION_WALLET)"
+  - variant_id: Q-SEC-TDE-WALLET-001-V2
+    label: cdb_aware_12plus
+    oracle_versions: {min: "12.1", max: "23.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V2 (cdb_aware_12plus, 12.1–23.0: V$ENCRYPTION_WALLET con con_id y tipo de keystore)"
+
 tests: [tests/test_no_write_operations.sh, tests/test_no_keystore_change.sh, tests/test_tde_awareness.sh, tests/test_keystore_awareness.sh, tests/test_no_wallet_secret_exposure.sh]
 status: active
 ---
 
-# Statement / procedure (read-only)
+# Statement / procedure (read-only) — Variant V1 (legacy_11g, 11.2–11.2: V$ENCRYPTION_WALLET)
 
 ```sql
-SELECT wrl_parameter, status, wallet_type
+SELECT wrl_type, status
 FROM   v$encryption_wallet;
 ```
 
-`wrl_parameter` es el path de configuración del wallet, nunca su contenido/password — se
-sanitiza (`MASK`) antes de reportarse, igual que `snapshot_controlfile_path` en RMAN (Fase 7).
-Nunca se selecciona ninguna columna con contenido de clave.
+# Statement / procedure (read-only) — Variant V2 (cdb_aware_12plus, 12.1–23.0: V$ENCRYPTION_WALLET con con_id y tipo de keystore)
+
+```sql
+SELECT con_id, wrl_type, status, wallet_type, wallet_order, fully_backed_up
+FROM   v$encryption_wallet
+ORDER  BY con_id;
+```
 
 # Notes by version
 
-`V$ENCRYPTION_WALLET` verificada disponible desde 11.2 (WebSearch) — en 10g/11.1, `security/
-tde-awareness` publica `capability_status: UNSUPPORTED`.
+`WALLET_TYPE`, `WALLET_ORDER`, `FULLY_BACKED_UP` y `CON_ID` existen desde 12.1.
 
 # Notes by platform
 
@@ -55,7 +70,7 @@ Ninguna — SQL puro.
 
 # Container / role scope notes
 
-`ANY_CONTAINER`.
+V2 devuelve una fila por contenedor (root y PDB visibles).
 
 # Cost classification rationale
 
@@ -68,10 +83,10 @@ base — `security/licensing-gates` reporta el status correspondiente, nunca asu
 
 # Sanitization notes
 
-`wrl_parameter` → MASK (path de filesystem, puede revelar convención interna). Nunca se expone
-wallet password ni key material — no existe columna con ese contenido en esta vista de todas
-formas.
+`wrl_parameter` (ruta del keystore) nunca se selecciona: DROP en la base. Solo tipo, estado y orden del keystore, todos enums. Nunca se lee contraseña ni material de llave.
 
 # Evolution via `/change query`
 
 N/A.
+
+2.0.0 CHG-ESTACK-B7-SECURITY-COVERAGE-001: 2.0.0: sin `wrl_parameter`; `wrl_type`, `wallet_order`, `fully_backed_up` y `con_id`.

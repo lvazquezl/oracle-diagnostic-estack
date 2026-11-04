@@ -443,6 +443,8 @@ $vw"
         sysdate|systimestamp|keep|dense_rank|first|last) continue ;;
         # CHG-ESTACK-PDB-COVERAGE-001: funciones de fecha y de expresiones regulares (CAST(SYS_EXTRACT_UTC(x) AS DATE), REGEXP_*)
         sys_extract_utc|date|regexp_like|regexp_substr|like|escape) continue ;;
+        # CHG-ESTACK-B7-SECURITY-COVERAGE-001: funciones de texto y predicados (SUBSTR, INSTR, TRIM, UPPER, IS [NOT] NULL, EXISTS)
+        substr|instr|trim|upper|is|exists) continue ;;
       esac
 
       local target_view=""

@@ -1300,9 +1300,13 @@ views:
     min_version: "11.2"    # verificado WebSearch — TDE tablespace/wallet encryption, 11gR2
     columns_exhaustive: true
     columns:
-      wrl_parameter: {min_version: "11.2"}
+      wrl_type:      {min_version: "11.2"}   # CHG-ESTACK-B7-SECURITY-COVERAGE-001
+      wrl_parameter: {min_version: "11.2"}   # ruta del keystore: ninguna query certificada la selecciona desde B7
       status:           {min_version: "11.2"}
-      wallet_type:         {min_version: "11.2"}
+      wallet_type:         {min_version: "12.1"}   # B7: Database Reference 12.1 (no está en 11.2); antes registrada como 11.2
+      wallet_order:        {min_version: "12.1"}   # B7
+      fully_backed_up:     {min_version: "12.1"}   # B7
+      con_id:              {min_version: "12.1"}   # B7
     notes: "Fase 8. En 10g/11.1, security/tde-awareness publica capability_status: UNSUPPORTED."
 
   V$ENCRYPTED_TABLESPACES:
@@ -1312,7 +1316,16 @@ views:
       ts#:              {min_version: "11.2"}
       encryptionalg:       {min_version: "11.2"}
       encryptedts:            {min_version: "11.2"}
+      con_id:                    {min_version: "12.1"}   # CHG-ESTACK-B7-SECURITY-COVERAGE-001
     notes: "Fase 8. Mismo boundary que V$ENCRYPTION_WALLET — TDE tablespace encryption."
+
+  CDB_ENCRYPTED_COLUMNS:
+    min_version: "12.1"
+    columns:
+      con_id:          {min_version: "12.1"}
+      owner:           {min_version: "12.1"}
+      encryption_alg:  {min_version: "12.1"}
+    notes: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: V2 de Q-SEC-ENCRYPTED-COLUMNS-001 (conteo por dueño y algoritmo, con con_id)."
 
   DBA_ENCRYPTED_COLUMNS:
     min_version: "10.2"    # verificado WebSearch — TDE column encryption, 10gR2
@@ -1323,6 +1336,16 @@ views:
       column_name:                {min_version: "10.2"}
       encryption_alg:                {min_version: "10.2"}
     notes: "Fase 8. Disponible desde 10g (10.2) — anterior a V$ENCRYPTION_WALLET (11.2), porque TDE column encryption precede a TDE tablespace encryption."
+
+  CDB_DB_LINKS:
+    min_version: "12.1"
+    columns:
+      con_id:    {min_version: "12.1"}
+      owner:     {min_version: "12.1"}
+      db_link:   {min_version: "12.1"}
+      username:  {min_version: "12.1"}
+      host:      {min_version: "12.1"}
+    notes: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: V2 de Q-SEC-DB-LINKS-001. host y username se clasifican en la base y nunca salen."
 
   DBA_DB_LINKS:
     min_version: all

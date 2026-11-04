@@ -1,0 +1,11 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B7)",
+  "rows": [
+    {
+      "policy_enabled": "YES",
+      "function_type": "PARTIAL",
+      "protected_objects": 2,
+      "redacted_columns": 3
+    }
+  ]
+}

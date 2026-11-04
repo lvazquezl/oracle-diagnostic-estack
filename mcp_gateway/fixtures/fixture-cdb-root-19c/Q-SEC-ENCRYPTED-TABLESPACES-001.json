@@ -1,0 +1,11 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B7)",
+  "rows": [
+    {
+      "con_id": 1,
+      "tablespace_name": "SYNTH_DATA",
+      "classification": "UNENCRYPTED",
+      "encryptionalg": "AES256"
+    }
+  ]
+}

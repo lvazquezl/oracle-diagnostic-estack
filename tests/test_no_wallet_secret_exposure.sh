@@ -15,8 +15,16 @@ for f in $(find "$ROOT/queries/security" -name 'Q-*.md' 2>/dev/null); do
 done
 [ $FAIL -eq 0 ] && echo "[PASS] Ninguna query Security selecciona wallet password/key material"
 
-grep -qi "wrl_parameter.*→ MASK\|wrl_parameter → MASK" "$ROOT/queries/security/Q-SEC-TDE-WALLET-001.md" \
-  && echo "[PASS] Q-SEC-TDE-WALLET-001 sanitiza wrl_parameter" \
-  || { echo "[FAIL] falta la sanitización de wrl_parameter"; FAIL=1; }
+# CHG-ESTACK-B7-SECURITY-COVERAGE-001: wrl_parameter (ruta del keystore) ya no se enmascara: nunca se selecciona.
+W="$ROOT/queries/security/Q-SEC-TDE-WALLET-001.md"
+wblock=$(awk '/```sql/{flag=1;next}/```/{flag=0}flag' "$W")
+if grep -qi "wrl_parameter" <<<"$wblock"; then
+  echo "[FAIL] Q-SEC-TDE-WALLET-001 selecciona wrl_parameter (ruta del keystore)"; FAIL=1
+else
+  echo "[PASS] Q-SEC-TDE-WALLET-001 nunca selecciona wrl_parameter"
+fi
+grep -qi "wrl_parameter.*nunca se selecciona" "$W" \
+  && echo "[PASS] Q-SEC-TDE-WALLET-001 documenta que wrl_parameter no sale de la base" \
+  || { echo "[FAIL] falta la nota de sanitización de wrl_parameter"; FAIL=1; }
 
 exit $FAIL

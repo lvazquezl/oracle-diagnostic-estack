@@ -1,7 +1,7 @@
 name: ols-awareness
 display_name: "Oracle Label Security Awareness"
 id: security/ols-awareness
-version: 1.0.0
+version: 1.1.0
 domain: security
 status: active
 
@@ -11,7 +11,7 @@ supported_architectures: [standalone, rac, rac_one_node]
 container_scope: ANY_CONTAINER
 database_role_scope: ANY
 
-license_requirements: "Oracle Label Security — SEPARATELY_LICENSED por defecto"
+license_requirements: none
 
 required_evidence:
   - query_id: Q-SEC-OLS-STATUS-001

@@ -41,9 +41,12 @@ FIELD_TYPES = {"identifier", "version_string", "enum", "integer", "integer_or_un
 PARAMETER_NAME_FIELDS = frozenset({"parameter_name"})
 # CHG-ESTACK-COLLECTOR-FACTORY-B2: Oracle vocabulary (wait events, library cache namespaces) — KEEP only in these fields.
 ORACLE_TERM_FIELDS = frozenset({"event", "namespace", "privilege", "action_name",   # + privilege/action_name: CHG-ESTACK-SEC-QUERIES-001
-                                "policy_name", "cause", "config_name"})               # CHG-ESTACK-PDB-COVERAGE-001: the certified SQL maps
+                                "policy_name", "cause", "config_name",
+                                "oracle_role"})                                       # CHG-ESTACK-PDB-COVERAGE-001: the certified SQL maps
 # custom audit-policy names to 'CUSTOM' (only ORA_*/ORA$* leave the database); `cause` is Oracle's plug-in violation category;
 # `config_name` is the V$RMAN_CONFIGURATION setting name (its value never leaves the database).
+# CHG-ESTACK-B7-SECURITY-COVERAGE-001: `oracle_role` carries a granted role's name only when the role is Oracle-maintained;
+# the certified SQL maps any other role to 'CUSTOM' (its real name goes, masked, in `granted_role`).
 # ... and the SQL identifier (13 base-32 chars; identifies a cursor, never carries SQL text) — KEEP only in these fields.
 SQL_ID_FIELDS = frozenset({"sql_id", "waiter_sql_id"})
 POLICIES = {"KEEP", "MASK", "HASH", "TOKENIZE", "DROP", "SIGNATURE"}
