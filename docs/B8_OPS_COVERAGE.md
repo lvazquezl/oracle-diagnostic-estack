@@ -103,4 +103,4 @@ Origen: el plan de lotes acordado con el DBA (B8: RMAN, multitenant, ASM y rendi
 | SECURITY | 12/12 mutaciones detectadas: ruta del archivelog, `HANDLE`, `SID`, `V$ASM_DISK` con discovery, cláusulas de lockdown, plan activo, cobertura sin contenedor, perfil de lockdown en `KEEP`, override de `state` quitado, guard que vuelve a rechazar `V$LOCK`, guard sin `lock` y `SQL_ID` por join con `V$SESSION` |
 | REGRESSION | 974/974 en macOS (bash 5.3), antes y después del lab |
 | LAB | Los 10 collectors y las 5 sondas `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM` (15 registros nuevos; el registro pasa de 81 a 96). Sin privilegios nuevos |
-| HUMAN REVIEW | Pendiente |
+| HUMAN REVIEW | Aprobado: `AUTH-B8-OPS-COVERAGE-001`, revisor `REV-DBAMANAGER`, `2026-11-10T18:29:46Z`, contra el digest `b68dc41b…cd70d6d` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). PROMOTE: pendiente (push, PR y merge, acciones humanas) |
