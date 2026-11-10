@@ -54,7 +54,7 @@ KINDS = {"sql_query", "alert_log_excerpt", "semantic_os"}
 # Any of these tokens inside a certified SQL block means the file is NOT read-only material for this gateway.
 _FORBIDDEN_SQL = re.compile(
     r'(?i)\b(insert|update|delete|merge|drop|create|alter|truncate|grant|revoke|execute|exec|call|begin|declare|commit|'
-    r'rollback|lock|flashback|purge|rename|comment|audit|noaudit|shutdown|startup|into)\b|dbms_|utl_|sys\.|;\s*\S')
+    r'rollback|(?<!\$)lock|flashback|purge|rename|comment|audit|noaudit|shutdown|startup|into)\b|dbms_|utl_|sys\.|;\s*\S')
 
 
 def _load_json(path: str, max_bytes: int = 1_000_000):

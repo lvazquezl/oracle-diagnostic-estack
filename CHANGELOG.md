@@ -53,6 +53,25 @@ Rama `change/tde-posture` sobre `change/b7-security-coverage`. Origen: pedido de
 - `Q-SEC-TDE-WALLET-001` 2.1.0: V3 (12.2+) con `keystore_mode`. `Q-SEC-SECURITY-PARAMETERS-001` 2.1.0: `encrypt_new_tablespaces`, `tde_configuration` y `wallet_root` (este último solo como configurado o no).
 - `policies/licensing-awareness-policy.md`: leer el estado de una opción no es usarla.
 - `queries/REGISTRY.md`: la licencia de las lecturas de TDE queda en `none`, como sus contratos.
+### `/change query|security|compatibility|skill|documentation` — CHG-ESTACK-B8-OPS-COVERAGE-001 — lote B8: RMAN, multitenant, ASM y locks
+
+Rama `change/b8-ops-coverage` sobre `main` (`af0ec38`). Origen: 31 queries certificadas de RMAN, multitenant, rendimiento y ASM que el gateway no exponía. Ver `docs/B8_OPS_COVERAGE.md`.
+
+#### Added
+
+- Lote B8: 10 queries expuestas por el gateway; el catálogo pasa de 91 a 101 collectors. Siete reescritas como agregados en la base: cobertura de backup de archivelogs por thread, de datafiles por contenedor, piezas de backup por dispositivo y estado, lockdown profiles, directivas de Resource Manager con el plan activo, salud de discos ASM por failure group y enqueue locks por tipo y modo. Tres sin cambio de SQL: saved state de PDBs, consumo de recursos por PDB y sesiones por PDB.
+- P18: el lote B8 no selecciona rutas, handles, tags, nombres de archivo, `SID`, `SQL_ID` ni identificadores de objeto, y todo nombre sale enmascarado.
+
+#### Changed
+
+- La defensa de solo lectura del gateway acepta `lock` precedido de `$` (las vistas `V$LOCK`/`GV$LOCK`); `LOCK TABLE` sigue rechazado. Las sondas del diccionario ahora verifican también `V$LOCK`.
+- `Q-ASM-DISKS-001` lee `V$ASM_DISK_STAT` (sin discovery de discos) y baja a costo `LOW`.
+- 10 skills de RMAN, ASM, multitenant y locking (1.1.0) documentan la forma de la evidencia del gateway y de qué collector sale el detalle que ya no se expone.
+
+#### Removed
+
+- Validaciones en campo de `Q-DICT-VERIFY-001`..`005` hasta revalidarlas en el lab (el diccionario cambió).
+
 ## [0.29.0] — 2026-10-08 — `v0.29.0-assessment-accuracy` — 1 cambio: exactitud del assessment
 
 El assessment detecta por sí mismo un desfase entre el reloj del host de la base y el del gateway, y declara qué contenedores ve realmente la cuenta de diagnóstico. También dice en qué diskgroup están datafiles, redo, controlfile y FRA. Se corrigieron el conteo de switches de redo y un error del resolver de variantes que dejaba sin resolver algunas queries en 11g. La revisión por especialistas pasa a ser un paso fijo de `/assessment`. El catálogo llega a 74 collectors.

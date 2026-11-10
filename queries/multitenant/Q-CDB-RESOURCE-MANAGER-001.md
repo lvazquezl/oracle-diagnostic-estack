@@ -1,9 +1,9 @@
 ---
 query_id: Q-CDB-RESOURCE-MANAGER-001
-version: 1.0.0
+version: 2.0.0
 
 domain: multitenant
-purpose: Visibilidad de CDB Resource Plan y directivas por PDB (shares, utilization limit, parallel server limit) — sólo lectura, nunca modifica Resource Manager
+purpose: CDB Resource Plans y directivas por PDB (shares, utilization limit, parallel server limit), con el plan activo marcado — sólo lectura, nunca modifica Resource Manager
 
 supported_oracle_versions: [12c, 18c, 19c, 21c, 23ai]
 supported_os: [todas]
@@ -12,8 +12,8 @@ supported_architectures: [Standalone, RAC]
 container_scope: CDB_ROOT_ONLY
 database_role_scope: ANY
 
-objects_accessed: [DBA_CDB_RSRC_PLAN_DIRECTIVES]
-privileges_required: [SELECT on DBA_CDB_RSRC_PLAN_DIRECTIVES]
+objects_accessed: [DBA_CDB_RSRC_PLAN_DIRECTIVES, V$RSRC_PLAN]
+privileges_required: [SELECT on DBA_CDB_RSRC_PLAN_DIRECTIVES, SELECT on V$RSRC_PLAN]
 
 risk_class: R0
 cost_class: LOW
@@ -23,35 +23,43 @@ max_rows: 200
 max_output_bytes: 65536
 
 sensitivity: LOW
-sanitization_required: false
+sanitization_required: true
 
 license_requirements: none
 
 execution_mode: READ_ONLY
 
-# El nombre real de esta vista es DBA_CDB_RSRC_PLAN_DIRECTIVES, no "CDB_RSRC_PLAN_DIRECTIVES" como
-# aparece en el ejemplo conceptual del prompt de Fase 6 (# 8) — verificado contra Oracle Database
-# Reference antes de declarar metadata (no repetir el defecto circular de metadata-sin-fuente-
-# documental encontrado y corregido en PHASE 5 — DATA GUARD FINAL PROCESS-VIEW & PORTABILITY
-# HARDENING). DBA_RSRC_PLAN_DIRECTIVES (sin CDB) es la vista legacy de consumer groups
-# intra-instancia — un objeto distinto, fuera de alcance aquí.
+variants:
+  - variant_id: Q-CDB-RESOURCE-MANAGER-001-V1
+    label: cdb_plans_12plus
+    oracle_versions: {min: "12.1", max: "23.0"}
+    container_scope: CDB_ROOT_ONLY
+    sql_block: "Variant V1 (cdb_plans_12plus, 12.1–23.0: DBA_CDB_RSRC_PLAN_DIRECTIVES)"
+
 tests: [tests/test_no_write_operations.sh, tests/test_pdb_resource_manager_visibility.sh, tests/test_no_resource_plan_change.sh, tests/test_no_resource_limit_change.sh, tests/test_multitenant_container_scope.sh]
 status: active
 ---
 
-# Statement / procedure (read-only)
+# Statement / procedure (read-only) — Variant V1 (cdb_plans_12plus, 12.1–23.0: DBA_CDB_RSRC_PLAN_DIRECTIVES)
 
 ```sql
-SELECT plan, pluggable_database, shares, utilization_limit, parallel_server_limit
-FROM   dba_cdb_rsrc_plan_directives
-ORDER  BY plan, pluggable_database;
+SELECT CASE WHEN d.plan IN ('DEFAULT_CDB_PLAN', 'DEFAULT_MAINTENANCE_PLAN', 'ORA$INTERNAL_CDB_PLAN', 'ORA$QOS_CDB_PLAN')
+            THEN 'ORACLE' ELSE 'CUSTOM' END AS plan_kind,
+       d.plan AS plan_name,
+       CASE WHEN d.plan IN (SELECT p.name FROM v$rsrc_plan p WHERE p.con_id IN (0, 1) AND p.is_top_plan = 'TRUE')
+            THEN 'YES' ELSE 'NO' END AS plan_active,
+       CASE WHEN d.pluggable_database = 'ORA$DEFAULT_PDB_DIRECTIVE' THEN 'DEFAULT_PDB'
+            WHEN d.pluggable_database = 'ORA$AUTOTASK' THEN 'AUTOTASK'
+            WHEN d.pluggable_database IS NULL THEN 'OTHER' ELSE 'PDB' END AS directive_kind,
+       CASE WHEN d.pluggable_database LIKE 'ORA$%' THEN NULL ELSE d.pluggable_database END AS pdb_name,
+       d.shares, d.utilization_limit, d.parallel_server_limit
+FROM   dba_cdb_rsrc_plan_directives d
+ORDER  BY d.plan, d.pluggable_database;
 ```
-
-`DBA_CDB_RSRC_PLAN_DIRECTIVES` es la vista real para directivas CDB→PDB (share de recursos entre PDBs) — distinta de `DBA_RSRC_PLAN_DIRECTIVES` (legacy, consumer groups dentro de una instancia). Sólo visibilidad — nunca `ALTER SYSTEM SET RESOURCE_MANAGER_PLAN` ni cambios de pending area (`# 31` del prompt).
 
 # Notes by version
 
-`DBA_CDB_RSRC_PLAN_DIRECTIVES` disponible desde 12.1 (Resource Manager para PDBs).
+`DBA_CDB_RSRC_PLAN_DIRECTIVES` y `V$RSRC_PLAN.CON_ID` desde 12.1. Las directivas por perfil de PDB (12.2+) salen como `directive_kind` `OTHER`.
 
 # Notes by platform
 
@@ -59,11 +67,11 @@ Ninguna — SQL puro.
 
 # Container / role scope notes
 
-`CDB_ROOT_ONLY` — el CDB Resource Plan sólo es visible/administrable desde CDB$ROOT. `database_role_scope: ANY`.
+`CDB_ROOT_ONLY`. En RAC, `plan_active` refleja la instancia consultada.
 
 # Cost classification rationale
 
-`LOW` — número de directivas acotado al número de PDBs × planes definidos, típicamente pequeño.
+`LOW` — vistas pequeñas de metadata.
 
 # License notes
 
@@ -71,8 +79,8 @@ Ninguna.
 
 # Sanitization notes
 
-Todos los campos → KEEP (nombres de plan/PDB no contienen datos de aplicación; `pluggable_database` sigue la política de tokenización del skill consumidor).
+Los nombres de plan y de PDB se enmascaran; `plan_kind` conserva si el plan es de Oracle y `directive_kind` si la directiva es la de PDB por defecto, la de autotask o una PDB concreta. `COMMENTS` nunca se selecciona.
 
 # Evolution via `/change query`
 
-N/A — vista estable.
+2.0.0 CHG-ESTACK-B8-OPS-COVERAGE-001: plan activo, tipo de plan y de directiva; nombres enmascarados.

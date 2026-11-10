@@ -1,7 +1,7 @@
 ---
 name: incremental-backup
 id: rman/incremental-backup
-version: 1.0.0
+version: 1.1.0
 domain: rman
 status: active
 ---
@@ -30,6 +30,8 @@ Standalone y RAC.
 
 - `Q-RMAN-BACKUP-SET-001`
 - `Q-RMAN-BACKUP-DATAFILE-001`
+
+**Gateway (lote B8, `CHG-ESTACK-B8-OPS-COVERAGE-001`):** Por el gateway, el nivel (full/level 0 frente a incremental) y su antigüedad salen de `Q-RMAN-BACKUP-FRESHNESS-001`; `Q-RMAN-BACKUP-DATAFILE-001` 2.0.0 da por contenedor los datafiles sin full ni level 0. `USED_CHANGE_TRACKING` no se expone: la eficiencia por block change tracking queda `NOT_ASSESSED`.
 
 # Optional evidence
 
@@ -123,3 +125,5 @@ Alimenta `analysis/ANA-*/backup-inventory.md`.
 # Change history
 
 v1.0.0 — Fase 7, creación inicial.
+
+v1.1.0 — `CHG-ESTACK-B8-OPS-COVERAGE-001`: forma de la evidencia expuesta por el gateway (ver Required evidence).

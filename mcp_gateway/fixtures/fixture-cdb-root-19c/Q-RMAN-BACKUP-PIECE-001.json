@@ -1,0 +1,13 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B8)",
+  "rows": [
+    {
+      "device_type": "DISK",
+      "piece_status": "AVAILABLE",
+      "pieces": 24,
+      "backup_bytes": 52428800000,
+      "hours_since_newest": 6.0,
+      "hours_since_oldest": 330.5
+    }
+  ]
+}

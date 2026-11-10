@@ -1,7 +1,7 @@
 ---
 name: lockdown-profiles
 id: multitenant/lockdown-profiles
-version: 1.0.0
+version: 1.1.0
 domain: multitenant
 status: active
 ---
@@ -29,6 +29,8 @@ Standalone y RAC.
 # Required evidence
 
 - `Q-CDB-LOCKDOWN-001` (`CDB_LOCKDOWN_PROFILES`)
+
+**Gateway (lote B8, `CHG-ESTACK-B8-OPS-COVERAGE-001`):** `Q-CDB-LOCKDOWN-001` 2.0.0 resume por perfil (de Oracle o propio, enmascarado), tipo y estado de regla con su cantidad; `RULE`, `CLAUSE` y `CLAUSE_OPTION` no salen. Qué perfil usa cada PDB (`PDB_LOCKDOWN`) no es observable aquí y se declara como limitación.
 
 # Optional evidence
 
@@ -121,3 +123,5 @@ Alimenta `analysis/ANA-*/pdb-findings.md`.
 # Change history
 
 v1.0.0 — Fase 6, creación inicial.
+
+v1.1.0 — `CHG-ESTACK-B8-OPS-COVERAGE-001`: forma de la evidencia expuesta por el gateway (ver Required evidence).

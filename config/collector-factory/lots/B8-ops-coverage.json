@@ -1,0 +1,172 @@
+{
+ "_doc": "CHG-ESTACK-B8-OPS-COVERAGE-001 — lot B8: operations coverage (RMAN, multitenant, ASM, locks). Exposes 10 certified queries; seven rewritten as aggregates in the database (no paths, handles, tags, file or object names, session ids or absolute dates), three exposed with their SQL unchanged and identity columns masked. Same rules as lots/B1-oracle-core.json.",
+ "lot_id": "B8",
+ "fixture_target": "fixture-cdb-root-19c",
+ "collectors": [
+  {
+   "collector_id": "Q-RMAN-ARCHIVED-LOG-COVERAGE-001",
+   "domain": "rman",
+   "title": "Archived log backup coverage per thread of the current incarnation: logs in the last 24 h, on disk, not backed up, and hours since the oldest unprotected and the last archived log (no paths or dates)",
+   "row_limit": 32,
+   "fields": [
+    "thread_no",
+    "logs_last_24h",
+    "logs_on_disk",
+    "logs_not_backed_up",
+    "hours_since_oldest_not_backed_up",
+    "hours_since_last_archived"
+   ]
+  },
+  {
+   "collector_id": "Q-RMAN-BACKUP-DATAFILE-001",
+   "domain": "rman",
+   "title": "Datafile backup coverage per container: datafiles never backed up, without a full or level 0, and the worst age of the latest backup and full (no file names or dates)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "datafiles",
+    "datafiles_never_backed_up",
+    "datafiles_without_full",
+    "max_hours_since_backup",
+    "max_hours_since_full"
+   ]
+  },
+  {
+   "collector_id": "Q-RMAN-BACKUP-PIECE-001",
+   "domain": "rman",
+   "title": "Backup pieces per device type and status (available, expired, unavailable): count, bytes and hours since the newest and oldest (no handles or tags)",
+   "row_limit": 20,
+   "fields": [
+    "device_type",
+    "piece_status",
+    "pieces",
+    "backup_bytes",
+    "hours_since_newest",
+    "hours_since_oldest"
+   ]
+  },
+  {
+   "collector_id": "Q-CDB-LOCKDOWN-001",
+   "domain": "multitenant",
+   "title": "Lockdown profiles per container: Oracle or custom profile (custom names masked), rule type, rule status and rule count (no rules or clauses)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "profile_kind",
+    "lockdown_profile",
+    "rule_type",
+    "rule_status",
+    "rules"
+   ]
+  },
+  {
+   "collector_id": "Q-CDB-PDB-SAVED-STATE-001",
+   "domain": "multitenant",
+   "title": "PDB saved states for this instance: container, saved state and restricted flag (PDB and instance names masked); a PDB without a row has no saved state",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "con_name",
+    "instance_name",
+    "state",
+    "restricted"
+   ],
+   "overrides": {
+    "state": {
+     "values": [
+      "OPEN",
+      "OPEN READ ONLY"
+     ],
+     "example": "OPEN"
+    }
+   }
+  },
+  {
+   "collector_id": "Q-CDB-RESOURCE-MANAGER-001",
+   "domain": "multitenant",
+   "title": "CDB resource plan directives: Oracle or custom plan, active flag, directive kind, shares, utilization and parallel server limits (plan and PDB names masked)",
+   "row_limit": 200,
+   "fields": [
+    "plan_kind",
+    "plan_name",
+    "plan_active",
+    "directive_kind",
+    "pdb_name",
+    "shares",
+    "utilization_limit",
+    "parallel_server_limit"
+   ]
+  },
+  {
+   "collector_id": "Q-CDB-RESOURCE-USAGE-001",
+   "domain": "multitenant",
+   "title": "Resource usage per PDB over the last minute: CPU, sessions, parallel servers, SGA/PGA and I/O with their limits (plan name masked; no AWR or ASH)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "cpu_consumed_time",
+    "cpu_wait_time",
+    "num_cpus",
+    "cpu_utilization_limit",
+    "avg_cpu_utilization",
+    "avg_running_sessions",
+    "avg_waiting_sessions",
+    "running_sessions_limit",
+    "avg_active_parallel_servers",
+    "avg_queued_parallel_servers",
+    "parallel_servers_limit",
+    "sga_bytes",
+    "pga_bytes",
+    "iops",
+    "iombps",
+    "plan_name"
+   ]
+  },
+  {
+   "collector_id": "Q-CDB-SESSION-DIST-001",
+   "domain": "multitenant",
+   "title": "User sessions per PDB, instance and service: total, active and inactive (service names masked; no session details)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "inst_id",
+    "service_name",
+    "session_count",
+    "active_count",
+    "inactive_count"
+   ]
+  },
+  {
+   "collector_id": "Q-ASM-DISKS-001",
+   "domain": "asm",
+   "title": "ASM disk health per disk group and failure group: disks, capacity in MB, not member, not online, not normal, and read/write errors (failure group masked; no paths or disk names; no disk discovery)",
+   "row_limit": 200,
+   "fields": [
+    "diskgroup_number",
+    "failgroup",
+    "disks",
+    "total_mb",
+    "disks_not_member",
+    "disks_not_online",
+    "disks_not_normal",
+    "read_errors",
+    "write_errors"
+   ]
+  },
+  {
+   "collector_id": "Q-PERF-LOCKS-001",
+   "domain": "performance",
+   "title": "Enqueue locks per container, lock type and mode: count, waiting, blocking and the longest time in mode (no sessions, SQL ids or object ids)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "lock_type",
+    "lock_mode",
+    "locks",
+    "waiting",
+    "blocking",
+    "max_seconds_in_mode"
+   ]
+  }
+ ]
+}

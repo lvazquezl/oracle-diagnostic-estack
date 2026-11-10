@@ -1,7 +1,7 @@
 name: incremental-backup
 display_name: "Incremental Backup Strategy"
 id: rman/incremental-backup
-version: 1.0.0
+version: 1.1.0
 domain: rman
 status: active
 

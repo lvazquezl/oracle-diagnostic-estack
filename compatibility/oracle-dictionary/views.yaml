@@ -65,6 +65,7 @@ views:
     min_version: all
     columns_exhaustive: true
     columns:
+      resetlogs_change#: {min_version: all}   # CHG-ESTACK-B8-OPS-COVERAGE-001
       name:                {min_version: all}
       database_role:         {min_version: all}
       platform_name:        {min_version: all}   # CHG-ESTACK-DISC-ARCHITECTURE-001
@@ -156,6 +157,10 @@ views:
     min_version: all
     columns_exhaustive: true
     columns:
+      completion_time: {min_version: all}   # CHG-ESTACK-B8-OPS-COVERAGE-001
+      status: {min_version: all}   # CHG-ESTACK-B8-OPS-COVERAGE-001
+      standby_dest: {min_version: all}   # CHG-ESTACK-B8-OPS-COVERAGE-001
+      resetlogs_change#: {min_version: all}   # CHG-ESTACK-B8-OPS-COVERAGE-001
       thread#:       {min_version: all}
       sequence#:      {min_version: all}
       applied:         {min_version: all}
@@ -410,6 +415,8 @@ views:
   V$DATAFILE:
     min_version: all
     columns:
+      file#: {min_version: all}   # CHG-ESTACK-B8-OPS-COVERAGE-001
+      con_id: {min_version: "12.1"}   # CHG-ESTACK-B8-OPS-COVERAGE-001
       name: {min_version: all}
     notes: "Usada por Q-PERF-IO-FILESTAT-001 (join con V$FILESTAT para nombre de archivo)."
 
@@ -419,6 +426,13 @@ views:
 
   V$LOCK:
     min_version: all
+    columns:
+      type: {min_version: all}   # CHG-ESTACK-B8-OPS-COVERAGE-001
+      lmode: {min_version: all}   # CHG-ESTACK-B8-OPS-COVERAGE-001
+      request: {min_version: all}   # CHG-ESTACK-B8-OPS-COVERAGE-001
+      block: {min_version: all}   # CHG-ESTACK-B8-OPS-COVERAGE-001
+      ctime: {min_version: all}   # CHG-ESTACK-B8-OPS-COVERAGE-001
+      con_id: {min_version: "12.1"}   # CHG-ESTACK-B8-OPS-COVERAGE-001
     notes: "Usada por Q-PERF-LOCKS-001."
 
   V$PX_SESSION:
@@ -472,6 +486,28 @@ views:
       status:                  {min_version: "11.2"}
       software_version:          {min_version: "11.2"}
     notes: "CHG-ESTACK-ORA19C-LAB-007: reemplaza a GV$ASM_INSTANCE (no existe; Storage Administrator's Guide 19c). Desde una instancia de base de datos muestra la instancia ASM que atiende sus archivos abiertos (Reference 19c). min_version 11.2 = piso de Q-ASM-TOPOLOGY-001; verificado sólo en 19c."
+
+
+  V$ASM_DISK_STAT:
+    min_version: "10.2"
+    columns:
+      group_number: {min_version: "10.2"}
+      header_status: {min_version: "10.2"}
+      mode_status: {min_version: "10.2"}
+      state: {min_version: "10.2"}
+      read_errs: {min_version: "10.2"}
+      write_errs: {min_version: "10.2"}
+      failgroup: {min_version: "10.2"}
+      total_mb: {min_version: "10.2"}
+    notes: "CHG-ESTACK-B8-OPS-COVERAGE-001: Q-ASM-DISKS-001 2.0.0 usa V$ASM_DISK_STAT (sin discovery de discos, a diferencia de V$ASM_DISK). Path y nombre de disco nunca se seleccionan; failgroup sale enmascarado."
+
+  V$RSRC_PLAN:
+    min_version: all
+    columns:
+      name: {min_version: all}
+      is_top_plan: {min_version: "11.1"}
+      con_id: {min_version: "12.1"}
+    notes: "CHG-ESTACK-B8-OPS-COVERAGE-001: Q-CDB-RESOURCE-MANAGER-001 2.0.0 marca el plan activo (top plan de CDB$ROOT)."
 
   V$ASM_DISK:
     min_version: "11.2"

@@ -84,12 +84,15 @@ def no_tool_schema_property_or_default_can_carry_free_form_input_and_all_objects
 @test
 def certified_sql_guard_accepts_selects_and_rejects_dml_ddl_plsql_and_stacked_statements():
     from mcp_gateway.catalog import assert_read_only_sql
-    good = ["SELECT a FROM v$x WHERE b = 1", "select a from t;", "WITH q AS (SELECT 1 FROM dual) SELECT * FROM q", "-- c\nSELECT 1 FROM dual"]
+    good = ["SELECT a FROM v$x WHERE b = 1", "select a from t;", "WITH q AS (SELECT 1 FROM dual) SELECT * FROM q", "-- c\nSELECT 1 FROM dual",
+            "SELECT type, COUNT(*) FROM v$lock GROUP BY type", "SELECT 1 FROM gv$lock"]  # CHG-ESTACK-B8-OPS-COVERAGE-001: V$LOCK is a view
     for g in good:
         assert_read_only_sql(g)
     bad = ["DELETE FROM t", "UPDATE t SET a=1", "INSERT INTO t VALUES (1)", "DROP TABLE t", "ALTER SYSTEM SET x=1", "SELECT 1 FROM dual; DROP TABLE t",
            "BEGIN NULL; END;", "CREATE TABLE t (a int)", "GRANT DBA TO x", "SELECT * FROM t FOR UPDATE", "SELECT dbms_utility.get_time FROM dual",
-           "SELECT 1 INTO x FROM dual", "TRUNCATE TABLE t", "EXEC foo", "MERGE INTO t USING s ON (1=1)", "commit", "select 1 from dual; select 2 from dual"]
+           "SELECT 1 INTO x FROM dual", "TRUNCATE TABLE t", "EXEC foo", "MERGE INTO t USING s ON (1=1)", "commit", "select 1 from dual; select 2 from dual",
+           "LOCK TABLE t IN EXCLUSIVE MODE", "lock table v$x in share mode", "SELECT 1 FROM v$lock; LOCK TABLE t IN SHARE MODE",
+           "WITH q AS (SELECT 1 FROM dual) SELECT * FROM q LOCK TABLE t IN SHARE MODE"]  # only the lock word catches this one
     for b in bad:
         try:
             assert_read_only_sql(b)

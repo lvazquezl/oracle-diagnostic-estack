@@ -704,5 +704,54 @@ def tde_posture_reads_keystore_mode_keys_and_parameters_without_ids_dates_paths_
     assert set(fields) == {"con_id", "master_keys", "keys_not_backed_up", "hours_since_last_activation"}, fields
 
 
+B8 = {"Q-RMAN-ARCHIVED-LOG-COVERAGE-001", "Q-RMAN-BACKUP-DATAFILE-001", "Q-RMAN-BACKUP-PIECE-001", "Q-CDB-LOCKDOWN-001",
+      "Q-CDB-PDB-SAVED-STATE-001", "Q-CDB-RESOURCE-MANAGER-001", "Q-CDB-RESOURCE-USAGE-001", "Q-CDB-SESSION-DIST-001",
+      "Q-ASM-DISKS-001", "Q-PERF-LOCKS-001"}
+
+
+@test
+def lot_b8_exposes_ten_operations_queries_with_masked_names_only():
+    """CHG-ESTACK-B8-OPS-COVERAGE-001: RMAN, multitenant, ASM and locks; every identity column is masked."""
+    cols = catalog.load_collectors()
+    b8 = {c["collector_id"] for c in json.load(open(FACTORY, encoding="utf-8"))["collectors"] if c["factory"]["lot"] == "B8"}
+    assert b8 == B8, b8 ^ B8
+    forbidden = {"name", "handle", "tag", "path", "sid", "serial#", "sql_id", "id1", "id2", "recid", "set_stamp",
+                 "first_time", "next_time", "completion_time", "checkpoint_time", "rule", "clause", "clause_option", "comments"}
+    idents = set()
+    for cid in b8:
+        f = cols[cid].output_fields
+        assert not set(f) & forbidden, (cid, set(f) & forbidden)
+        assert all(not (v["type"] == "identifier" and v["policy"] == "KEEP") for v in f.values()), cid
+        idents |= {k for k, v in f.items() if v["type"] == "identifier"}
+    assert idents == {"lockdown_profile", "con_name", "instance_name", "plan_name", "pdb_name", "service_name", "failgroup"}, idents
+    assert cols["Q-CDB-PDB-SAVED-STATE-001"].output_fields["state"]["values"] == ["OPEN", "OPEN READ ONLY"]
+
+
+@test
+def b8_rewritten_sql_aggregates_in_the_database_without_paths_handles_sessions_or_object_ids():
+    import re
+    word = lambda c, sql: re.search(r"(?<![a-z0-9_$#.]){}(?![a-z0-9_$#])".format(re.escape(c)), sql)
+    for v in ("11.2", "19.0"):
+        arc = _resolved("Q-RMAN-ARCHIVED-LOG-COVERAGE-001", v)
+        assert "group  by thread#" in arc and "standby_dest = 'no'" in arc and "resetlogs_change#" in arc, v
+        assert not any(word(c, arc) for c in ("name", "first_time", "next_time", "dest_id")), v
+        df = _resolved("Q-RMAN-BACKUP-DATAFILE-001", v)
+        assert not any(word(c, df) for c in ("name", "checkpoint_time", "checkpoint_change#")), v
+        assert ("group  by d.con_id" in df) == (v == "19.0"), v
+        bp = _resolved("Q-RMAN-BACKUP-PIECE-001", v)
+        assert not any(word(c, bp) for c in ("handle", "tag", "recid", "set_stamp", "media")) and "status <> 'd'" in bp, v
+        lk = _resolved("Q-PERF-LOCKS-001", v)
+        assert not any(word(c, lk) for c in ("sid", "serial#", "sql_id", "id1", "id2", "v$session")), v
+        assert ("con_id" in lk) == (v == "19.0") and "as lock_mode" in lk and "else 'other' end as lock_type" in lk, v
+    asm = _resolved("Q-ASM-DISKS-001", "19.0")
+    assert "from   v$asm_disk_stat" in asm and "group  by group_number, failgroup" in asm and not any(word(c, asm) for c in ("path", "name", "v$asm_disk")), asm
+    ld = _resolved("Q-CDB-LOCKDOWN-001", "19.0")
+    assert "count(rule) as rules" in ld and not any(word(c, ld) for c in ("clause", "clause_option")), ld
+    rm = _resolved("Q-CDB-RESOURCE-MANAGER-001", "19.0")
+    assert "is_top_plan = 'true'" in rm and not word("comments", rm) and "as directive_kind" in rm, rm
+    for cid in ("Q-RMAN-ARCHIVED-LOG-COVERAGE-001", "Q-RMAN-BACKUP-DATAFILE-001", "Q-RMAN-BACKUP-PIECE-001", "Q-CDB-LOCKDOWN-001",
+                "Q-CDB-RESOURCE-MANAGER-001", "Q-ASM-DISKS-001", "Q-PERF-LOCKS-001"):
+        assert re.search(r"^version: 2\.0\.0$", open(catalog._find_query_file(cid), encoding="utf-8").read(), re.M), cid
+
 if __name__ == "__main__":
     raise SystemExit(run_all())

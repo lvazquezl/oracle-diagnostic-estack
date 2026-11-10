@@ -1101,20 +1101,6 @@
       "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
     },
     {
-      "query_id": "Q-DICT-VERIFY-005",
-      "query_sha256": "9c5b438ad8123f57c03f7c0f94daf84b97a1ce1b3727bdc208b152a0c67aad77",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-23T19:31:32Z",
-      "evidence_refs": [
-        "EVR-c0f33b04fcf411b5bc09575a"
-      ],
-      "request_refs": [
-        "REQ-ff79749fb753"
-      ],
-      "record": "docs/B7_SECURITY_COVERAGE.md",
-      "change_id": "CHG-ESTACK-B7-SECURITY-COVERAGE-001"
-    },
-    {
       "query_id": "Q-SEC-DB-LINKS-001",
       "query_sha256": "47f24ada157f105da3ce346d41aa1cf68d706c9bcb23aa7f5f76d79c8717b118",
       "context_id": "LAB-OL8-19C-CDBROOT-ASM",
@@ -1166,62 +1152,6 @@
       ],
       "request_refs": [
         "REQ-e7f2db62f594"
-      ],
-      "record": "docs/TDE_POSTURE.md",
-      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
-    },
-    {
-      "query_id": "Q-DICT-VERIFY-001",
-      "query_sha256": "8eaea4b962f5b7a73f7800725d2dec49bc09a1d2eaacb6ee40bd9372e755045a",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-27T18:52:12Z",
-      "evidence_refs": [
-        "EVR-fb42362c879e6eadb0697a96"
-      ],
-      "request_refs": [
-        "REQ-b69d545265b5"
-      ],
-      "record": "docs/TDE_POSTURE.md",
-      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
-    },
-    {
-      "query_id": "Q-DICT-VERIFY-002",
-      "query_sha256": "14df42e9876eda251944a25f43ff2e1d43e710c59065f1794aa4c33e942849c9",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-27T18:52:13Z",
-      "evidence_refs": [
-        "EVR-94dc3ef9f326a7a7878b529e"
-      ],
-      "request_refs": [
-        "REQ-000a96a1781d"
-      ],
-      "record": "docs/TDE_POSTURE.md",
-      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
-    },
-    {
-      "query_id": "Q-DICT-VERIFY-003",
-      "query_sha256": "396ba2d6e126974267157470eceaf86fc65ce4544b0088850d87b1d3a5e55ce5",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-27T18:52:14Z",
-      "evidence_refs": [
-        "EVR-501e52b03322ba63be3c2cdd"
-      ],
-      "request_refs": [
-        "REQ-08c773eb9070"
-      ],
-      "record": "docs/TDE_POSTURE.md",
-      "change_id": "CHG-ESTACK-TDE-POSTURE-001"
-    },
-    {
-      "query_id": "Q-DICT-VERIFY-004",
-      "query_sha256": "2b747f0df2a6c5024c86eecdef50a5632808ab3fe8c44a87fced313ad6e0c020",
-      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
-      "validated_at_utc": "2026-10-27T18:52:15Z",
-      "evidence_refs": [
-        "EVR-977eb4ae4710a8c82cf9b82c"
-      ],
-      "request_refs": [
-        "REQ-70c0215a93fa"
       ],
       "record": "docs/TDE_POSTURE.md",
       "change_id": "CHG-ESTACK-TDE-POSTURE-001"

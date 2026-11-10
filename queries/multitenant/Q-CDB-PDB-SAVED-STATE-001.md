@@ -77,8 +77,10 @@ Ninguna.
 
 # Sanitization notes
 
-`con_name` → MASK por defecto, mismo tokenizado que `Q-CDB-PDB-STATE-001`.
+`con_name` → MASK por defecto, mismo alias que `pdb_name` de `Q-CDB-PDB-STATE-001` en la sesión; `instance_name` → MASK. `con_id`, `state` y `restricted` se conservan. Una PDB sin fila no tiene estado guardado: se deduce comparando con `Q-CDB-PDB-STATE-001` por `con_id`.
 
 # Evolution via `/change query`
 
 N/A — vista estable.
+
+CHG-ESTACK-B8-OPS-COVERAGE-001: expuesta por el gateway sin cambio de SQL (lote B8).

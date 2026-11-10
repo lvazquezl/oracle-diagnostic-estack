@@ -322,12 +322,12 @@ queries:
     file: queries/performance/concurrency/Q-PERF-LOCKS-001.md
     variants:
       - {variant_id: Q-PERF-LOCKS-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
-      - {variant_id: Q-PERF-LOCKS-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
-    required_views: [V$LOCK, V$SESSION]
+      - {variant_id: Q-PERF-LOCKS-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$LOCK]
     role_scope: PRIMARY
     cost_class: MEDIUM
     validation_status: COMPATIBLE
-    was: VARIANT_REQUIRED
+    was: "VARIANT_REQUIRED; CHG-ESTACK-B8-OPS-COVERAGE-001: agregado por tipo y lock_mode, sin V$SESSION"
   Q-PERF-PARALLEL-001: {file: queries/performance/parallel/Q-PERF-PARALLEL-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$PX_SESSION], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
   Q-PERF-REDO-001: {file: queries/performance/redo/Q-PERF-REDO-001.md, variants: implicit_full_range, min: "10.2", max: latest, required_views: [V$SYSSTAT], role_scope: PRIMARY, cost_class: LOW, validation_status: COMPATIBLE}
 
@@ -363,7 +363,15 @@ queries:
     cost_class: LOW
     validation_status: COMPATIBLE
     was: "CHG-ESTACK-ASSESSMENT-ACCURACY-001"
-  Q-ASM-DISKS-001: {file: queries/asm/Q-ASM-DISKS-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [V$ASM_DISK], role_scope: ANY, cost_class: MEDIUM, validation_status: COMPATIBLE}
+  Q-ASM-DISKS-001:
+    file: queries/asm/Q-ASM-DISKS-001.md
+    variants:
+      - {variant_id: Q-ASM-DISKS-001-V1, label: all_versions, min: "11.2", max: "23.0", container_scope: NOT_APPLICABLE}
+    required_views: [V$ASM_DISK_STAT]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B8-OPS-COVERAGE-001: conteos por disk group sobre V$ASM_DISK_STAT"
   Q-ASM-REBALANCE-001: {file: queries/asm/Q-ASM-REBALANCE-001.md, variants: implicit_full_range, min: "11.2", max: latest, required_views: [GV$ASM_OPERATION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
 
   # --- Fase 5 (Data Guard) ---
@@ -451,8 +459,24 @@ queries:
     was_before: INCORRECT_VERSION_RANGE   # Fase 6 Hardening: CON_ID se declaraba disponible desde 12.1; en realidad es 12.2+ — split en 2 variantes
 
   Q-CDB-RESOURCE-USAGE-001: {file: queries/multitenant/Q-CDB-RESOURCE-USAGE-001.md, variants: implicit_full_range, min: "12.2", max: "23.0", required_views: [V$RSRCPDBMETRIC], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE, was: INCORRECT_VERSION_RANGE}
-  Q-CDB-RESOURCE-MANAGER-001: {file: queries/multitenant/Q-CDB-RESOURCE-MANAGER-001.md, variants: implicit_full_range, min: "12.1", max: "23.0", required_views: [DBA_CDB_RSRC_PLAN_DIRECTIVES], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
-  Q-CDB-LOCKDOWN-001: {file: queries/multitenant/Q-CDB-LOCKDOWN-001.md, variants: implicit_full_range, min: "12.2", max: "23.0", required_views: [CDB_LOCKDOWN_PROFILES], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
+  Q-CDB-RESOURCE-MANAGER-001:
+    file: queries/multitenant/Q-CDB-RESOURCE-MANAGER-001.md
+    variants:
+      - {variant_id: Q-CDB-RESOURCE-MANAGER-001-V1, label: cdb_plans_12plus, min: "12.1", max: "23.0", container_scope: CDB_ROOT_ONLY}
+    required_views: [DBA_CDB_RSRC_PLAN_DIRECTIVES, V$RSRC_PLAN]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B8-OPS-COVERAGE-001: plan activo y tipo de directiva"
+  Q-CDB-LOCKDOWN-001:
+    file: queries/multitenant/Q-CDB-LOCKDOWN-001.md
+    variants:
+      - {variant_id: Q-CDB-LOCKDOWN-001-V1, label: lockdown_122plus, min: "12.2", max: "23.0", container_scope: CDB_ROOT_ONLY}
+    required_views: [CDB_LOCKDOWN_PROFILES]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-B8-OPS-COVERAGE-001: conteo de reglas por perfil, tipo y estado"
 
   # --- PHASE 7 — ORACLE BACKUP & RECOVERY / RMAN ---
   Q-RMAN-CONFIGURATION-001:
@@ -509,24 +533,23 @@ queries:
   Q-RMAN-BACKUP-PIECE-001:
     file: queries/rman/Q-RMAN-BACKUP-PIECE-001.md
     variants:
-      - {variant_id: Q-RMAN-BACKUP-PIECE-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
-      - {variant_id: Q-RMAN-BACKUP-PIECE-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-RMAN-BACKUP-PIECE-001-V1, label: all_versions, min: "10.2", max: "23.0", container_scope: ANY_CONTAINER}
     required_views: [V$BACKUP_PIECE]
     role_scope: ANY
     cost_class: MEDIUM
     validation_status: COMPATIBLE
-    was: VARIANT_REQUIRED
+    was: "VARIANT_REQUIRED; CHG-ESTACK-B8-OPS-COVERAGE-001: agregado por dispositivo y estado, una variante"
 
   Q-RMAN-BACKUP-DATAFILE-001:
     file: queries/rman/Q-RMAN-BACKUP-DATAFILE-001.md
     variants:
       - {variant_id: Q-RMAN-BACKUP-DATAFILE-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
-      - {variant_id: Q-RMAN-BACKUP-DATAFILE-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
-    required_views: [V$BACKUP_DATAFILE]
+      - {variant_id: Q-RMAN-BACKUP-DATAFILE-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$DATAFILE, V$BACKUP_DATAFILE]
     role_scope: ANY
     cost_class: MEDIUM
     validation_status: COMPATIBLE
-    was: VARIANT_REQUIRED
+    was: "VARIANT_REQUIRED; CHG-ESTACK-B8-OPS-COVERAGE-001: cobertura agregada por contenedor"
 
   Q-RMAN-ARCHIVELOG-BACKUP-001:
     file: queries/rman/Q-RMAN-ARCHIVELOG-BACKUP-001.md
@@ -542,13 +565,12 @@ queries:
   Q-RMAN-ARCHIVED-LOG-COVERAGE-001:
     file: queries/rman/Q-RMAN-ARCHIVED-LOG-COVERAGE-001.md
     variants:
-      - {variant_id: Q-RMAN-ARCHIVED-LOG-COVERAGE-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
-      - {variant_id: Q-RMAN-ARCHIVED-LOG-COVERAGE-001-V2, label: modern_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
-    required_views: [V$ARCHIVED_LOG]
+      - {variant_id: Q-RMAN-ARCHIVED-LOG-COVERAGE-001-V1, label: all_versions, min: "10.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$ARCHIVED_LOG, V$DATABASE]
     role_scope: ANY
     cost_class: MEDIUM
     validation_status: COMPATIBLE
-    was: VARIANT_REQUIRED
+    was: "VARIANT_REQUIRED; CHG-ESTACK-B8-OPS-COVERAGE-001: agregado por thread, una variante"
 
   Q-RMAN-CONTROLFILE-BACKUP-001:
     file: queries/rman/Q-RMAN-CONTROLFILE-BACKUP-001.md
