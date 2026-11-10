@@ -825,12 +825,22 @@ queries:
     file: queries/security/Q-SEC-TDE-WALLET-001.md
     variants:
       - {variant_id: Q-SEC-TDE-WALLET-001-V1, label: legacy_11g, min: "11.2", max: "11.2", container_scope: ANY_CONTAINER}
-      - {variant_id: Q-SEC-TDE-WALLET-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-TDE-WALLET-001-V2, label: cdb_aware_12_1, min: "12.1", max: "12.1.0.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-SEC-TDE-WALLET-001-V3, label: keystore_mode_12_2plus, min: "12.2", max: "23.0", container_scope: ANY_CONTAINER}
     required_views: [V$ENCRYPTION_WALLET]
     role_scope: ANY
     cost_class: LOW
     validation_status: COMPATIBLE
-    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
+    was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway; CHG-ESTACK-TDE-POSTURE-001: V3 con keystore_mode (12.2+)"
+  Q-SEC-TDE-MASTER-KEYS-001:
+    file: queries/security/Q-SEC-TDE-MASTER-KEYS-001.md
+    variants:
+      - {variant_id: Q-SEC-TDE-MASTER-KEYS-001-V1, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$ENCRYPTION_KEYS]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-TDE-POSTURE-001: nueva; conteos y antigüedad de la llave maestra activa por contenedor, sin identificadores ni fechas"
   Q-SEC-ENCRYPTED-TABLESPACES-001:
     file: queries/security/Q-SEC-ENCRYPTED-TABLESPACES-001.md
     variants:

@@ -1,0 +1,19 @@
+{
+ "_doc": "CHG-ESTACK-TDE-POSTURE-001 — lot B8T: TDE posture. Exposes the TDE master key counts and the age of the newest active key per container (no key ids, tags, creators or dates) so every review can tell TDE not configured, configured and healthy, at risk or misconfigured, without a license (reading is not using the option). Same rules as lots/B1-oracle-core.json.",
+ "lot_id": "B8T",
+ "fixture_target": "fixture-cdb-root-19c",
+ "collectors": [
+  {
+   "collector_id": "Q-SEC-TDE-MASTER-KEYS-001",
+   "domain": "security",
+   "title": "TDE master keys per container: key count, keys not backed up and hours since the newest activation (no key ids, tags or dates)",
+   "row_limit": 50,
+   "fields": [
+    "con_id",
+    "master_keys",
+    "keys_not_backed_up",
+    "hours_since_last_activation"
+   ]
+  }
+ ]
+}

@@ -180,6 +180,12 @@ desde 11.2 vía `V$ENCRYPTION_WALLET`, WebFetch), estado de wallet/keystore, tab
 encriptadas, posture de key/keystore (`# 31` del prompt). Nunca ejecuta `OPEN/CLOSE KEYSTORE`,
 `SET KEY`, `ROTATE KEY`, `CREATE KEYSTORE`.
 
+**Postura TDE en toda revisión (`CHG-ESTACK-TDE-POSTURE-001`).** El orquestador activa este paso
+en todo `/healthcheck` y `/assessment` aunque el alcance no sea seguridad y aunque la opción no
+esté licenciada (leer no es usar). `security/tde-awareness` clasifica la postura por contenedor y
+emite `TDE-01`..`TDE-13` como riesgo, mala configuración, mejora o revisión de licencia; si TDE
+está en uso, `TDE-12` pide `LICENSE_CHECK_REQUIRED` sin afirmar cobertura.
+
 # Keystore sanitization — nunca expone secretos
 
 `security_mode: READ_ONLY_ALWAYS` aplica estrictamente: nunca se expone wallet password, key
