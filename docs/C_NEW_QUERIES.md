@@ -70,6 +70,59 @@ Todas son 1.0.0 y agregan en la base: no sale ningún nombre de tabla, esquema, 
 - **Privilegios.** Se esperan cubiertos por `SELECT_CATALOG_ROLE` + `CONTAINER_DATA`. Un `ORA-00942` en el lab indica un grant faltante, y se informa con un script para el DBA.
 - **Nombres de feature.** Un nombre que no cumpla el patrón de término de Oracle se descarta en el gateway: la fila queda, pero sin `feature_name`. Se revisa cuántos se descartan en el lab.
 
+## Validación en el lab
+
+`lab-ol8-19c`, contexto `LAB-OL8-19C-CDBROOT-ASM` (19.32, `CDB$ROOT`, ASM), 2026-11-10, con la cuenta de diagnóstico (`SELECT_CATALOG_ROLE` + `CONTAINER_DATA`): **no hizo falta ningún privilegio nuevo**. Todas las vistas `CDB_*` nuevas existen y son legibles. Todas las respuestas son `REAL` y `SANITIZED`, sin valores descartados; ningún `feature_name` quedó fuera del patrón de término de Oracle.
+
+**Una query falló y se corrigió.** `Q-PERF-WORKAREA-001` devolvió ORA-00937: una subconsulta escalar no correlacionada junto a un agregado sin `GROUP BY`. Ahora agrega en dos vistas en línea (`738baf6`) y la aserción de P18 lo exige. Las otras 10 queries no tienen ese patrón en ninguna variante. La versión corregida corrió con el mismo gateway del lab invocado en local, porque el servidor MCP tenía cargado el catálogo anterior.
+
+| Collector | Filas | Lo que confirma | Evidencia |
+|---|---|---|---|
+| `Q-ORA-DATABASE-MODE-001` | 1 | `ARCHIVELOG`, sin force logging ni supplemental logging, `READ WRITE`, `ENTERPRISE`, CDB. `block_change_tracking` nulo (ver abajo) | `EVR-6a868972c9a04fe92b696243` / `REQ-24cbf312ac8d` |
+| `Q-PERF-AWR-STARTUP-HISTORY-001` | 1 | Un arranque en AWR, hace 438 h, coherente con `Q-CDB-PDB-STATE-001` (PDB abierta hace 438 h); 427 h de historia AWR; una versión | `EVR-3583e12b93e5d99e2d43cf4e` / `REQ-67a1a25bc434` |
+| `Q-ORA-SQLPATCH-001` | 2 | RU 39472050 (`RU`, `19.32.0.0.0`) aplicado con `SUCCESS` en el root y en la PDB hace 1184 h: coincide con el `release_update` 19.32 del contexto | `EVR-c806cf5cc1f651f1a71f96ed` / `REQ-2d08fa6c31e0` |
+| `Q-ORA-FEATURE-USAGE-001` | 72 | 37 features con uso detectado en el root y 35 en la PDB (RMAN y `ORACLE_LOADER` ya no en uso actual); muestreo hace 0.2 h | `EVR-9c60e5552b71bcbfeb8a4cf4` / `REQ-3c3f17429bf2` |
+| `Q-ORA-OPTIMIZER-STATS-001` | 5 | `FIXED`, `ORACLE` y `CUSTOM` (solo en la PDB, 7 tablas, todas con estadísticas). Fixed objects analizados una vez, hace 1171 h | `EVR-99930cef7b5531dd412b3293` / `REQ-c0acf8accc12` |
+| `Q-ORA-AUTOTASK-001` | 6 | Los 3 clientes `ENABLED` con 7 ventanas en cada contenedor, sin fallas; último éxito hace 163 h en el root y 0.8 h en la PDB | `EVR-7dbaf76698477d06c64f0a7a` / `REQ-a271bceae784` |
+| `Q-ORA-SCHEDULER-STATE-001` | 6 | Solo jobs de Oracle: 6 `DISABLED`, 15–16 `SCHEDULED` y 1 `SUCCEEDED` por contenedor, sin fallas. Ninguna fila `LEGACY_JOB` (variante 19c+, por diseño) | `EVR-866767df79f7dae7ed7039e9` / `REQ-9763d33a8791` |
+| `Q-ORA-UNDO-STATS-001` | 1 | Solo el root (ver abajo): 34 intervalos, 18.2 MB generados, consulta más larga de 1850 s, retención ajustada hasta 2750 s, sin ORA-01555 ni robos | `EVR-70921987590dd30e150ebc1c` / `REQ-2074b0defb2d` |
+| `Q-ORA-TEMP-HWM-001` | 2 | Root: pico de 17 MB de 130 MB asignados; PDB: 3 MB de 51 MB; autoextend hasta 32 GB | `EVR-22bce098a19c7c33e7ca6053` / `REQ-09f55d9ab523` |
+| `Q-PERF-SGA-COMPONENTS-001` | 19 | Buffer cache 1888 MB, shared pool 560 MB, large pool 48 MB, Shared IO Pool 128 MB; sin resize desde el arranque | `EVR-ec5ab22f9749812f2df6c4c5` / `REQ-5e7480f1ee45` |
+| `Q-PERF-WORKAREA-001` | 1 | 73 001 ejecuciones óptimas, ninguna one-pass ni multi-pass, PGA cache hit 100 %, pico de PGA 761 MiB | `EVR-9231c0db53ab50616aad3957` / `REQ-ea97c9ba595d` |
+
+**Sondas del diccionario** (regeneradas por este cambio): las 7 confirman todas las vistas y columnas declaradas, incluidas `CDB_REGISTRY_SQLPATCH`, `CDB_FEATURE_USAGE_STATISTICS`, `CDB_AUTOTASK_*` y `CDB_JOBS`. La única diferencia es `STATS$SNAPSHOT` y `STATS$SYSTEM_EVENT` como `VIEW_NOT_FOUND` (Statspack no instalado, igual que antes).
+
+| Sonda | Evidencia |
+|---|---|
+| `Q-DICT-VERIFY-001` | `EVR-0d4489e553090ab3ea5aa154` / `REQ-1252944d9f04` |
+| `Q-DICT-VERIFY-002` | `EVR-c2152ca322a4f20e5afaa827` / `REQ-d82fbe9e407d` |
+| `Q-DICT-VERIFY-003` | `EVR-5a4d2651225b138095c9b8ca` / `REQ-647e31e909ea` |
+| `Q-DICT-VERIFY-004` | `EVR-f7b8a95710cf9367199f0747` / `REQ-69cae2900960` |
+| `Q-DICT-VERIFY-005` | `EVR-4e49b32dc94c700b16a172ed` / `REQ-5afa6223af3f` |
+| `Q-DICT-VERIFY-006` | `EVR-4ab95c5caf4f1ff16a0cf5e1` / `REQ-340bae2cee43` |
+| `Q-DICT-VERIFY-007` | `EVR-9a2d2629f581dc6684d18b1b` / `REQ-4c6f2471b08c` |
+
+**Límites observados en el lab** (documentados en la query y el skill, sin cambio de SQL):
+- **UNDO de las PDB.** `V$UNDOSTAT` leída desde `CDB$ROOT` solo devolvió filas del root, aunque la PDB usa undo local (`local_undo` = 1 en `Q-CDB-PDB-STATE-001`). El UNDO de cada PDB queda `PARTIAL` desde el root.
+- **Block change tracking.** `V$BLOCK_CHANGE_TRACKING` no devolvió ninguna fila visible para el usuario de diagnóstico desde `CDB$ROOT`, así que el campo sale nulo. Nulo significa "no observado", nunca `DISABLED`.
+
+**Revisión de los especialistas:**
+1. **`oracle-dba-analyst`:**
+   - Modo de la base, parche y arranques son coherentes entre sí y con el contexto registrado (19.32, un arranque hace 438 h).
+   - **Estadísticas del root.** La recolección automática del root no tiene un éxito en las últimas 48 h (163 h), y el skill lo reporta como MEDIUM. Es un hallazgo real del lab, no del stack: el root abre ventanas pero casi no tiene carga.
+   - **Fixed objects.** 156 de 1335 fixed tables siguen sin estadísticas. Es lo esperable tras `GATHER_FIXED_OBJECTS_STATS`, porque algunas `X$` nunca se analizan. Como no son todas, no hay hallazgo.
+   - **Jobs.** Los 6 jobs de Oracle `DISABLED` vienen así de fábrica. El skill solo marca jobs propios, así que no hay hallazgo.
+   - **UNDO, corregido en este cambio.** La regla del skill comparaba `max_query_seconds` (1850) con `min_tuned_retention_seconds`, que fue 0 en un intervalo, y daba siempre un falso positivo. Ahora compara con `max_tuned_retention_seconds` (2750).
+2. **`oracle-performance-analyst`:**
+   - Las work areas trabajan en memoria (100 % óptimas). La SGA no cambió de tamaño desde el arranque y el pico de TEMP es mínimo.
+   - Los 34 intervalos de UNDO en 24 h indican que el lab estuvo detenido o suspendido gran parte del día. Son datos del lab, no de la query.
+   - `OTHER` en los componentes de la SGA agrupa nombres fuera de la lista cerrada, todos de 0 MB. No requiere cambio.
+3. **`oracle-security-analyst` (licenciamiento):**
+   - Ninguna feature se reporta como incumplimiento.
+   - **Variantes `(system)`, corregido en este cambio.** Las variantes como `Partitioning (system)` son uso de Oracle y el skill ya no las marca.
+   - **Uso que requiere revisar licencia.** `Real-Time SQL Monitoring` y `Automatic SQL Tuning Advisor` sí quedan `LICENSE_CHECK_REQUIRED`, porque corresponden al Tuning Pack. En el lab solo está confirmado el Diagnostics Pack.
+   - **Multitenant.** `Oracle Multitenant` con una sola PDB no requiere licencia en 19c (hasta 3 PDB), pero se reporta igual para revisión.
+
 ## Registro del cambio
 
 | Fase | Resultado |
@@ -82,6 +135,6 @@ Todas son 1.0.0 y agregan en la base: no sale ningún nombre de tabla, esquema, 
 | IMPLEMENT | 11 contratos nuevos; lotes C y CL; 76 campos; diccionario, matriz, registros, target de fixtures; skill nuevo y 10 skills actualizados; sondas del diccionario regeneradas (7) |
 | TEST | P18 41/41 (2 casos nuevos); P14 16/16; resolvers 10g–23ai; test del skill nuevo. La primera regresión detectó tres problemas que se corrigieron: el historial de arranques (AWR) en Oracle Core (movido a la familia AWR), el conteo de skills de `oracle` en el registro de madurez (19) y dos pruebas P15 que asumían 5 sondas |
 | SECURITY | 15/15 mutaciones detectadas: `FEATURE_INFO`, `DESCRIPTION` de parches, nombres de tabla, papelera contada, `JOB_ACTION`, literal `dbms_`, doble conteo de `DBMS_JOB` en 19c, nombres de ventana, `MAXQUERYID`, nombres de tempfile, texto del banner, `db_unique_name` en `KEEP`, `feature_name` fuera de `ORACLE_TERM_FIELDS`, historial de arranques sin gate de licencia y override de `state` quitado. Dos de ellas (`JOB_ACTION` y banner) pasaron en el primer intento porque el helper del test ignoraba referencias con alias: se endurecieron las aserciones |
-| REGRESSION | 975/975 en macOS (bash 5.3) |
-| LAB | pendiente |
+| REGRESSION | 975/975 en macOS (bash 5.3), también después del paso por el lab; 15/15 mutaciones repetidas sobre el árbol final |
+| LAB | Las 11 queries y las 7 sondas `FIELD_VALIDATED` en `LAB-OL8-19C-CDBROOT-ASM` (18 registros nuevos; el registro pasa de 91 a 109). Sin privilegios nuevos. `Q-PERF-WORKAREA-001` falló con ORA-00937 y se corrigió. La revisión de especialistas corrigió dos reglas de skills (UNDO y licenciamiento) y documentó dos límites (UNDO de las PDB y block change tracking) |
 | HUMAN REVIEW | pendiente |

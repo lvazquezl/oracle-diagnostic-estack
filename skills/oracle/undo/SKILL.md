@@ -39,7 +39,7 @@ Target Profile publicado.
 
 - `Q-ORA-UNDO-STATS-001`
 
-**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-ORA-UNDO-STATS-001` entrega las últimas 24 h de `V$UNDOSTAT` por contenedor. `snapshot_too_old_errors` > 0 (ORA-01555) o `undo_space_errors` > 0 son hallazgos HIGH con `FACT`; `unexpired_steals` > 0 indica que la presión de espacio redujo la retención (MEDIUM); `max_query_seconds` > `min_tuned_retention_seconds` es riesgo de ORA-01555 para esa consulta. `active_undo_mb`, `unexpired_undo_mb` y `expired_undo_mb` son el reparto del último intervalo (10 minutos).
+**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-ORA-UNDO-STATS-001` entrega las últimas 24 h de `V$UNDOSTAT` por contenedor. `snapshot_too_old_errors` > 0 (ORA-01555) o `undo_space_errors` > 0 son hallazgos HIGH con `FACT`; `unexpired_steals` > 0 indica que la presión de espacio redujo la retención (MEDIUM); `max_query_seconds` > `max_tuned_retention_seconds` es riesgo de ORA-01555 para esa consulta. No se compara contra `min_tuned_retention_seconds`, que puede ser 0 en un intervalo sin actividad: en el lab ese mínimo fue 0 y habría dado un falso positivo. Desde `CDB$ROOT` solo se ven las filas del root, aun con undo local (verificado en el lab): el UNDO de una PDB queda `PARTIAL` y nunca se infiere del root. `active_undo_mb`, `unexpired_undo_mb` y `expired_undo_mb` son el reparto del último intervalo (10 minutos).
 
 # Data collection
 

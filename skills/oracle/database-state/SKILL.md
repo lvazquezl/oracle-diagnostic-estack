@@ -39,7 +39,7 @@ Target Profile publicado.
 
 - `Q-ORA-DATABASE-MODE-001`
 
-**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-ORA-DATABASE-MODE-001` entrega modo ARCHIVELOG, force logging, supplemental logging mínimo, open mode, edición (palabra cerrada del banner), CDB y estado de block change tracking. Hallazgos: `NOARCHIVELOG` en una base productiva (sin recuperación a un punto en el tiempo ni backups en línea, HIGH); `force_logging` `NO` con Data Guard o una réplica lógica (operaciones `NOLOGGING` no llegan al standby, MEDIUM); block change tracking deshabilitado con backups incrementales (cada incremental lee todos los datafiles, LOW). La edición filtra qué features aplican; `UNKNOWN` (banner de 10g/11g Standard Edition) nunca se infiere.
+**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-ORA-DATABASE-MODE-001` entrega modo ARCHIVELOG, force logging, supplemental logging mínimo, open mode, edición (palabra cerrada del banner), CDB y estado de block change tracking. Hallazgos: `NOARCHIVELOG` en una base productiva (sin recuperación a un punto en el tiempo ni backups en línea, HIGH); `force_logging` `NO` con Data Guard o una réplica lógica (operaciones `NOLOGGING` no llegan al standby, MEDIUM); block change tracking deshabilitado con backups incrementales (cada incremental lee todos los datafiles, LOW). `block_change_tracking` nulo es "no observado" (en el lab, `V$BLOCK_CHANGE_TRACKING` no devolvió filas al usuario de diagnóstico desde `CDB$ROOT`): no hay hallazgo y el estado nunca se infiere. La edición filtra qué features aplican; `UNKNOWN` (banner de 10g/11g Standard Edition) nunca se infiere.
 
 # Data collection
 

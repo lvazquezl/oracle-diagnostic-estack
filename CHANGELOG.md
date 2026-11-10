@@ -80,7 +80,7 @@ Aprobado por revisión humana. Regresión local (macOS, bash 5.3): 973/973. CI e
 
 ### `/change query|skill|security|compatibility|documentation` — CHG-ESTACK-C-NEW-QUERIES-001 — lote C: queries nuevas para los dominios sin evidencia
 
-Rama `change/c-new-queries` sobre `main` (`be64435`). Origen: la cobertura por dominio de `ANA-20261020-001`, donde X (estadísticas) quedó `NOT_ASSESSED` y A, C, J, K, L, V, W y Z `PARTIAL` porque ninguna query certificada cubría esos datos. Ver `docs/C_NEW_QUERIES.md`.
+Rama `change/c-new-queries` sobre `main` (`be64435`). Origen: la cobertura por dominio de `ANA-20261020-001`, donde X (estadísticas) quedó `NOT_ASSESSED` y A, C, J, K, L, V, W y Z `PARTIAL` porque ninguna query certificada cubría esos datos. Validado en el lab: 11 queries y 7 sondas `FIELD_VALIDATED`. Ver `docs/C_NEW_QUERIES.md`.
 
 #### Added
 
@@ -92,7 +92,14 @@ Rama `change/c-new-queries` sobre `main` (`be64435`). Origen: la cobertura por d
 
 - 10 skills agregan la evidencia nueva como opcional, con su lógica de hallazgos: `oracle/database-state`, `oracle/archive`, `oracle/instance`, `oracle/components`, `oracle/jobs`, `oracle/undo`, `oracle/temp`, `performance/sga`, `performance/pga` y `security/licensing-gates`. El uso de features se reporta como `LICENSE_CHECK_REQUIRED`, nunca como incumplimiento.
 - `open_mode` acepta `READ ONLY WITH APPLY`.
-- Sondas del diccionario `Q-DICT-VERIFY-001`..`005` regeneradas y `006`/`007` nuevas; sus validaciones en campo se retiran hasta revalidar en el lab.
+- Sondas del diccionario `Q-DICT-VERIFY-001`..`005` regeneradas y `006`/`007` nuevas; revalidadas en el lab junto con las 11 queries (el registro de validaciones pasa de 91 a 109).
+
+#### Fixed
+
+- `Q-PERF-WORKAREA-001` agrega en dos vistas en línea: el lab devolvió ORA-00937 (subconsulta escalar junto a un agregado sin `GROUP BY`).
+- `oracle/undo` compara la consulta más larga con la retención ajustada máxima, no con la mínima, que puede ser 0 y daba un falso positivo. También documenta que desde `CDB$ROOT` no se ve el UNDO de las PDB, aun con undo local.
+- `security/licensing-gates` no marca las features `(system)`, que son uso de Oracle.
+- `oracle/database-state` trata `block_change_tracking` nulo como no observado.
 
 ### `/change query|security|compatibility|documentation` — CHG-ESTACK-ASSESSMENT-ACCURACY-001 — exactitud del assessment
 

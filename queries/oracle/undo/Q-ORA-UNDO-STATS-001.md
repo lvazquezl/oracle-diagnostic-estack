@@ -101,7 +101,7 @@ Ninguna — SQL puro.
 
 # Container / role scope notes
 
-Con undo local (12.2+), cada PDB tiene sus filas; con undo compartido, todo está en el contenedor del undo. Los MB usan `db_block_size`: el tablespace de UNDO siempre usa el tamaño de bloque estándar. Complementa a `Q-ORA-UNDO-001` (configuración). `PRIMARY`: en un standby no hay actividad propia.
+Desde `CDB$ROOT` solo se ven las filas del root, también con undo local: en el lab (19.32, una PDB con `local_undo` = 1) la PDB no tuvo filas. El undo de cada PDB requiere un target conectado a esa PDB o la historia de AWR; esta query no lo cubre desde el root. Con undo compartido, todo está en el root. Los MB usan `db_block_size`: el tablespace de UNDO siempre usa el tamaño de bloque estándar. Complementa a `Q-ORA-UNDO-001` (configuración). `PRIMARY`: en un standby no hay actividad propia.
 
 # Cost classification rationale
 

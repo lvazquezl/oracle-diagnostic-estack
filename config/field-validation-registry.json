@@ -1295,6 +1295,258 @@
       ],
       "record": "docs/B8_OPS_COVERAGE.md",
       "change_id": "CHG-ESTACK-B8-OPS-COVERAGE-001"
+    },
+    {
+      "query_id": "Q-ORA-DATABASE-MODE-001",
+      "query_sha256": "90285cf975e6ab3965a084233c2fb47f5b649430baf607ad5387b1627f1453ba",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:36Z",
+      "evidence_refs": [
+        "EVR-6a868972c9a04fe92b696243"
+      ],
+      "request_refs": [
+        "REQ-24cbf312ac8d"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-PERF-AWR-STARTUP-HISTORY-001",
+      "query_sha256": "c6f9b3977a8a420f2d5ca52d2b19332a6ce70ab383c4d75314c4fead297fdd7a",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:37Z",
+      "evidence_refs": [
+        "EVR-3583e12b93e5d99e2d43cf4e"
+      ],
+      "request_refs": [
+        "REQ-67a1a25bc434"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-ORA-SQLPATCH-001",
+      "query_sha256": "8d2c7f443bffdc7e1f276666bdaf06e53748d03c92ae3b9e048bedbbfe842c6f",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:37Z",
+      "evidence_refs": [
+        "EVR-c806cf5cc1f651f1a71f96ed"
+      ],
+      "request_refs": [
+        "REQ-2d08fa6c31e0"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-ORA-FEATURE-USAGE-001",
+      "query_sha256": "bec0debb5c87bdc98829bf177d9a2075b55dfa4678a034fdc674d311cf5f90b9",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:38Z",
+      "evidence_refs": [
+        "EVR-9c60e5552b71bcbfeb8a4cf4"
+      ],
+      "request_refs": [
+        "REQ-3c3f17429bf2"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-ORA-OPTIMIZER-STATS-001",
+      "query_sha256": "f1ed3a1300d701ea4a72e1a12fe3c78219c1454cea3279bb2de16257586224ae",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:39Z",
+      "evidence_refs": [
+        "EVR-99930cef7b5531dd412b3293"
+      ],
+      "request_refs": [
+        "REQ-c0acf8accc12"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-ORA-AUTOTASK-001",
+      "query_sha256": "f24ca2d0697d52d5e19f8ad04a08579eca235610d523c91f8638aec0b7c280da",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:40Z",
+      "evidence_refs": [
+        "EVR-7dbaf76698477d06c64f0a7a"
+      ],
+      "request_refs": [
+        "REQ-a271bceae784"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-ORA-SCHEDULER-STATE-001",
+      "query_sha256": "075222bc8e0c2497702a53bb1ff13fd8e49f117c3decdb0729571b4c071a2c85",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:45Z",
+      "evidence_refs": [
+        "EVR-866767df79f7dae7ed7039e9"
+      ],
+      "request_refs": [
+        "REQ-9763d33a8791"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-ORA-UNDO-STATS-001",
+      "query_sha256": "e6ed8b6bc083b964af346385647fd65fda9b347e6391fe7469a4c38c50799642",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:46Z",
+      "evidence_refs": [
+        "EVR-70921987590dd30e150ebc1c"
+      ],
+      "request_refs": [
+        "REQ-2074b0defb2d"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-ORA-TEMP-HWM-001",
+      "query_sha256": "59140c5f0a04e9c17ccbd2959546487e3545b1586a66486508ebe30d48769fdd",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:47Z",
+      "evidence_refs": [
+        "EVR-22bce098a19c7c33e7ca6053"
+      ],
+      "request_refs": [
+        "REQ-09f55d9ab523"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-PERF-SGA-COMPONENTS-001",
+      "query_sha256": "e94951890bc80e5bd6014108a06451172dfdb4e0865e1a090bb865f64336f160",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:47Z",
+      "evidence_refs": [
+        "EVR-ec5ab22f9749812f2df6c4c5"
+      ],
+      "request_refs": [
+        "REQ-5e7480f1ee45"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-PERF-WORKAREA-001",
+      "query_sha256": "e0e0f12fd6de1d1595222af74830fade33f51aa28df868ec2c458cd1330109bf",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:50:56Z",
+      "evidence_refs": [
+        "EVR-9231c0db53ab50616aad3957"
+      ],
+      "request_refs": [
+        "REQ-ea97c9ba595d"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-001",
+      "query_sha256": "8e20af5c316da6909ed3cd01a6db2a2acafc2fd8663345c5d65ef03e0a82a015",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:29Z",
+      "evidence_refs": [
+        "EVR-0d4489e553090ab3ea5aa154"
+      ],
+      "request_refs": [
+        "REQ-1252944d9f04"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-002",
+      "query_sha256": "cdba8e1b96bb163b344eb5731e4b40e856460f5af15344dc9d086e4d9880e644",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:30Z",
+      "evidence_refs": [
+        "EVR-c2152ca322a4f20e5afaa827"
+      ],
+      "request_refs": [
+        "REQ-d82fbe9e407d"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-003",
+      "query_sha256": "4d650df1e9c60aded2b8688c6dce78680a4654f6cf1f3c5d3512f35d2406938b",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:31Z",
+      "evidence_refs": [
+        "EVR-5a4d2651225b138095c9b8ca"
+      ],
+      "request_refs": [
+        "REQ-647e31e909ea"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-004",
+      "query_sha256": "30393c06b38c4c10688902635e52e17d2e6c497ad937c818f784c0e37c15ebb2",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:31Z",
+      "evidence_refs": [
+        "EVR-f7b8a95710cf9367199f0747"
+      ],
+      "request_refs": [
+        "REQ-69cae2900960"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-005",
+      "query_sha256": "9895a937efac04d24e4b7fa4a14951c81d6e652b45e8c7706fdb3c4958736be3",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:32Z",
+      "evidence_refs": [
+        "EVR-4e49b32dc94c700b16a172ed"
+      ],
+      "request_refs": [
+        "REQ-5afa6223af3f"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-006",
+      "query_sha256": "145bee6e5aad9241e854f566385ffc6d00d925c1490c7b7d0e20637a14723391",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:33Z",
+      "evidence_refs": [
+        "EVR-4ab95c5caf4f1ff16a0cf5e1"
+      ],
+      "request_refs": [
+        "REQ-340bae2cee43"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
+    },
+    {
+      "query_id": "Q-DICT-VERIFY-007",
+      "query_sha256": "a68615239d463a22b1875005948faf5afb2c62d7285562a52e6cc19036976980",
+      "context_id": "LAB-OL8-19C-CDBROOT-ASM",
+      "validated_at_utc": "2026-11-10T22:48:33Z",
+      "evidence_refs": [
+        "EVR-9a2d2629f581dc6684d18b1b"
+      ],
+      "request_refs": [
+        "REQ-4c6f2471b08c"
+      ],
+      "record": "docs/C_NEW_QUERIES.md",
+      "change_id": "CHG-ESTACK-C-NEW-QUERIES-001"
     }
   ]
 }

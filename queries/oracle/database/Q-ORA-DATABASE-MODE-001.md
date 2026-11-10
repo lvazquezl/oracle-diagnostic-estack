@@ -89,7 +89,7 @@ Ninguna — SQL puro.
 
 # Container / role scope notes
 
-`V$DATABASE` y `V$BLOCK_CHANGE_TRACKING` son de la base completa: en una CDB, el modo ARCHIVELOG, force logging y block change tracking son de la CDB y aplican a todas las PDB. `open_mode` es el del contenedor de la sesión. En un standby `open_mode` distingue `MOUNTED` de `READ ONLY WITH APPLY` (Active Data Guard).
+`V$DATABASE` y `V$BLOCK_CHANGE_TRACKING` son de la base completa: en una CDB, el modo ARCHIVELOG, force logging y block change tracking son de la CDB y aplican a todas las PDB. `open_mode` es el del contenedor de la sesión. En un standby `open_mode` distingue `MOUNTED` de `READ ONLY WITH APPLY` (Active Data Guard). En el lab (19.32, `CDB$ROOT`, usuario común de diagnóstico) `V$BLOCK_CHANGE_TRACKING` no devolvió ninguna fila visible y `block_change_tracking` salió nulo: un nulo significa "no observado", nunca `DISABLED`.
 
 # Cost classification rationale
 

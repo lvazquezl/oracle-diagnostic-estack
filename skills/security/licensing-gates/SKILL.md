@@ -38,7 +38,7 @@ Standalone y RAC.
 
 - `Q-ORA-FEATURE-USAGE-001`
 
-**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-ORA-FEATURE-USAGE-001` entrega las features con uso detectado (`DBA_FEATURE_USAGE_STATISTICS`) por contenedor. Cada feature en uso que corresponda a una opción o pack (por ejemplo Partitioning, Advanced Compression, Diagnostics/Tuning Pack, Active Data Guard) se reporta como `LICENSE_CHECK_REQUIRED`: el uso detectado no prueba que se requiera licencia (algunas se activan por componentes de Oracle) ni que esté o no licenciada. Nunca se reporta como incumplimiento. Oracle muestrea el uso aproximadamente una vez por semana (`hours_since_last_sample`).
+**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-ORA-FEATURE-USAGE-001` entrega las features con uso detectado (`DBA_FEATURE_USAGE_STATISTICS`) por contenedor. Cada feature en uso que corresponda a una opción o pack (por ejemplo Partitioning, Advanced Compression, Diagnostics/Tuning Pack, Active Data Guard) se reporta como `LICENSE_CHECK_REQUIRED`: el uso detectado no prueba que se requiera licencia (algunas se activan por componentes de Oracle) ni que esté o no licenciada. Nunca se reporta como incumplimiento. Las variantes `(system)` (por ejemplo `Partitioning (system)` o `SecureFiles (system)`) son uso de los esquemas de Oracle y no generan `LICENSE_CHECK_REQUIRED`: en el lab (19.32) aparecen en el root y en la PDB sin ninguna fila `Partitioning (user)`. Oracle muestrea el uso aproximadamente una vez por semana (`hours_since_last_sample`).
 
 # Licensing requirements
 
