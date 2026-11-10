@@ -43,13 +43,16 @@ status: active
 # Statement / procedure (read-only) — Variant V1 (all_versions, 10.2–23.0: una fila de la instancia)
 
 ```sql
-SELECT SUM(h.optimal_executions) AS optimal_executions,
-       SUM(h.onepass_executions) AS onepass_executions,
-       SUM(h.multipasses_executions) AS multipass_executions,
-       (SELECT MAX(s.value) FROM v$pgastat s WHERE s.name = 'cache hit percentage') AS pga_cache_hit_pct,
-       (SELECT MAX(s.value) FROM v$pgastat s WHERE s.name = 'extra bytes read/written') AS extra_bytes_read_written,
-       (SELECT MAX(s.value) FROM v$pgastat s WHERE s.name = 'maximum PGA allocated') AS max_pga_allocated_bytes
-FROM   v$sql_workarea_histogram h;
+SELECT w.optimal_executions, w.onepass_executions, w.multipass_executions,
+       p.pga_cache_hit_pct, p.extra_bytes_read_written, p.max_pga_allocated_bytes
+FROM   (SELECT SUM(h.optimal_executions) AS optimal_executions,
+               SUM(h.onepass_executions) AS onepass_executions,
+               SUM(h.multipasses_executions) AS multipass_executions
+        FROM   v$sql_workarea_histogram h) w,
+       (SELECT MAX(CASE WHEN s.name = 'cache hit percentage' THEN s.value END) AS pga_cache_hit_pct,
+               MAX(CASE WHEN s.name = 'extra bytes read/written' THEN s.value END) AS extra_bytes_read_written,
+               MAX(CASE WHEN s.name = 'maximum PGA allocated' THEN s.value END) AS max_pga_allocated_bytes
+        FROM   v$pgastat s) p;
 ```
 
 # Notes by version
@@ -58,7 +61,7 @@ FROM   v$sql_workarea_histogram h;
 
 # Notes by platform
 
-Ninguna — SQL puro.
+SQL puro. Los agregados del histograma y de `V$PGASTAT` van en dos vistas en línea: una subconsulta escalar junto a un agregado sin `GROUP BY` falla con ORA-00937 (detectado en el lab).
 
 # Container / role scope notes
 
@@ -66,7 +69,7 @@ Valores de la instancia desde el arranque. En RAC, de la instancia consultada. C
 
 # Cost classification rationale
 
-`LOW` — histograma de unas 30 filas y tres filas de `V$PGASTAT`.
+`LOW` — histograma de unas 30 filas y una lectura de `V$PGASTAT` (unas 20 filas).
 
 # License notes
 

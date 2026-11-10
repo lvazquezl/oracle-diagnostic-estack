@@ -815,7 +815,8 @@ def c_sql_aggregates_in_the_database_and_never_selects_names_text_or_dates():
     sga = _resolved("Q-PERF-SGA-COMPONENTS-001", "19.0")
     assert "else 'other' end as sga_component" in sga, sga
     wa = _resolved("Q-PERF-WORKAREA-001", "19.0")
-    assert "from   v$sql_workarea_histogram h" in wa and "max(s.value)" in wa, wa
+    # inline views: a scalar subquery next to an aggregate without GROUP BY raises ORA-00937 (found in the lab)
+    assert "from   v$sql_workarea_histogram h) w" in wa and "then s.value end" in wa and "(select max(s.value)" not in wa, wa
     for cid in C_LOT | {"Q-PERF-AWR-STARTUP-HISTORY-001"}:
         assert re.search(r"^version: 1\.0\.0$", open(catalog._find_query_file(cid), encoding="utf-8").read(), re.M), cid
 
