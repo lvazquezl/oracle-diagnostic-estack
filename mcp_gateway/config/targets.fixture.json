@@ -85,7 +85,10 @@
                              "Q-SEC-OBJECT-PRIVILEGES-001", "Q-SEC-PASSWORD-VERSIONS-001", "Q-SEC-PUBLIC-OBJECT-GRANTS-001",
                              "Q-SEC-PUBLIC-SYSTEM-GRANTS-001", "Q-SEC-ROLE-GRANTS-001", "Q-SEC-ROLES-001",
                              "Q-SEC-SECURITY-PARAMETERS-001", "Q-SEC-SYSTEM-PRIVILEGES-001", "Q-SEC-TDE-WALLET-001",
-                             "Q-SEC-TDE-MASTER-KEYS-001"],
+                             "Q-SEC-TDE-MASTER-KEYS-001",
+                             "Q-RMAN-ARCHIVED-LOG-COVERAGE-001", "Q-RMAN-BACKUP-DATAFILE-001", "Q-RMAN-BACKUP-PIECE-001",
+                             "Q-CDB-LOCKDOWN-001", "Q-CDB-PDB-SAVED-STATE-001", "Q-CDB-RESOURCE-MANAGER-001",
+                             "Q-CDB-RESOURCE-USAGE-001", "Q-CDB-SESSION-DIST-001", "Q-ASM-DISKS-001", "Q-PERF-LOCKS-001"],
       "budget": {"max_calls": 50, "max_rows": 500}
     },
     {

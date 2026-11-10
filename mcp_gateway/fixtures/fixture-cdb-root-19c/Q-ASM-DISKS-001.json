@@ -1,0 +1,16 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B8)",
+  "rows": [
+    {
+      "diskgroup_number": 1,
+      "failgroup": "SYNTH_FG1",
+      "disks": 4,
+      "total_mb": 102400,
+      "disks_not_member": 0,
+      "disks_not_online": 0,
+      "disks_not_normal": 0,
+      "read_errors": 0,
+      "write_errors": 0
+    }
+  ]
+}

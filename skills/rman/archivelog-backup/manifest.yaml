@@ -1,7 +1,7 @@
 name: archivelog-backup
 display_name: "Archivelog Backup Coverage"
 id: rman/archivelog-backup
-version: 1.0.0
+version: 1.1.0
 domain: rman
 status: active
 

@@ -1,7 +1,7 @@
 ---
 name: dataguard-awareness
 id: rman/dataguard-awareness
-version: 1.0.0
+version: 1.1.0
 domain: rman
 status: active
 ---
@@ -30,6 +30,8 @@ Target Profile `dataguard.enabled = true`.
 
 - `Q-RMAN-CONFIGURATION-001`
 - `Q-RMAN-ARCHIVED-LOG-COVERAGE-001`
+
+**Gateway (lote B8, `CHG-ESTACK-B8-OPS-COVERAGE-001`):** El `APPLIED` real se toma de `Q-DG-ARCHIVED-LOG-001`; `Q-RMAN-ARCHIVED-LOG-COVERAGE-001` 2.0.0 solo da la cobertura de backup por thread.
 
 # Optional evidence
 
@@ -123,3 +125,5 @@ Alimenta `analysis/ANA-*/backup-inventory.md`.
 # Change history
 
 v1.0.0 — Fase 7, creación inicial.
+
+v1.1.0 — `CHG-ESTACK-B8-OPS-COVERAGE-001`: forma de la evidencia expuesta por el gateway (ver Required evidence).

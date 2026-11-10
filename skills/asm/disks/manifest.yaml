@@ -1,7 +1,7 @@
 name: disks
 display_name: "ASM Disk Health"
 id: asm/disks
-version: 1.0.0
+version: 1.1.0
 domain: asm
 status: active
 supported_oracle_versions: [11gR2, 12c, 18c, 19c, 21c, 23ai]

@@ -503,6 +503,8 @@
     "COMPLETED",
     "DISABLED",
     "FAILED",
+    "OPEN",
+    "OPEN READ ONLY",
     "REMOTE",
     "RESOURCE_UNAVAILABLE",
     "RETRY SCHEDULED",
@@ -2111,6 +2113,469 @@
    "max": 10000000,
    "policy": "KEEP",
    "example": 4380.5
+  },
+  "active_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 2
+  },
+  "avg_active_parallel_servers": {
+   "type": "number",
+   "min": 0,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "avg_cpu_utilization": {
+   "type": "number",
+   "min": 0,
+   "max": 100000,
+   "policy": "KEEP",
+   "example": 2.5
+  },
+  "avg_queued_parallel_servers": {
+   "type": "number",
+   "min": 0,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "avg_running_sessions": {
+   "type": "number",
+   "min": 0,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 0.4
+  },
+  "avg_waiting_sessions": {
+   "type": "number",
+   "min": 0,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "backup_bytes": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000000,
+   "policy": "KEEP",
+   "example": 52428800000
+  },
+  "blocking": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "con_name": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "pdb",
+   "example": "SYNTH_PDB1"
+  },
+  "cpu_consumed_time": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000000,
+   "policy": "KEEP",
+   "example": 1200
+  },
+  "cpu_utilization_limit": {
+   "type": "number",
+   "min": 0,
+   "max": 100,
+   "policy": "KEEP",
+   "example": 100
+  },
+  "cpu_wait_time": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "datafiles": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 12
+  },
+  "datafiles_never_backed_up": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "datafiles_without_full": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "device_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "DISK",
+    "OTHER",
+    "SBT_TAPE"
+   ],
+   "example": "DISK"
+  },
+  "directive_kind": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "AUTOTASK",
+    "DEFAULT_PDB",
+    "OTHER",
+    "PDB"
+   ],
+   "example": "DEFAULT_PDB"
+  },
+  "diskgroup_number": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "disks": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 4
+  },
+  "disks_not_member": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "disks_not_normal": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "disks_not_online": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "hours_since_newest": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 6.0
+  },
+  "hours_since_oldest": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 330.5
+  },
+  "hours_since_oldest_not_backed_up": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 5.5
+  },
+  "inactive_count": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 8
+  },
+  "iombps": {
+   "type": "number",
+   "min": 0,
+   "max": 10000000000,
+   "policy": "KEEP",
+   "example": 0.8
+  },
+  "iops": {
+   "type": "number",
+   "min": 0,
+   "max": 10000000000,
+   "policy": "KEEP",
+   "example": 12.5
+  },
+  "lock_mode": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "Exclusive",
+    "None",
+    "Null",
+    "Row-S",
+    "Row-X",
+    "S/Row-X",
+    "Share",
+    "Unknown"
+   ],
+   "example": "Row-X"
+  },
+  "lock_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "AE",
+    "CF",
+    "CI",
+    "CU",
+    "DL",
+    "DX",
+    "HW",
+    "JQ",
+    "KO",
+    "MR",
+    "OTHER",
+    "PS",
+    "RT",
+    "SQ",
+    "ST",
+    "TM",
+    "TO",
+    "TS",
+    "TT",
+    "TX",
+    "UL",
+    "US",
+    "XR"
+   ],
+   "example": "TX"
+  },
+  "lockdown_profile": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "ldp",
+   "example": "SYNTH_LOCKDOWN"
+  },
+  "locks": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 3
+  },
+  "logs_last_24h": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 48
+  },
+  "logs_not_backed_up": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 3
+  },
+  "logs_on_disk": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 120
+  },
+  "max_hours_since_backup": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 20.5
+  },
+  "max_hours_since_full": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 140.2
+  },
+  "max_seconds_in_mode": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000000000,
+   "policy": "KEEP",
+   "example": 42
+  },
+  "num_cpus": {
+   "type": "number",
+   "min": 0,
+   "max": 100000,
+   "policy": "KEEP",
+   "example": 4
+  },
+  "parallel_server_limit": {
+   "type": "number",
+   "min": 0,
+   "max": 100,
+   "policy": "KEEP",
+   "example": 100
+  },
+  "parallel_servers_limit": {
+   "type": "number",
+   "min": 0,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 8
+  },
+  "pga_bytes": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 104857600
+  },
+  "piece_status": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "AVAILABLE",
+    "EXPIRED",
+    "OTHER",
+    "UNAVAILABLE"
+   ],
+   "example": "AVAILABLE"
+  },
+  "pieces": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 24
+  },
+  "plan_active": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "YES"
+  },
+  "plan_kind": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "CUSTOM",
+    "ORACLE"
+   ],
+   "example": "ORACLE"
+  },
+  "plan_name": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "pln",
+   "example": "SYNTH_PLAN"
+  },
+  "read_errors": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "rule_status": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "DISABLE",
+    "EMPTY",
+    "ENABLE",
+    "NONE"
+   ],
+   "example": "DISABLE"
+  },
+  "rule_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FEATURE",
+    "NONE",
+    "OPTION",
+    "STATEMENT"
+   ],
+   "example": "STATEMENT"
+  },
+  "rules": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 4
+  },
+  "running_sessions_limit": {
+   "type": "number",
+   "min": 0,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 4
+  },
+  "sga_bytes": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 524288000
+  },
+  "shares": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "utilization_limit": {
+   "type": "number",
+   "min": 0,
+   "max": 100,
+   "policy": "KEEP",
+   "example": 100
+  },
+  "waiting": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "write_errors": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "failgroup": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "fg",
+   "example": "SYNTH_FG1"
+  },
+  "total_mb": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000000000,
+   "policy": "KEEP",
+   "example": 102400
   }
  }
 }

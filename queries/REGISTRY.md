@@ -73,7 +73,7 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-RAC-INTERCONNECT-001` | Interfaces de interconnect privado activas | 11gR2–23ai | ídem | RAC | NOT_APPLICABLE | ANY |
 | `Q-RAC-GES-GCS-001` | Indicadores agregados GES/GCS | 11gR2–23ai | ídem | RAC | NOT_APPLICABLE | ANY |
 | `Q-ASM-TOPOLOGY-001` | Instancias ASM y disk groups (`V$ASM_DISKGROUP_STAT`, sin disk discovery) | 11gR2–23ai | ídem | ASM | NOT_APPLICABLE | ANY |
-| `Q-ASM-DISKS-001` | Salud de discos individuales (sólo anómalos) | 11gR2–23ai | ídem | ASM | NOT_APPLICABLE | ANY |
+| `Q-ASM-DISKS-001` | Salud de discos por disk group y failure group (conteos, sin discovery) | 11gR2–23ai | ídem | ASM | NOT_APPLICABLE | ANY |
 | `Q-ASM-REBALANCE-001` | Progreso de operaciones ASM en curso (lectura) | 11gR2–23ai | ídem | ASM | NOT_APPLICABLE | ANY |
 | `Q-DG-ROLE-001` | Rol, protección, switchover status, flashback | 10g–23ai | todas | Primary/Standby | ANY_CONTAINER | ANY |
 | `Q-DG-STATS-001` | Lag de transporte/apply | 10g–23ai | todas | Primary/Standby | ANY_CONTAINER | STANDBY |
@@ -96,16 +96,16 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-CDB-PLUGIN-VIOLATIONS-001` | Plug-in violations por PDB | 12c–23ai (CON_ID sólo 12.2+) | todas | CDB | CDB_ROOT_ONLY | ANY |
 | `Q-CDB-RESOURCE-USAGE-001` | Consumo de recursos por PDB (CPU/sesiones/parallel/SGA/PGA/I/O) | 12.2–23ai (12.1: PARTIALLY_SUPPORTED) | todas | CDB | CDB_ROOT_ONLY | ANY |
 | `Q-CDB-RESOURCE-MANAGER-001` | CDB Resource Plan y directivas por PDB (sólo lectura) | 12c–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
-| `Q-CDB-LOCKDOWN-001` | Lockdown profiles asignados (sólo lectura) | 12.2–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
+| `Q-CDB-LOCKDOWN-001` | Lockdown profiles: reglas por perfil, tipo y estado (sólo lectura) | 12.2–23ai | todas | CDB | CDB_ROOT_ONLY | ANY |
 | `Q-RMAN-CONFIGURATION-001` | Configuración RMAN persistente (retention/optimization/device/channels/snapshot/deletion policy) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-RMAN-STATUS-001` | Estado/progreso de jobs RMAN | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-RMAN-OUTPUT-001` | Mensajes recientes de RMAN (troubleshooting) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-RMAN-BACKUP-JOB-001` | Resumen de jobs de backup (duración/throughput) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-RMAN-BACKUP-SET-001` | Inventario de backup sets | 10g–23ai (CON_ID sólo 12.1+) | todas | Standalone/RAC | ANY_CONTAINER | ANY |
-| `Q-RMAN-BACKUP-PIECE-001` | Inventario de piezas físicas de backup | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
-| `Q-RMAN-BACKUP-DATAFILE-001` | Cobertura de backup por datafile | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-BACKUP-PIECE-001` | Piezas de backup por dispositivo y estado (sin handle) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-BACKUP-DATAFILE-001` | Cobertura de backup de datafiles por contenedor | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-RMAN-ARCHIVELOG-BACKUP-001` | Cobertura de backup de archivelogs por thread | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
-| `Q-RMAN-ARCHIVED-LOG-COVERAGE-001` | Generación/aplicación/eliminación de archivelogs | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-RMAN-ARCHIVED-LOG-COVERAGE-001` | Cobertura de backup de archivelogs por thread | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-RMAN-CONTROLFILE-BACKUP-001` | Backups que incluyen controlfile | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-RMAN-SPFILE-BACKUP-001` | Backups de SPFILE | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 | `Q-RMAN-BACKUP-DEVICE-001` | Canales actualmente asignados | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
@@ -172,7 +172,7 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-RAC-INTERCONNECT-001` | `GV$CLUSTER_INTERCONNECTS` | R0 | LOW | 15 | 50 | HIGH | none |
 | `Q-RAC-GES-GCS-001` | `GV$GES_STATISTICS`, `GV$SYSSTAT`, `GV$INSTANCE_CACHE_TRANSFER` | R0 | MEDIUM | 30 | 200 | LOW | none |
 | `Q-ASM-TOPOLOGY-001` | `V$ASM_CLIENT`, `V$ASM_DISKGROUP_STAT` | R0 | LOW | 15 | 100 | MEDIUM | none |
-| `Q-ASM-DISKS-001` | `V$ASM_DISK` | R0 | MEDIUM | 30 | 500 | HIGH | none |
+| `Q-ASM-DISKS-001` | `V$ASM_DISK_STAT` | R0 | LOW | 30 | 200 | LOW | none |
 | `Q-ASM-REBALANCE-001` | `GV$ASM_OPERATION` | R0 | LOW | 15 | 50 | LOW | none |
 | `Q-DG-ROLE-001` | `V$DATABASE` | R0 | LOW | 10 | 1 | MEDIUM | none |
 | `Q-DG-STATS-001` | `V$DATAGUARD_STATS` | R0 | LOW | 15 | 20 | LOW | none |
@@ -194,17 +194,17 @@ Manifest completo de tools (schema de input/output, certificación): [`mcp/tool-
 | `Q-CDB-COMPONENTS-001` | `CDB_REGISTRY` | R0 | LOW | 15 | 500 | LOW | none |
 | `Q-CDB-PLUGIN-VIOLATIONS-001` | `PDB_PLUG_IN_VIOLATIONS` | R0 | LOW | 15 | 200 | MEDIUM (texto libre) | none |
 | `Q-CDB-RESOURCE-USAGE-001` | `V$RSRCPDBMETRIC` | R0 | LOW | 15 | 200 | LOW | none |
-| `Q-CDB-RESOURCE-MANAGER-001` | `DBA_CDB_RSRC_PLAN_DIRECTIVES` | R0 | LOW | 15 | 200 | LOW | none |
-| `Q-CDB-LOCKDOWN-001` | `CDB_LOCKDOWN_PROFILES` | R0 | LOW | 15 | 500 | LOW | none |
+| `Q-CDB-RESOURCE-MANAGER-001` | `DBA_CDB_RSRC_PLAN_DIRECTIVES`, `V$RSRC_PLAN` | R0 | LOW | 15 | 200 | LOW | none |
+| `Q-CDB-LOCKDOWN-001` | `CDB_LOCKDOWN_PROFILES` | R0 | LOW | 15 | 200 | LOW | none |
 | `Q-RMAN-CONFIGURATION-001` | `V$RMAN_CONFIGURATION` | R0 | LOW | 10 | 100 | MEDIUM | none |
 | `Q-RMAN-STATUS-001` | `V$RMAN_STATUS` | R0 | MEDIUM | 20 | 500 | MEDIUM | none |
 | `Q-RMAN-OUTPUT-001` | `V$RMAN_OUTPUT` | R0 | MEDIUM | 15 | 1000 | HIGH | none |
 | `Q-RMAN-BACKUP-JOB-001` | `V$RMAN_BACKUP_JOB_DETAILS` | R0 | MEDIUM | 30 | 500 | LOW | none |
 | `Q-RMAN-BACKUP-SET-001` | `V$BACKUP_SET` | R0 | MEDIUM | 20 | 500 | MEDIUM | none |
-| `Q-RMAN-BACKUP-PIECE-001` | `V$BACKUP_PIECE` | R0 | MEDIUM | 20 | 500 | HIGH | none |
-| `Q-RMAN-BACKUP-DATAFILE-001` | `V$BACKUP_DATAFILE` | R0 | MEDIUM | 20 | 500 | MEDIUM | none |
+| `Q-RMAN-BACKUP-PIECE-001` | `V$BACKUP_PIECE` | R0 | MEDIUM | 20 | 20 | LOW | none |
+| `Q-RMAN-BACKUP-DATAFILE-001` | `V$DATAFILE`, `V$BACKUP_DATAFILE` | R0 | MEDIUM | 20 | 200 | LOW | none |
 | `Q-RMAN-ARCHIVELOG-BACKUP-001` | `V$BACKUP_REDOLOG` | R0 | MEDIUM | 20 | 1000 | LOW | none |
-| `Q-RMAN-ARCHIVED-LOG-COVERAGE-001` | `V$ARCHIVED_LOG` | R0 | MEDIUM | 20 | 1000 | MEDIUM | none |
+| `Q-RMAN-ARCHIVED-LOG-COVERAGE-001` | `V$ARCHIVED_LOG`, `V$DATABASE` | R0 | MEDIUM | 20 | 32 | LOW | none |
 | `Q-RMAN-CONTROLFILE-BACKUP-001` | `V$BACKUP_SET` | R0 | LOW | 15 | 200 | LOW | none |
 | `Q-RMAN-SPFILE-BACKUP-001` | `V$BACKUP_SPFILE` | R0 | LOW | 15 | 200 | LOW | none |
 | `Q-RMAN-BACKUP-DEVICE-001` | `V$BACKUP_DEVICE` | R0 | LOW | 10 | 100 | MEDIUM | none |
@@ -332,7 +332,7 @@ Todas con `status: active`, `execution_mode: READ_ONLY`, mismo set mínimo de te
 | `Q-PERF-IO-FILESTAT-001` | Latencia por datafile | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
 | `Q-PERF-TEMP-001` | Uso activo de TEMP por sesión/SQL_ID | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
 | `Q-PERF-BLOCKING-001` | Cadenas de bloqueo blocker/waiter | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
-| `Q-PERF-LOCKS-001` | Enqueue locks activos | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-LOCKS-001` | Enqueue locks por tipo y modo (agregado) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
 | `Q-PERF-PARALLEL-001` | Sesiones Parallel Execution activas | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
 | `Q-PERF-REDO-001` | Volumen de redo y tasa de commit | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
 
@@ -355,7 +355,7 @@ Todas con `status: active`, `execution_mode: READ_ONLY`, mismo set mínimo de te
 | `Q-PERF-IO-FILESTAT-001` | `V$FILESTAT`, `V$DATAFILE` | R0 | MEDIUM | 20 | 500 | MEDIUM | none |
 | `Q-PERF-TEMP-001` | `V$SORT_USAGE`, `V$SESSION` | R0 | MEDIUM | 15 | 200 | MEDIUM | none |
 | `Q-PERF-BLOCKING-001` | `V$SESSION` | R0 | MEDIUM | 15 | 200 | MEDIUM | none |
-| `Q-PERF-LOCKS-001` | `V$LOCK`, `V$SESSION` | R0 | MEDIUM | 15 | 500 | MEDIUM | none |
+| `Q-PERF-LOCKS-001` | `V$LOCK` | R0 | MEDIUM | 15 | 200 | LOW | none |
 | `Q-PERF-PARALLEL-001` | `V$PX_SESSION` | R0 | LOW | 15 | 200 | LOW | none |
 | `Q-PERF-REDO-001` | `V$SYSSTAT` | R0 | LOW | 10 | 10 | LOW | none |
 

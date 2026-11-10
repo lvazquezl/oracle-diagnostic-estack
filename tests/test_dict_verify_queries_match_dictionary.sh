@@ -34,7 +34,7 @@ tokens, _ = g.load_tokens()
 covered = [t for p in g.chunk(tokens) for t in p]
 if covered != tokens or len(set(covered)) != len(covered):
     fail.append("parts do not cover every token exactly once")
-if skipped != ["V$LOCK"]:
+if skipped != []:  # CHG-ESTACK-B8-OPS-COVERAGE-001: the guard accepts the V$LOCK view name, so it is probed now
     fail.append("unexpected tokens skipped by the guard (document them before accepting): %s" % skipped)
 for f in fail:
     print("[FAIL] " + f)

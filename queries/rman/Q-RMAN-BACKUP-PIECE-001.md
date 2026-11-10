@@ -1,9 +1,9 @@
 ---
 query_id: Q-RMAN-BACKUP-PIECE-001
-version: 1.0.0
+version: 2.0.0
 
 domain: rman
-purpose: Inventario de piezas físicas de backup (handle, device type, tag, disponibilidad) — evidencia de restore readiness
+purpose: Piezas de backup por dispositivo y estado (disponibles, expiradas, no disponibles): cantidad, tamaño y antigüedad — evidencia de restore readiness, nunca el handle
 
 supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
 supported_os: [todas]
@@ -19,10 +19,10 @@ risk_class: R0
 cost_class: MEDIUM
 
 timeout_seconds: 20
-max_rows: 500
-max_output_bytes: 131072
+max_rows: 20
+max_output_bytes: 8192
 
-sensitivity: HIGH
+sensitivity: LOW
 sanitization_required: true
 
 license_requirements: none
@@ -31,62 +31,45 @@ execution_mode: READ_ONLY
 
 variants:
   - variant_id: Q-RMAN-BACKUP-PIECE-001-V1
-    label: legacy_10g_11g
-    oracle_versions: {min: "10.2", max: "11.2"}
+    label: all_versions
+    oracle_versions: {min: "10.2", max: "23.0"}
     container_scope: ANY_CONTAINER
-    sql_block: "Variant V1 (legacy_10g_11g, 10g-11g)"
-  - variant_id: Q-RMAN-BACKUP-PIECE-001-V2
-    label: modern_12plus
-    oracle_versions: {min: "12.1", max: "23.0"}
-    container_scope: ANY_CONTAINER
-    sql_block: "Variant V2 (modern_12plus, 12.1+)"
+    sql_block: "Variant V1 (all_versions, 10.2–23.0: agregado por dispositivo y estado)"
 
 tests: [tests/test_no_write_operations.sh, tests/test_backup_piece_query.sh, tests/test_rman_query_version_compatibility.sh, tests/test_restore_readiness_ready.sh, tests/test_rman_legacy_variant_10g.sh, tests/test_rman_legacy_variant_11g.sh, tests/test_rman_modern_variant_12c.sh]
 status: active
 ---
 
-# Statement / procedure (read-only) — Variant V1 (legacy_10g_11g, 10g-11g)
+# Statement / procedure (read-only) — Variant V1 (all_versions, 10.2–23.0: agregado por dispositivo y estado)
 
 ```sql
-SELECT *
-FROM (
-  SELECT bp.recid, bp.set_stamp, bp.device_type, bp.handle, bp.tag,
-         bp.status, bp.completion_time, bp.bytes
-  FROM   v$backup_piece bp
-  WHERE  bp.status != 'D'
-  ORDER  BY bp.completion_time DESC
-)
-WHERE  ROWNUM <= 500;
+SELECT device_type, piece_status, COUNT(*) AS pieces, SUM(bytes) AS backup_bytes,
+       ROUND((SYSDATE - MAX(completion_time)) * 24, 2) AS hours_since_newest,
+       ROUND((SYSDATE - MIN(completion_time)) * 24, 2) AS hours_since_oldest
+FROM  (SELECT CASE WHEN device_type IN ('DISK', 'SBT_TAPE') THEN device_type ELSE 'OTHER' END AS device_type,
+              DECODE(status, 'A', 'AVAILABLE', 'X', 'EXPIRED', 'U', 'UNAVAILABLE', 'OTHER') AS piece_status,
+              bytes, completion_time
+       FROM   v$backup_piece
+       WHERE  status <> 'D')
+GROUP  BY device_type, piece_status
+ORDER  BY device_type, piece_status;
 ```
-
-# Statement / procedure (read-only) — Variant V2 (modern_12plus, 12.1+)
-
-```sql
-SELECT bp.recid, bp.set_stamp, bp.device_type, bp.handle, bp.tag,
-       bp.status, bp.completion_time, bp.bytes
-FROM   v$backup_piece bp
-WHERE  bp.status != 'D'
-ORDER  BY bp.completion_time DESC
-FETCH  FIRST 500 ROWS ONLY;
-```
-
-`STATUS != 'D'` excluye piezas marcadas `DELETED` en el controlfile (nunca implica que el e-stack las borró — sólo refleja el estado ya registrado por RMAN/DBA).
 
 # Notes by version
 
-`STATUS` reporta `A` (Available), `U` (Unavailable), `D` (Deleted), `X` (Expired) — reportado tal cual, nunca reinterpretado. Vista pre-10g, certificada 10g-23ai sin variante adicional.
+Columnas estables desde 10.2. Una sola variante: el agregado no usa `FETCH FIRST`.
 
 # Notes by platform
 
-`HANDLE` puede ser un path de filesystem, un nombre de disco ASM (`+DATA/...`) o un handle de media manager (SBT) según `DEVICE_TYPE` — la sanitización se aplica igual en los tres casos.
+Ninguna — SQL puro.
 
 # Container / role scope notes
 
-`ANY_CONTAINER`. `database_role_scope: ANY`.
+`ANY_CONTAINER`; desde `CDB$ROOT` incluye las piezas de todos los contenedores.
 
 # Cost classification rationale
 
-`MEDIUM` — el histórico de piezas crece con el tiempo; acotado a `FETCH FIRST 500 ROWS ONLY`.
+`MEDIUM` — recorre los registros de piezas del controlfile; devuelve a lo más una fila por dispositivo y estado.
 
 # License notes
 
@@ -94,8 +77,8 @@ Ninguna.
 
 # Sanitization notes
 
-`HANDLE` → TOKENIZE siempre (`sensitivity: HIGH`) — puede revelar convención interna de filesystem/ASM/SBT o el nombre del pool de media manager. `TAG` → MASK (puede contener nombre de aplicación/ambiente).
+`HANDLE` (ruta, ASM o SBT) y `TAG` nunca se seleccionan: antes se tokenizaban, desde 2.0.0 no salen de la base. Solo el tipo de dispositivo (`DISK`, `SBT_TAPE` u `OTHER`), el estado traducido, conteos, bytes y horas. Las piezas borradas (`D`) se excluyen; `EXPIRED` indica piezas registradas que `CROSSCHECK` no encontró.
 
 # Evolution via `/change query`
 
-N/A — vista estable.
+2.0.0 CHG-ESTACK-B8-OPS-COVERAGE-001: agregado por dispositivo y estado; `HANDLE`, `TAG`, `RECID` y fechas fuera.

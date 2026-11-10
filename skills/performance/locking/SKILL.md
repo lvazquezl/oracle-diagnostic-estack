@@ -2,7 +2,7 @@
 name: locking
 display_name: "Locking"
 id: performance/locking
-version: 1.0.0
+version: 1.1.0
 domain: performance
 status: active
 ---
@@ -39,6 +39,8 @@ Target Profile publicado.
 # Required evidence
 
 - `Q-PERF-LOCKS-001`
+
+**Gateway (lote B8, `CHG-ESTACK-B8-OPS-COVERAGE-001`):** `Q-PERF-LOCKS-001` 2.0.0 agrega por contenedor, tipo de enqueue y `lock_mode` (cantidad, en espera, bloqueando, segundos máximos). `SID`, `ID1`/`ID2` y `SQL_ID` no salen: la cadena bloqueante por sesión y su `sql_id` vienen de `Q-PERF-BLOCKING-001` (`performance/blocking`).
 
 # Optional evidence
 
@@ -118,3 +120,5 @@ Sensibilidad MEDIA (`sql_id`, `sid`/`serial#`). Presupuesto medio.
 | Versión | Fecha | Cambio |
 |---|---|---|
 | 1.0.0 | Fase 3 (Oracle Performance) | Materializado — detalle de tipo/modo de lock, complementario a performance/blocking. |
+
+v1.1.0 — `CHG-ESTACK-B8-OPS-COVERAGE-001`: forma de la evidencia expuesta por el gateway (ver Required evidence).

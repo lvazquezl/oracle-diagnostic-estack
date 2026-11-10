@@ -1,0 +1,14 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B8)",
+  "rows": [
+    {
+      "con_id": 1,
+      "lock_type": "TX",
+      "lock_mode": "Row-X",
+      "locks": 3,
+      "waiting": 0,
+      "blocking": 0,
+      "max_seconds_in_mode": 42
+    }
+  ]
+}

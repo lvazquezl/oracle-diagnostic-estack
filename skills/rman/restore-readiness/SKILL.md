@@ -1,7 +1,7 @@
 ---
 name: restore-readiness
 id: rman/restore-readiness
-version: 1.0.0
+version: 1.1.0
 domain: rman
 status: active
 ---
@@ -33,6 +33,8 @@ Standalone y RAC.
 - `Q-RMAN-BACKUP-DATAFILE-001`
 - `Q-RMAN-CONTROLFILE-BACKUP-001`
 - `Q-RMAN-SPFILE-BACKUP-001`
+
+**Gateway (lote B8, `CHG-ESTACK-B8-OPS-COVERAGE-001`):** Por el gateway: `Q-RMAN-BACKUP-DATAFILE-001` 2.0.0 (datafiles sin backup o sin full por contenedor), `Q-RMAN-BACKUP-PIECE-001` 2.0.0 (piezas expiradas o no disponibles) y `Q-RMAN-BACKUP-FRESHNESS-001` (controlfile y SPFILE, en lugar de `Q-RMAN-CONTROLFILE-BACKUP-001` y `Q-RMAN-SPFILE-BACKUP-001`, que no se exponen).
 
 # Optional evidence
 
@@ -125,3 +127,5 @@ Alimenta `analysis/ANA-*/restore-readiness.md`.
 # Change history
 
 v1.0.0 — Fase 7, creación inicial.
+
+v1.1.0 — `CHG-ESTACK-B8-OPS-COVERAGE-001`: forma de la evidencia expuesta por el gateway (ver Required evidence).

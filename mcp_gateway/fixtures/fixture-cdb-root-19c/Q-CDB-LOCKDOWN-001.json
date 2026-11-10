@@ -1,0 +1,13 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B8)",
+  "rows": [
+    {
+      "con_id": 1,
+      "profile_kind": "DEFAULT",
+      "lockdown_profile": "SYNTH_LOCKDOWN",
+      "rule_type": "STATEMENT",
+      "rule_status": "DISABLE",
+      "rules": 4
+    }
+  ]
+}

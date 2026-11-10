@@ -79,8 +79,10 @@ Ninguna — vista de Resource Manager base, no requiere Diagnostics/Tuning Pack.
 
 # Sanitization notes
 
-Todos los campos → KEEP (métricas numéricas, `plan_name` es configuración no sensible).
+Métricas numéricas → KEEP. `plan_name` → MASK en el gateway desde el lote B8 (un plan propio puede llevar nombres de la organización), igual que en `Q-CDB-RESOURCE-MANAGER-001`.
 
 # Evolution via `/change query`
 
 Histórico (`V$RSRC_PDB_HISTORY`) sólo vía `/change query` si se requiere tendencia — verificar licensing-safety antes de certificar (`# 8` del prompt: "when available/licensing-safe").
+
+CHG-ESTACK-B8-OPS-COVERAGE-001: expuesta por el gateway sin cambio de SQL (lote B8).

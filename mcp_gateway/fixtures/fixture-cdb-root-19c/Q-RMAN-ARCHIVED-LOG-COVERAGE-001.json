@@ -1,0 +1,13 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B8)",
+  "rows": [
+    {
+      "thread_no": 1,
+      "logs_last_24h": 48,
+      "logs_on_disk": 120,
+      "logs_not_backed_up": 3,
+      "hours_since_oldest_not_backed_up": 5.5,
+      "hours_since_last_archived": 6.5
+    }
+  ]
+}

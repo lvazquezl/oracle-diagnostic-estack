@@ -21,7 +21,7 @@ LIST_BUDGET = 2900              # chars of the embedded literal per query: SQL s
 OWNERS = ("SYS", "AUDSYS", "PERFSTAT")  # STATS$* are Statspack (PERFSTAT); unified audit may live in AUDSYS
 _FORBIDDEN = re.compile(          # mirror of mcp_gateway/catalog.py _FORBIDDEN_SQL (asserted equal by the test)
     r'(?i)\b(insert|update|delete|merge|drop|create|alter|truncate|grant|revoke|execute|exec|call|begin|declare|commit|'
-    r'rollback|lock|flashback|purge|rename|comment|audit|noaudit|shutdown|startup|into)\b|dbms_|utl_|sys\.|;\s*\S')
+    r'rollback|(?<!\$)lock|flashback|purge|rename|comment|audit|noaudit|shutdown|startup|into)\b|dbms_|utl_|sys\.|;\s*\S')
 _VIEW = re.compile(r"^  ([A-Z][A-Z0-9_$#]*):[ \t]*$", re.M)
 _VIEW_MIN = re.compile(r"^    min_version:[ \t]*(\S+)", re.M)
 _COL = re.compile(r"^      ([a-z][a-z0-9_#$]*):[ \t]*\{[^}\n]*?min_version:[ \t]*([^,}\s]+)", re.M)

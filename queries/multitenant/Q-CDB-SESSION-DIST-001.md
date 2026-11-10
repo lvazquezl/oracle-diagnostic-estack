@@ -78,3 +78,5 @@ Ninguna.
 # Evolution via `/change query`
 
 Detalle de sesión individual (no agregado) sólo vía `/change query` con justificación diagnóstica específica y sanitización explícita adicional.
+
+CHG-ESTACK-B8-OPS-COVERAGE-001: expuesta por el gateway sin cambio de SQL (lote B8); `service_name` con el mismo alias que `Q-CDB-SERVICES-001` en la sesión.

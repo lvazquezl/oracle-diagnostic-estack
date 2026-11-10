@@ -1,7 +1,7 @@
 name: resource-manager
 display_name: "CDB Resource Manager Visibility"
 id: multitenant/resource-manager
-version: 1.0.0
+version: 1.1.0
 domain: multitenant
 status: active
 

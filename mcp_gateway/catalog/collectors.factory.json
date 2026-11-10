@@ -968,6 +968,8 @@
             "COMPLETED",
             "DISABLED",
             "FAILED",
+            "OPEN",
+            "OPEN READ ONLY",
             "REMOTE",
             "RESOURCE_UNAVAILABLE",
             "RETRY SCHEDULED",
@@ -4232,6 +4234,705 @@
       },
       "factory": {
         "lot": "B7",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-RMAN-ARCHIVED-LOG-COVERAGE-001",
+      "kind": "sql_query",
+      "domain": "rman",
+      "title": "Archived log backup coverage per thread of the current incarnation: logs in the last 24 h, on disk, not backed up, and hours since the oldest unprotected and the last archived log (no paths or dates)",
+      "row_limit": 32,
+      "params": {},
+      "output_fields": {
+        "thread_no": {
+          "type": "integer",
+          "min": 1,
+          "max": 1000,
+          "policy": "KEEP"
+        },
+        "logs_last_24h": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "logs_on_disk": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "logs_not_backed_up": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "hours_since_oldest_not_backed_up": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "hours_since_last_archived": {
+          "type": "number",
+          "min": -24,
+          "max": 1000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B8",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-RMAN-BACKUP-DATAFILE-001",
+      "kind": "sql_query",
+      "domain": "rman",
+      "title": "Datafile backup coverage per container: datafiles never backed up, without a full or level 0, and the worst age of the latest backup and full (no file names or dates)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "datafiles": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "datafiles_never_backed_up": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "datafiles_without_full": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "max_hours_since_backup": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "max_hours_since_full": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B8",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-RMAN-BACKUP-PIECE-001",
+      "kind": "sql_query",
+      "domain": "rman",
+      "title": "Backup pieces per device type and status (available, expired, unavailable): count, bytes and hours since the newest and oldest (no handles or tags)",
+      "row_limit": 20,
+      "params": {},
+      "output_fields": {
+        "device_type": {
+          "type": "enum",
+          "values": [
+            "DISK",
+            "OTHER",
+            "SBT_TAPE"
+          ],
+          "policy": "KEEP"
+        },
+        "piece_status": {
+          "type": "enum",
+          "values": [
+            "AVAILABLE",
+            "EXPIRED",
+            "OTHER",
+            "UNAVAILABLE"
+          ],
+          "policy": "KEEP"
+        },
+        "pieces": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "backup_bytes": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000000,
+          "policy": "KEEP"
+        },
+        "hours_since_newest": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "hours_since_oldest": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B8",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-CDB-LOCKDOWN-001",
+      "kind": "sql_query",
+      "domain": "multitenant",
+      "title": "Lockdown profiles per container: Oracle or custom profile (custom names masked), rule type, rule status and rule count (no rules or clauses)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "profile_kind": {
+          "type": "enum",
+          "values": [
+            "CUSTOM",
+            "DEFAULT",
+            "ORACLE"
+          ],
+          "policy": "KEEP"
+        },
+        "lockdown_profile": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "ldp"
+        },
+        "rule_type": {
+          "type": "enum",
+          "values": [
+            "FEATURE",
+            "NONE",
+            "OPTION",
+            "STATEMENT"
+          ],
+          "policy": "KEEP"
+        },
+        "rule_status": {
+          "type": "enum",
+          "values": [
+            "DISABLE",
+            "EMPTY",
+            "ENABLE",
+            "NONE"
+          ],
+          "policy": "KEEP"
+        },
+        "rules": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B8",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-CDB-PDB-SAVED-STATE-001",
+      "kind": "sql_query",
+      "domain": "multitenant",
+      "title": "PDB saved states for this instance: container, saved state and restricted flag (PDB and instance names masked); a PDB without a row has no saved state",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "con_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "pdb"
+        },
+        "instance_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "inst"
+        },
+        "state": {
+          "type": "enum",
+          "values": [
+            "OPEN",
+            "OPEN READ ONLY"
+          ],
+          "policy": "KEEP"
+        },
+        "restricted": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B8",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-CDB-RESOURCE-MANAGER-001",
+      "kind": "sql_query",
+      "domain": "multitenant",
+      "title": "CDB resource plan directives: Oracle or custom plan, active flag, directive kind, shares, utilization and parallel server limits (plan and PDB names masked)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "plan_kind": {
+          "type": "enum",
+          "values": [
+            "CUSTOM",
+            "ORACLE"
+          ],
+          "policy": "KEEP"
+        },
+        "plan_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "pln"
+        },
+        "plan_active": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "directive_kind": {
+          "type": "enum",
+          "values": [
+            "AUTOTASK",
+            "DEFAULT_PDB",
+            "OTHER",
+            "PDB"
+          ],
+          "policy": "KEEP"
+        },
+        "pdb_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "pdb"
+        },
+        "shares": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "utilization_limit": {
+          "type": "number",
+          "min": 0,
+          "max": 100,
+          "policy": "KEEP"
+        },
+        "parallel_server_limit": {
+          "type": "number",
+          "min": 0,
+          "max": 100,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B8",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-CDB-RESOURCE-USAGE-001",
+      "kind": "sql_query",
+      "domain": "multitenant",
+      "title": "Resource usage per PDB over the last minute: CPU, sessions, parallel servers, SGA/PGA and I/O with their limits (plan name masked; no AWR or ASH)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "cpu_consumed_time": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000000,
+          "policy": "KEEP"
+        },
+        "cpu_wait_time": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000000,
+          "policy": "KEEP"
+        },
+        "num_cpus": {
+          "type": "number",
+          "min": 0,
+          "max": 100000,
+          "policy": "KEEP"
+        },
+        "cpu_utilization_limit": {
+          "type": "number",
+          "min": 0,
+          "max": 100,
+          "policy": "KEEP"
+        },
+        "avg_cpu_utilization": {
+          "type": "number",
+          "min": 0,
+          "max": 100000,
+          "policy": "KEEP"
+        },
+        "avg_running_sessions": {
+          "type": "number",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "avg_waiting_sessions": {
+          "type": "number",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "running_sessions_limit": {
+          "type": "number",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "avg_active_parallel_servers": {
+          "type": "number",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "avg_queued_parallel_servers": {
+          "type": "number",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "parallel_servers_limit": {
+          "type": "number",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "sga_bytes": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "pga_bytes": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "iops": {
+          "type": "number",
+          "min": 0,
+          "max": 10000000000,
+          "policy": "KEEP"
+        },
+        "iombps": {
+          "type": "number",
+          "min": 0,
+          "max": 10000000000,
+          "policy": "KEEP"
+        },
+        "plan_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "pln"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B8",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-CDB-SESSION-DIST-001",
+      "kind": "sql_query",
+      "domain": "multitenant",
+      "title": "User sessions per PDB, instance and service: total, active and inactive (service names masked; no session details)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "inst_id": {
+          "type": "integer",
+          "min": 1,
+          "max": 1000,
+          "policy": "KEEP"
+        },
+        "service_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "svc"
+        },
+        "session_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "active_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "inactive_count": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B8",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-ASM-DISKS-001",
+      "kind": "sql_query",
+      "domain": "asm",
+      "title": "ASM disk health per disk group and failure group: disks, capacity in MB, not member, not online, not normal, and read/write errors (failure group masked; no paths or disk names; no disk discovery)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "diskgroup_number": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000,
+          "policy": "KEEP"
+        },
+        "failgroup": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "fg"
+        },
+        "disks": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "total_mb": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000,
+          "policy": "KEEP"
+        },
+        "disks_not_member": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "disks_not_online": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "disks_not_normal": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "read_errors": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "write_errors": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B8",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-PERF-LOCKS-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Enqueue locks per container, lock type and mode: count, waiting, blocking and the longest time in mode (no sessions, SQL ids or object ids)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "lock_type": {
+          "type": "enum",
+          "values": [
+            "AE",
+            "CF",
+            "CI",
+            "CU",
+            "DL",
+            "DX",
+            "HW",
+            "JQ",
+            "KO",
+            "MR",
+            "OTHER",
+            "PS",
+            "RT",
+            "SQ",
+            "ST",
+            "TM",
+            "TO",
+            "TS",
+            "TT",
+            "TX",
+            "UL",
+            "US",
+            "XR"
+          ],
+          "policy": "KEEP"
+        },
+        "lock_mode": {
+          "type": "enum",
+          "values": [
+            "Exclusive",
+            "None",
+            "Null",
+            "Row-S",
+            "Row-X",
+            "S/Row-X",
+            "Share",
+            "Unknown"
+          ],
+          "policy": "KEEP"
+        },
+        "locks": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "waiting": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "blocking": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "max_seconds_in_mode": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "B8",
         "lab_aliases": {},
         "fixture_target": "fixture-cdb-root-19c"
       }

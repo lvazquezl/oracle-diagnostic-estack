@@ -1,7 +1,7 @@
 ---
 name: resource-manager
 id: multitenant/resource-manager
-version: 1.0.0
+version: 1.1.0
 domain: multitenant
 status: active
 ---
@@ -29,6 +29,8 @@ Standalone y RAC.
 # Required evidence
 
 - `Q-CDB-RESOURCE-MANAGER-001` (`DBA_CDB_RSRC_PLAN_DIRECTIVES`)
+
+**Gateway (lote B8, `CHG-ESTACK-B8-OPS-COVERAGE-001`):** `Q-CDB-RESOURCE-MANAGER-001` 2.0.0 marca el plan activo (`plan_active`) y el tipo de directiva (PDB por defecto, autotask o PDB concreta); los nombres de plan y de PDB salen enmascarados.
 
 # Optional evidence
 
@@ -119,3 +121,5 @@ Alimenta `analysis/ANA-*/pdb-findings.md`.
 # Change history
 
 v1.0.0 — Fase 6, creación inicial.
+
+v1.1.0 — `CHG-ESTACK-B8-OPS-COVERAGE-001`: forma de la evidencia expuesta por el gateway (ver Required evidence).

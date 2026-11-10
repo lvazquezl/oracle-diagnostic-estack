@@ -1,7 +1,7 @@
 name: failure-groups
 display_name: "ASM Failure Groups"
 id: asm/failure-groups
-version: 1.0.0
+version: 1.1.0
 domain: asm
 status: active
 supported_oracle_versions: [11gR2, 12c, 18c, 19c, 21c, 23ai]

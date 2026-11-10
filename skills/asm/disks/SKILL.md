@@ -1,7 +1,7 @@
 ---
 name: disks
 id: asm/disks
-version: 1.0.0
+version: 1.1.0
 domain: asm
 status: active
 ---
@@ -29,6 +29,8 @@ Standalone y RAC.
 # Required evidence
 
 - `Q-ASM-DISKS-001` (`V$ASM_DISK` — sólo top-N discos anómalos, no el listado completo)
+
+**Gateway (lote B8, `CHG-ESTACK-B8-OPS-COVERAGE-001`):** `Q-ASM-DISKS-001` 2.0.0 lee `V$ASM_DISK_STAT` (sin discovery) y entrega conteos por disk group y failure group: discos no `MEMBER`, fuera de línea, en estado anormal y errores de lectura/escritura. Un disco concreto no se identifica: si un conteo es mayor que 0, la remediación indica al DBA consultar `V$ASM_DISK` en la instancia ASM.
 
 # Optional evidence
 
@@ -92,3 +94,5 @@ Alimenta `asm-analysis.md`.
 # Evolution via `/change`
 
 Nuevos umbrales de error vía `/change policy`.
+
+v1.1.0 — `CHG-ESTACK-B8-OPS-COVERAGE-001`: forma de la evidencia expuesta por el gateway (ver Required evidence).

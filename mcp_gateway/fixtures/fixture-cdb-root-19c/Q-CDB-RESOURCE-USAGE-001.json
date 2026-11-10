@@ -1,0 +1,24 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot B8)",
+  "rows": [
+    {
+      "con_id": 1,
+      "cpu_consumed_time": 1200,
+      "cpu_wait_time": 0,
+      "num_cpus": 4,
+      "cpu_utilization_limit": 100,
+      "avg_cpu_utilization": 2.5,
+      "avg_running_sessions": 0.4,
+      "avg_waiting_sessions": 0,
+      "running_sessions_limit": 4,
+      "avg_active_parallel_servers": 0,
+      "avg_queued_parallel_servers": 0,
+      "parallel_servers_limit": 8,
+      "sga_bytes": 524288000,
+      "pga_bytes": 104857600,
+      "iops": 12.5,
+      "iombps": 0.8,
+      "plan_name": "SYNTH_PLAN"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 ---
 name: failure-groups
 id: asm/failure-groups
-version: 1.0.0
+version: 1.1.0
 domain: asm
 status: active
 ---
@@ -29,6 +29,8 @@ Standalone y RAC.
 # Required evidence
 
 - `Q-ASM-DISKS-001` (`V$ASM_DISK.FAILGROUP`)
+
+**Gateway (lote B8, `CHG-ESTACK-B8-OPS-COVERAGE-001`):** `Q-ASM-DISKS-001` 2.0.0 entrega una fila por disk group y failure group (enmascarado, alias estable en la sesión) con cantidad de discos y `total_mb`: la comparación de failure groups usa esos agregados, sin discos individuales.
 
 # Optional evidence
 
@@ -90,3 +92,5 @@ Alimenta `asm-analysis.md`.
 # Evolution via `/change`
 
 N/A — vista estable desde 11gR2.
+
+v1.1.0 — `CHG-ESTACK-B8-OPS-COVERAGE-001`: forma de la evidencia expuesta por el gateway (ver Required evidence).

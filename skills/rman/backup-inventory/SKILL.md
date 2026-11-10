@@ -1,7 +1,7 @@
 ---
 name: backup-inventory
 id: rman/backup-inventory
-version: 1.0.0
+version: 1.1.0
 domain: rman
 status: active
 ---
@@ -30,6 +30,8 @@ Standalone y RAC.
 
 - `Q-RMAN-BACKUP-SET-001`
 - `Q-RMAN-BACKUP-PIECE-001`
+
+**Gateway (lote B8, `CHG-ESTACK-B8-OPS-COVERAGE-001`):** Por el gateway, `Q-RMAN-BACKUP-PIECE-001` 2.0.0 entrega piezas por dispositivo y estado (disponibles, expiradas, no disponibles), sin `HANDLE` ni `TAG`; `Q-RMAN-BACKUP-SET-001` no se expone y la frescura por tipo de backup sale de `Q-RMAN-BACKUP-FRESHNESS-001`.
 
 # Optional evidence
 
@@ -128,3 +130,5 @@ Alimenta `analysis/ANA-*/backup-inventory.md`.
 # Change history
 
 v1.0.0 — Fase 7, creación inicial.
+
+v1.1.0 — `CHG-ESTACK-B8-OPS-COVERAGE-001`: forma de la evidencia expuesta por el gateway (ver Required evidence).

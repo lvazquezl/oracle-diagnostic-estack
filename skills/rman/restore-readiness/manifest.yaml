@@ -1,7 +1,7 @@
 name: restore-readiness
 display_name: "Restore Readiness"
 id: rman/restore-readiness
-version: 1.0.0
+version: 1.1.0
 domain: rman
 status: active
 
