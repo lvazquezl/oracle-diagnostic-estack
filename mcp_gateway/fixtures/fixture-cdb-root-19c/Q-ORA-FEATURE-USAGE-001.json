@@ -1,0 +1,14 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot C)",
+  "rows": [
+    {
+      "con_id": 1,
+      "feature_name": "Automatic Workload Repository",
+      "detected_usages": 12,
+      "currently_used": "TRUE",
+      "hours_since_last_usage": 150.0,
+      "hours_since_first_usage": 8760.0,
+      "hours_since_last_sample": 72.0
+    }
+  ]
+}

@@ -61,6 +61,8 @@ SUPPORTED_COLLECTORS = {
     "Q-DICT-VERIFY-003": {},
     "Q-DICT-VERIFY-004": {},
     "Q-DICT-VERIFY-005": {},
+    "Q-DICT-VERIFY-006": {},                                      # CHG-ESTACK-C-NEW-QUERIES-001: the dictionary grew to 7 parts
+    "Q-DICT-VERIFY-007": {},
 }
 
 

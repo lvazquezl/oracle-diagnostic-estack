@@ -2,7 +2,7 @@
 name: archive
 display_name: "Archive Configuration"
 id: oracle/archive
-version: 1.0.0
+version: 1.1.0
 domain: oracle
 status: active
 ---
@@ -37,7 +37,11 @@ Target Profile publicado (`log_mode` ya disponible ahí).
 
 # Optional evidence
 
-Ninguna (gap detection profundo pertenece a `dataguard/archive-gap`, no profundizado en Fase 2).
+- `Q-ORA-DATABASE-MODE-001`
+
+Sin otra evidencia opcional (gap detection profundo pertenece a `dataguard/archive-gap`, no profundizado en Fase 2).
+
+**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-ORA-DATABASE-MODE-001` entrega `log_mode` y `force_logging`, que esta skill necesita para interpretar destinos y archivado: con `NOARCHIVELOG` no hay archivelogs que evaluar y el hallazgo es el modo mismo.
 
 # Data collection
 
@@ -158,3 +162,4 @@ Sensibilidad MEDIA (rutas/hosts de destino remoto); presupuesto bajo.
 | Versión | Fecha | Cambio |
 |---|---|---|
 | 1.0.0 | Fase 2 (Oracle Core) | Creado. |
+| 1.1.0 | `CHG-ESTACK-C-NEW-QUERIES-001` (lote C) | Evidencia opcional del gateway: `Q-ORA-DATABASE-MODE-001` (ver Optional evidence). |

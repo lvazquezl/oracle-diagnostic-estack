@@ -1,0 +1,15 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot C)",
+  "rows": [
+    {
+      "con_id": 1,
+      "tablespace_name": "SYNTH_DATA",
+      "sort_segment_mb": 256.0,
+      "used_mb": 0.0,
+      "max_used_mb": 96.0,
+      "max_sort_mb": 64.0,
+      "allocated_mb": 512.0,
+      "max_size_mb": 32768.0
+    }
+  ]
+}

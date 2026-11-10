@@ -1,0 +1,187 @@
+{
+ "_doc": "CHG-ESTACK-C-NEW-QUERIES-001 — lot C: new certified queries for the assessment domains without evidence (A identity, C memory, J TEMP, K UNDO, L redo mode, V Scheduler, W SQL patches, X optimizer statistics, Z feature usage). All aggregate in the database: no object, schema, job, file or window names, no free text, no absolute dates; identifiers masked. Same rules as lots/B1-oracle-core.json.",
+ "lot_id": "C",
+ "fixture_target": "fixture-cdb-root-19c",
+ "collectors": [
+  {
+   "collector_id": "Q-ORA-DATABASE-MODE-001",
+   "domain": "oracle",
+   "title": "Database mode: ARCHIVELOG, force logging, minimal supplemental logging, open mode, edition, CDB and block change tracking (masked unique name, no banner text or file names)",
+   "row_limit": 1,
+   "fields": [
+    "log_mode",
+    "force_logging",
+    "supplemental_log_data_min",
+    "open_mode",
+    "db_unique_name",
+    "cdb",
+    "edition",
+    "block_change_tracking"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-SQLPATCH-001",
+   "domain": "oracle",
+   "title": "SQL patch history per container: action, status, patch type, target version and hours since the action (no descriptions, log files or dates)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "patch_action",
+    "patch_id",
+    "patch_type",
+    "patch_status",
+    "target_version",
+    "hours_since_action"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-FEATURE-USAGE-001",
+   "domain": "oracle",
+   "title": "Oracle features with detected usage per container: usages, currently used and hours since first and last usage and last sample (license review input, never proof of licensing; no feature info)",
+   "row_limit": 500,
+   "fields": [
+    "con_id",
+    "feature_name",
+    "detected_usages",
+    "currently_used",
+    "hours_since_last_usage",
+    "hours_since_first_usage",
+    "hours_since_last_sample"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-OPTIMIZER-STATS-001",
+   "domain": "oracle",
+   "title": "Optimizer statistics per container and owner kind (fixed objects, Oracle, custom): tables without, stale or locked statistics and age of the last analysis (no table or schema names)",
+   "row_limit": 64,
+   "fields": [
+    "con_id",
+    "owner_kind",
+    "tables",
+    "tables_without_stats",
+    "tables_stale",
+    "tables_stats_locked",
+    "max_hours_since_analyzed",
+    "min_hours_since_analyzed"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-AUTOTASK-001",
+   "domain": "oracle",
+   "title": "Automated maintenance tasks per container: status, enabled maintenance windows, runs and runs not succeeded in 7 days and hours since the last success (no window or job names)",
+   "row_limit": 100,
+   "fields": [
+    "con_id",
+    "autotask_client",
+    "autotask_status",
+    "windows_enabled",
+    "runs_last_7d",
+    "runs_not_succeeded_7d",
+    "hours_since_last_success"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-SCHEDULER-STATE-001",
+   "domain": "oracle",
+   "title": "Scheduler and legacy DBMS_JOB jobs per container, owner kind and state: jobs, jobs with failures, max failure count and worst hours since the last run (no job names, owners or code)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "job_source",
+    "owner_kind",
+    "state",
+    "jobs",
+    "jobs_with_failures",
+    "max_failure_count",
+    "max_hours_since_last_run"
+   ],
+   "overrides": {
+    "state": {
+     "values": [
+      "BLOCKED",
+      "BROKEN",
+      "CHAIN_STALLED",
+      "COMPLETED",
+      "DISABLED",
+      "FAILED",
+      "REMOTE",
+      "RESOURCE_UNAVAILABLE",
+      "RETRY SCHEDULED",
+      "RUNNING",
+      "SCHEDULED",
+      "SUCCEEDED"
+     ],
+     "example": "SCHEDULED"
+    }
+   }
+  },
+  {
+   "collector_id": "Q-ORA-UNDO-STATS-001",
+   "domain": "oracle",
+   "title": "UNDO statistics of the last 24 hours per container: undo generated, longest query, tuned retention, ORA-01555 and space errors, extent steals and active/unexpired/expired undo of the last interval (no sql_id or dates)",
+   "row_limit": 64,
+   "fields": [
+    "con_id",
+    "undo_intervals",
+    "undo_generated_mb",
+    "max_query_seconds",
+    "max_concurrency",
+    "min_tuned_retention_seconds",
+    "max_tuned_retention_seconds",
+    "snapshot_too_old_errors",
+    "undo_space_errors",
+    "unexpired_steals",
+    "expired_steals",
+    "active_undo_mb",
+    "unexpired_undo_mb",
+    "expired_undo_mb"
+   ]
+  },
+  {
+   "collector_id": "Q-ORA-TEMP-HWM-001",
+   "domain": "oracle",
+   "title": "TEMP peak usage since startup per container and temporary tablespace: sort segment, used, max used, largest sort, allocated and autoextend max size in MB (masked tablespace, no file names)",
+   "row_limit": 200,
+   "fields": [
+    "con_id",
+    "tablespace_name",
+    "sort_segment_mb",
+    "used_mb",
+    "max_used_mb",
+    "max_sort_mb",
+    "allocated_mb",
+    "max_size_mb"
+   ]
+  },
+  {
+   "collector_id": "Q-PERF-SGA-COMPONENTS-001",
+   "domain": "performance",
+   "title": "Dynamic SGA components including java and streams pool: current, min, max and user-specified size, resize operations since startup and the last operation",
+   "row_limit": 32,
+   "fields": [
+    "sga_component",
+    "current_mb",
+    "min_mb",
+    "max_mb",
+    "user_specified_mb",
+    "resize_ops",
+    "last_oper_type",
+    "hours_since_last_oper"
+   ]
+  },
+  {
+   "collector_id": "Q-PERF-WORKAREA-001",
+   "domain": "performance",
+   "title": "PGA work area executions since startup (optimal, one-pass, multi-pass), PGA cache hit percentage, extra bytes read/written and max PGA allocated",
+   "row_limit": 1,
+   "fields": [
+    "optimal_executions",
+    "onepass_executions",
+    "multipass_executions",
+    "pga_cache_hit_pct",
+    "extra_bytes_read_written",
+    "max_pga_allocated_bytes"
+   ]
+  }
+ ]
+}

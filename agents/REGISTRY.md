@@ -6,7 +6,7 @@
 |---|---|---|
 | `oracle-operations-orchestrator` | Orquestación | [agents/oracle-operations-orchestrator.md](oracle-operations-orchestrator.md) |
 | `oracle-discovery-analyst` | Discovery/identidad/Target Profile | [agents/oracle-discovery-analyst/AGENT.md](oracle-discovery-analyst/AGENT.md) |
-| `oracle-dba-analyst` | Oracle Core (18 áreas) | [agents/oracle-dba-analyst/AGENT.md](oracle-dba-analyst/AGENT.md) |
+| `oracle-dba-analyst` | Oracle Core (19 áreas) | [agents/oracle-dba-analyst/AGENT.md](oracle-dba-analyst/AGENT.md) |
 | `oracle-performance-analyst` | AWR/ASH/ADDM/Statspack/performance | [agents/oracle-performance-analyst/AGENT.md](oracle-performance-analyst/AGENT.md) |
 | `oracle-rac-analyst` | RAC/Grid Infrastructure/Cache Fusion | [agents/oracle-rac-analyst/AGENT.md](oracle-rac-analyst/AGENT.md) |
 | `oracle-asm-storage-analyst` | ASM/almacenamiento | [agents/oracle-asm-storage-analyst/AGENT.md](oracle-asm-storage-analyst/AGENT.md) |

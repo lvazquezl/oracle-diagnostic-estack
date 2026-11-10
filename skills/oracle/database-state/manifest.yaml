@@ -1,7 +1,7 @@
 name: database-state
 display_name: "Database State"
 id: oracle/database-state
-version: 1.0.0
+version: 1.1.0
 domain: oracle
 status: active
 
@@ -13,7 +13,8 @@ database_role_scope: ANY
 
 required_evidence:
   - query_id: Q-ORA-DB-STATE-001
-optional_evidence: []
+optional_evidence:
+  - query_id: Q-ORA-DATABASE-MODE-001
 
 data_sensitivity: LOW
 context_budget: LOW

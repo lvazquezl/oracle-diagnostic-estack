@@ -651,6 +651,22 @@ queries:
     role_scope: ANY
     cost_class: MEDIUM
     validation_status: COMPATIBLE   # CHG-ESTACK-ORA19C-LAB-006: generada desde views.yaml para 19c
+  Q-DICT-VERIFY-006:
+    file: queries/oracle/dictionary/Q-DICT-VERIFY-006.md
+    variants:
+      - {variant_id: Q-DICT-VERIFY-006-V1, label: oracle_19c, min: "19.0", max: "19.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_TAB_COLUMNS, DBA_SYNONYMS]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE   # CHG-ESTACK-C-NEW-QUERIES-001: generada desde views.yaml para 19c (el diccionario creció a 7 partes)
+  Q-DICT-VERIFY-007:
+    file: queries/oracle/dictionary/Q-DICT-VERIFY-007.md
+    variants:
+      - {variant_id: Q-DICT-VERIFY-007-V1, label: oracle_19c, min: "19.0", max: "19.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_TAB_COLUMNS, DBA_SYNONYMS]
+    role_scope: ANY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE   # CHG-ESTACK-C-NEW-QUERIES-001: generada desde views.yaml para 19c (el diccionario creció a 7 partes)
   Q-RMAN-CONTROLFILE-RECORD-SECTION-001: {file: queries/rman/Q-RMAN-CONTROLFILE-RECORD-SECTION-001.md, variants: implicit_full_range, min: "10.2", max: "23.0", required_views: [V$CONTROLFILE_RECORD_SECTION], role_scope: ANY, cost_class: LOW, validation_status: COMPATIBLE}
 
   # --- PHASE 8 — ORACLE SECURITY & COMPLIANCE ---
@@ -939,6 +955,119 @@ queries:
     cost_class: LOW
     validation_status: COMPATIBLE
     was: "CHG-ESTACK-B7-SECURITY-COVERAGE-001: variantes por versión/contenedor (CDB_* con con_id) y salida saneada para el gateway"
+
+  # --- CHG-ESTACK-C-NEW-QUERIES-001 (lote C): queries nuevas para los dominios sin evidencia del assessment ---
+  Q-ORA-DATABASE-MODE-001:
+    file: queries/oracle/database/Q-ORA-DATABASE-MODE-001.md
+    variants:
+      - {variant_id: Q-ORA-DATABASE-MODE-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-ORA-DATABASE-MODE-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$DATABASE, V$VERSION, V$BLOCK_CHANGE_TRACKING]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-C-NEW-QUERIES-001: nueva"
+  Q-PERF-AWR-STARTUP-HISTORY-001:
+    file: queries/performance/awr/Q-PERF-AWR-STARTUP-HISTORY-001.md
+    variants:
+      - {variant_id: Q-PERF-AWR-STARTUP-HISTORY-001-V1, label: all_versions, min: "10.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_HIST_DATABASE_INSTANCE, DBA_HIST_SNAPSHOT, V$DATABASE]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-C-NEW-QUERIES-001: nueva"
+  Q-ORA-SQLPATCH-001:
+    file: queries/oracle/components/Q-ORA-SQLPATCH-001.md
+    variants:
+      - {variant_id: Q-ORA-SQLPATCH-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-ORA-SQLPATCH-001-V2, label: sqlpatch_12_1_12_2, min: "12.1", max: "12.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-ORA-SQLPATCH-001-V3, label: sqlpatch_18plus, min: "18.0", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_REGISTRY_HISTORY, CDB_REGISTRY_SQLPATCH]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-C-NEW-QUERIES-001: nueva"
+  Q-ORA-FEATURE-USAGE-001:
+    file: queries/oracle/components/Q-ORA-FEATURE-USAGE-001.md
+    variants:
+      - {variant_id: Q-ORA-FEATURE-USAGE-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-ORA-FEATURE-USAGE-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_FEATURE_USAGE_STATISTICS, CDB_FEATURE_USAGE_STATISTICS, V$DATABASE]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-C-NEW-QUERIES-001: nueva"
+  Q-ORA-OPTIMIZER-STATS-001:
+    file: queries/oracle/statistics/Q-ORA-OPTIMIZER-STATS-001.md
+    variants:
+      - {variant_id: Q-ORA-OPTIMIZER-STATS-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-ORA-OPTIMIZER-STATS-001-V2, label: cdb_12_1_0_1, min: "12.1", max: "12.1.0.1", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-ORA-OPTIMIZER-STATS-001-V3, label: cdb_oracle_maintained, min: "12.1.0.2", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_TAB_STATISTICS, CDB_TAB_STATISTICS, CDB_USERS]
+    role_scope: PRIMARY
+    cost_class: MEDIUM
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-C-NEW-QUERIES-001: nueva"
+  Q-ORA-AUTOTASK-001:
+    file: queries/oracle/jobs/Q-ORA-AUTOTASK-001.md
+    variants:
+      - {variant_id: Q-ORA-AUTOTASK-001-V1, label: autotask_11g, min: "11.1", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-ORA-AUTOTASK-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_AUTOTASK_CLIENT, DBA_AUTOTASK_WINDOW_CLIENTS, DBA_AUTOTASK_JOB_HISTORY, CDB_AUTOTASK_CLIENT, CDB_AUTOTASK_WINDOW_CLIENTS, CDB_AUTOTASK_JOB_HISTORY]
+    role_scope: PRIMARY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-C-NEW-QUERIES-001: nueva"
+  Q-ORA-SCHEDULER-STATE-001:
+    file: queries/oracle/jobs/Q-ORA-SCHEDULER-STATE-001.md
+    variants:
+      - {variant_id: Q-ORA-SCHEDULER-STATE-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-ORA-SCHEDULER-STATE-001-V2, label: cdb_12_1_0_1, min: "12.1", max: "12.1.0.1", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-ORA-SCHEDULER-STATE-001-V3, label: cdb_oracle_maintained, min: "12.1.0.2", max: "18.0", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-ORA-SCHEDULER-STATE-001-V4, label: scheduler_only_19plus, min: "19.0", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [DBA_SCHEDULER_JOBS, DBA_JOBS, CDB_SCHEDULER_JOBS, CDB_JOBS, CDB_USERS]
+    role_scope: PRIMARY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-C-NEW-QUERIES-001: nueva"
+  Q-ORA-UNDO-STATS-001:
+    file: queries/oracle/undo/Q-ORA-UNDO-STATS-001.md
+    variants:
+      - {variant_id: Q-ORA-UNDO-STATS-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-ORA-UNDO-STATS-001-V2, label: per_container_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [V$UNDOSTAT, V$PARAMETER]
+    role_scope: PRIMARY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-C-NEW-QUERIES-001: nueva"
+  Q-ORA-TEMP-HWM-001:
+    file: queries/oracle/temp/Q-ORA-TEMP-HWM-001.md
+    variants:
+      - {variant_id: Q-ORA-TEMP-HWM-001-V1, label: legacy_10g_11g, min: "10.2", max: "11.2", container_scope: ANY_CONTAINER}
+      - {variant_id: Q-ORA-TEMP-HWM-001-V2, label: cdb_aware_12plus, min: "12.1", max: "23.0", container_scope: ANY_CONTAINER}
+    required_views: [GV$SORT_SEGMENT, DBA_TABLESPACES, DBA_TEMP_FILES, CDB_TABLESPACES, CDB_TEMP_FILES]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-C-NEW-QUERIES-001: nueva"
+  Q-PERF-SGA-COMPONENTS-001:
+    file: queries/performance/memory/Q-PERF-SGA-COMPONENTS-001.md
+    variants:
+      - {variant_id: Q-PERF-SGA-COMPONENTS-001-V1, label: all_versions, min: "10.2", max: "23.0", container_scope: NOT_APPLICABLE}
+    required_views: [V$SGA_DYNAMIC_COMPONENTS]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-C-NEW-QUERIES-001: nueva"
+  Q-PERF-WORKAREA-001:
+    file: queries/performance/memory/Q-PERF-WORKAREA-001.md
+    variants:
+      - {variant_id: Q-PERF-WORKAREA-001-V1, label: all_versions, min: "10.2", max: "23.0", container_scope: NOT_APPLICABLE}
+    required_views: [V$SQL_WORKAREA_HISTOGRAM, V$PGASTAT]
+    role_scope: ANY
+    cost_class: LOW
+    validation_status: COMPATIBLE
+    was: "CHG-ESTACK-C-NEW-QUERIES-001: nueva"
 
 notes: >
   "implicit_full_range" significa: la query no requirió split porque su SQL, verificado contra

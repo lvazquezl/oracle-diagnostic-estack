@@ -1,0 +1,21 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot C)",
+  "rows": [
+    {
+      "con_id": 1,
+      "undo_intervals": 144,
+      "undo_generated_mb": 812.5,
+      "max_query_seconds": 1450,
+      "max_concurrency": 6,
+      "min_tuned_retention_seconds": 900,
+      "max_tuned_retention_seconds": 2400,
+      "snapshot_too_old_errors": 0,
+      "undo_space_errors": 0,
+      "unexpired_steals": 0,
+      "expired_steals": 0,
+      "active_undo_mb": 12.0,
+      "unexpired_undo_mb": 180.5,
+      "expired_undo_mb": 1024.0
+    }
+  ]
+}

@@ -275,11 +275,21 @@ Todas con `status: active`, `execution_mode: READ_ONLY`, `tests:` referenciado a
 | `Q-ORA-RESOURCE-LIMITS-001` | Uso pico vs. límite de recursos | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
 | `Q-ORA-DIAGNOSTICS-ADR-001` | Incidentes ADR abiertos | 11g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
 | `Q-ORA-DIAGNOSTICS-ALERTLOG-001` | Extracto acotado de alert log (errores ORA-*) | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
-| `Q-DICT-VERIFY-001` | Verificación del diccionario contra el catálogo real, parte 1/5: sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
-| `Q-DICT-VERIFY-002` | Verificación del diccionario contra el catálogo real, parte 2/5: sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
-| `Q-DICT-VERIFY-003` | Verificación del diccionario contra el catálogo real, parte 3/5: sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
-| `Q-DICT-VERIFY-004` | Verificación del diccionario contra el catálogo real, parte 4/5: sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
-| `Q-DICT-VERIFY-005` | Verificación del diccionario contra el catálogo real, parte 5/5: sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-DICT-VERIFY-001` | Verificación del diccionario contra el catálogo real, parte 1/7: sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-DICT-VERIFY-002` | Verificación del diccionario contra el catálogo real, parte 2/7: sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-DICT-VERIFY-003` | Verificación del diccionario contra el catálogo real, parte 3/7: sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-DICT-VERIFY-004` | Verificación del diccionario contra el catálogo real, parte 4/7: sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-DICT-VERIFY-005` | Verificación del diccionario contra el catálogo real, parte 5/7: sólo discrepancias — generada, CHG-ESTACK-ORA19C-LAB-006 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-DICT-VERIFY-006` | Verificación del diccionario contra el catálogo real, parte 6/7: sólo discrepancias — generada, CHG-ESTACK-C-NEW-QUERIES-001 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-DICT-VERIFY-007` | Verificación del diccionario contra el catálogo real, parte 7/7: sólo discrepancias — generada, CHG-ESTACK-C-NEW-QUERIES-001 | 19c | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-ORA-DATABASE-MODE-001` | Modo de la base: ARCHIVELOG, force logging, supplemental logging mínimo, open mode, edición, CDB y block change tracking — identidad y protección del redo | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-ORA-SQLPATCH-001` | Historial de parches SQL aplicados por datapatch (o catupgrd/catbundle en 10g/11g) por contenedor: acción, estado, tipo de parche, versión destino y horas desde la acción | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-ORA-FEATURE-USAGE-001` | Features de Oracle con uso detectado (DBA_FEATURE_USAGE_STATISTICS) por contenedor: usos detectados, uso actual y antigüedad del primer y último uso — insumo de revisión de licencias, nunca prueba de licencia | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
+| `Q-ORA-OPTIMIZER-STATS-001` | Estado de las estadísticas del optimizer por contenedor y tipo de dueño (fixed objects, Oracle, propios): tablas sin estadísticas, obsoletas, bloqueadas y antigüedad del último análisis | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-ORA-AUTOTASK-001` | Automated maintenance tasks (estadísticas del optimizer, space advisor, SQL tuning advisor) por contenedor: estado, ventanas habilitadas, ejecuciones y fallas en 7 días y horas desde la última ejecución exitosa | 11g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-ORA-SCHEDULER-STATE-001` | Inventario agregado de jobs del Scheduler y de DBMS_JOB por contenedor, tipo de dueño y estado: cantidad, jobs con fallas, máximo de fallas y peor antigüedad de la última ejecución — incluye deshabilitados y broken | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-ORA-UNDO-STATS-001` | Estadísticas de UNDO de las últimas 24 h por contenedor: undo generado, consulta más larga, retención ajustada, ORA-01555, falta de espacio, robos de extents y reparto activo/no expirado/expirado del último intervalo | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-ORA-TEMP-HWM-001` | Pico de uso de TEMP desde el arranque por contenedor y tablespace temporal: segmento de ordenamiento, uso actual, máximo usado, ordenamiento más grande, tamaño asignado y máximo con autoextend | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 
 ## Oracle Core queries (Fase 2) — Cost, Risk & Sensitivity
 
@@ -310,6 +320,16 @@ Todas con `status: active`, `execution_mode: READ_ONLY`, `tests:` referenciado a
 | `Q-DICT-VERIFY-003` | `DBA_TAB_COLUMNS`, `DBA_SYNONYMS` (sólo nombres, owners SYS/AUDSYS/PERFSTAT) | R0 | MEDIUM | 30 | 120 | LOW | none |
 | `Q-DICT-VERIFY-004` | `DBA_TAB_COLUMNS`, `DBA_SYNONYMS` (sólo nombres, owners SYS/AUDSYS/PERFSTAT) | R0 | MEDIUM | 30 | 120 | LOW | none |
 | `Q-DICT-VERIFY-005` | `DBA_TAB_COLUMNS`, `DBA_SYNONYMS` (sólo nombres, owners SYS/AUDSYS/PERFSTAT) | R0 | MEDIUM | 30 | 120 | LOW | none |
+| `Q-DICT-VERIFY-006` | `DBA_TAB_COLUMNS`, `DBA_SYNONYMS` (sólo nombres, owners SYS/AUDSYS/PERFSTAT) | R0 | MEDIUM | 30 | 120 | LOW | none |
+| `Q-DICT-VERIFY-007` | `DBA_TAB_COLUMNS`, `DBA_SYNONYMS` (sólo nombres, owners SYS/AUDSYS/PERFSTAT) | R0 | MEDIUM | 30 | 120 | LOW | none |
+| `Q-ORA-DATABASE-MODE-001` | `V$DATABASE`, `V$VERSION`, `V$BLOCK_CHANGE_TRACKING` | R0 | LOW | 10 | 1 | LOW | none |
+| `Q-ORA-SQLPATCH-001` | `DBA_REGISTRY_HISTORY`, `CDB_REGISTRY_SQLPATCH` | R0 | LOW | 15 | 200 | LOW | none |
+| `Q-ORA-FEATURE-USAGE-001` | `DBA_FEATURE_USAGE_STATISTICS`, `CDB_FEATURE_USAGE_STATISTICS`, `V$DATABASE` | R0 | LOW | 20 | 500 | LOW | none |
+| `Q-ORA-OPTIMIZER-STATS-001` | `DBA_TAB_STATISTICS`, `CDB_TAB_STATISTICS`, `CDB_USERS` | R0 | MEDIUM | 60 | 64 | LOW | none |
+| `Q-ORA-AUTOTASK-001` | `DBA_AUTOTASK_CLIENT`, `DBA_AUTOTASK_WINDOW_CLIENTS`, `DBA_AUTOTASK_JOB_HISTORY`, `CDB_AUTOTASK_CLIENT`, `CDB_AUTOTASK_WINDOW_CLIENTS`, `CDB_AUTOTASK_JOB_HISTORY` | R0 | LOW | 20 | 100 | LOW | none |
+| `Q-ORA-SCHEDULER-STATE-001` | `DBA_SCHEDULER_JOBS`, `DBA_JOBS`, `CDB_SCHEDULER_JOBS`, `CDB_JOBS`, `CDB_USERS` | R0 | LOW | 20 | 200 | LOW | none |
+| `Q-ORA-UNDO-STATS-001` | `V$UNDOSTAT`, `V$PARAMETER` | R0 | LOW | 15 | 64 | LOW | none |
+| `Q-ORA-TEMP-HWM-001` | `GV$SORT_SEGMENT`, `DBA_TABLESPACES`, `DBA_TEMP_FILES`, `CDB_TABLESPACES`, `CDB_TEMP_FILES` | R0 | LOW | 15 | 200 | LOW | none |
 
 Todas con `status: active`, `execution_mode: READ_ONLY`, mismo set mínimo de tests que el resto del catálogo. Ninguna es `cost_class: BLOCKED`. Ninguna toca tablas de aplicación (`tests/test_no_application_table_access.sh`, `tests/test_application_data_blocked.sh`).
 
@@ -335,6 +355,9 @@ Todas con `status: active`, `execution_mode: READ_ONLY`, mismo set mínimo de te
 | `Q-PERF-LOCKS-001` | Enqueue locks por tipo y modo (agregado) | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
 | `Q-PERF-PARALLEL-001` | Sesiones Parallel Execution activas | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
 | `Q-PERF-REDO-001` | Volumen de redo y tasa de commit | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | PRIMARY |
+| `Q-PERF-SGA-COMPONENTS-001` | Componentes dinámicos de la SGA (incluye java y streams pool): tamaño actual, mínimo, máximo y especificado, operaciones de resize desde el arranque y la última operación | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+| `Q-PERF-WORKAREA-001` | Ejecuciones de work areas (sort, hash join) óptimas, one-pass y multi-pass desde el arranque, PGA cache hit, bytes extra leídos y escritos y pico de PGA asignada | 10g–23ai | todas | Standalone/RAC | NOT_APPLICABLE | ANY |
+| `Q-PERF-AWR-STARTUP-HISTORY-001` | Historial de arranques por instancia desde AWR: arranques en 7 y 30 días, horas desde el último, versiones distintas registradas y horas de historia AWR disponible | 10g–23ai | todas | Standalone/RAC | ANY_CONTAINER | ANY |
 
 ## Performance queries (Fase 3) — Cost, Risk & Sensitivity
 
@@ -358,6 +381,9 @@ Todas con `status: active`, `execution_mode: READ_ONLY`, mismo set mínimo de te
 | `Q-PERF-LOCKS-001` | `V$LOCK` | R0 | MEDIUM | 15 | 200 | LOW | none |
 | `Q-PERF-PARALLEL-001` | `V$PX_SESSION` | R0 | LOW | 15 | 200 | LOW | none |
 | `Q-PERF-REDO-001` | `V$SYSSTAT` | R0 | LOW | 10 | 10 | LOW | none |
+| `Q-PERF-SGA-COMPONENTS-001` | `V$SGA_DYNAMIC_COMPONENTS` | R0 | LOW | 10 | 32 | LOW | none |
+| `Q-PERF-WORKAREA-001` | `V$SQL_WORKAREA_HISTOGRAM`, `V$PGASTAT` | R0 | LOW | 10 | 1 | LOW | none |
+| `Q-PERF-AWR-STARTUP-HISTORY-001` | `DBA_HIST_DATABASE_INSTANCE`, `DBA_HIST_SNAPSHOT`, `V$DATABASE` | R0 | LOW | 15 | 64 | LOW | Diagnostics Pack |
 
 Todas con `status: active`, `execution_mode: READ_ONLY`, mismo set mínimo de tests que el resto del catálogo. Ninguna es `cost_class: BLOCKED`. Rutas `*-CURRENT-001`/`*-HIST-001` sin sufijo `-CURRENT-`/`-HIST-` son la alternativa AWR licenciada vs. la ruta estándar sin licencia respectivamente — ver `docs/PHASE_3_ORACLE_PERFORMANCE.md#awr-path` y `#standard-non-licensed-performance-path`. `Q-PERF-*` (excepto memoria estructural `SGA`/`PGA`/`LIBCACHE`/`SHAREDPOOL`, `database_role_scope: ANY`) se restringen a `PRIMARY` por la misma razón que `Q-PERF-WAIT-*` — reflejan actividad de sesión de usuario, mínima o nula en standby en mount.
 

@@ -2,7 +2,7 @@
 name: database-state
 display_name: "Database State"
 id: oracle/database-state
-version: 1.0.0
+version: 1.1.0
 domain: oracle
 status: active
 ---
@@ -37,7 +37,9 @@ Target Profile publicado.
 
 # Optional evidence
 
-Ninguna.
+- `Q-ORA-DATABASE-MODE-001`
+
+**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-ORA-DATABASE-MODE-001` entrega modo ARCHIVELOG, force logging, supplemental logging mínimo, open mode, edición (palabra cerrada del banner), CDB y estado de block change tracking. Hallazgos: `NOARCHIVELOG` en una base productiva (sin recuperación a un punto en el tiempo ni backups en línea, HIGH); `force_logging` `NO` con Data Guard o una réplica lógica (operaciones `NOLOGGING` no llegan al standby, MEDIUM); block change tracking deshabilitado con backups incrementales (cada incremental lee todos los datafiles, LOW). La edición filtra qué features aplican; `UNKNOWN` (banner de 10g/11g Standard Edition) nunca se infiere.
 
 # Data collection
 
@@ -149,3 +151,4 @@ Sensibilidad BAJA; presupuesto muy bajo (una sola consulta compacta).
 | Versión | Fecha | Cambio |
 |---|---|---|
 | 1.0.0 | Fase 2 (Oracle Core) | Creado. |
+| 1.1.0 | `CHG-ESTACK-C-NEW-QUERIES-001` (lote C) | Evidencia opcional del gateway: `Q-ORA-DATABASE-MODE-001` (ver Optional evidence). |

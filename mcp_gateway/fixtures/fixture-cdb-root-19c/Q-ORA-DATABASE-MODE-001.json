@@ -1,0 +1,15 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot C)",
+  "rows": [
+    {
+      "log_mode": "ARCHIVELOG",
+      "force_logging": "YES",
+      "supplemental_log_data_min": "NO",
+      "open_mode": "READ WRITE",
+      "db_unique_name": "SYNTH_DB",
+      "cdb": "YES",
+      "edition": "ENTERPRISE",
+      "block_change_tracking": "DISABLED"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot C)",
+  "rows": [
+    {
+      "optimal_executions": 125000,
+      "onepass_executions": 3,
+      "multipass_executions": 0,
+      "pga_cache_hit_pct": 99.2,
+      "extra_bytes_read_written": 0,
+      "max_pga_allocated_bytes": 524288000
+    }
+  ]
+}

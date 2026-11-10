@@ -703,7 +703,7 @@
       "kind": "collector",
       "domain": "oracle",
       "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
-      "notes": "Dictionary verification part 1/5: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
+      "notes": "Dictionary verification part 1/7: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
       "test_refs": [
         "tests/test_p14_integration_chain.sh",
         "tests/test_p15_oracle_lab_adapter.sh",
@@ -740,7 +740,7 @@
       "kind": "collector",
       "domain": "oracle",
       "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
-      "notes": "Dictionary verification part 2/5: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
+      "notes": "Dictionary verification part 2/7: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
       "test_refs": [
         "tests/test_p14_integration_chain.sh",
         "tests/test_p15_oracle_lab_adapter.sh",
@@ -777,7 +777,7 @@
       "kind": "collector",
       "domain": "oracle",
       "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
-      "notes": "Dictionary verification part 3/5: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
+      "notes": "Dictionary verification part 3/7: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
       "test_refs": [
         "tests/test_p14_integration_chain.sh",
         "tests/test_p15_oracle_lab_adapter.sh",
@@ -814,7 +814,7 @@
       "kind": "collector",
       "domain": "oracle",
       "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
-      "notes": "Dictionary verification part 4/5: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
+      "notes": "Dictionary verification part 4/7: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
       "test_refs": [
         "tests/test_p14_integration_chain.sh",
         "tests/test_p15_oracle_lab_adapter.sh",
@@ -851,7 +851,7 @@
       "kind": "collector",
       "domain": "oracle",
       "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
-      "notes": "Dictionary verification part 5/5: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
+      "notes": "Dictionary verification part 5/7: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006); a real lab run is not a pilot.",
       "test_refs": [
         "tests/test_p14_integration_chain.sh",
         "tests/test_p15_oracle_lab_adapter.sh",
@@ -859,6 +859,80 @@
         "tests/test_dict_verify_queries_match_dictionary.sh"
       ],
       "collector_id": "Q-DICT-VERIFY-005",
+      "oracle_versions": [
+        "19c"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on DBA_TAB_COLUMNS",
+        "SELECT on DBA_SYNONYMS"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 120,
+        "timeout_seconds": 30
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-DICT-VERIFY-006",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Dictionary verification part 6/7: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006; part 6 added by CHG-ESTACK-C-NEW-QUERIES-001); a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh",
+        "tests/test_dict_verify_queries_match_dictionary.sh"
+      ],
+      "collector_id": "Q-DICT-VERIFY-006",
+      "oracle_versions": [
+        "19c"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on DBA_TAB_COLUMNS",
+        "SELECT on DBA_SYNONYMS"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 120,
+        "timeout_seconds": 30
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-DICT-VERIFY-007",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Dictionary verification part 7/7: declared views/columns missing from the real catalog (compared in the database). Generated from compatibility/oracle-dictionary/views.yaml by scripts/dict_verify/generate.py (drift-guarded). Executed through the fixture adapter (fixture-primary-19c) and by the lab oracle_sql adapter tests with a SYNTHETIC driver (CHG-ESTACK-ORA19C-LAB-006; part 7 added by CHG-ESTACK-C-NEW-QUERIES-001); a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_adapter.sh",
+        "tests/test_p15_oracle_lab_security.sh",
+        "tests/test_dict_verify_queries_match_dictionary.sh"
+      ],
+      "collector_id": "Q-DICT-VERIFY-007",
       "oracle_versions": [
         "19c"
       ],
@@ -4286,6 +4360,482 @@
       ]
     },
     {
+      "id": "collector:Q-ORA-DATABASE-MODE-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Generated by the collector factory (lot C, CHG-ESTACK-C-NEW-QUERIES-001). Fixture adapter (fixture-cdb-root-19c) and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_collector_factory.sh",
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-ORA-DATABASE-MODE-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on V$DATABASE",
+        "SELECT on V$VERSION",
+        "SELECT on V$BLOCK_CHANGE_TRACKING"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 1,
+        "timeout_seconds": 10
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-PERF-AWR-STARTUP-HISTORY-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Generated by the collector factory (lot CL, CHG-ESTACK-C-NEW-QUERIES-001). Fixture adapter (fixture-licensed-19c) and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_collector_factory.sh",
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-PERF-AWR-STARTUP-HISTORY-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on DBA_HIST_DATABASE_INSTANCE",
+        "SELECT on DBA_HIST_SNAPSHOT",
+        "SELECT on V$DATABASE"
+      ],
+      "license": [
+        "Diagnostics Pack"
+      ],
+      "limits": {
+        "rows": 64,
+        "timeout_seconds": 15
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-ORA-SQLPATCH-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Generated by the collector factory (lot C, CHG-ESTACK-C-NEW-QUERIES-001). Fixture adapter (fixture-cdb-root-19c) and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_collector_factory.sh",
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-ORA-SQLPATCH-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on DBA_REGISTRY_HISTORY",
+        "SELECT on CDB_REGISTRY_SQLPATCH"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 200,
+        "timeout_seconds": 15
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-ORA-FEATURE-USAGE-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Generated by the collector factory (lot C, CHG-ESTACK-C-NEW-QUERIES-001). Fixture adapter (fixture-cdb-root-19c) and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_collector_factory.sh",
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-ORA-FEATURE-USAGE-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on DBA_FEATURE_USAGE_STATISTICS",
+        "SELECT on CDB_FEATURE_USAGE_STATISTICS",
+        "SELECT on V$DATABASE"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 500,
+        "timeout_seconds": 20
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-ORA-OPTIMIZER-STATS-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Generated by the collector factory (lot C, CHG-ESTACK-C-NEW-QUERIES-001). Fixture adapter (fixture-cdb-root-19c) and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_collector_factory.sh",
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-ORA-OPTIMIZER-STATS-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on DBA_TAB_STATISTICS",
+        "SELECT on CDB_TAB_STATISTICS",
+        "SELECT on CDB_USERS"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 64,
+        "timeout_seconds": 60
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-ORA-AUTOTASK-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Generated by the collector factory (lot C, CHG-ESTACK-C-NEW-QUERIES-001). Fixture adapter (fixture-cdb-root-19c) and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_collector_factory.sh",
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-ORA-AUTOTASK-001",
+      "oracle_versions": [
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on DBA_AUTOTASK_CLIENT",
+        "SELECT on DBA_AUTOTASK_WINDOW_CLIENTS",
+        "SELECT on DBA_AUTOTASK_JOB_HISTORY",
+        "SELECT on CDB_AUTOTASK_CLIENT",
+        "SELECT on CDB_AUTOTASK_WINDOW_CLIENTS",
+        "SELECT on CDB_AUTOTASK_JOB_HISTORY"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 100,
+        "timeout_seconds": 20
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-ORA-SCHEDULER-STATE-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Generated by the collector factory (lot C, CHG-ESTACK-C-NEW-QUERIES-001). Fixture adapter (fixture-cdb-root-19c) and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_collector_factory.sh",
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-ORA-SCHEDULER-STATE-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on DBA_SCHEDULER_JOBS",
+        "SELECT on DBA_JOBS",
+        "SELECT on CDB_SCHEDULER_JOBS",
+        "SELECT on CDB_JOBS",
+        "SELECT on CDB_USERS"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 200,
+        "timeout_seconds": 20
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-ORA-UNDO-STATS-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Generated by the collector factory (lot C, CHG-ESTACK-C-NEW-QUERIES-001). Fixture adapter (fixture-cdb-root-19c) and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_collector_factory.sh",
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-ORA-UNDO-STATS-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on V$UNDOSTAT",
+        "SELECT on V$PARAMETER"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 64,
+        "timeout_seconds": 15
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-ORA-TEMP-HWM-001",
+      "kind": "collector",
+      "domain": "oracle",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Generated by the collector factory (lot C, CHG-ESTACK-C-NEW-QUERIES-001). Fixture adapter (fixture-cdb-root-19c) and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_collector_factory.sh",
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-ORA-TEMP-HWM-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on GV$SORT_SEGMENT",
+        "SELECT on DBA_TABLESPACES",
+        "SELECT on DBA_TEMP_FILES",
+        "SELECT on CDB_TABLESPACES",
+        "SELECT on CDB_TEMP_FILES"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 200,
+        "timeout_seconds": 15
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-PERF-SGA-COMPONENTS-001",
+      "kind": "collector",
+      "domain": "performance",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Generated by the collector factory (lot C, CHG-ESTACK-C-NEW-QUERIES-001). Fixture adapter (fixture-cdb-root-19c) and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_collector_factory.sh",
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-PERF-SGA-COMPONENTS-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on V$SGA_DYNAMIC_COMPONENTS"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 32,
+        "timeout_seconds": 10
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
+      "id": "collector:Q-PERF-WORKAREA-001",
+      "kind": "collector",
+      "domain": "performance",
+      "maturity": "TESTED_WITH_SYNTHETIC_FIXTURES",
+      "notes": "Generated by the collector factory (lot C, CHG-ESTACK-C-NEW-QUERIES-001). Fixture adapter (fixture-cdb-root-19c) and lab oracle_sql tests with a SYNTHETIC driver; a real lab run is not a pilot.",
+      "test_refs": [
+        "tests/test_collector_factory.sh",
+        "tests/test_p14_integration_chain.sh",
+        "tests/test_p15_oracle_lab_security.sh"
+      ],
+      "collector_id": "Q-PERF-WORKAREA-001",
+      "oracle_versions": [
+        "10g",
+        "11g",
+        "12c",
+        "18c",
+        "19c",
+        "21c",
+        "23ai"
+      ],
+      "platforms": [
+        "ANY"
+      ],
+      "architectures": [
+        "ANY"
+      ],
+      "min_privileges": [
+        "SELECT on V$SQL_WORKAREA_HISTOGRAM",
+        "SELECT on V$PGASTAT"
+      ],
+      "license": "none",
+      "limits": {
+        "rows": 1,
+        "timeout_seconds": 10
+      },
+      "sanitization": "DEFAULT_DENY_FIELD_POLICY",
+      "adapters": [
+        "fixture",
+        "oracle_sql"
+      ]
+    },
+    {
       "id": "engine:rca_engine",
       "kind": "engine",
       "domain": "estack",
@@ -5046,7 +5596,7 @@
       "notes": "Skills are instruction contracts for the model; they are not executed code.",
       "test_refs": [],
       "skill_domain": "oracle",
-      "skill_count": 18
+      "skill_count": 19
     },
     {
       "id": "skill_domain:os",

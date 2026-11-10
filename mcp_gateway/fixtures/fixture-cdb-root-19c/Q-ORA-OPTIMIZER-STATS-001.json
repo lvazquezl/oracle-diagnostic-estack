@@ -1,0 +1,15 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot C)",
+  "rows": [
+    {
+      "con_id": 1,
+      "owner_kind": "CUSTOM",
+      "tables": 1200,
+      "tables_without_stats": 4,
+      "tables_stale": 10,
+      "tables_stats_locked": 0,
+      "max_hours_since_analyzed": 4380.0,
+      "min_hours_since_analyzed": 20.0
+    }
+  ]
+}

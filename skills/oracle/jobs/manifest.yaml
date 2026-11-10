@@ -1,7 +1,7 @@
 name: jobs
 display_name: "Scheduler / Jobs Summary"
 id: oracle/jobs
-version: 1.0.0
+version: 1.2.0
 domain: oracle
 status: active
 
@@ -13,7 +13,9 @@ database_role_scope: PRIMARY
 
 required_evidence:
   - query_id: Q-ORA-JOBS-SUMMARY-001
-optional_evidence: []
+optional_evidence:
+  - query_id: Q-ORA-SCHEDULER-STATE-001
+  - query_id: Q-ORA-AUTOTASK-001
 
 data_sensitivity: MEDIUM
 context_budget: LOW

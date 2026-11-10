@@ -2,7 +2,7 @@
 name: sga
 display_name: "SGA"
 id: performance/sga
-version: 1.0.0
+version: 1.1.0
 domain: performance
 status: active
 ---
@@ -43,6 +43,9 @@ Target Profile publicado.
 # Optional evidence
 
 - Evidencia de HugePages/RAM del host vía `os-platform-analyst` (routing, no evidencia propia)
+- `Q-PERF-SGA-COMPONENTS-001`
+
+**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-PERF-SGA-COMPONENTS-001` entrega cada componente dinámico de la SGA (incluidos java y streams pool) con tamaño actual, mínimo, máximo y especificado, y las operaciones de resize desde el arranque. Muchas operaciones `GROW`/`SHRINK` en poco uptime indican resize frecuente entre buffer cache y shared pool (ASMM/AMM): considerar mínimos explícitos (LOW, nunca por un ratio aislado).
 
 # Data collection
 
@@ -118,3 +121,4 @@ Sensibilidad BAJA. Presupuesto bajo.
 | Versión | Fecha | Cambio |
 |---|---|---|
 | 1.0.0 | Fase 3 (Oracle Performance) | Materializado — nunca recomienda memoria por ratio aislado. |
+| 1.1.0 | `CHG-ESTACK-C-NEW-QUERIES-001` (lote C) | Evidencia opcional del gateway: `Q-PERF-SGA-COMPONENTS-001` (ver Optional evidence). |

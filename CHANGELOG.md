@@ -78,6 +78,22 @@ El assessment detecta por sí mismo un desfase entre el reloj del host de la bas
 
 Aprobado por revisión humana. Regresión local (macOS, bash 5.3): 973/973. CI en verde en ubuntu, macOS y Windows con Python 3.13 y 3.14.
 
+### `/change query|skill|security|compatibility|documentation` — CHG-ESTACK-C-NEW-QUERIES-001 — lote C: queries nuevas para los dominios sin evidencia
+
+Rama `change/c-new-queries` sobre `main` (`be64435`). Origen: la cobertura por dominio de `ANA-20261020-001`, donde X (estadísticas) quedó `NOT_ASSESSED` y A, C, J, K, L, V, W y Z `PARTIAL` porque ninguna query certificada cubría esos datos. Ver `docs/C_NEW_QUERIES.md`.
+
+#### Added
+
+- 11 queries certificadas nuevas, agregadas en la base y expuestas por el gateway (lotes C y CL): modo de la base y edición, historial de arranques (AWR, Diagnostics Pack), parches de datapatch, uso de features, estadísticas del optimizer, mantenimiento automático, Scheduler y `DBMS_JOB`, estadísticas de UNDO, pico de TEMP, componentes de la SGA y work areas de PGA. El catálogo pasa de 101 a 114 collectors, incluidas dos sondas nuevas del diccionario.
+- Skill `oracle/optimizer-statistics` 1.0.0: área 19 de `oracle-dba-analyst` (2.1.0), activa en `/healthcheck`.
+- `feature_name` en `ORACLE_TERM_FIELDS`: nombre de feature definido por Oracle; `FEATURE_INFO` nunca se selecciona.
+
+#### Changed
+
+- 10 skills agregan la evidencia nueva como opcional, con su lógica de hallazgos: `oracle/database-state`, `oracle/archive`, `oracle/instance`, `oracle/components`, `oracle/jobs`, `oracle/undo`, `oracle/temp`, `performance/sga`, `performance/pga` y `security/licensing-gates`. El uso de features se reporta como `LICENSE_CHECK_REQUIRED`, nunca como incumplimiento.
+- `open_mode` acepta `READ ONLY WITH APPLY`.
+- Sondas del diccionario `Q-DICT-VERIFY-001`..`005` regeneradas y `006`/`007` nuevas; sus validaciones en campo se retiran hasta revalidar en el lab.
+
 ### `/change query|security|compatibility|documentation` — CHG-ESTACK-ASSESSMENT-ACCURACY-001 — exactitud del assessment
 
 Rama `change/assessment-accuracy` sobre `main` (`230ae4b`). Integrada a `main` vía PR #41 (merge `0facc67`). Aprobación humana registrada: `AUTH-ASSESSMENT-ACCURACY-001`, revisor `REV-DBAMANAGER`, `2026-10-08T20:13:24Z`, contra el digest `042e8de9…3dec01` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Origen: la revisión por especialistas de `ANA-20261008-001`. Validado en el lab: 13 collectors `FIELD_VALIDATED`. Ver `docs/ASSESSMENT_ACCURACY.md`.

@@ -1,0 +1,14 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot CL)",
+  "rows": [
+    {
+      "instance_number": 1,
+      "startups_in_awr": 2,
+      "startups_last_7d": 0,
+      "startups_last_30d": 1,
+      "hours_since_last_startup": 412.3,
+      "versions_in_awr": 1,
+      "hours_of_awr_history": 192.0
+    }
+  ]
+}

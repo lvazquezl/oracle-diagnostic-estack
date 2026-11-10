@@ -753,5 +753,72 @@ def b8_rewritten_sql_aggregates_in_the_database_without_paths_handles_sessions_o
                 "Q-CDB-RESOURCE-MANAGER-001", "Q-ASM-DISKS-001", "Q-PERF-LOCKS-001"):
         assert re.search(r"^version: 2\.0\.0$", open(catalog._find_query_file(cid), encoding="utf-8").read(), re.M), cid
 
+
+C_LOT = {"Q-ORA-DATABASE-MODE-001", "Q-ORA-SQLPATCH-001", "Q-ORA-FEATURE-USAGE-001", "Q-ORA-OPTIMIZER-STATS-001",
+         "Q-ORA-AUTOTASK-001", "Q-ORA-SCHEDULER-STATE-001", "Q-ORA-UNDO-STATS-001", "Q-ORA-TEMP-HWM-001",
+         "Q-PERF-SGA-COMPONENTS-001", "Q-PERF-WORKAREA-001"}
+
+
+@test
+def lot_c_exposes_eleven_new_queries_with_masked_names_only():
+    """CHG-ESTACK-C-NEW-QUERIES-001: new queries for the assessment domains without evidence; only two masked identifiers."""
+    import re
+    cols = catalog.load_collectors()
+    lots = {}
+    for c in json.load(open(FACTORY, encoding="utf-8"))["collectors"]:
+        lots.setdefault(c["factory"]["lot"], set()).add(c["collector_id"])
+    assert lots.get("C") == C_LOT and lots.get("CL") == {"Q-PERF-AWR-STARTUP-HISTORY-001"}, (lots.get("C"), lots.get("CL"))
+    forbidden = {"name", "owner", "table_name", "job_name", "window_name", "feature_info", "description", "logfile",
+                 "banner", "filename", "maxqueryid", "what", "interval", "job_action", "job_error", "comments",
+                 "host_name", "instance_name", "file_name", "action_time", "startup_time", "last_analyzed"}
+    idents = set()
+    for cid in C_LOT | {"Q-PERF-AWR-STARTUP-HISTORY-001"}:
+        f = cols[cid].output_fields
+        assert not set(f) & forbidden, (cid, set(f) & forbidden)
+        assert all(not (v["type"] == "identifier" and v["policy"] != "MASK") for v in f.values()), cid
+        idents |= {k for k, v in f.items() if v["type"] == "identifier"}
+        lic = re.search(r"^license_requirements: (.*)$", open(catalog._find_query_file(cid), encoding="utf-8").read(), re.M).group(1)
+        assert (lic == "[Diagnostics Pack]") == (cid == "Q-PERF-AWR-STARTUP-HISTORY-001") and lic in ("none", "[Diagnostics Pack]"), (cid, lic)
+    assert idents == {"db_unique_name", "tablespace_name"}, idents
+    fu = cols["Q-ORA-FEATURE-USAGE-001"].output_fields["feature_name"]
+    assert fu["type"] == "oracle_term" and "feature_name" in catalog.ORACLE_TERM_FIELDS
+    assert not {"OPEN", "OPEN READ ONLY"} & set(cols["Q-ORA-SCHEDULER-STATE-001"].output_fields["state"]["values"])
+
+
+@test
+def c_sql_aggregates_in_the_database_and_never_selects_names_text_or_dates():
+    import re
+    word = lambda c, sql: re.search(r"(?<![a-z0-9_$#.]){}(?![a-z0-9_$#])".format(re.escape(c)), sql)
+    for v in ("11.2", "19.0"):
+        cdb = v == "19.0"
+        fu = _resolved("Q-ORA-FEATURE-USAGE-001", v)
+        assert "feature_info" not in fu and "detected_usages > 0" in fu and ("cdb_feature_usage_statistics" in fu) == cdb, v
+        sp = _resolved("Q-ORA-SQLPATCH-001", v)
+        assert not any(c in sp for c in ("description", "logfile", "patch_directory", "patch_descriptor", "comments", "bundle_data")), v
+        assert ("cdb_registry_sqlpatch" in sp and "p.target_version" in sp) if cdb else "dba_registry_history" in sp, v
+        os_ = _resolved("Q-ORA-OPTIMIZER-STATS-001", v)
+        assert ("oracle_maintained" in os_) == cdb and "not like 'bin$%'" in os_ and not word("table_name", _select_list(os_)), v
+        sj = _resolved("Q-ORA-SCHEDULER-STATE-001", v)
+        assert "dbms_" not in sj and not any(c in sj for c in ("job_action", "job_name", ".what", ".interval")), v
+        assert ("_jobs j" in sj and "'legacy_job'" in sj) != cdb, v                # 19c+: DBMS_JOB jobs are Scheduler jobs
+        at = _resolved("Q-ORA-AUTOTASK-001", v)
+        assert not any(c in at for c in ("job_error", "window_name", "job_name")) and "'auto_optimizer_stats'" in at, v
+        un = _resolved("Q-ORA-UNDO-STATS-001", v)
+        assert "maxqueryid" not in un and "begin_time >= sysdate - 1" in un and ("group  by u.con_id" in un) == cdb, v
+        tp = _resolved("Q-ORA-TEMP-HWM-001", v)
+        assert "file_name" not in tp and "gv$sort_segment" in tp and ("cdb_temp_files" in tp) == cdb, v
+        dm = _resolved("Q-ORA-DATABASE-MODE-001", v)
+        assert dm.count("banner") == len(re.findall(r"v\.banner like ", dm)) and "filename" not in dm, v   # banner only feeds the edition CASE
+        assert ("d.cdb" in dm) == cdb and "else 'unknown' end" in dm, v
+        sh = _resolved("Q-PERF-AWR-STARTUP-HISTORY-001", v)
+        assert "count(distinct i.startup_time)" in sh and not any(word(c, sh) for c in ("host_name", "instance_name", "db_name")), v
+    sga = _resolved("Q-PERF-SGA-COMPONENTS-001", "19.0")
+    assert "else 'other' end as sga_component" in sga, sga
+    wa = _resolved("Q-PERF-WORKAREA-001", "19.0")
+    assert "from   v$sql_workarea_histogram h" in wa and "max(s.value)" in wa, wa
+    for cid in C_LOT | {"Q-PERF-AWR-STARTUP-HISTORY-001"}:
+        assert re.search(r"^version: 1\.0\.0$", open(catalog._find_query_file(cid), encoding="utf-8").read(), re.M), cid
+
+
 if __name__ == "__main__":
     raise SystemExit(run_all())
