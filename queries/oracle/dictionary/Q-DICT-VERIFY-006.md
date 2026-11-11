@@ -1,0 +1,105 @@
+---
+query_id: Q-DICT-VERIFY-006
+version: 1.0.0
+
+domain: oracle
+purpose: "Verificación del diccionario del e-stack contra el catálogo real (parte 6/7: V$ENCRYPTION_WALLET.WALLET_ORDER … V$RMAN_BACKUP_JOB_DETAILS.START_TIME) — la base compara y devuelve sólo discrepancias"
+
+supported_oracle_versions: [19c]
+supported_os: [todas]
+supported_architectures: [standalone, rac]
+
+container_scope: ANY_CONTAINER
+database_role_scope: ANY
+
+objects_accessed: [DBA_TAB_COLUMNS, DBA_SYNONYMS]
+privileges_required: [SELECT on DBA_TAB_COLUMNS, SELECT on DBA_SYNONYMS]
+
+risk_class: R0
+cost_class: MEDIUM
+
+timeout_seconds: 30
+max_rows: 120
+max_output_bytes: 16384
+
+sensitivity: LOW
+sanitization_required: true
+
+license_requirements: none
+
+execution_mode: READ_ONLY
+
+# GENERADO por scripts/dict_verify/generate.py desde compatibility/oracle-dictionary/views.yaml — NO editar a mano.
+# CHG-ESTACK-ORA19C-LAB-006. La lista embebida es la del diccionario para 19c; otra versión requiere su propia
+# variante generada (CHG-REQ-LAB-MULTIVERSION).
+variants:
+  - variant_id: Q-DICT-VERIFY-006-V1
+    label: oracle_19c
+    oracle_versions: {min: "19.0", max: "19.0"}
+    container_scope: ANY_CONTAINER
+    sql_block: "Variant V1 (oracle_19c, generated)"
+
+tests: [tests/test_no_write_operations.sh, tests/test_sql_static_validator.sh, tests/test_dict_verify_queries_match_dictionary.sh, tests/test_p15_oracle_lab_adapter.sh]
+status: active
+---
+
+# Statement / procedure (read-only) — Variant V1 (oracle_19c, generated)
+
+```sql
+WITH s AS (SELECT 'V$ENCRYPTION_WALLET.WALLET_ORDER V$ENCRYPTION_WALLET.WALLET_TYPE V$ENCRYPTION_WALLET.WRL_PARAMETER V$ENCRYPTION_WALLET.WRL_TYPE V$FILESTAT.* V$FLASH_RECOVERY_AREA_USAGE.* V$FLASH_RECOVERY_AREA_USAGE.FILE_TYPE V$FLASH_RECOVERY_AREA_USAGE.NUMBER_OF_FILES V$FLASH_RECOVERY_AREA_USAGE.PERCENT_SPACE_RECLAIMABLE V$FLASH_RECOVERY_AREA_USAGE.PERCENT_SPACE_USED V$INSTANCE.* V$INSTANCE.ACTIVE_STATE V$INSTANCE.DATABASE_STATUS V$INSTANCE.HOST_NAME V$INSTANCE.INSTANCE_NAME V$INSTANCE.INSTANCE_NUMBER V$INSTANCE.INSTANCE_ROLE V$INSTANCE.SHUTDOWN_PENDING V$INSTANCE.STARTUP_TIME V$INSTANCE.STATUS V$INSTANCE.VERSION V$INSTANCE.VERSION_FULL V$LIBRARYCACHE.* V$LOCK.* V$LOCK.BLOCK V$LOCK.CON_ID V$LOCK.CTIME V$LOCK.LMODE V$LOCK.REQUEST V$LOCK.TYPE V$LOG.* V$LOGFILE.* V$LOG_HISTORY.* V$LOG_HISTORY.CON_ID V$LOG_HISTORY.FIRST_CHANGE# V$LOG_HISTORY.FIRST_TIME V$LOG_HISTORY.NEXT_CHANGE# V$LOG_HISTORY.RECID V$LOG_HISTORY.RESETLOGS_CHANGE# V$LOG_HISTORY.RESETLOGS_TIME V$LOG_HISTORY.SEQUENCE# V$LOG_HISTORY.STAMP V$LOG_HISTORY.THREAD# V$MANAGED_STANDBY.* V$MANAGED_STANDBY.BLOCK# V$MANAGED_STANDBY.BLOCKS V$MANAGED_STANDBY.CLIENT_PID V$MANAGED_STANDBY.CLIENT_PROCESS V$MANAGED_STANDBY.PID V$MANAGED_STANDBY.PROCESS V$MANAGED_STANDBY.SEQUENCE# V$MANAGED_STANDBY.STATUS V$MANAGED_STANDBY.THREAD# V$OPTION.* V$OPTION.PARAMETER V$OPTION.VALUE V$PARAMETER.* V$PDBS.* V$PDBS.APPLICATION_PDB V$PDBS.APPLICATION_ROOT V$PDBS.APPLICATION_SEED V$PDBS.CON_ID V$PDBS.LOCAL_UNDO V$PDBS.NAME V$PDBS.OPEN_MODE V$PDBS.OPEN_TIME V$PDBS.PROXY_PDB V$PDBS.RECOVERY_STATUS V$PDBS.RESTRICTED V$PDBS.TOTAL_SIZE V$PGASTAT.* V$PGASTAT.NAME V$PGASTAT.UNIT V$PGASTAT.VALUE V$PQ_SYSSTAT.* V$PROCESS.* V$PWFILE_USERS.* V$PWFILE_USERS.COMMON V$PWFILE_USERS.CON_ID V$PWFILE_USERS.SYSASM V$PWFILE_USERS.SYSBACKUP V$PWFILE_USERS.SYSDBA V$PWFILE_USERS.SYSDG V$PWFILE_USERS.SYSKM V$PWFILE_USERS.SYSOPER V$PWFILE_USERS.USERNAME V$PX_SESSION.* V$RECOVERY_FILE_DEST.* V$RECOVERY_FILE_DEST.NAME V$RECOVERY_FILE_DEST.NUMBER_OF_FILES V$RECOVERY_FILE_DEST.SPACE_LIMIT V$RECOVERY_FILE_DEST.SPACE_RECLAIMABLE V$RECOVERY_FILE_DEST.SPACE_USED V$RECOVERY_PROGRESS.* V$RESOURCE_LIMIT.* V$RMAN_BACKUP_JOB_DETAILS.* V$RMAN_BACKUP_JOB_DETAILS.COMPRESSION_RATIO V$RMAN_BACKUP_JOB_DETAILS.CON_ID V$RMAN_BACKUP_JOB_DETAILS.ELAPSED_SECONDS V$RMAN_BACKUP_JOB_DETAILS.END_TIME V$RMAN_BACKUP_JOB_DETAILS.INPUT_BYTES V$RMAN_BACKUP_JOB_DETAILS.INPUT_BYTES_PER_SEC V$RMAN_BACKUP_JOB_DETAILS.INPUT_TYPE V$RMAN_BACKUP_JOB_DETAILS.OUTPUT_BYTES V$RMAN_BACKUP_JOB_DETAILS.OUTPUT_BYTES_PER_SEC V$RMAN_BACKUP_JOB_DETAILS.SESSION_KEY V$RMAN_BACKUP_JOB_DETAILS.START_TIME' AS l FROM dual),
+e AS (SELECT REGEXP_SUBSTR(l, '[^ ]+', 1, LEVEL) AS p FROM s CONNECT BY LEVEL <= REGEXP_COUNT(l, '[^ ]+')),
+x AS (SELECT SUBSTR(p, 1, INSTR(p, '.') - 1) AS view_name, SUBSTR(p, INSTR(p, '.') + 1) AS column_name FROM e),
+o AS (SELECT x.view_name, x.column_name, NVL(y.table_owner, '-') AS obj_owner, NVL(y.table_name, x.view_name) AS obj_name
+      FROM x LEFT JOIN dba_synonyms y ON y.owner = 'PUBLIC' AND y.synonym_name = x.view_name AND y.table_owner IN ('SYS', 'AUDSYS', 'PERFSTAT'))
+SELECT CASE WHEN NOT EXISTS (SELECT 1 FROM dba_tab_columns d WHERE d.owner IN ('SYS', 'AUDSYS', 'PERFSTAT') AND d.table_name = o.obj_name
+                             AND (o.obj_owner = '-' OR d.owner = o.obj_owner))
+            THEN 'VIEW_NOT_FOUND' ELSE 'COLUMN_NOT_FOUND' END AS finding,
+       o.view_name, o.column_name, CAST(1 AS NUMBER(10)) AS tokens
+FROM   o
+WHERE  NOT EXISTS (SELECT 1 FROM dba_tab_columns d WHERE d.owner IN ('SYS', 'AUDSYS', 'PERFSTAT') AND d.table_name = o.obj_name
+                   AND (o.obj_owner = '-' OR d.owner = o.obj_owner) AND (o.column_name = '*' OR d.column_name = o.column_name))
+UNION ALL
+SELECT 'CHECKED', '*', '*', CAST(COUNT(*) AS NUMBER(10)) FROM o;
+```
+
+Parte 6 de 7: 107 tokens `VISTA.COLUMNA` (o `VISTA.*` = la vista misma) sobre 22 vistas. Devuelve una fila
+por token **no encontrado** (`VIEW_NOT_FOUND` si la vista no existe para los owners `SYS`, `AUDSYS`, `PERFSTAT`; si no,
+`COLUMN_NOT_FOUND`) y siempre una fila `CHECKED` con el total de tokens verificados. Un diccionario correcto responde
+sólo la fila `CHECKED`.
+
+- Cada nombre se resuelve por su sinónimo público (`DBA_SYNONYMS`, destino acotado a los mismos owners); sin sinónimo, se busca el objeto con ese nombre. Así `V$X` llega a su objeto real aunque no se llame `V_$X`.
+- La comparación ocurre en la base: la respuesta nunca contiene el catálogo, sólo discrepancias.
+
+# Notes by version
+
+Generada para 19c (`min_version` ≤ 19 en el diccionario). `REGEXP_SUBSTR`/`REGEXP_COUNT` existen desde 11g.
+
+# Notes by platform
+
+Ninguna.
+
+# Container / role scope notes
+
+`ANY_CONTAINER`. El lab la ejecuta desde `CDB$ROOT`, donde viven los objetos de `SYS`.
+
+# Cost classification rationale
+
+`MEDIUM`: 107 búsquedas por nombre en el catálogo (`DBA_SYNONYMS`, `DBA_TAB_COLUMNS`), sin datos de aplicación.
+
+# License notes
+
+Ninguna.
+
+# Sanitization notes
+
+`finding`, `view_name` y `column_name` son **enums** cuyos valores permitidos son exactamente los de esta parte del
+diccionario: KEEP sin riesgo, y cualquier otro valor se descarta. `tokens` es un entero.
+
+# Limitations
+
+Sólo verifica que lo declarado exista (no detecta columnas reales ausentes de listas exhaustivas). No incluye
+tokens que el guard de solo lectura rechazaría por contener palabras reservadas (hoy: `V$LOCK`).
+
+# Evolution via `/change query`
+
+Se regenera con `python3 -m scripts.dict_verify.generate --write` al cambiar el diccionario.

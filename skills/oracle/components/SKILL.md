@@ -2,7 +2,7 @@
 name: components
 display_name: "Database Components"
 id: oracle/components
-version: 1.0.0
+version: 1.1.0
 domain: oracle
 status: active
 ---
@@ -37,7 +37,10 @@ Target Profile publicado.
 
 # Optional evidence
 
-Ninguna.
+- `Q-ORA-SQLPATCH-001`
+- `Q-ORA-FEATURE-USAGE-001`
+
+**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-ORA-SQLPATCH-001` entrega el historial de datapatch por contenedor (acción, estado, tipo de parche, versión destino, horas). Un `patch_status` distinto de `SUCCESS` en la última acción de un parche, o un contenedor cuya `target_version` más reciente difiere de la del root, es hallazgo (MEDIUM): datapatch no corrió o falló en ese contenedor. `Q-ORA-FEATURE-USAGE-001` entrega las features con uso detectado por contenedor; se interpreta en `security/licensing-gates` (insumo de revisión de licencias, nunca incumplimiento).
 
 # Data collection
 
@@ -149,3 +152,4 @@ Sensibilidad BAJA; presupuesto muy bajo.
 | Versión | Fecha | Cambio |
 |---|---|---|
 | 1.0.0 | Fase 2 (Oracle Core) | Creado. |
+| 1.1.0 | `CHG-ESTACK-C-NEW-QUERIES-001` (lote C) | Evidencia opcional del gateway: `Q-ORA-SQLPATCH-001`, `Q-ORA-FEATURE-USAGE-001` (ver Optional evidence). |

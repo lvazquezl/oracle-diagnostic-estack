@@ -2,7 +2,7 @@
 name: pga
 display_name: "PGA"
 id: performance/pga
-version: 1.0.0
+version: 1.1.0
 domain: performance
 status: active
 ---
@@ -42,7 +42,9 @@ Target Profile publicado (para saber si `PGA_AGGREGATE_LIMIT` aplica según vers
 
 # Optional evidence
 
-Ninguna adicional para el uso base.
+- `Q-PERF-WORKAREA-001`
+
+**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-PERF-WORKAREA-001` entrega las ejecuciones de work areas óptimas, one-pass y multi-pass desde el arranque, el PGA cache hit y los bytes extra leídos y escritos. `multipass_executions` > 0 o una proporción one-pass relevante indican PGA insuficiente para la carga (MEDIUM, cruzar con `over_allocation_count` de `Q-PERF-PGA-001`).
 
 # Data collection
 
@@ -117,3 +119,4 @@ Sensibilidad BAJA. Presupuesto bajo.
 | Versión | Fecha | Cambio |
 |---|---|---|
 | 1.0.0 | Fase 3 (Oracle Performance) | Materializado — PGA_AGGREGATE_LIMIT tratado como NOT_APPLICABLE explícito antes de 12.1, nunca asumido. |
+| 1.1.0 | `CHG-ESTACK-C-NEW-QUERIES-001` (lote C) | Evidencia opcional del gateway: `Q-PERF-WORKAREA-001` (ver Optional evidence). |

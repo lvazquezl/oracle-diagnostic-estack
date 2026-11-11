@@ -1,0 +1,22 @@
+{
+ "_doc": "CHG-ESTACK-C-NEW-QUERIES-001 — lot CL: instance startup history from AWR (Diagnostics Pack). Counts and hours per instance only (no host or instance names, no dates). The gateway only runs it where the target declares license_status.diagnostics_pack = CONFIRMED (human confirmation of the contract), as lots/B4-awr.json.",
+ "lot_id": "CL",
+ "fixture_target": "fixture-licensed-19c",
+ "collectors": [
+  {
+   "collector_id": "Q-PERF-AWR-STARTUP-HISTORY-001",
+   "domain": "performance",
+   "title": "Instance startup history from AWR: startups in AWR, in 7 and 30 days, hours since the last startup, distinct versions and hours of AWR history (Diagnostics Pack; no names or dates)",
+   "row_limit": 64,
+   "fields": [
+    "instance_number",
+    "startups_in_awr",
+    "startups_last_7d",
+    "startups_last_30d",
+    "hours_since_last_startup",
+    "versions_in_awr",
+    "hours_of_awr_history"
+   ]
+  }
+ ]
+}

@@ -1,7 +1,7 @@
 ---
 name: licensing-gates
 id: security/licensing-gates
-version: 1.0.0
+version: 1.1.0
 domain: security
 status: active
 ---
@@ -35,6 +35,10 @@ Standalone y RAC.
 # Optional evidence
 
 `Target Profile.security.licensing_profile` cuando el DBA lo confirma explícitamente.
+
+- `Q-ORA-FEATURE-USAGE-001`
+
+**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-ORA-FEATURE-USAGE-001` entrega las features con uso detectado (`DBA_FEATURE_USAGE_STATISTICS`) por contenedor. Cada feature en uso que corresponda a una opción o pack (por ejemplo Partitioning, Advanced Compression, Diagnostics/Tuning Pack, Active Data Guard) se reporta como `LICENSE_CHECK_REQUIRED`: el uso detectado no prueba que se requiera licencia (algunas se activan por componentes de Oracle) ni que esté o no licenciada. Nunca se reporta como incumplimiento. Las variantes `(system)` (por ejemplo `Partitioning (system)` o `SecureFiles (system)`) son uso de los esquemas de Oracle y no generan `LICENSE_CHECK_REQUIRED`: en el lab (19.32) aparecen en el root y en la PDB sin ninguna fila `Partitioning (user)`. Oracle muestrea el uso aproximadamente una vez por semana (`hours_since_last_sample`).
 
 # Licensing requirements
 
@@ -136,3 +140,5 @@ Alimenta `analysis/ANA-*/security-posture.md`.
 # Change history
 
 v1.0.0 — Fase 8, creación inicial.
+
+v1.1.0 — `CHG-ESTACK-C-NEW-QUERIES-001`: evidencia opcional del gateway (ver Optional evidence).

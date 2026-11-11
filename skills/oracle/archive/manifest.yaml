@@ -1,7 +1,7 @@
 name: archive
 display_name: "Archive Configuration"
 id: oracle/archive
-version: 1.0.0
+version: 1.1.0
 domain: oracle
 status: active
 
@@ -13,7 +13,8 @@ database_role_scope: PRIMARY
 
 required_evidence:
   - query_id: Q-ORA-ARCHIVE-001
-optional_evidence: []
+optional_evidence:
+  - query_id: Q-ORA-DATABASE-MODE-001
 
 data_sensitivity: MEDIUM
 context_budget: LOW

@@ -7,13 +7,13 @@ mission: >
   objects y componentes — la capa "Oracle Core" completa de Fase 2 — para dar una foto de
   salud general basada en el Target Profile ya publicado por oracle-discovery-analyst, sin
   duplicar su trabajo de identidad/topología.
-version: 2.0.0
+version: 2.1.0
 status: active
 ---
 
 # Responsibilities
 
-Cubre las 18 áreas de diagnóstico Oracle Core, cada una respaldada por su propio skill (`skills/oracle/<área>/SKILL.md`):
+Cubre las 19 áreas de diagnóstico Oracle Core, cada una respaldada por su propio skill (`skills/oracle/<área>/SKILL.md`):
 
 - `oracle/database-state` — estado global (`V$DATABASE`, `open_mode`, `log_mode`, `force_logging` ya en el Target Profile; aquí se profundiza en consistencia y flags adicionales).
 - `oracle/instance` — estado de instancia (`V$INSTANCE`: `STATUS`, `STARTUP_TIME`, `SHUTDOWN_PENDING`, etc.).
@@ -33,6 +33,7 @@ Cubre las 18 áreas de diagnóstico Oracle Core, cada una respaldada por su prop
 - `oracle/invalid-objects` — objetos inválidos por schema/tipo.
 - `oracle/resource-limits` — uso vs. límite de `processes`, `sessions`, `open_cursors`, licencias de sesión si aplica.
 - `oracle/diagnostics` — consolidación: ADR/alert log metadata básica (existencia y errores recientes, no análisis profundo de trace).
+- `oracle/optimizer-statistics` — estadísticas del optimizer (tablas sin estadísticas, obsoletas o bloqueadas por tipo de dueño) y la recolección automática (`CHG-ESTACK-C-NEW-QUERIES-001`).
 
 # Explicit boundaries
 
@@ -42,13 +43,13 @@ Cubre las 18 áreas de diagnóstico Oracle Core, cada una respaldada por su prop
 
 # Scope
 
-**En alcance (Fase 2):** las 18 áreas listadas en Responsibilities, a nivel de instancia individual (o CDB$ROOT si CDB) y de metadata/agregados — nunca contenido de aplicación.
+**En alcance (Fase 2):** las 19 áreas listadas en Responsibilities, a nivel de instancia individual (o CDB$ROOT si CDB) y de metadata/agregados — nunca contenido de aplicación.
 
 **Fuera de alcance (Fase 2):** AWR/ASH/ADDM/SQL tuning, RAC internals, Cache Fusion, ASM internals, Data Guard internals, RMAN internals, OS profundo — todo eso pertenece a fases posteriores.
 
 # Activation
 
-Se activa después de `oracle-discovery-analyst` (o de un Target Profile cacheado vigente) en todo workflow que requiera Oracle Core: `/healthcheck`, `/assessment`, `/diagnose` (cuando el síntoma clasifica como Oracle Core — sección 28 de Fase 2), y `/analyze` cuando el área solicitada mapea a uno de los 18 skills de este agente.
+Se activa después de `oracle-discovery-analyst` (o de un Target Profile cacheado vigente) en todo workflow que requiera Oracle Core: `/healthcheck`, `/assessment`, `/diagnose` (cuando el síntoma clasifica como Oracle Core — sección 28 de Fase 2), y `/analyze` cuando el área solicitada mapea a uno de los 19 skills de este agente.
 
 # Supported versions/platforms/architectures
 
@@ -64,7 +65,7 @@ Se activa después de `oracle-discovery-analyst` (o de un Target Profile cachead
 - `oracle/database-state`, `oracle/instance`, `oracle/parameters`, `oracle/spfile`, `oracle/controlfile`,
   `oracle/redo`, `oracle/archive`, `oracle/tablespaces`, `oracle/temp`, `oracle/undo`, `oracle/sessions`,
   `oracle/processes`, `oracle/jobs`, `oracle/objects`, `oracle/components`, `oracle/invalid-objects`,
-  `oracle/resource-limits`, `oracle/diagnostics`
+  `oracle/resource-limits`, `oracle/diagnostics`, `oracle/optimizer-statistics`
 
 # Forbidden capabilities
 
@@ -79,7 +80,7 @@ target_summary: string        # referencia al Target Profile ya publicado, nunca
 question: string
 relevant_evidence_refs: [EVD-...]
 constraints:
-  area_scope: [string]|null    # opcional: acotar a un subconjunto de las 18 áreas (ej. /analyze)
+  area_scope: [string]|null    # opcional: acotar a un subconjunto de las 19 áreas (ej. /analyze)
 expected_output: string
 ```
 
@@ -88,7 +89,7 @@ expected_output: string
 ```yaml
 findings:
   - finding_id: FND-...
-    category: string            # una de las 18 áreas
+    category: string            # una de las 19 áreas
     severity: LOW|MEDIUM|HIGH
     title: string
     observation: string
@@ -143,7 +144,7 @@ y — cuando aplica — incluye `precheck`, `command`, `expected_result`, `rollb
 # Context/token policy
 
 - Presupuesto medio: Target Profile (por referencia) + un set acotado de vistas de configuración por área activada; sin AWR/ASH.
-- `constraints.area_scope` permite acotar a un subconjunto de las 18 áreas (usado por `/analyze`), reduciendo el Task Package al mínimo necesario.
+- `constraints.area_scope` permite acotar a un subconjunto de las 19 áreas (usado por `/analyze`), reduciendo el Task Package al mínimo necesario.
 - Evidencia por referencia; reutiliza discovery cache existente y evidencia ya recolectada en la misma sesión.
 
 # Confidence rules
@@ -160,7 +161,7 @@ y — cuando aplica — incluye `precheck`, `command`, `expected_result`, `rollb
 
 # Documentation obligations
 
-- Aporta `findings.md` con hallazgos de las 18 áreas agrupados por severidad, y `recommendations.md` con sugerencias no accionables automáticamente (`manual_execution_required: true` siempre).
+- Aporta `findings.md` con hallazgos de las 19 áreas agrupados por severidad, y `recommendations.md` con sugerencias no accionables automáticamente (`manual_execution_required: true` siempre).
 - Todo `capability_status` distinto de `SUPPORTED` se declara explícitamente, nunca se omite un área silenciosamente.
 
 # Security constraints
@@ -184,3 +185,4 @@ y — cuando aplica — incluye `precheck`, `command`, `expected_result`, `rollb
 |---|---|---|
 | 1.0.0 | Fase 1 (Foundation) | Skill único materializado (`oracle/tablespaces`); resto de áreas `registered`. |
 | 2.0.0 | Fase 2 (Oracle Core) | Reestructurado a `agents/oracle-dba-analyst/AGENT.md`. Las 18 áreas Oracle Core completamente materializadas (`skills/oracle/*/SKILL.md`), DBA Command Generation formalizado, lectura del Target Profile en vez de re-discovery, escalada explícita `UNSUPPORTED` hacia dominios no profundizados aún. |
+| 2.1.0 | `CHG-ESTACK-C-NEW-QUERIES-001` (lote C) | Área 19: `oracle/optimizer-statistics` (dominio X del assessment, antes sin evidencia). |

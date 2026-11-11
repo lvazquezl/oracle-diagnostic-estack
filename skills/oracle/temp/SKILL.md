@@ -2,7 +2,7 @@
 name: temp
 display_name: "TEMP Tablespace Usage"
 id: oracle/temp
-version: 1.0.0
+version: 1.1.0
 domain: oracle
 status: active
 ---
@@ -37,7 +37,9 @@ Target Profile publicado.
 
 # Optional evidence
 
-Ninguna.
+- `Q-ORA-TEMP-HWM-001`
+
+**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-ORA-TEMP-HWM-001` entrega por contenedor y tablespace temporal el pico usado desde el arranque (`max_used_mb`), el ordenamiento más grande, el tamaño asignado y el máximo con autoextend. `max_used_mb` ≥ 90 % de `max_size_mb` es riesgo de ORA-01652 (MEDIUM). Con poco uptime el pico no es representativo: se cruza con `uptime_hours` y se declara la limitación.
 
 # Data collection
 
@@ -154,3 +156,4 @@ Sensibilidad BAJA; presupuesto bajo.
 | Versión | Fecha | Cambio |
 |---|---|---|
 | 1.0.0 | Fase 2 (Oracle Core) | Creado. |
+| 1.1.0 | `CHG-ESTACK-C-NEW-QUERIES-001` (lote C) | Evidencia opcional del gateway: `Q-ORA-TEMP-HWM-001` (ver Optional evidence). |

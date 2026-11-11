@@ -1376,6 +1376,7 @@
     "MIGRATE",
     "MOUNTED",
     "READ ONLY",
+    "READ ONLY WITH APPLY",
     "READ WRITE"
    ],
    "example": "READ WRITE"
@@ -2576,6 +2577,615 @@
    "max": 1000000000000,
    "policy": "KEEP",
    "example": 102400
+  },
+  "log_mode": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "ARCHIVELOG",
+    "MANUAL",
+    "NOARCHIVELOG"
+   ],
+   "example": "ARCHIVELOG"
+  },
+  "force_logging": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "STANDBY NOLOGGING FOR DATA AVAILABILITY",
+    "STANDBY NOLOGGING FOR LOAD PERFORMANCE",
+    "YES"
+   ],
+   "example": "YES"
+  },
+  "supplemental_log_data_min": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "IMPLICIT",
+    "NO",
+    "YES"
+   ],
+   "example": "NO"
+  },
+  "db_unique_name": {
+   "type": "identifier",
+   "policy": "MASK",
+   "alias_prefix": "dbu",
+   "example": "SYNTH_DB"
+  },
+  "cdb": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "NO",
+    "YES"
+   ],
+   "example": "YES"
+  },
+  "edition": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "ENTERPRISE",
+    "EXPRESS",
+    "FREE",
+    "PERSONAL",
+    "STANDARD_EDITION",
+    "STANDARD_EDITION_2",
+    "UNKNOWN"
+   ],
+   "example": "ENTERPRISE"
+  },
+  "block_change_tracking": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "DISABLED",
+    "ENABLED",
+    "TARGET"
+   ],
+   "example": "DISABLED"
+  },
+  "startups_in_awr": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 2
+  },
+  "startups_last_7d": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "startups_last_30d": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "hours_since_last_startup": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 412.3
+  },
+  "versions_in_awr": {
+   "type": "integer",
+   "min": 0,
+   "max": 100,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "hours_of_awr_history": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 192.0
+  },
+  "patch_action": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "APPLY",
+    "BOOTSTRAP",
+    "CPU",
+    "DOWNGRADE",
+    "JVMPSU",
+    "ROLLBACK",
+    "UPGRADE",
+    "VIEW INVALIDATE"
+   ],
+   "example": "APPLY"
+  },
+  "patch_id": {
+   "type": "number",
+   "min": 0,
+   "max": 10000000000,
+   "policy": "KEEP",
+   "example": 36233263
+  },
+  "patch_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "BUNDLE",
+    "CU",
+    "INTERIM",
+    "LEGACY",
+    "NOT_RECORDED",
+    "RU",
+    "RUR"
+   ],
+   "example": "RU"
+  },
+  "patch_status": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "BEGIN",
+    "END",
+    "NOT_RECORDED",
+    "SUCCESS",
+    "WITH ERRORS",
+    "WITH ERRORS (RU)"
+   ],
+   "example": "SUCCESS"
+  },
+  "target_version": {
+   "type": "version_string",
+   "policy": "KEEP",
+   "example": "19.32.0.0.0"
+  },
+  "hours_since_action": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 2160.0
+  },
+  "feature_name": {
+   "type": "oracle_term",
+   "policy": "KEEP",
+   "example": "Automatic Workload Repository"
+  },
+  "detected_usages": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 12
+  },
+  "currently_used": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "FALSE",
+    "TRUE"
+   ],
+   "example": "TRUE"
+  },
+  "hours_since_last_usage": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 150.0
+  },
+  "hours_since_first_usage": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 8760.0
+  },
+  "hours_since_last_sample": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 72.0
+  },
+  "owner_kind": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "CUSTOM",
+    "FIXED",
+    "ORACLE",
+    "OTHER"
+   ],
+   "example": "CUSTOM"
+  },
+  "tables": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 1200
+  },
+  "tables_without_stats": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 4
+  },
+  "tables_stale": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 10
+  },
+  "tables_stats_locked": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "max_hours_since_analyzed": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 4380.0
+  },
+  "min_hours_since_analyzed": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 20.0
+  },
+  "autotask_client": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "AUTO_OPTIMIZER_STATS",
+    "AUTO_SPACE_ADVISOR",
+    "OTHER",
+    "SQL_TUNING_ADVISOR"
+   ],
+   "example": "AUTO_OPTIMIZER_STATS"
+  },
+  "autotask_status": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "DISABLED",
+    "ENABLED"
+   ],
+   "example": "ENABLED"
+  },
+  "windows_enabled": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000,
+   "policy": "KEEP",
+   "example": 7
+  },
+  "runs_last_7d": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 7
+  },
+  "runs_not_succeeded_7d": {
+   "type": "integer",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "hours_since_last_success": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 20.0
+  },
+  "job_source": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "LEGACY_JOB",
+    "SCHEDULER"
+   ],
+   "example": "SCHEDULER"
+  },
+  "jobs": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 25
+  },
+  "jobs_with_failures": {
+   "type": "integer",
+   "min": 0,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 1
+  },
+  "max_failure_count": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 3
+  },
+  "max_hours_since_last_run": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 26.0
+  },
+  "undo_intervals": {
+   "type": "integer",
+   "min": 0,
+   "max": 100000,
+   "policy": "KEEP",
+   "example": 144
+  },
+  "undo_generated_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 812.5
+  },
+  "max_query_seconds": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 1450
+  },
+  "max_concurrency": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000,
+   "policy": "KEEP",
+   "example": 6
+  },
+  "min_tuned_retention_seconds": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 900
+  },
+  "max_tuned_retention_seconds": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 2400
+  },
+  "snapshot_too_old_errors": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "undo_space_errors": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "unexpired_steals": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "expired_steals": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "active_undo_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 12.0
+  },
+  "unexpired_undo_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 180.5
+  },
+  "expired_undo_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 1024.0
+  },
+  "sort_segment_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 256.0
+  },
+  "used_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 0.0
+  },
+  "max_used_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 96.0
+  },
+  "max_sort_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 64.0
+  },
+  "allocated_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 512.0
+  },
+  "max_size_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 32768.0
+  },
+  "sga_component": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "ASM Buffer Cache",
+    "DEFAULT 16K buffer cache",
+    "DEFAULT 2K buffer cache",
+    "DEFAULT 32K buffer cache",
+    "DEFAULT 4K buffer cache",
+    "DEFAULT 8K buffer cache",
+    "DEFAULT buffer cache",
+    "Data Transfer Cache",
+    "In-Memory Area",
+    "KEEP buffer cache",
+    "OTHER",
+    "RECYCLE buffer cache",
+    "Shared IO Pool",
+    "java pool",
+    "large pool",
+    "memoptimize buffer cache",
+    "shared pool",
+    "streams pool",
+    "unified pga pool"
+   ],
+   "example": "shared pool"
+  },
+  "current_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 1024.0
+  },
+  "min_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 1024.0
+  },
+  "max_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 1024.0
+  },
+  "user_specified_mb": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 0.0
+  },
+  "resize_ops": {
+   "type": "number",
+   "min": 0,
+   "max": 100000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "last_oper_type": {
+   "type": "enum",
+   "policy": "KEEP",
+   "values": [
+    "DISABLED",
+    "GROW",
+    "INITIALIZING",
+    "SHRINK",
+    "SHRINK_CANCEL",
+    "STATIC"
+   ],
+   "example": "STATIC"
+  },
+  "hours_since_last_oper": {
+   "type": "number",
+   "min": -24,
+   "max": 10000000,
+   "policy": "KEEP",
+   "example": 400.0
+  },
+  "optimal_executions": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 125000
+  },
+  "onepass_executions": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 3
+  },
+  "multipass_executions": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "pga_cache_hit_pct": {
+   "type": "number",
+   "min": 0,
+   "max": 100,
+   "policy": "KEEP",
+   "example": 99.2
+  },
+  "extra_bytes_read_written": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000000000000,
+   "policy": "KEEP",
+   "example": 0
+  },
+  "max_pga_allocated_bytes": {
+   "type": "number",
+   "min": 0,
+   "max": 1000000000000000,
+   "policy": "KEEP",
+   "example": 524288000
   }
  }
 }

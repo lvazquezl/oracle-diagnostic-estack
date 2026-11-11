@@ -1,0 +1,15 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot C)",
+  "rows": [
+    {
+      "con_id": 1,
+      "job_source": "SCHEDULER",
+      "owner_kind": "CUSTOM",
+      "state": "SCHEDULED",
+      "jobs": 25,
+      "jobs_with_failures": 1,
+      "max_failure_count": 3,
+      "max_hours_since_last_run": 26.0
+    }
+  ]
+}

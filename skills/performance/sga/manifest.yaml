@@ -1,7 +1,7 @@
 name: sga
 display_name: "SGA"
 id: performance/sga
-version: 1.0.0
+version: 1.1.0
 domain: performance
 status: active
 
@@ -15,7 +15,8 @@ license_requirements: none
 
 required_evidence:
   - query_id: Q-PERF-SGA-001
-optional_evidence: []
+optional_evidence:
+  - query_id: Q-PERF-SGA-COMPONENTS-001
 
 data_sensitivity: LOW
 context_budget: LOW

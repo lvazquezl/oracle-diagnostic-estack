@@ -2,7 +2,7 @@
 name: instance
 display_name: "Instance State"
 id: oracle/instance
-version: 1.0.0
+version: 1.1.0
 domain: oracle
 status: active
 ---
@@ -37,7 +37,9 @@ Target Profile publicado (para saber si iterar `GV$INSTANCE` o sólo `V$INSTANCE
 
 # Optional evidence
 
-Ninguna.
+- `Q-PERF-AWR-STARTUP-HISTORY-001`
+
+**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-PERF-AWR-STARTUP-HISTORY-001` (requiere Diagnostics Pack; `LICENSE_RESTRICTED` sin `license_status.diagnostics_pack = CONFIRMED`) entrega por instancia los arranques en AWR, en 7 y 30 días, las horas desde el último y las versiones distintas registradas. Varios arranques en 7 días sin ventana de mantenimiento conocida sugieren inestabilidad (MEDIUM, confirmar con el DBA); `versions_in_awr` > 1 indica un upgrade o parche dentro de la ventana. Solo cubre la retención de AWR (`hours_of_awr_history`): un arranque más viejo no se ve y nunca se infiere su ausencia.
 
 # Data collection
 
@@ -147,3 +149,4 @@ Sensibilidad BAJA; presupuesto bajo, escalable con número de instancias en RAC.
 | Versión | Fecha | Cambio |
 |---|---|---|
 | 1.0.0 | Fase 2 (Oracle Core) | Creado. |
+| 1.1.0 | `CHG-ESTACK-C-NEW-QUERIES-001` (lote C) | Evidencia opcional del gateway: `Q-PERF-AWR-STARTUP-HISTORY-001` (ver Optional evidence). |

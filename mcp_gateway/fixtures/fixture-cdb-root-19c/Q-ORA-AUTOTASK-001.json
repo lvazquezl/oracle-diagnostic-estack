@@ -1,0 +1,14 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot C)",
+  "rows": [
+    {
+      "con_id": 1,
+      "autotask_client": "AUTO_OPTIMIZER_STATS",
+      "autotask_status": "ENABLED",
+      "windows_enabled": 7,
+      "runs_last_7d": 7,
+      "runs_not_succeeded_7d": 0,
+      "hours_since_last_success": 20.0
+    }
+  ]
+}

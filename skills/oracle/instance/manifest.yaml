@@ -1,7 +1,7 @@
 name: instance
 display_name: "Instance State"
 id: oracle/instance
-version: 1.0.0
+version: 1.1.0
 domain: oracle
 status: active
 
@@ -13,7 +13,8 @@ database_role_scope: ANY
 
 required_evidence:
   - query_id: Q-ORA-INSTANCE-STATE-001
-optional_evidence: []
+optional_evidence:
+  - query_id: Q-PERF-AWR-STARTUP-HISTORY-001
 
 data_sensitivity: LOW
 context_budget: LOW

@@ -1,0 +1,14 @@
+{
+  "fixture_note": "SYNTHETIC data — not observed from any real system (collector factory lot C)",
+  "rows": [
+    {
+      "con_id": 1,
+      "patch_action": "APPLY",
+      "patch_id": 36233263,
+      "patch_type": "RU",
+      "patch_status": "SUCCESS",
+      "target_version": "19.32.0.0.0",
+      "hours_since_action": 2160.0
+    }
+  ]
+}

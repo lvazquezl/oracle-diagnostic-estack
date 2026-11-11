@@ -40,7 +40,7 @@ Target identificado (alias de conexión read-only ya configurado en `config/allo
 
 # Skills
 
-`core/context-discovery`, `core/version-awareness` (vía discovery); `oracle-dba-analyst` activa, según `constraints.area_scope` o por defecto todas, las 18 skills Oracle Core (`oracle/database-state`, `oracle/instance`, `oracle/parameters`, `oracle/spfile`, `oracle/controlfile`, `oracle/redo`, `oracle/archive`, `oracle/tablespaces`, `oracle/temp`, `oracle/undo`, `oracle/sessions`, `oracle/processes`, `oracle/jobs`, `oracle/objects`, `oracle/components`, `oracle/invalid-objects`, `oracle/resource-limits`, `oracle/diagnostics`) — ver `agents/oracle-dba-analyst/AGENT.md#responsibilities`.
+`core/context-discovery`, `core/version-awareness` (vía discovery); `oracle-dba-analyst` activa, según `constraints.area_scope` o por defecto todas, las 19 skills Oracle Core (`oracle/database-state`, `oracle/instance`, `oracle/parameters`, `oracle/spfile`, `oracle/controlfile`, `oracle/redo`, `oracle/archive`, `oracle/tablespaces`, `oracle/temp`, `oracle/undo`, `oracle/sessions`, `oracle/processes`, `oracle/jobs`, `oracle/objects`, `oracle/components`, `oracle/invalid-objects`, `oracle/resource-limits`, `oracle/diagnostics`, `oracle/optimizer-statistics`) — ver `agents/oracle-dba-analyst/AGENT.md#responsibilities`.
 
 # Evidence required
 

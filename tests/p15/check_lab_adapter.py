@@ -388,7 +388,7 @@ def job_summary_exposes_status_age_and_failures_without_absolute_dates():
 @posix_test
 def dictionary_verification_runs_the_generated_block_and_returns_only_discrepancies():
     from mcp_gateway import catalog
-    q = "Q-DICT-VERIFY-003"
+    q = "Q-DICT-VERIFY-005"   # CHG-ESTACK-C-NEW-QUERIES-001: V$BACKUP_REDOLOG moved to part 5 when the dictionary grew
     with tmpdir() as d:
         sc = Scenario()
         sc.dictverify = [{"finding": "COLUMN_NOT_FOUND", "view_name": "V$BACKUP_REDOLOG", "column_name": "THREAD#", "tokens": 1},

@@ -11,7 +11,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$ROOT/scripts/lib/version.sh"
 FAIL=0
 TARGET="21.0"
-EXPECTED_UNSUPPORTED="Q-DICT-VERIFY-001 Q-DICT-VERIFY-002 Q-DICT-VERIFY-003 Q-DICT-VERIFY-004 Q-DICT-VERIFY-005"
+EXPECTED_UNSUPPORTED="Q-DICT-VERIFY-001 Q-DICT-VERIFY-002 Q-DICT-VERIFY-003 Q-DICT-VERIFY-004 Q-DICT-VERIFY-005 Q-DICT-VERIFY-006 Q-DICT-VERIFY-007"
 # CHG-ESTACK-ORA19C-LAB-006: Q-DICT-VERIFY-00N se generan desde views.yaml SÓLO para 19c (la lista embebida
 # depende de la versión); otra versión requiere su propia variante generada (CHG-REQ-LAB-MULTIVERSION).
 

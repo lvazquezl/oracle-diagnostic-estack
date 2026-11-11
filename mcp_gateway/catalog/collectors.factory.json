@@ -2752,6 +2752,7 @@
             "MIGRATE",
             "MOUNTED",
             "READ ONLY",
+            "READ ONLY WITH APPLY",
             "READ WRITE"
           ],
           "policy": "KEEP"
@@ -4978,6 +4979,840 @@
         "lot": "B8T",
         "lab_aliases": {},
         "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-ORA-DATABASE-MODE-001",
+      "kind": "sql_query",
+      "domain": "oracle",
+      "title": "Database mode: ARCHIVELOG, force logging, minimal supplemental logging, open mode, edition, CDB and block change tracking (masked unique name, no banner text or file names)",
+      "row_limit": 1,
+      "params": {},
+      "output_fields": {
+        "log_mode": {
+          "type": "enum",
+          "values": [
+            "ARCHIVELOG",
+            "MANUAL",
+            "NOARCHIVELOG"
+          ],
+          "policy": "KEEP"
+        },
+        "force_logging": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "STANDBY NOLOGGING FOR DATA AVAILABILITY",
+            "STANDBY NOLOGGING FOR LOAD PERFORMANCE",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "supplemental_log_data_min": {
+          "type": "enum",
+          "values": [
+            "IMPLICIT",
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "open_mode": {
+          "type": "enum",
+          "values": [
+            "MIGRATE",
+            "MOUNTED",
+            "READ ONLY",
+            "READ ONLY WITH APPLY",
+            "READ WRITE"
+          ],
+          "policy": "KEEP"
+        },
+        "db_unique_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "dbu"
+        },
+        "cdb": {
+          "type": "enum",
+          "values": [
+            "NO",
+            "YES"
+          ],
+          "policy": "KEEP"
+        },
+        "edition": {
+          "type": "enum",
+          "values": [
+            "ENTERPRISE",
+            "EXPRESS",
+            "FREE",
+            "PERSONAL",
+            "STANDARD_EDITION",
+            "STANDARD_EDITION_2",
+            "UNKNOWN"
+          ],
+          "policy": "KEEP"
+        },
+        "block_change_tracking": {
+          "type": "enum",
+          "values": [
+            "DISABLED",
+            "ENABLED",
+            "TARGET"
+          ],
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "C",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-ORA-SQLPATCH-001",
+      "kind": "sql_query",
+      "domain": "oracle",
+      "title": "SQL patch history per container: action, status, patch type, target version and hours since the action (no descriptions, log files or dates)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "patch_action": {
+          "type": "enum",
+          "values": [
+            "APPLY",
+            "BOOTSTRAP",
+            "CPU",
+            "DOWNGRADE",
+            "JVMPSU",
+            "ROLLBACK",
+            "UPGRADE",
+            "VIEW INVALIDATE"
+          ],
+          "policy": "KEEP"
+        },
+        "patch_id": {
+          "type": "number",
+          "min": 0,
+          "max": 10000000000,
+          "policy": "KEEP"
+        },
+        "patch_type": {
+          "type": "enum",
+          "values": [
+            "BUNDLE",
+            "CU",
+            "INTERIM",
+            "LEGACY",
+            "NOT_RECORDED",
+            "RU",
+            "RUR"
+          ],
+          "policy": "KEEP"
+        },
+        "patch_status": {
+          "type": "enum",
+          "values": [
+            "BEGIN",
+            "END",
+            "NOT_RECORDED",
+            "SUCCESS",
+            "WITH ERRORS",
+            "WITH ERRORS (RU)"
+          ],
+          "policy": "KEEP"
+        },
+        "target_version": {
+          "type": "version_string",
+          "policy": "KEEP"
+        },
+        "hours_since_action": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "C",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-ORA-FEATURE-USAGE-001",
+      "kind": "sql_query",
+      "domain": "oracle",
+      "title": "Oracle features with detected usage per container: usages, currently used and hours since first and last usage and last sample (license review input, never proof of licensing; no feature info)",
+      "row_limit": 500,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "feature_name": {
+          "type": "oracle_term",
+          "policy": "KEEP"
+        },
+        "detected_usages": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "currently_used": {
+          "type": "enum",
+          "values": [
+            "FALSE",
+            "TRUE"
+          ],
+          "policy": "KEEP"
+        },
+        "hours_since_last_usage": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "hours_since_first_usage": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "hours_since_last_sample": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "C",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-ORA-OPTIMIZER-STATS-001",
+      "kind": "sql_query",
+      "domain": "oracle",
+      "title": "Optimizer statistics per container and owner kind (fixed objects, Oracle, custom): tables without, stale or locked statistics and age of the last analysis (no table or schema names)",
+      "row_limit": 64,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "owner_kind": {
+          "type": "enum",
+          "values": [
+            "CUSTOM",
+            "FIXED",
+            "ORACLE",
+            "OTHER"
+          ],
+          "policy": "KEEP"
+        },
+        "tables": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "tables_without_stats": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "tables_stale": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "tables_stats_locked": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "max_hours_since_analyzed": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "min_hours_since_analyzed": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "C",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-ORA-AUTOTASK-001",
+      "kind": "sql_query",
+      "domain": "oracle",
+      "title": "Automated maintenance tasks per container: status, enabled maintenance windows, runs and runs not succeeded in 7 days and hours since the last success (no window or job names)",
+      "row_limit": 100,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "autotask_client": {
+          "type": "enum",
+          "values": [
+            "AUTO_OPTIMIZER_STATS",
+            "AUTO_SPACE_ADVISOR",
+            "OTHER",
+            "SQL_TUNING_ADVISOR"
+          ],
+          "policy": "KEEP"
+        },
+        "autotask_status": {
+          "type": "enum",
+          "values": [
+            "DISABLED",
+            "ENABLED"
+          ],
+          "policy": "KEEP"
+        },
+        "windows_enabled": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000,
+          "policy": "KEEP"
+        },
+        "runs_last_7d": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "runs_not_succeeded_7d": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "hours_since_last_success": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "C",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-ORA-SCHEDULER-STATE-001",
+      "kind": "sql_query",
+      "domain": "oracle",
+      "title": "Scheduler and legacy DBMS_JOB jobs per container, owner kind and state: jobs, jobs with failures, max failure count and worst hours since the last run (no job names, owners or code)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "job_source": {
+          "type": "enum",
+          "values": [
+            "LEGACY_JOB",
+            "SCHEDULER"
+          ],
+          "policy": "KEEP"
+        },
+        "owner_kind": {
+          "type": "enum",
+          "values": [
+            "CUSTOM",
+            "FIXED",
+            "ORACLE",
+            "OTHER"
+          ],
+          "policy": "KEEP"
+        },
+        "state": {
+          "type": "enum",
+          "values": [
+            "BLOCKED",
+            "BROKEN",
+            "CHAIN_STALLED",
+            "COMPLETED",
+            "DISABLED",
+            "FAILED",
+            "REMOTE",
+            "RESOURCE_UNAVAILABLE",
+            "RETRY SCHEDULED",
+            "RUNNING",
+            "SCHEDULED",
+            "SUCCEEDED"
+          ],
+          "policy": "KEEP"
+        },
+        "jobs": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "jobs_with_failures": {
+          "type": "integer",
+          "min": 0,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "max_failure_count": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        },
+        "max_hours_since_last_run": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "C",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-ORA-UNDO-STATS-001",
+      "kind": "sql_query",
+      "domain": "oracle",
+      "title": "UNDO statistics of the last 24 hours per container: undo generated, longest query, tuned retention, ORA-01555 and space errors, extent steals and active/unexpired/expired undo of the last interval (no sql_id or dates)",
+      "row_limit": 64,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "undo_intervals": {
+          "type": "integer",
+          "min": 0,
+          "max": 100000,
+          "policy": "KEEP"
+        },
+        "undo_generated_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        },
+        "max_query_seconds": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "max_concurrency": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "min_tuned_retention_seconds": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "max_tuned_retention_seconds": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "snapshot_too_old_errors": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "undo_space_errors": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "unexpired_steals": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        },
+        "expired_steals": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000,
+          "policy": "KEEP"
+        },
+        "active_undo_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "unexpired_undo_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "expired_undo_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "C",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-ORA-TEMP-HWM-001",
+      "kind": "sql_query",
+      "domain": "oracle",
+      "title": "TEMP peak usage since startup per container and temporary tablespace: sort segment, used, max used, largest sort, allocated and autoextend max size in MB (masked tablespace, no file names)",
+      "row_limit": 200,
+      "params": {},
+      "output_fields": {
+        "con_id": {
+          "type": "integer",
+          "min": 0,
+          "max": 4098,
+          "policy": "KEEP"
+        },
+        "tablespace_name": {
+          "type": "identifier",
+          "policy": "MASK",
+          "alias_prefix": "ts"
+        },
+        "sort_segment_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "used_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "max_used_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "max_sort_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "allocated_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "max_size_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "C",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-PERF-SGA-COMPONENTS-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Dynamic SGA components including java and streams pool: current, min, max and user-specified size, resize operations since startup and the last operation",
+      "row_limit": 32,
+      "params": {},
+      "output_fields": {
+        "sga_component": {
+          "type": "enum",
+          "values": [
+            "ASM Buffer Cache",
+            "DEFAULT 16K buffer cache",
+            "DEFAULT 2K buffer cache",
+            "DEFAULT 32K buffer cache",
+            "DEFAULT 4K buffer cache",
+            "DEFAULT 8K buffer cache",
+            "DEFAULT buffer cache",
+            "Data Transfer Cache",
+            "In-Memory Area",
+            "KEEP buffer cache",
+            "OTHER",
+            "RECYCLE buffer cache",
+            "Shared IO Pool",
+            "java pool",
+            "large pool",
+            "memoptimize buffer cache",
+            "shared pool",
+            "streams pool",
+            "unified pga pool"
+          ],
+          "policy": "KEEP"
+        },
+        "current_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "min_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "max_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "user_specified_mb": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "resize_ops": {
+          "type": "number",
+          "min": 0,
+          "max": 100000000,
+          "policy": "KEEP"
+        },
+        "last_oper_type": {
+          "type": "enum",
+          "values": [
+            "DISABLED",
+            "GROW",
+            "INITIALIZING",
+            "SHRINK",
+            "SHRINK_CANCEL",
+            "STATIC"
+          ],
+          "policy": "KEEP"
+        },
+        "hours_since_last_oper": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "C",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-PERF-WORKAREA-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "PGA work area executions since startup (optimal, one-pass, multi-pass), PGA cache hit percentage, extra bytes read/written and max PGA allocated",
+      "row_limit": 1,
+      "params": {},
+      "output_fields": {
+        "optimal_executions": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "onepass_executions": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "multipass_executions": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        },
+        "pga_cache_hit_pct": {
+          "type": "number",
+          "min": 0,
+          "max": 100,
+          "policy": "KEEP"
+        },
+        "extra_bytes_read_written": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000000000,
+          "policy": "KEEP"
+        },
+        "max_pga_allocated_bytes": {
+          "type": "number",
+          "min": 0,
+          "max": 1000000000000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "C",
+        "lab_aliases": {},
+        "fixture_target": "fixture-cdb-root-19c"
+      }
+    },
+    {
+      "collector_id": "Q-PERF-AWR-STARTUP-HISTORY-001",
+      "kind": "sql_query",
+      "domain": "performance",
+      "title": "Instance startup history from AWR: startups in AWR, in 7 and 30 days, hours since the last startup, distinct versions and hours of AWR history (Diagnostics Pack; no names or dates)",
+      "row_limit": 64,
+      "params": {},
+      "output_fields": {
+        "instance_number": {
+          "type": "integer",
+          "min": 1,
+          "max": 1000,
+          "policy": "KEEP"
+        },
+        "startups_in_awr": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "startups_last_7d": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "startups_last_30d": {
+          "type": "integer",
+          "min": 0,
+          "max": 1000000,
+          "policy": "KEEP"
+        },
+        "hours_since_last_startup": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        },
+        "versions_in_awr": {
+          "type": "integer",
+          "min": 0,
+          "max": 100,
+          "policy": "KEEP"
+        },
+        "hours_of_awr_history": {
+          "type": "number",
+          "min": -24,
+          "max": 10000000,
+          "policy": "KEEP"
+        }
+      },
+      "adapters": {
+        "fixture": "VERIFIED_FIXTURE",
+        "oracle_sql": "DISABLED"
+      },
+      "factory": {
+        "lot": "CL",
+        "lab_aliases": {},
+        "fixture_target": "fixture-licensed-19c"
       }
     }
   ]

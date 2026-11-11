@@ -2,7 +2,7 @@
 name: jobs
 display_name: "Scheduler / Jobs Summary"
 id: oracle/jobs
-version: 1.1.0
+version: 1.2.0
 domain: oracle
 status: active
 ---
@@ -39,7 +39,10 @@ Target Profile publicado.
 
 # Optional evidence
 
-Ninguna.
+- `Q-ORA-SCHEDULER-STATE-001`
+- `Q-ORA-AUTOTASK-001`
+
+**Gateway (lote C, `CHG-ESTACK-C-NEW-QUERIES-001`):** `Q-ORA-SCHEDULER-STATE-001` agrega todos los jobs por contenedor, tipo de dueño y estado (incluye `DISABLED` y `BROKEN`), con los de `DBMS_JOB` como `LEGACY_JOB` hasta 18c: deja de ser `PARTIALLY_SUPPORTED` para `DBMS_JOB`. Desde 19c los jobs de `DBMS_JOB` son jobs del Scheduler y salen como `SCHEDULER`. Jobs propios `BROKEN` o `DISABLED` son hallazgo (LOW, MEDIUM si `max_failure_count` > 0). `Q-ORA-AUTOTASK-001` (11.1+) entrega el estado de las tareas de mantenimiento automático; la de estadísticas se interpreta en `oracle/optimizer-statistics`.
 
 # Data collection
 
@@ -158,3 +161,4 @@ Sensibilidad BAJA-MEDIA (nombres de job pueden revelar lógica de negocio); pres
 |---|---|---|
 | 1.0.0 | Fase 2 (Oracle Core) | Creado. |
 | 1.1.0 | Oracle Core Compatibility Hardening | Corregido metadata/reality mismatch (`DBA_JOBS` declarado sin consultarse); alcance acotado explícitamente a `DBMS_SCHEDULER`; `DBA_JOBS` legacy documentado como `PARTIALLY_SUPPORTED`/`PLANNED`. |
+| 1.2.0 | `CHG-ESTACK-C-NEW-QUERIES-001` (lote C) | Evidencia opcional del gateway: `Q-ORA-SCHEDULER-STATE-001`, `Q-ORA-AUTOTASK-001` (ver Optional evidence). |

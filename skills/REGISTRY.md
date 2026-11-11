@@ -39,7 +39,7 @@ Fase 1 materializó **un ejemplo representativo completo por dominio** (14); Fou
 | `core/redaction` | registered |
 | `core/reporting` | registered |
 
-## oracle (18) — completo desde Fase 2 (Oracle Core)
+## oracle (19) — completo desde Fase 2 (Oracle Core); `oracle/optimizer-statistics` agregado por `CHG-ESTACK-C-NEW-QUERIES-001`
 
 Todos materializados con estructura `skills/oracle/<skill>/SKILL.md` + `manifest.yaml`.
 
@@ -63,6 +63,7 @@ Todos materializados con estructura `skills/oracle/<skill>/SKILL.md` + `manifest
 | `oracle/invalid-objects` | **active** ([oracle/invalid-objects/SKILL.md](oracle/invalid-objects/SKILL.md)) |
 | `oracle/resource-limits` | **active** ([oracle/resource-limits/SKILL.md](oracle/resource-limits/SKILL.md)) |
 | `oracle/diagnostics` | **active** ([oracle/diagnostics/SKILL.md](oracle/diagnostics/SKILL.md)) |
+| `oracle/optimizer-statistics` | **active** ([oracle/optimizer-statistics/SKILL.md](oracle/optimizer-statistics/SKILL.md)) — `CHG-ESTACK-C-NEW-QUERIES-001` |
 
 ## performance (31)
 

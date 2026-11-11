@@ -65,6 +65,8 @@ views:
     min_version: all
     columns_exhaustive: true
     columns:
+      supplemental_log_data_min: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      dbid: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
       resetlogs_change#: {min_version: all}   # CHG-ESTACK-B8-OPS-COVERAGE-001
       name:                {min_version: all}
       database_role:         {min_version: all}
@@ -186,6 +188,9 @@ views:
 
   DBA_TABLESPACES:
     min_version: all
+    columns:
+      tablespace_name: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      block_size: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
 
   V$TABLESPACE:
     min_version: all
@@ -203,6 +208,10 @@ views:
 
   DBA_TEMP_FILES:
     min_version: all
+    columns:
+      tablespace_name: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      bytes: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      maxbytes: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
 
   DBA_TEMP_FREE_SPACE:
     min_version: all
@@ -213,6 +222,20 @@ views:
 
   V$UNDOSTAT:
     min_version: all
+    columns:
+      begin_time: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      undoblks: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      maxquerylen: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      maxconcurrency: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      tuned_undoretention: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      ssolderrcnt: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      nospaceerrcnt: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      unxpstealcnt: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      expstealcnt: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      activeblks: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      unexpiredblks: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      expiredblks: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      con_id: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
 
   DBA_UNDO_EXTENTS:
     min_version: all
@@ -254,6 +277,13 @@ views:
   # Existencia y acceso verificados en el lab 19c como C##ESTACK_DIAG (2026-10-07), con filas en con_id 1 y 3.
   CDB_SCHEDULER_JOBS:
     min_version: "12.1"
+    columns:
+      con_id: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      owner: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      job_name: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      state: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      failure_count: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      last_start_date: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
     notes: "V2 de Q-ORA-JOBS-SUMMARY-001."
   CDB_SYS_PRIVS:
     min_version: "12.1"
@@ -283,12 +313,24 @@ views:
 
   DBA_SCHEDULER_JOBS:
     min_version: all
+    columns:
+      owner: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      job_name: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      state: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      failure_count: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      last_start_date: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
 
   DBA_SCHEDULER_JOB_RUN_DETAILS:
     min_version: all
 
   DBA_JOBS:
     min_version: all
+    columns:
+      schema_user: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      broken: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      this_date: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      failures: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      last_date: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
     notes: "Legacy DBMS_JOB. Declarado en objects_accessed de Q-ORA-JOBS-SUMMARY-001 pero NO consultado por su SQL actual — gap corregido en este hardening (ver docs/PHASE_2_COMPATIBILITY_HARDENING.md#other-query-fixes); consulta separada queda PLANNED, no se inventa un SELECT ficticio."
 
   V$DIAG_INFO:
@@ -319,6 +361,10 @@ views:
 
   DBA_HIST_SNAPSHOT:
     min_version: "10.1"
+    columns:
+      dbid: {min_version: "10.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      instance_number: {min_version: "10.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      begin_interval_time: {min_version: "10.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
     notes: "AWR (Diagnostics Pack). Usada por Q-PERF-WAIT-AWR-001 para acotar snap_id/end_interval_time de la ventana."
 
   DBA_HIST_SYSTEM_EVENT:
@@ -390,6 +436,9 @@ views:
         "total PGA allocated": {min_version: all}
         "over allocation count": {min_version: all}
         "total freeable PGA memory": {min_version: all}
+        "cache hit percentage": {min_version: all}
+        "extra bytes read/written": {min_version: all}
+        "maximum PGA allocated": {min_version: all}
     notes: "Usada por Q-PERF-PGA-001. Filtrado por VALORES de 'name', no por nombre de columna SQL — una fila ausente en una versión no produce error, sólo NULL (ver docs/QUERY_VARIANTS.md). PGA_AGGREGATE_LIMIT (12.1+) es un PARAMETER leído vía V$PARAMETER, no una fila de esta vista. CHG-ESTACK-DICT-PSEUDO-COLUMNS-001: se retira la pseudo-columna pga_aggregate_limit_row (marcador documental, no existe)."
 
   V$SYSSTAT:
@@ -748,6 +797,10 @@ views:
 
   CDB_TABLESPACES:
     min_version: "12.1"
+    columns:
+      con_id: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      tablespace_name: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      block_size: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
     notes: "Fase 6. Mirror de DBA_TABLESPACES + con_id. Usada por Q-CDB-TABLESPACES-001 (columna contents para distinguir PERMANENT/TEMPORARY/UNDO)."
 
   CDB_DATA_FILES:
@@ -756,6 +809,11 @@ views:
 
   CDB_TEMP_FILES:
     min_version: "12.1"
+    columns:
+      con_id: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      tablespace_name: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      bytes: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      maxbytes: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
     notes: "Fase 6. Mirror de DBA_TEMP_FILES (ya certificada en Oracle Core) + con_id. Usada por Q-CDB-TEMP-001."
 
   GV$TEMP_SPACE_HEADER:
@@ -768,6 +826,10 @@ views:
 
   CDB_USERS:
     min_version: "12.1"
+    columns:
+      con_id: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      username: {min_version: "12.1"}   # CHG-ESTACK-C-NEW-QUERIES-001
+      oracle_maintained: {min_version: "12.1.0.2"}   # CHG-ESTACK-C-NEW-QUERIES-001
     notes: "Fase 6. Mirror de DBA_USERS + con_id/common/oracle_maintained. Usada por Q-CDB-USERS-001 — sólo visibilidad, nunca password hashes (# 23 del prompt de Fase 6)."
 
   CDB_ROLES:
@@ -1547,8 +1609,183 @@ views:
   GV$SORT_SEGMENT:
     min_version: all
     columns:
+      total_blocks: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      max_used_blocks: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
+      max_sort_blocks: {min_version: all}   # CHG-ESTACK-C-NEW-QUERIES-001
       inst_id:          {min_version: all}
       tablespace_name:   {min_version: all}
       used_blocks:        {min_version: all}
       con_id:              {min_version: "12.1"}
     notes: "Variante multi-instancia de V$SORT_SEGMENT: en RAC cada instancia tiene su propio segmento; Q-CDB-TEMP-001 2.0.0 suma USED_BLOCKS."
+
+  V$VERSION:
+    min_version: all
+    columns:
+      banner: {min_version: all}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: Q-ORA-DATABASE-MODE-001 lee solo la edición del banner como palabra cerrada; el texto del banner nunca sale."
+
+  V$BLOCK_CHANGE_TRACKING:
+    min_version: all
+    columns:
+      status: {min_version: all}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: Q-ORA-DATABASE-MODE-001: estado de block change tracking; FILENAME nunca se selecciona."
+
+  DBA_HIST_DATABASE_INSTANCE:
+    min_version: "10.1"
+    columns:
+      dbid: {min_version: "10.1"}
+      instance_number: {min_version: "10.1"}
+      startup_time: {min_version: "10.1"}
+      version: {min_version: "10.1"}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: AWR (Diagnostics Pack). Q-PERF-AWR-STARTUP-HISTORY-001: arranques por instancia."
+
+  DBA_REGISTRY_HISTORY:
+    min_version: "10.2"
+    columns:
+      action: {min_version: "10.2"}
+      id: {min_version: "10.2"}
+      version: {min_version: "10.2"}
+      action_time: {min_version: "10.2"}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: V1 (10g/11g) de Q-ORA-SQLPATCH-001: CPU/PSU registrados por catbundle. COMMENTS nunca se selecciona."
+
+  CDB_REGISTRY_SQLPATCH:
+    min_version: "12.1"
+    columns:
+      con_id: {min_version: "12.1"}
+      patch_id: {min_version: "12.1"}
+      action: {min_version: "12.1"}
+      status: {min_version: "12.1"}
+      action_time: {min_version: "12.1"}
+      patch_type: {min_version: "18.0"}
+      target_version: {min_version: "18.0"}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: V2/V3 de Q-ORA-SQLPATCH-001: parches de datapatch por contenedor. PATCH_TYPE y TARGET_VERSION desde 18c. DESCRIPTION, LOGFILE y PATCH_DIRECTORY nunca se seleccionan."
+
+  DBA_FEATURE_USAGE_STATISTICS:
+    min_version: all
+    columns:
+      name: {min_version: all}
+      detected_usages: {min_version: all}
+      currently_used: {min_version: all}
+      first_usage_date: {min_version: all}
+      last_usage_date: {min_version: all}
+      last_sample_date: {min_version: all}
+      dbid: {min_version: all}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: V1 de Q-ORA-FEATURE-USAGE-001. FEATURE_INFO (CLOB) nunca se selecciona."
+
+  CDB_FEATURE_USAGE_STATISTICS:
+    min_version: "12.1"
+    columns:
+      con_id: {min_version: "12.1"}
+      name: {min_version: "12.1"}
+      detected_usages: {min_version: "12.1"}
+      currently_used: {min_version: "12.1"}
+      first_usage_date: {min_version: "12.1"}
+      last_usage_date: {min_version: "12.1"}
+      last_sample_date: {min_version: "12.1"}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: V2 de Q-ORA-FEATURE-USAGE-001: uso por contenedor desde CDB$ROOT."
+
+  DBA_TAB_STATISTICS:
+    min_version: "10.2"
+    columns:
+      owner: {min_version: all}
+      table_name: {min_version: all}
+      object_type: {min_version: all}
+      last_analyzed: {min_version: all}
+      stale_stats: {min_version: "10.2"}
+      stattype_locked: {min_version: "10.2"}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: V1 de Q-ORA-OPTIMIZER-STATS-001 (conteos agregados; nombres de tabla y esquema nunca salen)."
+
+  CDB_TAB_STATISTICS:
+    min_version: "12.1"
+    columns:
+      con_id: {min_version: "12.1"}
+      owner: {min_version: "12.1"}
+      table_name: {min_version: "12.1"}
+      object_type: {min_version: "12.1"}
+      last_analyzed: {min_version: "12.1"}
+      stale_stats: {min_version: "12.1"}
+      stattype_locked: {min_version: "12.1"}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: V2/V3 de Q-ORA-OPTIMIZER-STATS-001."
+
+  DBA_AUTOTASK_CLIENT:
+    min_version: "11.1"
+    columns:
+      client_name: {min_version: "11.1"}
+      status: {min_version: "11.1"}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: V1 de Q-ORA-AUTOTASK-001."
+
+  DBA_AUTOTASK_WINDOW_CLIENTS:
+    min_version: "11.1"
+    columns:
+      autotask_status: {min_version: "11.1"}
+      optimizer_stats: {min_version: "11.1"}
+      segment_advisor: {min_version: "11.1"}
+      sql_tune_advisor: {min_version: "11.1"}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: V1 de Q-ORA-AUTOTASK-001: clientes habilitados por ventana de mantenimiento; WINDOW_NAME nunca sale."
+
+  DBA_AUTOTASK_JOB_HISTORY:
+    min_version: "11.1"
+    columns:
+      client_name: {min_version: "11.1"}
+      job_start_time: {min_version: "11.1"}
+      job_status: {min_version: "11.1"}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: V1 de Q-ORA-AUTOTASK-001: ejecuciones de 7 días; JOB_NAME y JOB_ERROR nunca salen."
+
+  CDB_AUTOTASK_CLIENT:
+    min_version: "12.1"
+    columns:
+      con_id: {min_version: "12.1"}
+      client_name: {min_version: "12.1"}
+      status: {min_version: "12.1"}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: V2 de Q-ORA-AUTOTASK-001."
+
+  CDB_AUTOTASK_WINDOW_CLIENTS:
+    min_version: "12.1"
+    columns:
+      con_id: {min_version: "12.1"}
+      autotask_status: {min_version: "12.1"}
+      optimizer_stats: {min_version: "12.1"}
+      segment_advisor: {min_version: "12.1"}
+      sql_tune_advisor: {min_version: "12.1"}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: V2 de Q-ORA-AUTOTASK-001."
+
+  CDB_AUTOTASK_JOB_HISTORY:
+    min_version: "12.1"
+    columns:
+      con_id: {min_version: "12.1"}
+      client_name: {min_version: "12.1"}
+      job_start_time: {min_version: "12.1"}
+      job_status: {min_version: "12.1"}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: V2 de Q-ORA-AUTOTASK-001."
+
+  CDB_JOBS:
+    min_version: "12.1"
+    columns:
+      con_id: {min_version: "12.1"}
+      schema_user: {min_version: "12.1"}
+      broken: {min_version: "12.1"}
+      this_date: {min_version: "12.1"}
+      failures: {min_version: "12.1"}
+      last_date: {min_version: "12.1"}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: V2/V3 de Q-ORA-SCHEDULER-STATE-001 (DBMS_JOB legado hasta 18c). WHAT e INTERVAL nunca se seleccionan."
+
+  V$SGA_DYNAMIC_COMPONENTS:
+    min_version: all
+    columns:
+      component: {min_version: all}
+      current_size: {min_version: all}
+      min_size: {min_version: all}
+      max_size: {min_version: all}
+      user_specified_size: {min_version: all}
+      oper_count: {min_version: all}
+      last_oper_type: {min_version: all}
+      last_oper_time: {min_version: all}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: Q-PERF-SGA-COMPONENTS-001."
+
+  V$SQL_WORKAREA_HISTOGRAM:
+    min_version: all
+    columns:
+      optimal_executions: {min_version: all}
+      onepass_executions: {min_version: all}
+      multipasses_executions: {min_version: all}
+    notes: "CHG-ESTACK-C-NEW-QUERIES-001: Q-PERF-WORKAREA-001."
