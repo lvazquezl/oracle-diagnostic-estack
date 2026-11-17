@@ -1,0 +1,1164 @@
+{
+ "schema_version": "1.0.0",
+ "description": "Modelo de cobertura por dominio del assessment (CHG-ESTACK-D-COMPLETE-WITHIN-POLICY-001). Ver docs/ASSESSMENT_COVERAGE_MODEL.md.",
+ "domain_states": [
+  "COMPLETE",
+  "COMPLETE_WITHIN_POLICY",
+  "PARTIAL",
+  "NOT_ASSESSED",
+  "NOT_APPLICABLE",
+  "INSUFFICIENT_EVIDENCE"
+ ],
+ "exclusion_categories": {
+  "DATA_CLASSIFICATION": {
+   "policy": "sanitizers/data-classification-policy.md",
+   "meaning": "El dato existe en la base pero la política de clasificación impide que salga"
+  },
+  "FORBIDDEN_OPERATION": {
+   "policy": "policies/forbidden-operations.md",
+   "meaning": "Obtenerlo exige ejecutar una operación prohibida"
+  },
+  "LICENSE_NOT_ENTITLED": {
+   "policy": "policies/licensing-awareness-policy.md",
+   "meaning": "Requiere un pack que el humano declaró no licenciado (license_status NOT_LICENSED)"
+  },
+  "LICENSE_ENTITLEMENT_NOT_ASSERTED": {
+   "policy": "policies/licensing-awareness-policy.md",
+   "meaning": "Es un dato del contrato, que el e-stack nunca afirma"
+  }
+ },
+ "topology_flags": [
+  "cdb",
+  "rac",
+  "asm",
+  "dataguard",
+  "standby"
+ ],
+ "domains": [
+  {
+   "id": "A",
+   "title": "Identidad, arquitectura y topología",
+   "items": [
+    {
+     "id": "A1",
+     "label": "Identidad: versión, rol, open mode",
+     "collectors": [
+      "Q-DISC-IDENTITY-001"
+     ]
+    },
+    {
+     "id": "A2",
+     "label": "Arquitectura: RAC, ASM, Data Guard, plataforma",
+     "collectors": [
+      "Q-DISC-ARCHITECTURE-001"
+     ]
+    },
+    {
+     "id": "A3",
+     "label": "Instancias, estado y uptime",
+     "collectors": [
+      "Q-DISC-INSTANCE-001",
+      "Q-ORA-INSTANCE-STATE-001"
+     ]
+    },
+    {
+     "id": "A4",
+     "label": "Modo de la base y edición: log_mode, force logging, CDB",
+     "collectors": [
+      "Q-ORA-DATABASE-MODE-001"
+     ]
+    },
+    {
+     "id": "A5",
+     "label": "Historial de arranques",
+     "collectors": [
+      "Q-PERF-AWR-STARTUP-HISTORY-001"
+     ]
+    },
+    {
+     "id": "A6",
+     "label": "Reloj de la base frente al del gateway",
+     "collectors": [
+      "Q-DISC-CLOCK-001"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "B",
+   "title": "Parámetros de configuración",
+   "items": [
+    {
+     "id": "B1",
+     "label": "Parámetros no default",
+     "collectors": [
+      "Q-ORA-PARAMETERS-001"
+     ]
+    },
+    {
+     "id": "B2",
+     "label": "SPFILE y cambios desde el arranque",
+     "collectors": [
+      "Q-ORA-SPFILE-001"
+     ]
+    },
+    {
+     "id": "B3",
+     "label": "Parámetros de seguridad",
+     "collectors": [
+      "Q-SEC-SECURITY-PARAMETERS-001"
+     ]
+    },
+    {
+     "id": "B4",
+     "label": "Valores de texto libre de los parámetros",
+     "collectors": [],
+     "excluded_by_policy": {
+      "category": "DATA_CLASSIFICATION",
+      "reason": "Los valores de parámetro solo salen como número, TRUE/FALSE, versión o palabra cerrada; rutas, nombres y texto libre no salen"
+     }
+    },
+    {
+     "id": "B5",
+     "label": "Parámetros por instancia (GV$)",
+     "collectors": [],
+     "applies_when": {
+      "rac": true
+     },
+     "gap": "Sin collector certificado para GV$SYSTEM_PARAMETER"
+    }
+   ]
+  },
+  {
+   "id": "C",
+   "title": "Memoria",
+   "items": [
+    {
+     "id": "C1",
+     "label": "SGA y pools principales",
+     "collectors": [
+      "Q-PERF-SGA-001"
+     ]
+    },
+    {
+     "id": "C2",
+     "label": "Componentes dinámicos y operaciones de resize",
+     "collectors": [
+      "Q-PERF-SGA-COMPONENTS-001"
+     ]
+    },
+    {
+     "id": "C3",
+     "label": "PGA: target, uso y over allocation",
+     "collectors": [
+      "Q-PERF-PGA-001"
+     ]
+    },
+    {
+     "id": "C4",
+     "label": "Work areas óptimas, one-pass y multi-pass",
+     "collectors": [
+      "Q-PERF-WORKAREA-001"
+     ]
+    },
+    {
+     "id": "C5",
+     "label": "Shared pool y diccionario",
+     "collectors": [
+      "Q-PERF-SHAREDPOOL-001",
+      "Q-PERF-LIBCACHE-001"
+     ]
+    },
+    {
+     "id": "C6",
+     "label": "Result cache",
+     "collectors": [],
+     "gap": "Sin collector certificado para V$RESULT_CACHE_STATISTICS"
+    }
+   ]
+  },
+  {
+   "id": "D",
+   "title": "CPU y carga",
+   "items": [
+    {
+     "id": "D1",
+     "label": "DB time y DB CPU",
+     "collectors": [
+      "Q-PERF-DBTIME-CURRENT-001"
+     ]
+    },
+    {
+     "id": "D2",
+     "label": "Tiempo de espera por clase",
+     "collectors": [
+      "Q-PERF-WAIT-CLASS-001"
+     ]
+    },
+    {
+     "id": "D3",
+     "label": "Historia de carga (AWR)",
+     "collectors": [
+      "Q-PERF-AWR-DBTIME-24H-001"
+     ]
+    },
+    {
+     "id": "D4",
+     "label": "CPU del host",
+     "collectors": [],
+     "gap": "Requiere el adaptador os_readonly (hoy CONTRACT_ONLY; lote E)"
+    }
+   ]
+  },
+  {
+   "id": "E",
+   "title": "Performance general",
+   "items": [
+    {
+     "id": "E1",
+     "label": "Eventos de espera desde el arranque",
+     "collectors": [
+      "Q-PERF-WAIT-SYSTEM-001"
+     ]
+    },
+    {
+     "id": "E2",
+     "label": "I/O por evento y por datafile",
+     "collectors": [
+      "Q-PERF-IO-001",
+      "Q-PERF-IO-FILESTAT-001"
+     ]
+    },
+    {
+     "id": "E3",
+     "label": "Redo y commits",
+     "collectors": [
+      "Q-PERF-REDO-001"
+     ]
+    },
+    {
+     "id": "E4",
+     "label": "Parsing",
+     "collectors": [
+      "Q-PERF-HARDPARSE-001"
+     ]
+    },
+    {
+     "id": "E5",
+     "label": "Historia de esperas (AWR)",
+     "collectors": [
+      "Q-PERF-AWR-WAITS-24H-001"
+     ]
+    },
+    {
+     "id": "E6",
+     "label": "Actividad reciente (ASH)",
+     "collectors": [
+      "Q-PERF-ASH-1H-001"
+     ]
+    },
+    {
+     "id": "E7",
+     "label": "Latches y mutexes",
+     "collectors": [],
+     "gap": "Sin collector certificado para V$LATCH y V$MUTEX_SLEEP"
+    }
+   ]
+  },
+  {
+   "id": "F",
+   "title": "SQL Performance",
+   "items": [
+    {
+     "id": "F1",
+     "label": "Top SQL actual por métricas",
+     "collectors": [
+      "Q-PERF-TOPSQL-CURRENT-001"
+     ]
+    },
+    {
+     "id": "F2",
+     "label": "Top SQL histórico (AWR)",
+     "collectors": [
+      "Q-PERF-AWR-TOPSQL-24H-001"
+     ]
+    },
+    {
+     "id": "F3",
+     "label": "Cursores hijos y memoria compartida por SQL",
+     "collectors": [],
+     "gap": "Sin collector certificado para V$SQLAREA.VERSION_COUNT y SHARABLE_MEM"
+    },
+    {
+     "id": "F4",
+     "label": "Texto SQL",
+     "collectors": [],
+     "excluded_by_policy": {
+      "category": "DATA_CLASSIFICATION",
+      "reason": "El gateway entrega SQL_ID, plan hash y métricas; el texto SQL completo nunca sale de la base por este canal"
+     }
+    },
+    {
+     "id": "F5",
+     "label": "Bind values",
+     "collectors": [],
+     "excluded_by_policy": {
+      "category": "DATA_CLASSIFICATION",
+      "reason": "Los bind values son DROP siempre"
+     }
+    }
+   ]
+  },
+  {
+   "id": "G",
+   "title": "Sesiones y procesos",
+   "items": [
+    {
+     "id": "G1",
+     "label": "Sesiones por estado y tipo",
+     "collectors": [
+      "Q-ORA-SESSIONS-SUMMARY-001"
+     ]
+    },
+    {
+     "id": "G2",
+     "label": "Procesos y sesiones frente al límite",
+     "collectors": [
+      "Q-ORA-PROCESSES-SUMMARY-001",
+      "Q-ORA-RESOURCE-LIMITS-001"
+     ]
+    },
+    {
+     "id": "G3",
+     "label": "Sesiones por PDB y servicio",
+     "collectors": [
+      "Q-CDB-SESSION-DIST-001"
+     ],
+     "applies_when": {
+      "cdb": true
+     }
+    },
+    {
+     "id": "G4",
+     "label": "Ejecución paralela",
+     "collectors": [
+      "Q-PERF-PARALLEL-001"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "H",
+   "title": "Bloqueos y concurrencia",
+   "items": [
+    {
+     "id": "H1",
+     "label": "Sesiones bloqueadas ahora",
+     "collectors": [
+      "Q-PERF-BLOCKING-001"
+     ]
+    },
+    {
+     "id": "H2",
+     "label": "Enqueues por tipo y modo",
+     "collectors": [
+      "Q-PERF-LOCKS-001"
+     ]
+    },
+    {
+     "id": "H3",
+     "label": "Deadlocks e historia de bloqueos (alert log)",
+     "collectors": [
+      "Q-ORA-DIAGNOSTICS-ALERTLOG-001"
+     ],
+     "gap": "Requiere el adaptador oracle_diag_file (hoy CONTRACT_ONLY; lote E)"
+    }
+   ]
+  },
+  {
+   "id": "I",
+   "title": "Tablespaces y datafiles",
+   "items": [
+    {
+     "id": "I1",
+     "label": "Uso de tablespaces",
+     "collectors": [
+      "Q-DBA-TBS-USAGE-001"
+     ]
+    },
+    {
+     "id": "I2",
+     "label": "Datafiles y autoextend",
+     "collectors": [
+      "Q-DBA-TBS-DATAFILES-001"
+     ]
+    },
+    {
+     "id": "I3",
+     "label": "Tablespaces de cada PDB",
+     "collectors": [
+      "Q-CDB-TABLESPACES-001"
+     ],
+     "applies_when": {
+      "cdb": true
+     }
+    },
+    {
+     "id": "I4",
+     "label": "Tablespaces BIGFILE o SMALLFILE",
+     "collectors": [],
+     "gap": "Ningún collector expone DBA_TABLESPACES.BIGFILE"
+    }
+   ]
+  },
+  {
+   "id": "J",
+   "title": "TEMP",
+   "items": [
+    {
+     "id": "J1",
+     "label": "Tamaño y espacio libre de TEMP",
+     "collectors": [
+      "Q-ORA-TEMP-001"
+     ]
+    },
+    {
+     "id": "J2",
+     "label": "Pico de uso desde el arranque",
+     "collectors": [
+      "Q-ORA-TEMP-HWM-001"
+     ]
+    },
+    {
+     "id": "J3",
+     "label": "Consumidores actuales de TEMP",
+     "collectors": [
+      "Q-PERF-TEMP-001"
+     ]
+    },
+    {
+     "id": "J4",
+     "label": "TEMP de cada PDB",
+     "collectors": [
+      "Q-CDB-TEMP-001"
+     ],
+     "applies_when": {
+      "cdb": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "K",
+   "title": "UNDO",
+   "items": [
+    {
+     "id": "K1",
+     "label": "Configuración y retención",
+     "collectors": [
+      "Q-ORA-UNDO-001"
+     ]
+    },
+    {
+     "id": "K2",
+     "label": "Estadísticas de las últimas 24 h",
+     "collectors": [
+      "Q-ORA-UNDO-STATS-001"
+     ]
+    },
+    {
+     "id": "K3",
+     "label": "UNDO de cada PDB",
+     "collectors": [],
+     "applies_when": {
+      "cdb": true
+     },
+     "gap": "Desde CDB$ROOT V$UNDOSTAT solo muestra el root, aun con undo local (lote C): requiere un target conectado a la PDB"
+    }
+   ]
+  },
+  {
+   "id": "L",
+   "title": "Redo / Archive",
+   "items": [
+    {
+     "id": "L1",
+     "label": "Grupos y miembros de redo",
+     "collectors": [
+      "Q-ORA-REDO-001"
+     ]
+    },
+    {
+     "id": "L2",
+     "label": "Log switches en 24 h",
+     "collectors": [
+      "Q-ORA-REDO-SWITCH-24H-001"
+     ]
+    },
+    {
+     "id": "L3",
+     "label": "Destinos de archivado",
+     "collectors": [
+      "Q-ORA-ARCHIVE-001"
+     ]
+    },
+    {
+     "id": "L4",
+     "label": "Modo ARCHIVELOG y force logging",
+     "collectors": [
+      "Q-ORA-DATABASE-MODE-001"
+     ]
+    },
+    {
+     "id": "L5",
+     "label": "Standby redo logs",
+     "collectors": [],
+     "applies_when": {
+      "dataguard": true
+     },
+     "gap": "Sin collector certificado para V$STANDBY_LOG"
+    }
+   ]
+  },
+  {
+   "id": "M",
+   "title": "FRA y recuperación",
+   "items": [
+    {
+     "id": "M1",
+     "label": "Uso de la FRA por tipo de archivo",
+     "collectors": [
+      "Q-RMAN-FRA-USAGE-001"
+     ]
+    },
+    {
+     "id": "M2",
+     "label": "Flashback y protección",
+     "collectors": [
+      "Q-ORA-DB-STATE-001"
+     ]
+    },
+    {
+     "id": "M3",
+     "label": "Control files",
+     "collectors": [
+      "Q-ORA-CONTROLFILE-001"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "N",
+   "title": "RMAN / Backup & Recovery",
+   "items": [
+    {
+     "id": "N1",
+     "label": "Configuración RMAN",
+     "collectors": [
+      "Q-RMAN-CONFIGURATION-001"
+     ]
+    },
+    {
+     "id": "N2",
+     "label": "Frescura de backups por categoría",
+     "collectors": [
+      "Q-RMAN-BACKUP-FRESHNESS-001"
+     ]
+    },
+    {
+     "id": "N3",
+     "label": "Jobs RMAN y fallas",
+     "collectors": [
+      "Q-RMAN-JOB-SUMMARY-001"
+     ]
+    },
+    {
+     "id": "N4",
+     "label": "Cobertura de datafiles",
+     "collectors": [
+      "Q-RMAN-BACKUP-DATAFILE-001"
+     ]
+    },
+    {
+     "id": "N5",
+     "label": "Cobertura de archivelogs",
+     "collectors": [
+      "Q-RMAN-ARCHIVED-LOG-COVERAGE-001"
+     ]
+    },
+    {
+     "id": "N6",
+     "label": "Piezas y dispositivos",
+     "collectors": [
+      "Q-RMAN-BACKUP-PIECE-001",
+      "Q-RMAN-BACKUP-DEVICE-001"
+     ]
+    },
+    {
+     "id": "N7",
+     "label": "Restore validate y restore preview",
+     "collectors": [],
+     "excluded_by_policy": {
+      "category": "FORBIDDEN_OPERATION",
+      "reason": "RESTORE ... VALIDATE y RESTORE PREVIEW son comandos RMAN: el e-stack no ejecuta RMAN"
+     }
+    }
+   ]
+  },
+  {
+   "id": "O",
+   "title": "Seguridad",
+   "items": [
+    {
+     "id": "O1",
+     "label": "Inventario de cuentas",
+     "collectors": [
+      "Q-SEC-ACCOUNT-INVENTORY-001"
+     ]
+    },
+    {
+     "id": "O2",
+     "label": "Cuentas con credencial por defecto",
+     "collectors": [
+      "Q-SEC-DEFAULT-ACCOUNTS-001"
+     ]
+    },
+    {
+     "id": "O3",
+     "label": "Privilegios de sistema directos",
+     "collectors": [
+      "Q-SEC-SYSTEM-PRIVILEGES-001"
+     ]
+    },
+    {
+     "id": "O4",
+     "label": "Roles y su anidamiento",
+     "collectors": [
+      "Q-SEC-ROLES-001",
+      "Q-SEC-ROLE-GRANTS-001",
+      "Q-SEC-NESTED-ROLE-GRANTS-001",
+      "Q-SEC-ROLE-SYSTEM-PRIVILEGES-001"
+     ]
+    },
+    {
+     "id": "O5",
+     "label": "Privilegios de objeto",
+     "collectors": [
+      "Q-SEC-OBJECT-PRIVILEGES-001"
+     ]
+    },
+    {
+     "id": "O6",
+     "label": "Grants a PUBLIC",
+     "collectors": [
+      "Q-SEC-PUBLIC-SYSTEM-GRANTS-001",
+      "Q-SEC-PUBLIC-OBJECT-GRANTS-001"
+     ]
+    },
+    {
+     "id": "O7",
+     "label": "Perfiles y verificadores de contraseña",
+     "collectors": [
+      "Q-SEC-PASSWORD-PROFILES-001",
+      "Q-SEC-PASSWORD-VERSIONS-001"
+     ]
+    },
+    {
+     "id": "O8",
+     "label": "Privilegios administrativos (password file)",
+     "collectors": [
+      "Q-SEC-ADMIN-PRIVILEGES-001"
+     ]
+    },
+    {
+     "id": "O9",
+     "label": "Autenticación por proxy",
+     "collectors": [
+      "Q-SEC-PROXY-AUTHENTICATION-001"
+     ]
+    },
+    {
+     "id": "O10",
+     "label": "Directorios y database links",
+     "collectors": [
+      "Q-SEC-DIRECTORIES-001",
+      "Q-SEC-DB-LINKS-001"
+     ]
+    },
+    {
+     "id": "O11",
+     "label": "Credenciales por defecto y proxy de cada PDB",
+     "collectors": [],
+     "applies_when": {
+      "cdb": true
+     },
+     "gap": "DBA_USERS_WITH_DEFPWD y PROXY_USERS no tienen vista CDB_: requiere un target conectado a la PDB"
+    },
+    {
+     "id": "O12",
+     "label": "Passwords y hashes",
+     "collectors": [],
+     "excluded_by_policy": {
+      "category": "DATA_CLASSIFICATION",
+      "reason": "Passwords y password hashes son DROP siempre"
+     }
+    }
+   ]
+  },
+  {
+   "id": "P",
+   "title": "Auditoría",
+   "items": [
+    {
+     "id": "P1",
+     "label": "Políticas de auditoría unificada",
+     "collectors": [
+      "Q-SEC-UNIFIED-AUDIT-POLICIES-001"
+     ]
+    },
+    {
+     "id": "P2",
+     "label": "Actividad auditada en 7 días",
+     "collectors": [
+      "Q-SEC-UNIFIED-AUDIT-TRAIL-001",
+      "Q-SEC-TRADITIONAL-AUDIT-001"
+     ]
+    },
+    {
+     "id": "P3",
+     "label": "Políticas de auditoría de cada PDB",
+     "collectors": [],
+     "applies_when": {
+      "cdb": true
+     },
+     "gap": "AUDIT_UNIFIED_ENABLED_POLICIES no tiene vista CDB_: requiere un target conectado a la PDB"
+    },
+    {
+     "id": "P4",
+     "label": "Detalle de cada registro de auditoría",
+     "collectors": [],
+     "excluded_by_policy": {
+      "category": "DATA_CLASSIFICATION",
+      "reason": "El detalle de cada registro de auditoría (usuario, objeto, SQL) no sale: solo conteos por acción y código de retorno"
+     }
+    }
+   ]
+  },
+  {
+   "id": "Q",
+   "title": "TDE y protección de datos",
+   "items": [
+    {
+     "id": "Q1",
+     "label": "Keystore TDE",
+     "collectors": [
+      "Q-SEC-TDE-WALLET-001"
+     ]
+    },
+    {
+     "id": "Q2",
+     "label": "Tablespaces y columnas cifradas",
+     "collectors": [
+      "Q-SEC-ENCRYPTED-TABLESPACES-001",
+      "Q-SEC-ENCRYPTED-COLUMNS-001"
+     ]
+    },
+    {
+     "id": "Q3",
+     "label": "Master keys",
+     "collectors": [
+      "Q-SEC-TDE-MASTER-KEYS-001"
+     ]
+    },
+    {
+     "id": "Q4",
+     "label": "Data Redaction",
+     "collectors": [
+      "Q-SEC-DATA-REDACTION-POLICIES-001"
+     ]
+    },
+    {
+     "id": "Q5",
+     "label": "Database Vault y Label Security",
+     "collectors": [
+      "Q-SEC-DATABASE-VAULT-STATUS-001",
+      "Q-SEC-OLS-STATUS-001"
+     ]
+    },
+    {
+     "id": "Q6",
+     "label": "Ruta del keystore",
+     "collectors": [],
+     "excluded_by_policy": {
+      "category": "DATA_CLASSIFICATION",
+      "reason": "Las rutas de wallets y keystores nunca salen de la base"
+     }
+    }
+   ]
+  },
+  {
+   "id": "R",
+   "title": "Multitenant",
+   "applies_when": {
+    "cdb": true
+   },
+   "items": [
+    {
+     "id": "R1",
+     "label": "Estado de las PDB",
+     "collectors": [
+      "Q-CDB-PDB-STATE-001"
+     ]
+    },
+    {
+     "id": "R2",
+     "label": "Saved state",
+     "collectors": [
+      "Q-CDB-PDB-SAVED-STATE-001"
+     ]
+    },
+    {
+     "id": "R3",
+     "label": "Plug-in violations",
+     "collectors": [
+      "Q-CDB-PLUGIN-VIOLATIONS-001"
+     ]
+    },
+    {
+     "id": "R4",
+     "label": "Lockdown profiles",
+     "collectors": [
+      "Q-CDB-LOCKDOWN-001"
+     ]
+    },
+    {
+     "id": "R5",
+     "label": "Servicios de las PDB",
+     "collectors": [
+      "Q-CDB-SERVICES-001"
+     ]
+    },
+    {
+     "id": "R6",
+     "label": "Alcance de CONTAINER_DATA",
+     "collectors": [
+      "Q-CDB-CONTAINER-DATA-001"
+     ]
+    },
+    {
+     "id": "R7",
+     "label": "Consumo por PDB",
+     "collectors": [
+      "Q-CDB-RESOURCE-USAGE-001"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S",
+   "title": "RAC / Cluster",
+   "applies_when": {
+    "rac": true
+   },
+   "items": [
+    {
+     "id": "S1",
+     "label": "Instancias y servicios del cluster",
+     "collectors": [],
+     "gap": "Sin collectors certificados de RAC expuestos por el gateway"
+    },
+    {
+     "id": "S2",
+     "label": "Interconnect y Clusterware",
+     "collectors": [],
+     "gap": "Sin collectors certificados de RAC expuestos por el gateway"
+    }
+   ]
+  },
+  {
+   "id": "T",
+   "title": "ASM",
+   "applies_when": {
+    "asm": true
+   },
+   "items": [
+    {
+     "id": "T1",
+     "label": "Disk groups y capacidad",
+     "collectors": [
+      "Q-ASM-TOPOLOGY-001"
+     ]
+    },
+    {
+     "id": "T2",
+     "label": "Discos y failure groups",
+     "collectors": [
+      "Q-ASM-DISKS-001"
+     ]
+    },
+    {
+     "id": "T3",
+     "label": "Rebalance y allocation unit",
+     "collectors": [],
+     "gap": "Sin collector certificado para V$ASM_OPERATION y el AU size"
+    }
+   ]
+  },
+  {
+   "id": "U",
+   "title": "Data Guard",
+   "applies_when": {
+    "dataguard": true
+   },
+   "items": [
+    {
+     "id": "U1",
+     "label": "Destinos de transporte desde el primario",
+     "collectors": [
+      "Q-ORA-ARCHIVE-001"
+     ],
+     "applies_when": {
+      "standby": false
+     }
+    },
+    {
+     "id": "U2",
+     "label": "Lag de transporte y apply",
+     "collectors": [
+      "Q-DG-STATS-001"
+     ],
+     "applies_when": {
+      "standby": true
+     }
+    },
+    {
+     "id": "U3",
+     "label": "Broker y fast-start failover",
+     "collectors": [],
+     "gap": "Sin collector certificado para V$DATAGUARD_CONFIG y V$FS_FAILOVER_STATS"
+    }
+   ]
+  },
+  {
+   "id": "V",
+   "title": "Jobs y Scheduler",
+   "items": [
+    {
+     "id": "V1",
+     "label": "Jobs rotos o con fallas",
+     "collectors": [
+      "Q-ORA-JOBS-SUMMARY-001"
+     ]
+    },
+    {
+     "id": "V2",
+     "label": "Estado de todos los jobs, incluido DBMS_JOB",
+     "collectors": [
+      "Q-ORA-SCHEDULER-STATE-001"
+     ]
+    },
+    {
+     "id": "V3",
+     "label": "Mantenimiento automático",
+     "collectors": [
+      "Q-ORA-AUTOTASK-001"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "W",
+   "title": "Objetos inválidos y componentes",
+   "items": [
+    {
+     "id": "W1",
+     "label": "Objetos inválidos",
+     "collectors": [
+      "Q-ORA-INVALID-OBJECTS-001"
+     ]
+    },
+    {
+     "id": "W2",
+     "label": "Inventario de objetos",
+     "collectors": [
+      "Q-ORA-OBJECTS-INVENTORY-001"
+     ]
+    },
+    {
+     "id": "W3",
+     "label": "Componentes del registro",
+     "collectors": [
+      "Q-ORA-COMPONENTS-001"
+     ]
+    },
+    {
+     "id": "W4",
+     "label": "Parches de datapatch",
+     "collectors": [
+      "Q-ORA-SQLPATCH-001"
+     ]
+    },
+    {
+     "id": "W5",
+     "label": "Alertas del servidor",
+     "collectors": [
+      "Q-ORA-DIAGNOSTICS-ADR-001"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "X",
+   "title": "Estadísticas y optimizer",
+   "items": [
+    {
+     "id": "X1",
+     "label": "Frescura de estadísticas por tipo de dueño",
+     "collectors": [
+      "Q-ORA-OPTIMIZER-STATS-001"
+     ]
+    },
+    {
+     "id": "X2",
+     "label": "Recolección automática",
+     "collectors": [
+      "Q-ORA-AUTOTASK-001"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Y",
+   "title": "Resource Manager",
+   "items": [
+    {
+     "id": "Y1",
+     "label": "Plan de la CDB y directivas por PDB",
+     "collectors": [
+      "Q-CDB-RESOURCE-MANAGER-001"
+     ],
+     "applies_when": {
+      "cdb": true
+     }
+    },
+    {
+     "id": "Y2",
+     "label": "Consumo y límites por PDB",
+     "collectors": [
+      "Q-CDB-RESOURCE-USAGE-001"
+     ],
+     "applies_when": {
+      "cdb": true
+     }
+    },
+    {
+     "id": "Y3",
+     "label": "Plan de una base no CDB",
+     "collectors": [],
+     "applies_when": {
+      "cdb": false
+     },
+     "gap": "Sin collector certificado para DBA_RSRC_PLAN_DIRECTIVES fuera de una CDB"
+    }
+   ]
+  },
+  {
+   "id": "Z",
+   "title": "Licenciamiento y opciones",
+   "items": [
+    {
+     "id": "Z1",
+     "label": "Features con uso detectado",
+     "collectors": [
+      "Q-ORA-FEATURE-USAGE-001"
+     ]
+    },
+    {
+     "id": "Z2",
+     "label": "Opciones registradas",
+     "collectors": [
+      "Q-ORA-COMPONENTS-001"
+     ]
+    },
+    {
+     "id": "Z3",
+     "label": "Derecho de uso según el contrato",
+     "collectors": [],
+     "excluded_by_policy": {
+      "category": "LICENSE_ENTITLEMENT_NOT_ASSERTED",
+      "reason": "Si la licencia cubre una feature es un dato del contrato, no de la base: el e-stack nunca lo afirma"
+     }
+    }
+   ]
+  },
+  {
+   "id": "NET",
+   "title": "Red visible desde la base",
+   "items": [
+    {
+     "id": "NET1",
+     "label": "Servicios",
+     "collectors": [
+      "Q-CDB-SERVICES-001"
+     ],
+     "applies_when": {
+      "cdb": true
+     }
+    },
+    {
+     "id": "NET2",
+     "label": "Database links",
+     "collectors": [
+      "Q-SEC-DB-LINKS-001"
+     ]
+    },
+    {
+     "id": "NET3",
+     "label": "Listener y servicios registrados",
+     "collectors": [],
+     "gap": "Requiere el adaptador listener (hoy CONTRACT_ONLY; lote E)"
+    },
+    {
+     "id": "NET4",
+     "label": "ACL de red",
+     "collectors": [],
+     "gap": "Sin collector certificado para DBA_HOST_ACES"
+    }
+   ]
+  },
+  {
+   "id": "OS",
+   "title": "Sistema operativo",
+   "items": [
+    {
+     "id": "OS1",
+     "label": "Límites de procesos del SO",
+     "collectors": [
+      "os.get_process_limits"
+     ],
+     "gap": "Requiere el adaptador os_readonly (hoy CONTRACT_ONLY; lote E)"
+    },
+    {
+     "id": "OS2",
+     "label": "Fallas de creación de procesos Oracle",
+     "collectors": [
+      "os.get_oracle_process_summary"
+     ],
+     "gap": "Requiere el adaptador os_readonly (hoy CONTRACT_ONLY; lote E)"
+    },
+    {
+     "id": "OS3",
+     "label": "Memoria, HugePages y swap",
+     "collectors": [],
+     "gap": "Requiere el adaptador os_readonly (hoy CONTRACT_ONLY; lote E)"
+    },
+    {
+     "id": "OS4",
+     "label": "Sincronización de hora",
+     "collectors": [],
+     "gap": "Requiere el adaptador os_readonly (hoy CONTRACT_ONLY; lote E)"
+    }
+   ]
+  }
+ ]
+}

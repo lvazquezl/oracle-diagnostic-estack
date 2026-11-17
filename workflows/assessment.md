@@ -1,6 +1,6 @@
 ---
 name: assessment
-version: 1.1.0
+version: 1.2.0
 status: active
 ---
 
@@ -44,7 +44,7 @@ Todas las queries certificadas relevantes a los dominios activados, con ventanas
 
 # Stop conditions
 
-Igual que `healthcheck.md`. Adicionalmente: si un dominio activo (ej. RAC) no puede completarse por falta de acceso, el assessment continúa con el resto de dominios y declara ese dominio `UNDETERMINED` explícitamente, en vez de abortar completo.
+Igual que `healthcheck.md`. Adicionalmente: si un dominio activo (ej. RAC) no puede completarse por falta de acceso, el assessment continúa con el resto de dominios y declara ese dominio `PARTIAL` o `NOT_ASSESSED` con lo que falta (modelo de cobertura, abajo), en vez de abortar completo.
 
 # Confidence threshold
 
@@ -57,6 +57,14 @@ Cualquier hallazgo `HIGH` activa `incident-root-cause-analyst` si hay indicios d
 # Documentation output
 
 `analysis/ANA-YYYYMMDD-NNN/` completo, más `recommendations.md` extendido con matriz de riesgo. Base típica para `/document assessment --format pptx` (executive assessment).
+
+**Cobertura por dominio (paso fijo, CHG-ESTACK-D-COMPLETE-WITHIN-POLICY-001).** El informe incluye la tabla de cobertura de los dominios de `config/assessment-coverage-model.json`, calculada con `python3 -m scripts.assessment_coverage.evaluate` a partir del estado de cada collector en el gateway (`OBSERVED`, `FAILED` o su `capability_status`), la topología observada y el `license_status` del target. Estados:
+- `COMPLETE`: se obtuvo todo lo que aplica.
+- `COMPLETE_WITHIN_POLICY`: se obtuvo todo lo obtenible y el resto está excluido por una política nombrada en el modelo (clasificación de datos, operación prohibida, licencia declarada `NOT_LICENSED` o derecho de licencia, que el e-stack nunca afirma).
+- `PARTIAL`: falta algo que **se puede** obtener (collector, privilegio, adaptador, target de la PDB, confirmación de licencia); la tabla dice qué y cómo.
+- `NOT_ASSESSED`: no se obtuvo nada del dominio. `NOT_APPLICABLE`: la topología no lo tiene.
+- `INSUFFICIENT_EVIDENCE`: solo la revisión de especialistas lo asigna, bajando un estado calculado con motivo (por ejemplo, AWR con un solo intervalo).
+Ninguna revisión sube un estado. Detalle en `docs/ASSESSMENT_COVERAGE_MODEL.md`.
 
 **Revisión por especialistas (paso fijo, CHG-ESTACK-ASSESSMENT-ACCURACY-001).** Antes de cerrar el análisis, el orquestador revisa el informe actuando como cada agente especialista activado (roles en el mismo contexto, con Task Package; no se abren sesiones de modelo aparte). Como mínimo, revisan el dominio con el hallazgo de mayor severidad, `oracle-discovery-analyst` (alcance y confianza del contexto) y `technical-documentation-manager` (contrato, trazabilidad, conteos).
 

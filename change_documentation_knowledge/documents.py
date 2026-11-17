@@ -298,13 +298,55 @@ def build_change_report(adv: dict, generated_at: str) -> dict:
 _SEVERITIES = ("INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL")
 _COVERAGE = ("SUPPORTED", "UNSUPPORTED", "UNKNOWN")
 _ENTITLEMENT = ("ENTITLED", "NOT_ENTITLED", "UNKNOWN")
+# CHG-ESTACK-D-COMPLETE-WITHIN-POLICY-001: domain coverage (config/assessment-coverage-model.json, docs/ASSESSMENT_COVERAGE_MODEL.md).
+# Ranked best to worst; NOT_APPLICABLE is outside the ranking and never changes.
+_DOMAIN_STATES = ("COMPLETE", "COMPLETE_WITHIN_POLICY", "PARTIAL", "INSUFFICIENT_EVIDENCE", "NOT_ASSESSED", "NOT_APPLICABLE")
+_EXCLUSION_CATEGORIES = ("DATA_CLASSIFICATION", "FORBIDDEN_OPERATION", "LICENSE_NOT_ENTITLED", "LICENSE_ENTITLEMENT_NOT_ASSERTED")
+
+
+def _parse_domain_coverage(raw) -> list:
+    """A specialist review may only LOWER a computed state (evaluated_status), with a review_note; nothing raises
+    coverage. COMPLETE_WITHIN_POLICY needs at least one policy exclusion of a known category; PARTIAL and NOT_ASSESSED
+    must say what is missing; INSUFFICIENT_EVIDENCE only comes from a review."""
+    out = []
+    for d in req_list(raw, "assessment.domain_coverage", 60):
+        d = req_dict(d, "assessment.domain_coverage")
+        strict_keys(d, {"domain", "status"}, {"evaluated_status", "review_note", "missing", "policy_exclusions"},
+                    "assessment.domain_coverage")
+        status = req_enum(d["status"], _DOMAIN_STATES, "domain_coverage.status")
+        evaluated = req_enum(d.get("evaluated_status", status), _DOMAIN_STATES, "domain_coverage.evaluated_status")
+        note = clean_text(d.get("review_note", ""), 200, "domain_coverage.review_note")
+        missing = [clean_text(x, 200, "domain_coverage.missing") for x in req_list(d.get("missing", []), "domain_coverage.missing", 20)]
+        excl = []
+        for e in req_list(d.get("policy_exclusions", []), "domain_coverage.policy_exclusions", 20):
+            e = req_dict(e, "domain_coverage.policy_exclusions")
+            strict_keys(e, {"item", "category"}, set(), "domain_coverage.policy_exclusions")
+            excl.append({"item": clean_text(e["item"], 80, "domain_coverage.policy_exclusions.item"),
+                         "category": req_enum(e["category"], _EXCLUSION_CATEGORIES, "domain_coverage.policy_exclusions.category")})
+        if status != evaluated:
+            if not note or "NOT_APPLICABLE" in (status, evaluated) \
+                    or _DOMAIN_STATES.index(status) < _DOMAIN_STATES.index(evaluated):
+                raise AdvisoryError("E_INPUT_INVALID", "domain_coverage.status: a review may only lower a state, with a review_note")
+        if status == "INSUFFICIENT_EVIDENCE" and evaluated == status:
+            raise AdvisoryError("E_INPUT_INVALID", "domain_coverage.status: INSUFFICIENT_EVIDENCE only comes from a review")
+        if evaluated == "COMPLETE_WITHIN_POLICY" and not excl:
+            raise AdvisoryError("E_INPUT_INVALID", "domain_coverage.policy_exclusions: COMPLETE_WITHIN_POLICY needs a policy exclusion")
+        if evaluated in ("PARTIAL", "NOT_ASSESSED") and not missing:
+            raise AdvisoryError("E_INPUT_INVALID", "domain_coverage.missing: PARTIAL and NOT_ASSESSED say what is missing")
+        if evaluated == "COMPLETE" and (missing or excl):
+            raise AdvisoryError("E_INPUT_INVALID", "domain_coverage: COMPLETE has nothing missing and nothing excluded")
+        out.append({"domain": clean_text(d["domain"], 80, "domain_coverage.domain"), "status": status, "evaluated_status": evaluated,
+                    "review_note": note, "missing": missing, "policy_exclusions": excl})
+    if len({d["domain"] for d in out}) != len(out):
+        raise AdvisoryError("E_REFERENCE", "assessment.domain_coverage")
+    return out
 
 
 def parse_assessment(raw) -> dict:
     require_sanitizer()
     a = req_dict(raw, "assessment")
     strict_keys(a, {"schema_version", "assessment_id", "title", "target", "findings", "coverage"},
-                {"license_notes", "exceptions", "pending"}, "assessment")
+                {"license_notes", "exceptions", "pending", "domain_coverage"}, "assessment")
     if a["schema_version"] != SCHEMA_VERSION:
         raise AdvisoryError("E_UNSUPPORTED_SCHEMA_VERSION", "assessment.schema_version")
     aid = require_id(a["assessment_id"], ("DOC", "INC", "CHG", "ADV"), "assessment.assessment_id")
@@ -340,6 +382,7 @@ def parse_assessment(raw) -> dict:
             "oracle_version": clean_text(str(target["oracle_version"]), 20, "assessment.target"),
             "findings": sorted(findings, key=lambda f: (f["domain"], _SEVERITIES.index(f["severity"]) * -1, f["finding_id"])),
             "coverage": sorted(cov, key=lambda c: c["area"]), "license_notes": sorted(lic, key=lambda x: x["feature"]),
+            "domain_coverage": _parse_domain_coverage(a.get("domain_coverage", [])),
             "exceptions": [clean_text(x, 200, "assessment.exceptions") for x in req_list(a.get("exceptions", []), "assessment.exceptions", 50)],
             "pending": [clean_text(x, 200, "assessment.pending") for x in req_list(a.get("pending", []), "assessment.pending", 50)]}
 
@@ -352,12 +395,24 @@ def build_assessment_report(raw, generated_at: str) -> dict:
         warnings.append("COVERAGE_UNKNOWN_PRESENT")
     if not a["findings"]:
         warnings.append("NO_FINDINGS_PROVIDED")
+    dc = a["domain_coverage"]
+    if any(d["status"] != d["evaluated_status"] for d in dc):
+        warnings.append("DOMAIN_STATUS_LOWERED_BY_REVIEW")
+    dcounts = ", ".join(f"{s}={sum(1 for d in dc if d['status'] == s)}" for s in _DOMAIN_STATES)
     secs = [
         _section("scope", "Scope", [_item(f"Assessment {a['assessment_id']}: {a['title']}. Oracle version declared: {a['oracle_version']}. "
                                           "Coverage for other versions is not implied.", [], "human_reported")]),
         _section("coverage", "Coverage (SUPPORTED / UNSUPPORTED / UNKNOWN)",
                  [_item(f"SUPPORTED={counts['SUPPORTED']}, UNSUPPORTED={counts['UNSUPPORTED']}, UNKNOWN={counts['UNKNOWN']}. UNKNOWN is not treated as supported.", [], "observed")],
                  columns=["area", "status", "note"], rows=[[c["area"], c["status"], c["note"]] for c in a["coverage"]]),
+        _section("domain_coverage", "Domain coverage",
+                 [_item(f"{dcounts}. COMPLETE_WITHIN_POLICY means everything obtainable was obtained and the rest is excluded by a "
+                        "named policy; PARTIAL means something obtainable is missing.", [], "observed")] if dc
+                 else [_item("No domain coverage provided.", [], "unknown")], "PRESENT" if dc else "NOT_PROVIDED_BY_SOURCE",
+                 columns=["domain", "status", "evaluated_status", "policy_exclusions", "missing", "review_note"],
+                 rows=[[d["domain"], d["status"], d["evaluated_status"],
+                        "; ".join(f"{e['item']} ({e['category']})" for e in d["policy_exclusions"]),
+                        "; ".join(d["missing"]), d["review_note"]] for d in dc]),
         _section("findings", "Findings", [_item(f"{f['finding_id']} [{f['severity']}] ({f['domain']}) {f['title']}", f["evidence_ids"],
                                                 "observed" if f["status"] == "OBSERVED" else "not_verified") for f in a["findings"]],
                  "PRESENT" if a["findings"] else "MISSING"),
