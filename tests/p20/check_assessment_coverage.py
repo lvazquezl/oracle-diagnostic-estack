@@ -156,6 +156,8 @@ def a_missing_item_says_why_and_how_and_failures_are_never_coverage():
         assert d["status"] == "NOT_ASSESSED" and d["items"][0]["status"] == "MISSING" and d["items"][0]["reason"], state
     d = _one(_mini([dict(OBT, gap="adaptador")]), {"Q-ORA-UNDO-001": "UNSUPPORTED"})
     assert "adaptador" in d["items"][0]["reason"]
+    d = _one(_mini([OBT]), {"Q-ORA-UNDO-001": "DEGRADED"})          # truncated evidence is obtained, but flagged
+    assert d["status"] == "COMPLETE" and d["items"][0]["degraded"] == ["Q-ORA-UNDO-001"]
     assert "unknown collector states" in _refused(lambda: _one(_mini([OBT]), {"Q-ORA-UNDO-001": "OK"}))
 
 
@@ -209,6 +211,9 @@ def the_assessment_document_shows_domain_coverage_and_a_review_may_only_lower_it
     assert "DOMAIN_STATUS_LOWERED_BY_REVIEW" in doc["warnings"]
     md = docs.render_document_md(doc)
     assert "COMPLETE\\_WITHIN\\_POLICY" in md or "COMPLETE_WITHIN_POLICY" in md
+    lowered = docs.parse_assessment(_assessment([{"domain": "W", "status": "PARTIAL", "evaluated_status": "COMPLETE",
+                                                  "missing": ["W2 truncado a 100 filas"], "review_note": "inventario truncado"}]))
+    assert lowered["domain_coverage"][0]["status"] == "PARTIAL"
     none = docs.build_assessment_report(_assessment([]), T)
     assert next(s for s in none["sections"] if s["section_id"] == "domain_coverage")["status"] == "NOT_PROVIDED_BY_SOURCE"
 
@@ -222,7 +227,9 @@ def the_assessment_document_refuses_coverage_that_is_not_earned():
         [{"domain": "X", "status": "NOT_ASSESSED"}],
         [{"domain": "X", "status": "COMPLETE", "missing": ["algo"]}],
         [{"domain": "X", "status": "COMPLETE", "evaluated_status": "PARTIAL", "missing": ["m"], "review_note": "lo revisé"}],   # raising
+        [{"domain": "X", "status": "PARTIAL", "evaluated_status": "NOT_ASSESSED", "missing": ["m"], "review_note": "n"}],  # raising only
         [{"domain": "X", "status": "PARTIAL", "evaluated_status": "COMPLETE", "missing": ["m"]}],     # lowering without a note
+        [{"domain": "X", "status": "PARTIAL", "evaluated_status": "COMPLETE", "review_note": "n"}],   # lowered to PARTIAL, nothing said missing
         [{"domain": "X", "status": "INSUFFICIENT_EVIDENCE", "missing": ["m"]}],                      # only from a review
         [{"domain": "S", "status": "NOT_ASSESSED", "evaluated_status": "NOT_APPLICABLE", "review_note": "n", "missing": ["m"]}],
         [PART, PART],                                                                                # duplicate domain

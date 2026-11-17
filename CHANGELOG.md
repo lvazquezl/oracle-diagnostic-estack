@@ -103,13 +103,14 @@ Rama `change/c-new-queries` sobre `main` (`be64435`). Origen: la cobertura por d
 
 ### `/change compatibility|documentation|skill|workflow` — CHG-ESTACK-D-COMPLETE-WITHIN-POLICY-001 — lote D: cobertura por dominio con `COMPLETE_WITHIN_POLICY`
 
-Rama `change/d-complete-within-policy` sobre `main` (`09ab88d`). Origen: en `ANA-20261020-001` la cobertura por dominio se armó a mano y `PARTIAL` mezclaba lo que falta con lo que la política excluye para siempre (texto SQL, binds, valores de texto de parámetros). Ver `docs/D_COMPLETE_WITHIN_POLICY.md` y `docs/ASSESSMENT_COVERAGE_MODEL.md`.
+Rama `change/d-complete-within-policy` sobre `main` (`09ab88d`). Origen: en `ANA-20261020-001` la cobertura por dominio se armó a mano y `PARTIAL` mezclaba lo que falta con lo que la política excluye para siempre (texto SQL, binds, valores de texto de parámetros). Validado en el lab: recorrido de los 114 collectors y cobertura calculada y revisada. Ver `docs/D_COMPLETE_WITHIN_POLICY.md` y `docs/ASSESSMENT_COVERAGE_MODEL.md`.
 
 #### Added
 
 - `config/assessment-coverage-model.json`: 28 dominios y 127 ítems, con los collectors que cubren cada ítem, la topología a la que aplica y las exclusiones por política (4 categorías, cada una con su política).
 - `scripts/assessment_coverage/evaluate.py`: calcula `COMPLETE`, `COMPLETE_WITHIN_POLICY`, `PARTIAL`, `NOT_ASSESSED` o `NOT_APPLICABLE` por dominio desde el estado de cada collector, la topología y el `license_status`. `INSUFFICIENT_EVIDENCE` solo lo asigna la revisión de especialistas.
 - Suite P20 (`tests/test_assessment_coverage.sh`).
+- El evaluador acepta el estado `DEGRADED` del gateway (evidencia con limitaciones, por ejemplo truncada): cuenta como obtenido y queda marcado "con limitaciones". Lo encontró el lab.
 
 #### Changed
 

@@ -329,11 +329,13 @@ def _parse_domain_coverage(raw) -> list:
                 raise AdvisoryError("E_INPUT_INVALID", "domain_coverage.status: a review may only lower a state, with a review_note")
         if status == "INSUFFICIENT_EVIDENCE" and evaluated == status:
             raise AdvisoryError("E_INPUT_INVALID", "domain_coverage.status: INSUFFICIENT_EVIDENCE only comes from a review")
-        if evaluated == "COMPLETE_WITHIN_POLICY" and not excl:
+        # both the computed and the final state must be justified: a review that lowers COMPLETE to PARTIAL says
+        # what is missing (lab finding: a truncated inventory), and COMPLETE itself has nothing missing or excluded
+        if "COMPLETE_WITHIN_POLICY" in (status, evaluated) and not excl:
             raise AdvisoryError("E_INPUT_INVALID", "domain_coverage.policy_exclusions: COMPLETE_WITHIN_POLICY needs a policy exclusion")
-        if evaluated in ("PARTIAL", "NOT_ASSESSED") and not missing:
+        if {status, evaluated} & {"PARTIAL", "NOT_ASSESSED"} and not missing:
             raise AdvisoryError("E_INPUT_INVALID", "domain_coverage.missing: PARTIAL and NOT_ASSESSED say what is missing")
-        if evaluated == "COMPLETE" and (missing or excl):
+        if status == "COMPLETE" and (missing or excl):
             raise AdvisoryError("E_INPUT_INVALID", "domain_coverage: COMPLETE has nothing missing and nothing excluded")
         out.append({"domain": clean_text(d["domain"], 80, "domain_coverage.domain"), "status": status, "evaluated_status": evaluated,
                     "review_note": note, "missing": missing, "policy_exclusions": excl})

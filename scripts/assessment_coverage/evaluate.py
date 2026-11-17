@@ -8,7 +8,9 @@ Input (--observations FILE, JSON):
   {"topology": {"cdb": true, "rac": false, "asm": true, "dataguard": false, "standby": false},
    "license_status": {"diagnostics_pack": "CONFIRMED"},           # same keys and values as the gateway target
    "collectors": {"Q-ORA-UNDO-001": "OBSERVED", "Q-DG-STATS-001": "UNSUPPORTED", ...}}
-  A collector state is OBSERVED (the gateway returned sanitized evidence, zero rows included), FAILED, or the
+  A collector state is OBSERVED (the gateway returned sanitized evidence, zero rows included), DEGRADED (evidence
+  with gateway limitations, e.g. ROWS_TRUNCATED_TO_LIMIT: it counts as obtained and the item lists it under
+  `degraded`, so the specialist review can decide whether to lower the domain), FAILED, or the
   gateway capability_status (UNSUPPORTED, LICENSE_RESTRICTED, INSUFFICIENT_PRIVILEGES, ENVIRONMENT_UNKNOWN,
   DISABLED, NOT_APPLICABLE). A collector that is not listed was NOT_RUN.
 
@@ -35,7 +37,7 @@ MODEL = os.path.join(ROOT, "config", "assessment-coverage-model.json")
 
 DOMAIN_STATES = ("COMPLETE", "COMPLETE_WITHIN_POLICY", "PARTIAL", "NOT_ASSESSED", "NOT_APPLICABLE", "INSUFFICIENT_EVIDENCE")
 ITEM_STATES = ("OBTAINED", "EXCLUDED_BY_POLICY", "NOT_APPLICABLE", "MISSING")
-COLLECTOR_STATES = ("OBSERVED", "FAILED", "NOT_RUN", "UNSUPPORTED", "LICENSE_RESTRICTED", "INSUFFICIENT_PRIVILEGES",
+COLLECTOR_STATES = ("OBSERVED", "DEGRADED", "FAILED", "NOT_RUN", "UNSUPPORTED", "LICENSE_RESTRICTED", "INSUFFICIENT_PRIVILEGES",
                     "ENVIRONMENT_UNKNOWN", "DISABLED", "NOT_APPLICABLE")
 NOT_LICENSED = "NOT_LICENSED"
 _REASONS = {
@@ -117,9 +119,10 @@ def evaluate_item(item, topology, license_status, states, catalog=None) -> dict:
     if applies is None:
         return {**out, "status": "MISSING", "reason": "topología desconocida para decidir si aplica", "collectors": item["collectors"]}
     cs = {c: states.get(c, "NOT_RUN") for c in item["collectors"]}
-    observed = sorted(c for c, s in cs.items() if s == "OBSERVED")
+    observed = sorted(c for c, s in cs.items() if s in ("OBSERVED", "DEGRADED"))
     if observed:
-        return {**out, "status": "OBTAINED", "collectors": observed}
+        degraded = sorted(c for c in observed if cs[c] == "DEGRADED")
+        return {**out, "status": "OBTAINED", "collectors": observed, **({"degraded": degraded} if degraded else {})}
     if cs and all(s == "NOT_APPLICABLE" for s in cs.values()):
         return {**out, "status": "NOT_APPLICABLE", "reason": "el gateway declara los collectors no aplicables al target"}
     restricted = [c for c, s in cs.items() if s == "LICENSE_RESTRICTED"]
@@ -168,7 +171,8 @@ def evaluate(model, observations, catalog=None) -> dict:
 def to_markdown(result) -> str:
     rows = ["| Dominio | Estado | Obtenido | Excluido por política | Qué falta |", "|---|---|---|---|---|"]
     for d in result["domains"]:
-        got = ", ".join(i["id"] for i in d["items"] if i["status"] == "OBTAINED") or "—"
+        got = ", ".join(i["id"] + (" (con limitaciones)" if i.get("degraded") else "") for i in d["items"]
+                        if i["status"] == "OBTAINED") or "—"
         exc = "; ".join(f"{i['id']} ({i['category']})" for i in d["items"] if i["status"] == "EXCLUDED_BY_POLICY") or "—"
         miss = "; ".join(f"{i['id']}: {i['reason']}" for i in d["items"] if i["status"] == "MISSING") or "—"
         rows.append(f"| {d['id']}. {d['title']} | {d['status']} | {got} | {exc} | {miss} |")

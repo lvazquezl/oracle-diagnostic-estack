@@ -26,7 +26,7 @@ Con eso, F (SQL) o B (parámetros) iban a quedar `PARTIAL` para siempre, y `PART
 ## Estados de un ítem
 
 Cada dominio se compone de ítems. Cada ítem lista los collectors certificados que lo cubren; con cualquiera de ellos alcanza.
-- `OBTAINED`: algún collector devolvió evidencia saneada (`OBSERVED`, también con cero filas).
+- `OBTAINED`: algún collector devolvió evidencia saneada (`OBSERVED`, también con cero filas). Si el gateway la devolvió con limitaciones (`DEGRADED`, por ejemplo `ROWS_TRUNCATED_TO_LIMIT`), el ítem cuenta como obtenido, la lista `degraded` lo dice y la tabla lo marca "con limitaciones". La revisión de especialistas decide si eso baja el dominio.
 - `EXCLUDED_BY_POLICY`: el modelo lo declara excluido con una categoría, o sus collectors requieren un pack que el humano declaró `NOT_LICENSED`.
 - `NOT_APPLICABLE`: su condición de topología no se cumple, o el gateway declara `NOT_APPLICABLE` todos sus collectors.
 - `MISSING`: cualquier otro caso: no se ejecutó, falló, no está habilitado, falta un privilegio, licencia sin confirmar, no existe un collector certificado (`gap`) o falta el adaptador. El motivo dice cuál y cómo obtenerlo.
@@ -59,9 +59,11 @@ P20 verifica que ninguna exclusión tenga `gap`.
 
 ## Cómo se usa
 
-1. El orquestador arma las observaciones del assessment: el estado de cada collector en el gateway (`OBSERVED`, `FAILED` o su `capability_status`), la topología observada en el discovery y el `license_status` del target.
+1. El orquestador arma las observaciones del assessment: el estado de cada collector en el gateway (`OBSERVED`, `DEGRADED`, `FAILED` o su `capability_status`), la topología observada en el discovery y el `license_status` del target.
 2. `python3 -m scripts.assessment_coverage.evaluate --observations obs.json --format md` entrega la tabla. `--format json` entrega el detalle por ítem con `model_sha256`.
 3. La revisión de especialistas puede bajar un estado, con `review_note`.
+   - El evaluador no juzga el contenido. Cero filas cuentan como obtenidas, porque "ninguna sesión bloqueada" es un dato.
+   - Un collector de historia con cero filas, como AWR de 24 h sin snapshots porque el ambiente estuvo detenido, no alcanza para juzgar la carga. El especialista baja ese dominio a `INSUFFICIENT_EVIDENCE` (ocurrió en el lab con D, E y F; ver `docs/D_COMPLETE_WITHIN_POLICY.md`).
 4. `document --kind assessment` recibe `domain_coverage` y valida:
    - `COMPLETE_WITHIN_POLICY` con al menos una exclusión;
    - `PARTIAL` y `NOT_ASSESSED` con lo que falta;
