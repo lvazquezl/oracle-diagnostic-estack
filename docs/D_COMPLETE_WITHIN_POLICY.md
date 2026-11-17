@@ -148,4 +148,4 @@ Con la revisión aplicada, el documento de assessment (`DOC-20261117-001`, diges
 | SECURITY | 15/15 mutaciones detectadas |
 | REGRESSION | 976/976 en macOS (bash 5.3), también después de las correcciones del lab; 15/15 mutaciones sobre el árbol final |
 | LAB | Recorrido de los 114 collectors (108 observados, 1 `DEGRADED`, 5 `UNSUPPORTED` esperados); el lab encontró dos defectos (estado `DEGRADED` y baja a `PARTIAL`), corregidos; cobertura del lab calculada y revisada por 4 especialistas (4 bajas con motivo) |
-| HUMAN REVIEW | pendiente |
+| HUMAN REVIEW | Aprobado: `AUTH-D-COMPLETE-WITHIN-POLICY-001`, revisor `REV-DBAMANAGER`, `2026-11-17T17:33:43Z`, contra el digest `44d86c2c…34b7e0ba5ff` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`), incluida la convención `NOT_LICENSED`. PROMOTE: pendiente (push, PR y merge, acciones humanas) |
