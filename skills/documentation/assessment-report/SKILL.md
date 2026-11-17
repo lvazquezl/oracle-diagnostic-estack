@@ -1,14 +1,14 @@
 ---
 name: assessment-report
 id: documentation/assessment-report
-version: 1.0.0
+version: 1.1.0
 domain: documentation
 status: active
 ---
 
 # Purpose
 
-Reutiliza hallazgos existentes de un assessment/healthcheck y reporta cobertura SUPPORTED/UNSUPPORTED/UNKNOWN, licenciamiento, excepciones y pendientes.
+Reutiliza hallazgos existentes de un assessment/healthcheck y reporta cobertura SUPPORTED/UNSUPPORTED/UNKNOWN, la cobertura por dominio (`COMPLETE`, `COMPLETE_WITHIN_POLICY`, `PARTIAL`, `INSUFFICIENT_EVIDENCE`, `NOT_ASSESSED`, `NOT_APPLICABLE`), licenciamiento, excepciones y pendientes.
 
 # Supported Oracle versions
 
@@ -29,6 +29,7 @@ Entradas válidas y saneadas (ver Inputs). El motor local `change_documentation_
 # Inputs
 
 - Entrada de assessment estricta: findings (FND, dominio, severidad, evidencia), coverage, license_notes, exceptions, pending
+- `domain_coverage` opcional: por dominio, `status`, `evaluated_status` (el que calculó `scripts/assessment_coverage/evaluate.py`), `review_note`, `missing` y `policy_exclusions` (`item`, `category`). Ver `docs/ASSESSMENT_COVERAGE_MODEL.md`.
 
 # Outputs
 
@@ -39,6 +40,8 @@ Entradas válidas y saneadas (ver Inputs). El motor local `change_documentation_
 - `UNKNOWN` nunca se cuenta como soportado
 - licenciamiento `UNKNOWN` se reporta como tal; no se asume entitlement
 - la versión Oracle declarada limita la cobertura; no se extiende a otras
+- `COMPLETE_WITHIN_POLICY` exige al menos una exclusión con categoría del modelo; `PARTIAL` y `NOT_ASSESSED` exigen decir qué falta; `COMPLETE` no tiene faltantes ni exclusiones
+- la revisión de especialistas solo **baja** un estado calculado, con `review_note` (warning `DOMAIN_STATUS_LOWERED_BY_REVIEW`); nada sube la cobertura, `NOT_APPLICABLE` no cambia e `INSUFFICIENT_EVIDENCE` solo sale de una revisión
 
 # Required evidence
 
@@ -64,6 +67,7 @@ Lectura de archivos JSON de entrada validados y escritura de artefactos derivado
 1. Validar dominio, severidad, ids únicos y claves desconocidas (fallo cerrado).
 2. Ordenar findings por dominio y severidad de forma estable.
 3. Contar cobertura y avisar `COVERAGE_UNKNOWN_PRESENT`.
+4. Validar y presentar la cobertura por dominio (sección `domain_coverage`); sin ella, la sección queda `NOT_PROVIDED_BY_SOURCE`.
 
 # Normal state
 
@@ -120,6 +124,7 @@ Hereda `sanitizers/data-classification-policy.md` y la sanitización/tokenizaci�
 # Tests
 
 - tests/test_p12_documentation_factory.sh
+- tests/test_assessment_coverage.sh
 
 # Documentation requirements
 
@@ -128,3 +133,4 @@ Hereda `sanitizers/data-classification-policy.md` y la sanitización/tokenizaci�
 # Change history
 
 v1.0.0 — PHASE 12 — Change Advisory, Documentation & Knowledge Lifecycle, creación inicial.
+v1.1.0 — `CHG-ESTACK-D-COMPLETE-WITHIN-POLICY-001` (lote D) — cobertura por dominio con `COMPLETE_WITHIN_POLICY`.

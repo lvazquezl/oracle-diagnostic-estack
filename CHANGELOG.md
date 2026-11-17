@@ -101,6 +101,22 @@ Rama `change/c-new-queries` sobre `main` (`be64435`). Origen: la cobertura por d
 - `security/licensing-gates` no marca las features `(system)`, que son uso de Oracle.
 - `oracle/database-state` trata `block_change_tracking` nulo como no observado.
 
+### `/change compatibility|documentation|skill|workflow` — CHG-ESTACK-D-COMPLETE-WITHIN-POLICY-001 — lote D: cobertura por dominio con `COMPLETE_WITHIN_POLICY`
+
+Rama `change/d-complete-within-policy` sobre `main` (`09ab88d`). Origen: en `ANA-20261020-001` la cobertura por dominio se armó a mano y `PARTIAL` mezclaba lo que falta con lo que la política excluye para siempre (texto SQL, binds, valores de texto de parámetros). Validado en el lab: recorrido de los 114 collectors y cobertura calculada y revisada. Ver `docs/D_COMPLETE_WITHIN_POLICY.md` y `docs/ASSESSMENT_COVERAGE_MODEL.md`.
+
+#### Added
+
+- `config/assessment-coverage-model.json`: 28 dominios y 127 ítems, con los collectors que cubren cada ítem, la topología a la que aplica y las exclusiones por política (4 categorías, cada una con su política).
+- `scripts/assessment_coverage/evaluate.py`: calcula `COMPLETE`, `COMPLETE_WITHIN_POLICY`, `PARTIAL`, `NOT_ASSESSED` o `NOT_APPLICABLE` por dominio desde el estado de cada collector, la topología y el `license_status`. `INSUFFICIENT_EVIDENCE` solo lo asigna la revisión de especialistas.
+- Suite P20 (`tests/test_assessment_coverage.sh`).
+- El evaluador acepta el estado `DEGRADED` del gateway (evidencia con limitaciones, por ejemplo truncada): cuenta como obtenido y queda marcado "con limitaciones". Lo encontró el lab.
+
+#### Changed
+
+- El documento de assessment acepta `domain_coverage` y rechaza la cobertura no ganada: `COMPLETE_WITHIN_POLICY` sin exclusión, `PARTIAL` sin lo que falta, una revisión que sube un estado. `documentation/assessment-report` 1.1.0.
+- `workflows/assessment.md` 1.2.0: la cobertura por dominio es un paso fijo; un dominio sin acceso queda `PARTIAL` o `NOT_ASSESSED` en lugar de `UNDETERMINED`.
+
 ### `/change query|security|compatibility|documentation` — CHG-ESTACK-ASSESSMENT-ACCURACY-001 — exactitud del assessment
 
 Rama `change/assessment-accuracy` sobre `main` (`230ae4b`). Integrada a `main` vía PR #41 (merge `0facc67`). Aprobación humana registrada: `AUTH-ASSESSMENT-ACCURACY-001`, revisor `REV-DBAMANAGER`, `2026-10-08T20:13:24Z`, contra el digest `042e8de9…3dec01` (`STRUCTURAL_ONLY_IDENTITY_NOT_VERIFIED`). Origen: la revisión por especialistas de `ANA-20261008-001`. Validado en el lab: 13 collectors `FIELD_VALIDATED`. Ver `docs/ASSESSMENT_ACCURACY.md`.

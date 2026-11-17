@@ -1,7 +1,7 @@
 name: assessment-report
 display_name: "Assessment / Healthcheck Report"
 id: documentation/assessment-report
-version: 1.0.0
+version: 1.1.0
 domain: documentation
 status: active
 supported_oracle_versions: [10g, 11g, 12c, 18c, 19c, 21c, 23ai]
